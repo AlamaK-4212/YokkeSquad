@@ -270,9 +270,12 @@
             <button class="btn btn-outline" onclick="filterList('MLBB')">MLBB (<span id="countMLBB">0</span> Tim)</button>
             <button class="btn btn-outline" onclick="filterList('MCGG')">MCGG (<span id="countMCGG">0</span> Pemain)</button>
           </div>
-          <div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <button class="btn btn-primary" id="btnSyncGSheet" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;" onclick="fetchParticipantsFromGoogleSheet()">
               🔄 Ambil Data Terbaru dari GSheet
+            </button>
+            <button class="btn btn-primary" id="btnSaveAllChanges" style="padding: 0.45rem 0.9rem; font-size: 0.82rem; background: linear-gradient(135deg, #059669, #10b981); border: none;" onclick="saveAllChangesToGoogleSheet()">
+              💾 Simpan Semua Perubahan ke GSheet
             </button>
           </div>
         </div>

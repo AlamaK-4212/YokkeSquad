@@ -156,6 +156,7 @@ function doGet(e) {
 
         var teamData = {
           id: 1000 + i,
+          rowIndex: i + 1,
           category: "MLBB",
           name: teamName,
           captainName: capName,
@@ -225,6 +226,7 @@ function doGet(e) {
         } else {
           result.participants.push({
             id: 2000 + j,
+            rowIndex: j + 1,
             category: "MCGG",
             name: pName,
             nickname: pName,
@@ -286,14 +288,46 @@ function doPost(e) {
       }
     }
 
+    if (data.action === "DELETE") {
+      var delSheet = data.category === "MLBB" ? ss.getSheetByName("Pendaftaran MLBB") : ss.getSheetByName("Pendaftaran MCGG");
+      if (delSheet) {
+        // Jika dikirim rowIndex spesifik, hapus baris tersebut langsung
+        if (data.rowIndex && data.rowIndex > 1 && data.rowIndex <= delSheet.getLastRow()) {
+          delSheet.deleteRow(parseInt(data.rowIndex));
+        } else {
+          // Fallback: hapus baris pertama yang cocok dengan nama
+          var dValues = delSheet.getDataRange().getValues();
+          var dTarget = (data.teamName || data.name || "").toString().trim().toLowerCase();
+          for (var dr = 1; dr < dValues.length; dr++) {
+            if (dValues[dr][1] && dValues[dr][1].toString().trim().toLowerCase() === dTarget) {
+              delSheet.deleteRow(dr + 1);
+              break;
+            }
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Data berhasil dihapus dari Google Sheets" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (data.action === "UPDATE") {
       var updateSheet = data.category === "MLBB" ? ss.getSheetByName("Pendaftaran MLBB") : ss.getSheetByName("Pendaftaran MCGG");
       if (updateSheet) {
-        var sheetValues = updateSheet.getDataRange().getValues();
-        var searchTarget = (data.teamName || data.name || "").toString().trim().toLowerCase();
-        for (var r = 1; r < sheetValues.length; r++) {
-          if (sheetValues[r][1] && sheetValues[r][1].toString().trim().toLowerCase() === searchTarget) {
-            var rowIdx = r + 1;
+        var rowIdx = -1;
+        if (data.rowIndex && data.rowIndex > 1 && data.rowIndex <= updateSheet.getLastRow()) {
+          rowIdx = parseInt(data.rowIndex);
+        } else {
+          var sheetValues = updateSheet.getDataRange().getValues();
+          var searchTarget = (data.teamName || data.name || "").toString().trim().toLowerCase();
+          for (var r = 1; r < sheetValues.length; r++) {
+            if (sheetValues[r][1] && sheetValues[r][1].toString().trim().toLowerCase() === searchTarget) {
+              rowIdx = r + 1;
+              break;
+            }
+          }
+        }
+
+        if (rowIdx !== -1) {
             
             if (data.category === "MLBB") {
               var teamName = data.teamName || data.name || "Tim MLBB";
@@ -368,9 +402,7 @@ function doPost(e) {
               if (data.status) updateSheet.getRange(rowIdx, 8).setValue(data.status);
               if (data.notes) updateSheet.getRange(rowIdx, 9).setValue(data.notes);
             }
-            break;
           }
-        }
       }
       return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Data dan foto berhasil diperbarui di Google Drive & Sheets" }))
         .setMimeType(ContentService.MimeType.JSON);

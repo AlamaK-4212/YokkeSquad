@@ -343,22 +343,46 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
     const data = await res.json();
     if (data && data.status === 'online' && Array.isArray(data.participants) && data.participants.length > 0) {
       
+      const deletedList = JSON.parse(localStorage.getItem('yokke_deleted_participants') || '[]');
+
+      // Helper key: utamakan id atau rowIndex jika ada, fallback ke category_name
+      const getItemKey = (item) => {
+        if (item.rowIndex) return `${item.category}_row_${item.rowIndex}`;
+        if (item.id) return `${item.category}_id_${item.id}`;
+        return `${item.category}_${(item.name || '').trim().toLowerCase()}`;
+      };
+
+      // Filter sheet data agar yang sudah dihapus tidak masuk lagi
+      const activeSheetParticipants = data.participants.filter(sheetItem => {
+        const rowKey = sheetItem.rowIndex ? `${sheetItem.category}_row_${sheetItem.rowIndex}` : null;
+        const idKey = sheetItem.id ? `${sheetItem.category}_id_${sheetItem.id}` : null;
+        const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
+        return !deletedList.includes(rowKey) && !deletedList.includes(idKey) && !deletedList.includes(nameKey);
+      });
+
       // Intelligent Merge: Jangan timpa perubahan lokal atau foto yang sudah ada di browser!
       const localMap = {};
       participants.forEach(localItem => {
-        const key = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
-        localMap[key] = localItem;
+        localMap[getItemKey(localItem)] = localItem;
+        // Simpan juga by name untuk backward compatibility
+        const nameKey = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
+        if (!localMap[nameKey]) localMap[nameKey] = localItem;
       });
 
-      const merged = data.participants.map(sheetItem => {
-        const key = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
-        const localItem = localMap[key];
+      const merged = activeSheetParticipants.map(sheetItem => {
+        const itemKey = getItemKey(sheetItem);
+        const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
+        const localItem = localMap[itemKey] || localMap[nameKey];
         if (!localItem) return sheetItem;
+
+        // Pertahankan status lokal jika sudah pernah diubah (VERIFIED/REJECTED/hasLocalEdits)
+        const finalStatus = (localItem.status && localItem.status !== 'PENDING') ? localItem.status : (sheetItem.status || localItem.status || 'PENDING');
 
         return {
           ...sheetItem,
           id: localItem.id || sheetItem.id,
-          status: (localItem.hasLocalEdits || localItem.status !== 'PENDING') ? localItem.status : sheetItem.status,
+          rowIndex: sheetItem.rowIndex || localItem.rowIndex,
+          status: finalStatus,
           notes: localItem.notes || sheetItem.notes,
           logo: localItem.logo || sheetItem.logo,
           idCard: localItem.idCard || sheetItem.idCard,
@@ -380,11 +404,13 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
         };
       });
 
-      // Tetap simpan peserta lokal yang mungkin belum masuk di sheet
+      // Tetap simpan peserta lokal yang mungkin belum masuk di sheet (jika tidak ada di daftar hapus)
       participants.forEach(localItem => {
-        const key = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
-        const existsInSheet = data.participants.some(s => `${s.category}_${(s.name || '').trim().toLowerCase()}` === key);
-        if (!existsInSheet) {
+        const itemKey = getItemKey(localItem);
+        const nameKey = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
+        const existsInSheet = activeSheetParticipants.some(s => getItemKey(s) === itemKey || `${s.category}_${(s.name || '').trim().toLowerCase()}` === nameKey);
+        const isDeleted = deletedList.includes(itemKey) || deletedList.includes(nameKey);
+        if (!existsInSheet && !isDeleted) {
           merged.push(localItem);
         }
       });
@@ -407,9 +433,54 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
       alert('⚠️ Gagal mengambil data dari Google Sheets.');
     }
   } finally {
-    if (syncBtn) {
-      syncBtn.disabled = false;
-      syncBtn.innerText = '🔄 Ambil Data Terbaru dari GSheet';
+  }
+}
+
+// ========================================================
+// SIMPAN SEMUA PERUBAHAN KE GOOGLE SHEETS
+// ========================================================
+async function saveAllChangesToGoogleSheet() {
+  const saveBtn = document.getElementById('btnSaveAllChanges');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Menyimpan... ⏳';
+  }
+
+  saveState();
+
+  try {
+    // Kirim pembaruan setiap peserta yang memiliki status atau edit lokal
+    const updatePromises = participants.map(p => {
+      return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'UPDATE',
+          category: p.category,
+          rowIndex: p.rowIndex || undefined,
+          id: p.id,
+          teamName: p.name,
+          name: p.name,
+          dept: p.dept,
+          wa: p.wa,
+          status: p.status,
+          notes: p.notes,
+          logo: p.logo || '',
+          idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+          roster: p.roster || []
+        })
+      }).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
+    });
+
+    await Promise.all(updatePromises);
+    alert('✅ Seluruh perubahan status dan data berhasil disimpan permanen ke Google Sheets!');
+  } catch (err) {
+    console.warn('Gagal menyimpan perubahan ke Google Sheets:', err);
+    alert('⚠️ Terjadi kendala saat menyimpan ke Google Sheets, namun data lokal Anda tetap aman tersimpan.');
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerText = '💾 Simpan Semua Perubahan ke GSheet';
     }
   }
 }
@@ -982,23 +1053,86 @@ async function handleRegister(e) {
   setTimeout(() => succ.style.display = 'none', 5000);
 }
 
-// Verification actions
+// Verification actions: Setujui / Tolak langsung tersinkron ke Google Sheets
 function setParticipantStatus(id, newStatus) {
   const p = participants.find(item => item.id === id);
   if (p) {
     p.status = newStatus;
+    p.hasLocalEdits = true;
     saveState();
+    renderParticipants();
     renderCurrentMLBBFormat();
     syncMCGGPlayers();
+    updateCounts();
+
+    // Kirim pembaruan status ke Google Sheets secara background
+    try {
+      fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'UPDATE',
+          category: p.category,
+          rowIndex: p.rowIndex || undefined,
+          id: p.id,
+          teamName: p.name,
+          name: p.name,
+          dept: p.dept,
+          wa: p.wa,
+          status: newStatus,
+          notes: p.notes,
+          logo: p.logo || '',
+          idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+          roster: p.roster || []
+        })
+      }).catch(err => console.warn('Gagal sync status ke Google Sheets:', err));
+    } catch(e) {}
   }
 }
 
-function deleteParticipant(id) {
-  if (confirm('Hapus data pendaftaran tim ini?')) {
-    participants = participants.filter(p => p.id !== id);
+async function deleteParticipant(id) {
+  const p = participants.find(item => item.id === id);
+  if (!p) return;
+
+  const targetName = p.name || 'Peserta';
+  if (confirm(`Yakin ingin menghapus ${targetName}? Data akan dihapus dari portal dan disinkronkan ke Google Sheets.`)) {
+    // 1. Simpan ke daftar blacklist lokal menggunakan key spesifik (row/id) agar tim lain dengan nama sama tidak terhapus
+    let deletedList = JSON.parse(localStorage.getItem('yokke_deleted_participants') || '[]');
+    
+    const rowKey = p.rowIndex ? `${p.category}_row_${p.rowIndex}` : null;
+    const idKey = p.id ? `${p.category}_id_${p.id}` : null;
+    const nameKey = `${p.category}_${(p.name || '').trim().toLowerCase()}`;
+
+    [rowKey, idKey, nameKey].forEach(k => {
+      if (k && !deletedList.includes(k)) deletedList.push(k);
+    });
+    localStorage.setItem('yokke_deleted_participants', JSON.stringify(deletedList));
+
+    // 2. Hapus dari state lokal
+    participants = participants.filter(item => item.id !== id);
     saveState();
+    renderParticipants();
     renderCurrentMLBBFormat();
     syncMCGGPlayers();
+    updateCounts();
+
+    // 3. Kirim permintaan DELETE ke Google Apps Script dengan rowIndex spesifik
+    try {
+      fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'DELETE',
+          category: p.category,
+          rowIndex: p.rowIndex || undefined,
+          id: p.id,
+          name: p.name,
+          teamName: p.name
+        })
+      }).catch(err => console.warn('Gagal sinkronisasi DELETE ke Sheets:', err));
+    } catch (e) {}
+
+    alert(`🗑️ Data "${targetName}" berhasil dihapus.`);
   }
 }
 
