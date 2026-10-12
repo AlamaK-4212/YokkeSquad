@@ -251,6 +251,33 @@ function doGet(e) {
       }
     }
 
+    // C. BACA TAB PENGATURAN TURNAMEN & PERATURAN (AGAR TIDAK TERESET)
+    var configSheet = ss.getSheetByName("Pengaturan Turnamen");
+    var appConfig = {
+      customRules: null,
+      tournamentFormat: null,
+      groupStageData: null,
+      mcggLobbies: null
+    };
+
+    if (configSheet && configSheet.getLastRow() >= 2) {
+      var cData = configSheet.getDataRange().getValues();
+      for (var c = 1; c < cData.length; c++) {
+        var key = cData[c][0] ? cData[c][0].toString().trim() : "";
+        var val = cData[c][1] ? cData[c][1].toString() : "";
+        if (!key) continue;
+        try {
+          if (key === "customRules") appConfig.customRules = JSON.parse(val);
+          if (key === "tournamentFormat") appConfig.tournamentFormat = val;
+          if (key === "groupStageData") appConfig.groupStageData = JSON.parse(val);
+          if (key === "mcggLobbies") appConfig.mcggLobbies = JSON.parse(val);
+        } catch(e) {
+          if (key === "tournamentFormat") appConfig.tournamentFormat = val;
+        }
+      }
+    }
+    result.config = appConfig;
+
     return ContentService.createTextOutput(JSON.stringify(result))
       .setMimeType(ContentService.MimeType.JSON);
 
@@ -286,6 +313,43 @@ function doPost(e) {
       } catch (err) {
         return "Gagal: " + err.toString();
       }
+    }
+
+    if (data.action === "SAVE_CONFIG") {
+      var cfgSheet = ss.getSheetByName("Pengaturan Turnamen");
+      if (!cfgSheet) {
+        cfgSheet = ss.insertSheet("Pengaturan Turnamen");
+        cfgSheet.appendRow(["Kunci Konfigurasi", "Isi JSON / Nilai", "Terakhir Diperbarui"]);
+        cfgSheet.getRange(1, 1, 1, 3).setFontWeight("bold").setBackground("#1e293b").setFontColor("#ffffff");
+      }
+
+      var cfgData = cfgSheet.getDataRange().getValues();
+      var keyMap = {};
+      for (var k = 1; k < cfgData.length; k++) {
+        var kName = cfgData[k][0] ? cfgData[k][0].toString().trim() : "";
+        if (kName) keyMap[kName] = k + 1; // row number
+      }
+
+      var itemsToSave = [
+        { key: "customRules", val: data.customRules ? JSON.stringify(data.customRules) : null },
+        { key: "tournamentFormat", val: data.tournamentFormat || null },
+        { key: "groupStageData", val: data.groupStageData ? JSON.stringify(data.groupStageData) : null },
+        { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null }
+      ];
+
+      itemsToSave.forEach(function(item) {
+        if (item.val !== null) {
+          if (keyMap[item.key]) {
+            cfgSheet.getRange(keyMap[item.key], 2).setValue(item.val);
+            cfgSheet.getRange(keyMap[item.key], 3).setValue(now);
+          } else {
+            cfgSheet.appendRow([item.key, item.val, now]);
+          }
+        }
+      });
+
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Pengaturan turnamen berhasil disimpan ke Google Sheets" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
     if (data.action === "DELETE") {

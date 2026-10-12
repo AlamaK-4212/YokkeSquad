@@ -415,6 +415,30 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
         }
       });
 
+      // Sinkronkan juga Pengaturan Turnamen, Peraturan, & Skor Bagan dari Google Sheets jika tersedia
+      if (data.config) {
+        if (data.config.customRules) {
+          customRules = data.config.customRules;
+          localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
+          renderRules();
+        }
+        if (data.config.tournamentFormat) {
+          tournamentFormat = data.config.tournamentFormat;
+          localStorage.setItem('yokke_mlbb_format', tournamentFormat);
+          const fmtEl = document.getElementById('bracketFormat');
+          if (fmtEl) fmtEl.value = tournamentFormat;
+        }
+        if (data.config.groupStageData && Object.keys(data.config.groupStageData).length > 0) {
+          groupStageData = data.config.groupStageData;
+          localStorage.setItem('yokke_group_data', JSON.stringify(groupStageData));
+        }
+        if (data.config.mcggLobbies && Object.keys(data.config.mcggLobbies).length > 0) {
+          mcggLobbies = data.config.mcggLobbies;
+          localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
+          renderMCGGTable();
+        }
+      }
+
       participants = merged;
       saveState();
       renderParticipants();
@@ -422,7 +446,7 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
       syncMCGGPlayers();
       updateCounts();
       if (!isSilent) {
-        alert(`✅ Berhasil menyinkronkan ${participants.length} data pendaftar dari Google Sheets!`);
+        alert(`✅ Berhasil menyinkronkan data pendaftar & pengaturan turnamen dari Google Sheets!`);
       }
     } else if (!isSilent) {
       alert('ℹ️ Webhook aktif, tetapi belum ada data peserta yang dikembalikan.');
@@ -472,8 +496,21 @@ async function saveAllChangesToGoogleSheet() {
       }).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
     });
 
-    await Promise.all(updatePromises);
-    alert('✅ Seluruh perubahan status dan data berhasil disimpan permanen ke Google Sheets!');
+    // Simpan juga Konfigurasi Turnamen, Peraturan & Bagan Skor ke Google Sheets
+    const configPromise = fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'SAVE_CONFIG',
+        customRules: customRules,
+        tournamentFormat: tournamentFormat,
+        groupStageData: groupStageData,
+        mcggLobbies: mcggLobbies
+      })
+    }).catch(err => console.warn('Gagal sync config ke Google Sheets:', err));
+
+    await Promise.all([...updatePromises, configPromise]);
+    alert('✅ Seluruh perubahan data, status, peraturan, dan bagan skor berhasil disimpan permanen ke Google Sheets!');
   } catch (err) {
     console.warn('Gagal menyimpan perubahan ke Google Sheets:', err);
     alert('⚠️ Terjadi kendala saat menyimpan ke Google Sheets, namun data lokal Anda tetap aman tersimpan.');
@@ -538,7 +575,20 @@ function saveCustomRules() {
 
   renderRules();
   toggleEditRules();
-  alert('✅ Peraturan berhasil diperbarui dan disimpan!');
+
+  // Kirim update peraturan ke Google Sheets
+  try {
+    fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'SAVE_CONFIG',
+        customRules: customRules
+      })
+    }).catch(e => console.warn('Gagal sync peraturan ke Sheets:', e));
+  } catch(e) {}
+
+  alert('✅ Peraturan berhasil diperbarui dan disimpan ke Google Sheets!');
 }
 
 function resetRulesToDefault() {
