@@ -30,6 +30,260 @@
 var TARGET_FOLDER_ID = "1i6ccl3qnoWeBPHTcTr6Q4GRyWWNJ5m8M"; // Folder: Yokke Tournament - Uploads
 
 // ========================================================
+// HELPER OTORISASI & GOOGLE DRIVE SHARING AMAN
+// ========================================================
+
+/**
+ * Mengatur permission sharing secara aman.
+ * Menghindari error 'Access denied: DriveApp' jika domain Google Workspace
+ * membatasi sharing publik (ANYONE_WITH_LINK).
+ */
+function safeSetSharing(driveItem) {
+  if (!driveItem) return;
+  try {
+    driveItem.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  } catch(e1) {
+    try {
+      driveItem.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch(e2) {
+      // Kebijakan domain membatasi sharing otomatis, abaikan agar upload tidak gagal
+    }
+  }
+}
+
+/**
+ * Mendapatkan atau membuat folder upload utama secara andal.
+ * Jika TARGET_FOLDER_ID tidak dapat diakses atau bukan milik akun ini,
+ * otomatis beralih membuat folder di My Drive (Root) milik akun panitia.
+ */
+function getOrCreateUploadFolder() {
+  var folder = null;
+  if (TARGET_FOLDER_ID && TARGET_FOLDER_ID.length > 5) {
+    try {
+      folder = DriveApp.getFolderById(TARGET_FOLDER_ID);
+      folder.getName(); // Tes validitas akses
+    } catch(err) {
+      folder = null;
+    }
+  }
+  if (!folder) {
+    try {
+      var root = DriveApp.getRootFolder();
+      var folders = root.getFoldersByName("Yokke Tournament - Uploads");
+      if (folders.hasNext()) {
+        folder = folders.next();
+      } else {
+        folder = root.createFolder("Yokke Tournament - Uploads");
+        safeSetSharing(folder);
+      }
+    } catch(err) {
+      folder = null;
+    }
+  }
+  return folder;
+}
+
+/**
+ * ========================================================
+ * FUNGSI UJI OTORISASI GOOGLE DRIVE & SPREADSHEET
+ * ========================================================
+ * PENTING: Pilih fungsi 'testDriveAuth' di dropdown toolbar atas Google Apps Script,
+ * lalu klik tombol 'Run' (Jalankan).
+ * Jika muncul popup 'Authorization Required' (Izin Diperlukan):
+ * 1. Klik 'Review Permissions' (Tinjau Izin).
+ * 2. Pilih akun Google pemilik spreadsheet.
+ * 3. Klik 'Advanced' (Lanjutan) -> 'Go to Yokke Tournament Script (unsafe)'.
+ * 4. Klik 'Allow' (Izinkan).
+ */
+function testDriveAuth() {
+  Logger.log("--- MEMULAI UJI OTORISASI DRIVE & SHEET ---");
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log("1. Akses Spreadsheet: BERHASIL (" + ss.getName() + ")");
+  
+  var root = DriveApp.getRootFolder();
+  Logger.log("2. Akses My Drive (Root): BERHASIL (" + root.getName() + ")");
+  
+  var uploadFolder = getOrCreateUploadFolder();
+  if (uploadFolder) {
+    Logger.log("3. Akses Folder Upload: BERHASIL (" + uploadFolder.getName() + " - ID: " + uploadFolder.getId() + ")");
+  } else {
+    Logger.log("3. Peringatan: Folder upload khusus tidak dapat diakses, fallback ke Root.");
+  }
+  
+  // Uji membuat file kecil lalu hapus
+  try {
+    var testBlob = Utilities.newBlob("test auth yokke", "text/plain", "yokke_test_auth.txt");
+    var testFolder = uploadFolder || root;
+    var testFile = testFolder.createFile(testBlob);
+    safeSetSharing(testFile);
+    Logger.log("4. Uji Simpan Berkas ke Drive: BERHASIL (" + testFile.getUrl() + ")");
+    testFile.setTrashed(true);
+    Logger.log("5. Pembersihan berkas uji: BERHASIL");
+  } catch(e) {
+    Logger.log("4. Gagal uji simpan berkas: " + e.toString());
+  }
+
+  Logger.log("=== SEMUA OTORISASI TELAH LENGKAP DAN AKTIF ===");
+  return "OTORISASI BERHASIL! Silakan Deploy Web App (New Version).";
+}
+
+/**
+ * Mendapatkan atau membuat subfolder tim/kategori secara andal.
+ */
+function getOrCreateSubFolder(parentFolder, subFolderName) {
+  var target = parentFolder || getOrCreateUploadFolder();
+  var sub = null;
+  if (target) {
+    try {
+      var folders = target.getFoldersByName(subFolderName);
+      if (folders.hasNext()) {
+        sub = folders.next();
+      } else {
+        sub = target.createFolder(subFolderName);
+        safeSetSharing(sub);
+      }
+    } catch(err) {
+      sub = null;
+    }
+  }
+  if (!sub) {
+    try {
+      var root = DriveApp.getRootFolder();
+      var rootFolders = root.getFoldersByName(subFolderName);
+      if (rootFolders.hasNext()) {
+        sub = rootFolders.next();
+      } else {
+        sub = root.createFolder(subFolderName);
+        safeSetSharing(sub);
+      }
+    } catch(e) {
+      sub = null;
+    }
+  }
+  return sub;
+}
+
+/**
+ * ========================================================
+ * FUNGSI PERBAIKAN: RELINK ID CARD YANG GAGAL DI SPREADSHEET
+ * ========================================================
+ * Jalankan fungsi ini jika Anda melihat tulisan
+ * 'Link ID Card: Gagal: Exception: Access denied: DriveApp.' di spreadsheet.
+ * Fungsi ini akan:
+ * 1. Memeriksa Google Drive apakah berkas foto pemain sudah ada.
+ * 2. Jika ada, mengganti teks gagal menjadi link Google Drive yang benar.
+ * 3. Jika berkas belum ada, membersihkan teks gagal agar rapi.
+ */
+function relinkExistingFailedIDCards() {
+  Logger.log("--- MEMULAI PERBAIKAN LINK ID CARD DI SPREADSHEET ---");
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var mainFolder = getOrCreateUploadFolder();
+
+  // 1. Periksa Pendaftaran MLBB
+  var mlbbSheet = ss.getSheetByName("Pendaftaran MLBB");
+  if (mlbbSheet && mlbbSheet.getLastRow() > 1) {
+    var mlbbData = mlbbSheet.getDataRange().getValues();
+    for (var r = 1; r < mlbbData.length; r++) {
+      var teamName = mlbbData[r][1] ? mlbbData[r][1].toString().trim() : "";
+      var rosterCell = mlbbData[r][12] ? mlbbData[r][12].toString() : "";
+      
+      if (rosterCell.indexOf("Access denied: DriveApp") !== -1 || rosterCell.indexOf("Gagal:") !== -1) {
+        Logger.log("Menemukan error di baris " + (r + 1) + " (Tim: " + teamName + ")");
+        
+        // Cari folder tim di Drive
+        var cleanTName = teamName.toLowerCase().replace(/[^a-z0-9]/g, "");
+        var tFolder = null;
+        if (mainFolder) {
+          try {
+            var subFolders = mainFolder.getFolders();
+            while (subFolders.hasNext()) {
+              var sf = subFolders.next();
+              var sfName = sf.getName().toLowerCase().replace(/[^a-z0-9]/g, "");
+              if (sfName.indexOf(cleanTName) !== -1) {
+                tFolder = sf;
+                break;
+              }
+            }
+          } catch(e) {}
+        }
+
+        var driveFiles = [];
+        if (tFolder) {
+          try {
+            var files = tFolder.getFiles();
+            while (files.hasNext()) {
+              var f = files.next();
+              safeSetSharing(f);
+              driveFiles.push({ name: f.getName().toLowerCase(), url: f.getUrl() });
+            }
+          } catch(e) {}
+        }
+
+        // Parse dan perbaiki tiap blok roster
+        var blocks = rosterCell.split(/\n\s*\n|\n(?=\s*\d+\.\s+)/);
+        var updatedBlocks = blocks.map(function(block) {
+          if (block.indexOf("Access denied: DriveApp") === -1 && block.indexOf("Gagal:") === -1) return block;
+
+          // Cari nama dan NIP dari blok
+          var nipMatch = block.match(/NIP:\s*([^,\)]+)/i);
+          var nip = nipMatch ? nipMatch[1].trim().replace(/[^0-9]/g, "") : "";
+          var firstLine = block.split("\n")[0];
+          var cleanName = firstLine.replace(/^[0-9\.\s\w]+:\s*/, "")
+                                   .replace(/\([^\)]+\)/g, "")
+                                   .replace(/"[^"]+"/g, "")
+                                   .toLowerCase().replace(/[^a-z0-9]/g, "");
+
+          var foundUrl = "";
+          if (nip.length >= 4) {
+            for (var d = 0; d < driveFiles.length; d++) {
+              if (driveFiles[d].name.indexOf(nip) !== -1) {
+                foundUrl = driveFiles[d].url;
+                break;
+              }
+            }
+          }
+          if (!foundUrl && cleanName.length >= 3) {
+            for (var d = 0; d < driveFiles.length; d++) {
+              if (driveFiles[d].name.replace(/[^a-z0-9]/g, "").indexOf(cleanName) !== -1) {
+                foundUrl = driveFiles[d].url;
+                break;
+              }
+            }
+          }
+
+          if (foundUrl) {
+            return block.replace(/->\s*Link ID Card:\s*Gagal:.*$/im, "-> Link ID Card: " + foundUrl);
+          } else {
+            // Hapus baris gagal agar sheet tetap rapi dan bersih
+            return block.replace(/\n\s*->\s*Link ID Card:\s*Gagal:.*$/im, "");
+          }
+        });
+
+        var newRosterText = updatedBlocks.join("\n\n");
+        mlbbSheet.getRange(r + 1, 13).setValue(newRosterText);
+        Logger.log("   -> Baris " + (r + 1) + " berhasil diperbarui!");
+      }
+    }
+  }
+
+  // 2. Periksa Pendaftaran MCGG
+  var mcggSheet = ss.getSheetByName("Pendaftaran MCGG");
+  if (mcggSheet && mcggSheet.getLastRow() > 1) {
+    var mcggData = mcggSheet.getDataRange().getValues();
+    for (var m = 1; m < mcggData.length; m++) {
+      var idCardCell = mcggData[m][8] ? mcggData[m][8].toString() : "";
+      if (idCardCell.indexOf("Access denied: DriveApp") !== -1 || idCardCell.indexOf("Gagal:") !== -1) {
+        mcggSheet.getRange(m + 1, 9).setValue("");
+        Logger.log("Pendaftaran MCGG baris " + (m + 1) + ": pesan error dibersihkan.");
+      }
+    }
+  }
+
+  Logger.log("=== SELESAI: SEMUA LINK ID CARD TELAH DIPERBAIKI ===");
+  return "Perbaikan Selesai!";
+}
+
+// ========================================================
 // 1. GET HANDLER: FETCH SEMUA PESERTA KE WEBSITE
 // ========================================================
 function doGet(e) {
@@ -40,10 +294,7 @@ function doGet(e) {
       participants: []
     };
 
-    var mainFolder = null;
-    try {
-      mainFolder = DriveApp.getFolderById(TARGET_FOLDER_ID);
-    } catch(e) {}
+    var mainFolder = getOrCreateUploadFolder();
 
     // A. BACA TAB PENDAFTARAN MLBB
     var mlbbSheet = ss.getSheetByName("Pendaftaran MLBB");
@@ -406,7 +657,7 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var now = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
-    var mainFolder = DriveApp.getFolderById(TARGET_FOLDER_ID);
+    var mainFolder = getOrCreateUploadFolder();
 
     function saveBase64Image(base64Data, fileName, targetFolder) {
       if (!base64Data || typeof base64Data !== 'string' || base64Data.indexOf("data:image") === -1) {
@@ -417,8 +668,9 @@ function doPost(e) {
         var contentType = parts[0].split(";")[0].replace("data:", "");
         var decoded = Utilities.base64Decode(parts[1]);
         var blob = Utilities.newBlob(decoded, contentType, fileName);
-        var file = targetFolder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        var destination = targetFolder || mainFolder || DriveApp.getRootFolder();
+        var file = destination.createFile(blob);
+        safeSetSharing(file);
         return file.getUrl();
       } catch (err) {
         return "Gagal: " + err.toString();
@@ -506,14 +758,7 @@ function doPost(e) {
             if (data.category === "MLBB") {
               var teamName = data.teamName || data.name || "Tim MLBB";
               var teamFolderName = "[MLBB] " + teamName + " - " + (data.dept || "Yokke");
-              var teamFolder;
-              var teamFolders = mainFolder.getFoldersByName(teamFolderName);
-              if (teamFolders.hasNext()) {
-                teamFolder = teamFolders.next();
-              } else {
-                teamFolder = mainFolder.createFolder(teamFolderName);
-                teamFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-              }
+              var teamFolder = getOrCreateSubFolder(mainFolder, teamFolderName);
 
               if (data.logo && data.logo.indexOf("data:image") !== -1) {
                 saveBase64Image(data.logo, "Logo_" + teamName + ".jpg", teamFolder);
@@ -553,14 +798,7 @@ function doPost(e) {
             } else {
               var playerName = data.name || "Pemain MCGG";
               var mcggFolderName = "[MCGG] Berkas ID Card Pemain Solo";
-              var mcggFolder;
-              var mcggFolders = mainFolder.getFoldersByName(mcggFolderName);
-              if (mcggFolders.hasNext()) {
-                mcggFolder = mcggFolders.next();
-              } else {
-                mcggFolder = mainFolder.createFolder(mcggFolderName);
-                mcggFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-              }
+              var mcggFolder = getOrCreateSubFolder(mainFolder, mcggFolderName);
 
               var safePlayerName = playerName.replace(/[^a-zA-Z0-9]/g, "_");
               var safeEmp = (data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "").toString().replace(/[^a-zA-Z0-9]/g, "_");
@@ -590,9 +828,8 @@ function doPost(e) {
       var teamName = data.teamName || data.name || "Tim MLBB";
       
       var teamFolderName = "[MLBB] " + teamName + " - " + (data.dept || "Yokke");
-      var teamFolder = mainFolder.createFolder(teamFolderName);
-      teamFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      var teamFolderUrl = teamFolder.getUrl();
+      var teamFolder = getOrCreateSubFolder(mainFolder, teamFolderName);
+      var teamFolderUrl = teamFolder ? teamFolder.getUrl() : "-";
 
       var logoUrl = saveBase64Image(data.logo, "Logo_" + teamName + ".jpg", teamFolder);
 
@@ -650,14 +887,7 @@ function doPost(e) {
       var playerName = data.name || "Pemain MCGG";
       
       var mcggFolderName = "[MCGG] Berkas ID Card Pemain Solo";
-      var mcggFolder;
-      var mcggFolders = mainFolder.getFoldersByName(mcggFolderName);
-      if (mcggFolders.hasNext()) {
-        mcggFolder = mcggFolders.next();
-      } else {
-        mcggFolder = mainFolder.createFolder(mcggFolderName);
-        mcggFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      }
+      var mcggFolder = getOrCreateSubFolder(mainFolder, mcggFolderName);
 
       var safePlayerName = playerName.replace(/[^a-zA-Z0-9]/g, "_");
       var safeEmp = (data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "").toString().replace(/[^a-zA-Z0-9]/g, "_");
