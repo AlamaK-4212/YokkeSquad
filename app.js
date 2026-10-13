@@ -898,8 +898,8 @@ function closeLoginModal() {
 
 function verifyAdminPin() {
   const pin = document.getElementById('adminPinInput').value.trim();
-  const validPins = [currentAdminPin, ADMIN_PIN, "YOKKE2026_", "YOKKE2026", localStorage.getItem('yokke_admin_pin')].filter(Boolean);
-  if (validPins.includes(pin)) {
+  const expectedPin = (currentAdminPin || localStorage.getItem('yokke_admin_pin') || ADMIN_PIN).trim();
+  if (pin === expectedPin) {
     isAdmin = true;
     sessionStorage.setItem('yokke_is_admin', 'true');
     closeLoginModal();
