@@ -386,39 +386,38 @@ function doGet(e) {
 
             // Ambil baris pertama sebagai deskripsi nama dan peran
             var firstLine = block.split("\n")[0].trim().replace(/^\d+\.\s*/, "");
-            if (firstLine.indexOf(":") !== -1) {
-              var parts = firstLine.split(":");
-              role = parts[0].trim();
-              name = parts.slice(1).join(":").trim();
+            var colonIdx = firstLine.indexOf(":");
+            if (colonIdx !== -1) {
+              role = firstLine.substring(0, colonIdx).trim();
+              name = firstLine.substring(colonIdx + 1).trim();
             } else {
               name = firstLine;
             }
 
-            if (name.indexOf("IGN:") !== -1) {
-              var ignMatch = name.match(/IGN:\s*([^,\)]+)/);
-              if (ignMatch) ign = ignMatch[1].trim();
+            if (block.indexOf("IGN:") !== -1) {
+              var ignMatch = block.match(/IGN:\s*([^,\n\]]+)/i);
+              if (ignMatch) ign = ignMatch[1].trim().replace(/\)$/, "").trim();
             } else if (name.indexOf('"') !== -1) {
               var qMatch = name.match(/"([^"]+)"/);
               if (qMatch) ign = qMatch[1];
             }
 
-            var nipMatch = name.match(/NIP:\s*([^,\)]+)/i) || name.match(/\(([^\)]+)\)/);
-            if (nipMatch) nip = nipMatch[1].trim();
+            var nipMatch = block.match(/NIP:\s*([^,\n\]]+)/i);
+            if (nipMatch) nip = nipMatch[1].trim().replace(/\)$/, "").trim();
 
             // Ekstrak Game ID dari block / name jika ada
-            var gidMatch = block.match(/(?:Game\s*ID|ID\s*Game|GameID)\s*:\s*([^,\)\n]+)/i) || 
-                           block.match(/\bID:\s*([^,\)\n]+)/i);
+            var gidMatch = block.match(/(?:Game\s*ID|ID\s*Game|GameID)\s*:\s*([^,\n\]]+)/i) || 
+                           block.match(/\bID:\s*([^,\n\]]+)/i);
             if (gidMatch) {
-              gId = gidMatch[1].trim();
+              gId = gidMatch[1].trim().replace(/\)$/, "").trim();
             } else if (isCap && capGameId !== "-") {
               gId = capGameId;
             } else if ((role.indexOf("Official 1") !== -1 || role.indexOf("Official") !== -1) && offGameId !== "-") {
               gId = offGameId;
             }
 
-            var cleanName = name.replace(/\([^\)]+\)/g, "")
+            var cleanName = name.split(/\s*[\(\[]/)[0]
                                 .replace(/"[^"]+"/g, "")
-                                .replace(/\[[^\]]+\]/g, "")
                                 .replace(/->\s*Link ID Card:.*$/g, "")
                                 .trim();
 
