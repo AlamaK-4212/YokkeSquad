@@ -71,9 +71,10 @@ function doGet(e) {
         // Cari Folder Google Drive Tim untuk Logo & ID Card
         var logoUrl = "";
         var folderMatch = (notes || "").match(/folders\/([a-zA-Z0-9_-]+)/);
+        var tFolder = null;
         if (folderMatch && folderMatch[1]) {
           try {
-            var tFolder = DriveApp.getFolderById(folderMatch[1]);
+            tFolder = DriveApp.getFolderById(folderMatch[1]);
             var logoFiles = tFolder.getFilesByName("Logo_" + teamName + ".jpg");
             if (logoFiles.hasNext()) {
               logoUrl = logoFiles.next().getUrl();
@@ -148,6 +149,30 @@ function doGet(e) {
           });
         }
 
+        // Jika anggota belum ada link ID Card, cari berkas gambar di Google Drive folder tim
+        if (tFolder && rosterList.length > 0) {
+          try {
+            var allFiles = tFolder.getFiles();
+            var driveFiles = [];
+            while (allFiles.hasNext()) {
+              var f = allFiles.next();
+              driveFiles.push({ name: f.getName().toLowerCase(), url: f.getUrl() });
+            }
+            rosterList.forEach(function(m) {
+              if (!m.idCard) {
+                var cleanMemberName = (m.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+                for (var df = 0; df < driveFiles.length; df++) {
+                  var cdfName = driveFiles[df].name.replace(/[^a-z0-9]/g, "");
+                  if (cleanMemberName.length > 2 && cdfName.indexOf(cleanMemberName) !== -1) {
+                    m.idCard = driveFiles[df].url;
+                    break;
+                  }
+                }
+              }
+            });
+          } catch(e) {}
+        }
+
         // Cek deduplikasi tim MLBB (jika tim mendaftar ulang dengan ID card lebih lengkap)
         var existingTeamIdx = -1;
         for (var t = 0; t < result.participants.length; t++) {
@@ -204,8 +229,40 @@ function doGet(e) {
         var pGameId = mRow[5] ? mRow[5].toString().trim() : "-";
         var pOrg = (mRow[6] ? mRow[6].toString().trim() : "") === "Organik";
         var pStatus = (mRow[7] && mRow[7].toString().trim()) ? mRow[7].toString().trim() : "PENDING";
-        var pIdCard = (mRow[8] && mRow[8].toString().indexOf("http") !== -1) ? mRow[8].toString().trim() : "";
+        
+        // Cari Link ID Card di kolom manapun yang mengandung link http/drive
+        var pIdCard = "";
+        for (var col = 0; col < mRow.length; col++) {
+          var val = mRow[col] ? mRow[col].toString().trim() : "";
+          if (val.indexOf("http") !== -1 && (val.indexOf("drive.google.com") !== -1 || val.indexOf("/file/d/") !== -1 || val.indexOf("/id=") !== -1)) {
+            pIdCard = val;
+            break;
+          }
+        }
+        if (!pIdCard && mRow[8] && mRow[8].toString().indexOf("http") !== -1) {
+          pIdCard = mRow[8].toString().trim();
+        }
         var pNotes = (mRow[8] && mRow[8].toString().indexOf("http") === -1) ? mRow[8].toString().trim() : (mRow[9] ? mRow[9].toString().trim() : "");
+
+        // Jika belum ada link di sheet, cari berkas di Google Drive [MCGG] Berkas ID Card Pemain Solo
+        if (!pIdCard) {
+          try {
+            var mcggFolderSearch = mainFolder.getFoldersByName("[MCGG] Berkas ID Card Pemain Solo");
+            if (mcggFolderSearch.hasNext()) {
+              var mFol = mcggFolderSearch.next();
+              var mFiles = mFol.getFiles();
+              var cleanPName = pName.toLowerCase().replace(/[^a-z0-9]/g, "");
+              while (mFiles.hasNext()) {
+                var mf = mFiles.next();
+                var cmf = mf.getName().toLowerCase().replace(/[^a-z0-9]/g, "");
+                if (cleanPName.length > 2 && cmf.indexOf(cleanPName) !== -1) {
+                  pIdCard = mf.getUrl();
+                  break;
+                }
+              }
+            }
+          } catch(e) {}
+        }
 
         var existingIdx = -1;
         for (var k = 0; k < result.participants.length; k++) {

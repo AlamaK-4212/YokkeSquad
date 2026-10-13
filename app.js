@@ -373,39 +373,71 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
       }
 
       const merged = activeSheetParticipants.map(sheetItem => {
-        if (isPure) return sheetItem;
-
         const itemKey = getItemKey(sheetItem);
         const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
-        const localItem = localMap[itemKey] || localMap[nameKey];
-        if (!localItem) return sheetItem;
+        const localItem = !isPure ? (localMap[itemKey] || localMap[nameKey]) : null;
 
-        // Pertahankan status lokal jika sudah pernah diubah (VERIFIED/REJECTED/hasLocalEdits)
-        const finalStatus = (localItem.status && localItem.status !== 'PENDING') ? localItem.status : (sheetItem.status || localItem.status || 'PENDING');
+        // Hubungkan dengan Master Default Assets (Yokke.AANG dan pendaftar ber-ID card)
+        const defaultItem = DEFAULT_PARTICIPANTS.find(d => 
+          d.category === sheetItem.category && 
+          (d.name || '').trim().toLowerCase() === (sheetItem.name || '').trim().toLowerCase()
+        );
+
+        // Pertahankan status lokal jika sudah pernah diubah
+        const finalStatus = (localItem && localItem.status && localItem.status !== 'PENDING') 
+          ? localItem.status 
+          : (sheetItem.status || (localItem ? localItem.status : '') || (defaultItem ? defaultItem.status : '') || 'PENDING');
+
+        // Prioritas Logo: sheetItem -> localItem -> defaultItem
+        const finalLogo = sheetItem.logo || (localItem ? localItem.logo : '') || (defaultItem ? defaultItem.logo : '') || '';
+
+        // Prioritas ID Card (MCGG / root level): sheetItem -> localItem -> defaultItem
+        const rootIdCard = sheetItem.idCard || (localItem ? localItem.idCard : '') || (defaultItem ? defaultItem.idCard : '') || '';
+
+        // Hubungkan roster anggota dengan ID Card lengkap
+        let mergedRoster = [];
+        if (sheetItem.roster && sheetItem.roster.length > 0) {
+          mergedRoster = sheetItem.roster.map((sM, idx) => {
+            const lM = localItem?.roster ? (localItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) || localItem.roster[idx]) : null;
+            const dM = defaultItem?.roster ? (defaultItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) || defaultItem.roster[idx]) : null;
+
+            // Prioritas ID Card anggota: sM (sheet/Drive) -> lM (edit lokal) -> dM (master default)
+            let mIdCard = sM.idCard || (lM ? lM.idCard : '') || (dM ? dM.idCard : '') || '';
+            if (!mIdCard && sheetItem.category === 'MCGG') {
+              mIdCard = rootIdCard;
+            }
+            const mDriveUrl = sM.driveUrl || (lM ? lM.driveUrl : '') || (dM ? dM.driveUrl : '') || '';
+
+            return {
+              ...sM,
+              name: (lM && lM.name) ? lM.name : sM.name,
+              nickname: (lM && lM.nickname && lM.nickname !== '-' && lM.nickname !== 'undefined') ? lM.nickname : (sM.nickname || (dM ? dM.nickname : '-')),
+              empId: (lM && lM.empId) ? lM.empId : (sM.empId || (dM ? dM.empId : '-')),
+              gameId: (lM && lM.gameId) ? lM.gameId : (sM.gameId || (dM ? dM.gameId : '-')),
+              isOrganik: (lM && lM.isOrganik !== undefined) ? lM.isOrganik : (sM.isOrganik !== undefined ? sM.isOrganik : (dM ? dM.isOrganik : false)),
+              isCaptain: (lM && lM.isCaptain !== undefined) ? lM.isCaptain : (sM.isCaptain !== undefined ? sM.isCaptain : (dM ? dM.isCaptain : false)),
+              idCard: mIdCard,
+              driveUrl: mDriveUrl
+            };
+          });
+        } else if (localItem && localItem.roster && localItem.roster.length > 0) {
+          mergedRoster = localItem.roster;
+        } else if (defaultItem && defaultItem.roster && defaultItem.roster.length > 0) {
+          mergedRoster = defaultItem.roster;
+        }
+
+        const finalRootIdCard = rootIdCard || (mergedRoster[0] ? mergedRoster[0].idCard : '');
 
         return {
           ...sheetItem,
-          id: localItem.id || sheetItem.id,
-          rowIndex: sheetItem.rowIndex || localItem.rowIndex,
+          id: (localItem && localItem.id) || sheetItem.id || (defaultItem ? defaultItem.id : undefined),
+          rowIndex: sheetItem.rowIndex || (localItem ? localItem.rowIndex : undefined),
           status: finalStatus,
-          notes: localItem.notes || sheetItem.notes,
-          logo: localItem.logo || sheetItem.logo,
-          idCard: localItem.idCard || sheetItem.idCard,
-          hasLocalEdits: localItem.hasLocalEdits || false,
-          roster: (sheetItem.roster && sheetItem.roster.length > 0) ? sheetItem.roster.map((sM, idx) => {
-            const lM = localItem.roster && localItem.roster[idx];
-            if (!lM) return sM;
-            return {
-              ...sM,
-              name: lM.name || sM.name,
-              nickname: (lM.nickname && lM.nickname !== '-' && lM.nickname !== 'undefined') ? lM.nickname : sM.nickname,
-              empId: lM.empId || sM.empId,
-              gameId: lM.gameId || sM.gameId,
-              isOrganik: lM.isOrganik !== undefined ? lM.isOrganik : sM.isOrganik,
-              isCaptain: lM.isCaptain !== undefined ? lM.isCaptain : sM.isCaptain,
-              idCard: lM.idCard || sM.idCard
-            };
-          }) : (localItem.roster || [])
+          notes: (localItem && localItem.notes) ? localItem.notes : (sheetItem.notes || (defaultItem ? defaultItem.notes : '')),
+          logo: finalLogo,
+          idCard: finalRootIdCard,
+          hasLocalEdits: (localItem && localItem.hasLocalEdits) || false,
+          roster: mergedRoster
         };
       });
 
@@ -1499,10 +1531,11 @@ function viewRosterDetail(id) {
   const tbody = document.getElementById('modalRosterList');
   tbody.innerHTML = (team.roster || []).map(m => {
     let idCardHtml = '<span style="font-size:0.75rem; color:var(--text-muted);">-</span>';
-    if (m.idCard) {
+    const cardSrc = m.idCard || (team.category === 'MCGG' ? team.idCard : '');
+    if (cardSrc) {
       idCardHtml = `
-        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--yokke-cyan); display:inline-flex; align-items:center; gap:0.4rem;" onclick="openIdCardLightbox('${m.idCard}', '🪪 ID Card: ${m.name} (${m.role})', '${m.driveUrl || ''}')">
-          <div class="idcard-thumb-sm"><img src="${formatDriveImageUrl(m.idCard)}"></div>
+        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--yokke-cyan); display:inline-flex; align-items:center; gap:0.4rem;" onclick="openIdCardLightbox('${cardSrc}', '🪪 ID Card: ${m.name} (${m.role})', '${m.driveUrl || team.idCard || ''}')">
+          <div class="idcard-thumb-sm"><img src="${formatDriveImageUrl(cardSrc)}"></div>
           <span>Lihat ID</span>
         </button>
       `;
@@ -1557,11 +1590,11 @@ function renderParticipants() {
     }
 
     const totalRoster = (p.roster && p.roster.length) ? p.roster.length : 1;
-    const cardsUploaded = (p.roster || []).filter(m => m.idCard).length;
-    const allCardsUploaded = cardsUploaded >= totalRoster;
+    const cardsUploaded = (p.roster || []).filter(m => !!m.idCard || (p.category === 'MCGG' && !!p.idCard)).length;
+    const allCardsUploaded = cardsUploaded >= totalRoster && cardsUploaded > 0;
 
     const idCardSummaryHtml = `
-      <div style="font-size:0.75rem; color:${allCardsUploaded ? 'var(--yokke-green)' : 'var(--yokke-gold)'}; margin-top:0.25rem; font-weight:600;">
+      <div style="font-size:0.75rem; color:${allCardsUploaded ? 'var(--yokke-green)' : (cardsUploaded > 0 ? 'var(--yokke-cyan)' : 'var(--yokke-gold)')}; margin-top:0.25rem; font-weight:600;">
         🪪 ${cardsUploaded}/${totalRoster} ID Card ${allCardsUploaded ? 'Lengkap' : ''}
       </div>
     `;
