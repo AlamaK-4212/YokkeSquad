@@ -378,11 +378,28 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
 
         const finalRootIdCard = rootIdCard || (mergedRoster[0] ? mergedRoster[0].idCard : '');
 
+        const activeNick = (localItem && localItem.hasLocalEdits && localItem.nickname && localItem.nickname !== '-') 
+          ? localItem.nickname 
+          : ((mergedRoster[0] && mergedRoster[0].nickname && mergedRoster[0].nickname !== '-') 
+              ? mergedRoster[0].nickname 
+              : ((sheetItem.nickname && sheetItem.nickname !== '-') ? sheetItem.nickname : '-'));
+              
+        const activeGameId = (localItem && localItem.hasLocalEdits && localItem.gameId && localItem.gameId !== '-') 
+          ? localItem.gameId 
+          : ((mergedRoster[0] && mergedRoster[0].gameId && mergedRoster[0].gameId !== '-') 
+              ? mergedRoster[0].gameId 
+              : ((sheetItem.gameId && sheetItem.gameId !== '-') ? sheetItem.gameId : '-'));
+
+        if (mergedRoster[0]) {
+          if (activeNick && activeNick !== '-') mergedRoster[0].nickname = activeNick;
+          if (activeGameId && activeGameId !== '-') mergedRoster[0].gameId = activeGameId;
+        }
+
         return {
           ...sheetItem,
           id: (localItem && localItem.id) || sheetItem.id || (defaultItem ? defaultItem.id : undefined),
-          nickname: (sheetItem.nickname && sheetItem.nickname !== '-') ? sheetItem.nickname : (mergedRoster[0] ? mergedRoster[0].nickname : '-'),
-          gameId: (sheetItem.gameId && sheetItem.gameId !== '-') ? sheetItem.gameId : (mergedRoster[0] ? mergedRoster[0].gameId : '-'),
+          nickname: activeNick,
+          gameId: activeGameId,
           rowIndex: sheetItem.rowIndex || (localItem ? localItem.rowIndex : undefined),
           status: finalStatus,
           notes: (localItem && localItem.notes) ? localItem.notes : (sheetItem.notes || (defaultItem ? defaultItem.notes : '')),
@@ -582,6 +599,16 @@ async function saveAllChangesToGoogleSheet() {
   try {
     // Kirim pembaruan setiap peserta yang memiliki status atau edit lokal
     const updatePromises = participants.map(p => {
+      const activeNickname = (p.category === 'MCGG')
+        ? (p.nickname || (p.roster && p.roster[0] ? p.roster[0].nickname : ''))
+        : (p.captainNickname || '');
+      const activeGameId = (p.category === 'MCGG')
+        ? (p.gameId || (p.roster && p.roster[0] ? p.roster[0].gameId : ''))
+        : '';
+      const activeEmpId = (p.category === 'MCGG')
+        ? (p.empId || (p.roster && p.roster[0] ? p.roster[0].empId : ''))
+        : '';
+
       return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -594,6 +621,9 @@ async function saveAllChangesToGoogleSheet() {
           name: p.name,
           dept: p.dept,
           wa: p.wa,
+          empId: activeEmpId,
+          gameId: activeGameId,
+          nickname: activeNickname,
           status: p.status,
           notes: p.notes,
           logo: p.logo || '',
@@ -1238,6 +1268,9 @@ function setParticipantStatus(id, newStatus) {
           name: p.name,
           dept: p.dept,
           wa: p.wa,
+          empId: (p.roster && p.roster[0] ? p.roster[0].empId : p.empId) || '-',
+          gameId: (p.roster && p.roster[0] ? p.roster[0].gameId : p.gameId) || '-',
+          nickname: (p.roster && p.roster[0] ? p.roster[0].nickname : p.nickname) || '-',
           status: newStatus,
           notes: p.notes,
           logo: p.logo || '',
@@ -1307,6 +1340,35 @@ function filterList(cat) {
 function openEditParticipantModal(id) {
   const p = participants.find(item => item.id === id);
   if (!p) return;
+
+  // Pastikan roster untuk MCGG selalu tersedia dan terisi
+  if (p.category === 'MCGG') {
+    if (!p.roster || p.roster.length === 0) {
+      p.roster = [{
+        role: 'Pemain Solo',
+        name: p.name || '',
+        nickname: p.nickname || '',
+        empId: p.empId || '',
+        gameId: p.gameId || '',
+        isOrganik: true,
+        isCaptain: true,
+        idCard: p.idCard || ''
+      }];
+    } else {
+      if ((!p.roster[0].nickname || p.roster[0].nickname === '-') && p.nickname && p.nickname !== '-') {
+        p.roster[0].nickname = p.nickname;
+      }
+      if ((!p.roster[0].gameId || p.roster[0].gameId === '-') && p.gameId && p.gameId !== '-') {
+        p.roster[0].gameId = p.gameId;
+      }
+      if ((!p.roster[0].empId || p.roster[0].empId === '-') && p.empId && p.empId !== '-') {
+        p.roster[0].empId = p.empId;
+      }
+      if (!p.roster[0].idCard && p.idCard) {
+        p.roster[0].idCard = p.idCard;
+      }
+    }
+  }
 
   document.getElementById('editParticipantId').value = p.id;
   document.getElementById('editTeamName').value = p.name || '';
@@ -1395,10 +1457,17 @@ async function handleEditRosterIdCardUpload(event, idx) {
   }
 }
 
-function saveParticipantEdit() {
+async function saveParticipantEdit() {
   const id = parseInt(document.getElementById('editParticipantId').value);
   const p = participants.find(item => item.id === id);
   if (!p) return;
+
+  const saveBtn = document.querySelector('#editParticipantModal button.btn-primary');
+  const originalBtnText = saveBtn ? saveBtn.innerText : '💾 Simpan Perubahan Data';
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Menyimpan ke Google Sheets... ⏳';
+  }
 
   p.name = document.getElementById('editTeamName').value.trim();
   p.dept = document.getElementById('editDept').value.trim();
@@ -1442,36 +1511,65 @@ function saveParticipantEdit() {
 
   if (p.category === 'MCGG' && p.roster && p.roster[0]) {
     p.nickname = p.roster[0].nickname;
+    p.gameId = p.roster[0].gameId;
+    p.empId = p.roster[0].empId;
   }
 
   autoLinkParticipantsAssets();
   saveState();
-  closeEditParticipantModal();
+  renderParticipants();
   renderCurrentMLBBFormat();
   syncMCGGPlayers();
 
-  // Async sync update to Google Sheets & Drive
+  const activeNickname = (p.category === 'MCGG')
+    ? (p.nickname || (p.roster && p.roster[0] ? p.roster[0].nickname : ''))
+    : (p.captainNickname || '');
+  const activeGameId = (p.category === 'MCGG')
+    ? (p.gameId || (p.roster && p.roster[0] ? p.roster[0].gameId : ''))
+    : '';
+  const activeEmpId = (p.category === 'MCGG')
+    ? (p.empId || (p.roster && p.roster[0] ? p.roster[0].empId : ''))
+    : '';
+
   try {
-    fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    const response = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
         action: 'UPDATE',
         category: p.category,
+        rowIndex: p.rowIndex || undefined,
+        id: p.id,
         teamName: p.name,
         name: p.name,
         dept: p.dept,
         wa: p.wa,
+        empId: activeEmpId,
+        gameId: activeGameId,
+        nickname: activeNickname,
         status: p.status,
         notes: p.notes,
         logo: p.logo || '',
         idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
         roster: p.roster || []
       })
-    }).catch(e => console.warn('Background sync warning:', e));
-  } catch(e) {}
-
-  alert('✅ Perubahan data berhasil disimpan permanen!');
+    });
+    const result = await response.json();
+    if (result && result.status === 'success') {
+      alert('✅ Perubahan data dan Nickname berhasil disimpan ke Google Sheets!');
+    } else {
+      alert('⚠️ Perubahan tersimpan lokal: ' + (result?.error || result?.message || 'Gagal sync ke Sheets'));
+    }
+  } catch (e) {
+    console.warn('Sync update warning:', e);
+    alert('⚠️ Perubahan tersimpan di browser, tetapi koneksi ke Google Sheets tertunda.');
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerText = originalBtnText;
+    }
+    closeEditParticipantModal();
+  }
 }
 
 // Modal Detail Roster Lengkap & ID Card Per-Pemain
