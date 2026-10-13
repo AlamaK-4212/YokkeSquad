@@ -1068,6 +1068,14 @@ async function handleRegister(e) {
       return;
     }
 
+    // WAJIB UPLOAD LOGO TIM MLBB
+    if (!logoData || logoData.trim() === "") {
+      alert("❌ PENDAFTARAN DITOLAK:\nLogo Tim MLBB WAJIB diunggah!\nHarap unggah gambar/logo tim Anda (PNG/JPG) sebelum mengirim pendaftaran.");
+      document.getElementById('teamLogoInput')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('teamLogoInput')?.focus();
+      return;
+    }
+
     // Official 1 (Wajib)
     const off1Name = document.getElementById('off1_name').value.trim();
     const off1EmpId = document.getElementById('off1_empid').value.trim();

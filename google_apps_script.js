@@ -901,6 +901,14 @@ function doPost(e) {
       var officials = roster.filter(function(m){ return (m.role || '').indexOf('Official') !== -1; });
       var players = roster.filter(function(m){ return (m.role || '').indexOf('Official') === -1; });
 
+      // Validasi 0: Logo Tim MLBB Wajib Diunggah
+      if (!data.logo || data.logo.trim() === "" || data.logo === "-") {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Pendaftaran ditolak: Logo Tim MLBB wajib diunggah!"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       // Validasi 1: Foto ID Card wajib untuk setiap anggota yang terdaftar (Official & Pemain)
       for (var r = 0; r < roster.length; r++) {
         var mCheck = roster[r];
