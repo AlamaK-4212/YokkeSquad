@@ -46,9 +46,12 @@ function doGet(e) {
       var mlbbData = mlbbSheet.getDataRange().getValues();
       for (var i = 1; i < mlbbData.length; i++) {
         var row = mlbbData[i];
-        if (!row[1] || row[1].toString().trim() === "") continue;
+        if (!row || row.length < 2) continue;
+        var isAllEmpty = row.every(function(cell) { return cell === null || cell === undefined || cell.toString().trim() === ""; });
+        if (isAllEmpty) continue;
 
-        var teamName = row[1].toString().trim();
+        var teamName = row[1] ? row[1].toString().trim() : "";
+        if (!teamName || teamName === "-" || teamName.length < 2) continue;
         var dept = row[2] ? row[2].toString().trim() : "-";
         var wa = row[3] ? row[3].toString().trim() : "-";
         var offName = row[4] ? row[4].toString().trim() : "-";
@@ -189,9 +192,12 @@ function doGet(e) {
       var mcggData = mcggSheet.getDataRange().getValues();
       for (var j = 1; j < mcggData.length; j++) {
         var mRow = mcggData[j];
-        if (!mRow[1] || mRow[1].toString().trim() === "") continue;
+        if (!mRow || mRow.length < 2) continue;
+        var isAllEmpty = mRow.every(function(cell) { return cell === null || cell === undefined || cell.toString().trim() === ""; });
+        if (isAllEmpty) continue;
 
-        var pName = mRow[1].toString().trim();
+        var pName = mRow[1] ? mRow[1].toString().trim() : "";
+        if (!pName || pName === "-" || pName.length < 2) continue;
         var pDept = mRow[2] ? mRow[2].toString().trim() : "-";
         var pWa = mRow[3] ? mRow[3].toString().trim() : "-";
         var pEmpId = mRow[4] ? mRow[4].toString().trim() : "-";

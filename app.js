@@ -328,7 +328,9 @@ function formatDriveImageUrl(url) {
 }
 
 // Fetch registered participants from Google Sheets via doGet Webhook
-async function fetchParticipantsFromGoogleSheet(isSilent = false) {
+// Fetch registered participants from Google Sheets via doGet Webhook
+// Google Sheets menjadi Single Source of Truth: data yang dihapus di sheet tidak akan dimunculkan kembali.
+async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false) {
   const syncBtn = document.getElementById('btnSyncGSheet');
   if (syncBtn) {
     syncBtn.disabled = true;
@@ -343,7 +345,7 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
     const data = await res.json();
     if (data && data.status === 'online' && Array.isArray(data.participants) && data.participants.length > 0) {
       
-      const deletedList = JSON.parse(localStorage.getItem('yokke_deleted_participants') || '[]');
+      const deletedList = isPure ? [] : JSON.parse(localStorage.getItem('yokke_deleted_participants') || '[]');
 
       // Helper key: utamakan id atau rowIndex jika ada, fallback ke category_name
       const getItemKey = (item) => {
@@ -352,24 +354,27 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
         return `${item.category}_${(item.name || '').trim().toLowerCase()}`;
       };
 
-      // Filter sheet data agar yang sudah dihapus tidak masuk lagi
-      const activeSheetParticipants = data.participants.filter(sheetItem => {
+      // Filter sheet data agar yang sudah dihapus secara lokal tidak masuk lagi (kecuali mode pure)
+      const activeSheetParticipants = isPure ? data.participants : data.participants.filter(sheetItem => {
         const rowKey = sheetItem.rowIndex ? `${sheetItem.category}_row_${sheetItem.rowIndex}` : null;
         const idKey = sheetItem.id ? `${sheetItem.category}_id_${sheetItem.id}` : null;
         const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
         return !deletedList.includes(rowKey) && !deletedList.includes(idKey) && !deletedList.includes(nameKey);
       });
 
-      // Intelligent Merge: Jangan timpa perubahan lokal atau foto yang sudah ada di browser!
+      // Intelligent Merge: Pertahankan foto Base64 atau edit lokal HANYA jika data masih ada di Google Sheets
       const localMap = {};
-      participants.forEach(localItem => {
-        localMap[getItemKey(localItem)] = localItem;
-        // Simpan juga by name untuk backward compatibility
-        const nameKey = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
-        if (!localMap[nameKey]) localMap[nameKey] = localItem;
-      });
+      if (!isPure) {
+        participants.forEach(localItem => {
+          localMap[getItemKey(localItem)] = localItem;
+          const nameKey = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
+          if (!localMap[nameKey]) localMap[nameKey] = localItem;
+        });
+      }
 
       const merged = activeSheetParticipants.map(sheetItem => {
+        if (isPure) return sheetItem;
+
         const itemKey = getItemKey(sheetItem);
         const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
         const localItem = localMap[itemKey] || localMap[nameKey];
@@ -404,17 +409,6 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
         };
       });
 
-      // Tetap simpan peserta lokal yang mungkin belum masuk di sheet (jika tidak ada di daftar hapus)
-      participants.forEach(localItem => {
-        const itemKey = getItemKey(localItem);
-        const nameKey = `${localItem.category}_${(localItem.name || '').trim().toLowerCase()}`;
-        const existsInSheet = activeSheetParticipants.some(s => getItemKey(s) === itemKey || `${s.category}_${(s.name || '').trim().toLowerCase()}` === nameKey);
-        const isDeleted = deletedList.includes(itemKey) || deletedList.includes(nameKey);
-        if (!existsInSheet && !isDeleted) {
-          merged.push(localItem);
-        }
-      });
-
       // Sinkronkan juga Pengaturan Turnamen, Peraturan, & Skor Bagan dari Google Sheets jika tersedia
       if (data.config) {
         if (data.config.customRules) {
@@ -440,13 +434,16 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
       }
 
       participants = merged;
+      cleanOrphanedTournamentData();
       saveState();
       renderParticipants();
       renderCurrentMLBBFormat();
       syncMCGGPlayers();
       updateCounts();
       if (!isSilent) {
-        alert(`✅ Berhasil menyinkronkan data pendaftar & pengaturan turnamen dari Google Sheets!`);
+        alert(isPure 
+          ? `⚡ Berhasil reset cache! Data 100% mengikuti Google Sheets (${participants.length} peserta aktif).`
+          : `✅ Berhasil menyinkronkan data pendaftar & pengaturan turnamen dari Google Sheets!`);
       }
     } else if (!isSilent) {
       alert('ℹ️ Webhook aktif, tetapi belum ada data peserta yang dikembalikan.');
@@ -457,6 +454,127 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false) {
       alert('⚠️ Gagal mengambil data dari Google Sheets.');
     }
   } finally {
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.innerText = '🔄 Sinkronkan Google Sheets';
+    }
+  }
+}
+
+// Bersihkan tim/peserta yang sudah dihapus dari bagan turnamen, klasemen grup, dan lobi MCGG
+function cleanOrphanedTournamentData() {
+  const activeMlbbNames = participants
+    .filter(p => p.category === 'MLBB')
+    .map(p => (p.name || '').trim().toLowerCase());
+  const activeMcggNames = participants
+    .filter(p => p.category === 'MCGG')
+    .map(p => (p.name || '').trim().toLowerCase());
+
+  // 1. Bersihkan Klasemen Group Stage MLBB
+  let groupChanged = false;
+  if (groupStageData && typeof groupStageData === 'object') {
+    for (const gName in groupStageData) {
+      if (Array.isArray(groupStageData[gName])) {
+        groupStageData[gName].forEach((team, idx) => {
+          if (team && team.name && !team.name.includes('(TBD)') && !team.name.startsWith('Slot')) {
+            if (!activeMlbbNames.includes(team.name.trim().toLowerCase())) {
+              team.name = `Slot ${idx + 1} (TBD)`;
+              team.win = 0;
+              team.lose = 0;
+              team.pts = 0;
+              groupChanged = true;
+            }
+          }
+        });
+      }
+    }
+  }
+  if (groupChanged) {
+    localStorage.setItem('yokke_group_data', JSON.stringify(groupStageData));
+    if (typeof initGroupPlayoff === 'function') initGroupPlayoff();
+  }
+
+  // 2. Bersihkan Knockout Bracket MLBB
+  let bracketChanged = false;
+  if (Array.isArray(bracketMatches)) {
+    bracketMatches.forEach(round => {
+      if (Array.isArray(round)) {
+        round.forEach(match => {
+          if (match.teamA && !match.teamA.includes('(TBD)') && match.teamA !== 'Menunggu...') {
+            if (!activeMlbbNames.includes(match.teamA.trim().toLowerCase())) {
+              if (match.winner === match.teamA) match.winner = null;
+              match.teamA = `Slot TBD`;
+              bracketChanged = true;
+            }
+          }
+          if (match.teamB && !match.teamB.includes('(TBD)') && match.teamB !== 'Menunggu...') {
+            if (!activeMlbbNames.includes(match.teamB.trim().toLowerCase())) {
+              if (match.winner === match.teamB) match.winner = null;
+              match.teamB = `Slot TBD`;
+              bracketChanged = true;
+            }
+          }
+          if (match.winner && !activeMlbbNames.includes(match.winner.trim().toLowerCase())) {
+            match.winner = null;
+            bracketChanged = true;
+          }
+        });
+      }
+    });
+  }
+
+  // 3. Bersihkan Kursi Lobi MCGG
+  let lobbyChanged = false;
+  ['LOBBY_A', 'LOBBY_B', 'GRAND_FINAL'].forEach(lobKey => {
+    if (mcggLobbies && Array.isArray(mcggLobbies[lobKey])) {
+      mcggLobbies[lobKey].forEach((player, idx) => {
+        if (player && player.name && !player.name.includes('(TBD)') && !player.name.startsWith('Pemain') && !player.name.startsWith('Top ')) {
+          if (!activeMcggNames.includes(player.name.trim().toLowerCase())) {
+            player.name = `Slot ${idx + 1} (TBD)`;
+            player.nickname = '-';
+            player.r1 = 0;
+            player.r2 = 0;
+            player.r3 = 0;
+            player.total = 0;
+            lobbyChanged = true;
+          }
+        }
+      });
+    }
+  });
+  if (lobbyChanged) {
+    localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
+  }
+}
+
+// Reset cache lokal dan ikuti 100% data aktif dari Google Sheets
+async function resetCacheAndFollowGSheet() {
+  if (!confirm('Apakah Anda yakin ingin mereset cache lokal dan memuat data murni dari Google Sheets?\n\nData yang sudah dihapus di Google Sheets akan otomatis dibersihkan dari portal.')) {
+    return;
+  }
+
+  const btn = document.getElementById('btnResetCacheFollowGSheet');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'Mereset... ⏳';
+  }
+
+  try {
+    // Bersihkan cache pendaftar dan blacklist lokal
+    localStorage.removeItem('yokke_participants');
+    localStorage.removeItem('yokke_deleted_participants');
+    participants = [];
+
+    // Ambil data murni dari Google Sheets
+    await fetchParticipantsFromGoogleSheet(false, true);
+  } catch (err) {
+    console.error('Gagal reset cache:', err);
+    alert('⚠️ Terjadi kendala saat mereset cache.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = '⚡ Reset Cache & Ikuti GSheet';
+    }
   }
 }
 
@@ -1160,6 +1278,7 @@ async function deleteParticipant(id) {
 
     // 2. Hapus dari state lokal
     participants = participants.filter(item => item.id !== id);
+    cleanOrphanedTournamentData();
     saveState();
     renderParticipants();
     renderCurrentMLBBFormat();
@@ -2206,13 +2325,18 @@ function loadSampleData() {
 }
 
 function clearAllData() {
-  if (confirm('Reset seluruh data pendaftar?')) {
+  if (confirm('Reset seluruh data pendaftar dan bagan skor lokal? Tindakan ini akan mengosongkan cache browser Anda.')) {
     participants = [];
     groupStageData = {};
     mcggLobbies = { LOBBY_A: [], LOBBY_B: [], GRAND_FINAL: [] };
+    localStorage.removeItem('yokke_deleted_participants');
     saveState();
+    renderParticipants();
     renderCurrentMLBBFormat();
     renderMCGGTable();
+    syncMCGGPlayers();
+    updateCounts();
+    alert('🧹 Seluruh data lokal dan riwayat hapus berhasil di-reset.');
   }
 }
 
