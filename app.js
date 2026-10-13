@@ -1,5 +1,5 @@
 const ADMIN_PIN = "YOKKE2026";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwD3ypYR1BdaZ6EVaZpLXxKi1iKNWr6CsoA13mKt1oz09nsjNmmnH4L2FgfZSW9biLU/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyXaT89g3OHxKkd5uiKBQipRybjH3zZ1aIKM6WPXlZezRJXbKcwZqHGHXK_wu2Br2Nh/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
