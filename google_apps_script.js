@@ -405,8 +405,15 @@ function doGet(e) {
             var nipMatch = name.match(/NIP:\s*([^,\)]+)/i) || name.match(/\(([^\)]+)\)/);
             if (nipMatch) nip = nipMatch[1].trim();
 
-            if (isCap && capGameId !== "-") {
+            // Ekstrak Game ID dari block / name jika ada
+            var gidMatch = block.match(/(?:Game\s*ID|ID\s*Game|GameID)\s*:\s*([^,\)\n]+)/i) || 
+                           block.match(/\bID:\s*([^,\)\n]+)/i);
+            if (gidMatch) {
+              gId = gidMatch[1].trim();
+            } else if (isCap && capGameId !== "-") {
               gId = capGameId;
+            } else if ((role.indexOf("Official 1") !== -1 || role.indexOf("Official") !== -1) && offGameId !== "-") {
+              gId = offGameId;
             }
 
             var cleanName = name.replace(/\([^\)]+\)/g, "")
@@ -825,14 +832,29 @@ function doPost(e) {
                   cardUrl = m.idCard;
                 }
 
+                var gameIdStr = (m.gameId && m.gameId !== "-" && m.gameId !== "undefined") ? (", Game ID: " + m.gameId) : "";
                 var line = (i + 1) + ". " + m.role + ": " + m.name + 
                            ' (IGN: ' + (m.nickname || "-") + 
+                           gameIdStr +
                            ", NIP: " + (m.empId || "-") + 
                            ", " + (m.isOrganik ? "Organik" : "Non-Organik") + 
                            (m.isCaptain ? " [KAPTEN]" : "") + 
                            ")" + (cardUrl !== "-" ? "\n   -> Link ID Card: " + cardUrl : "");
                 rosterSummaryList.push(line);
               });
+
+              var cap = (roster || []).find(function(m){ return m.isCaptain; });
+              if (cap) {
+                if (cap.name) updateSheet.getRange(rowIdx, 9).setValue(cap.name);
+                if (cap.empId) updateSheet.getRange(rowIdx, 10).setValue(cap.empId);
+                if (cap.gameId && cap.gameId !== "-") updateSheet.getRange(rowIdx, 11).setValue(cap.gameId);
+              }
+              var off = (roster || []).find(function(m){ return (m.role || '').indexOf('Official 1') !== -1; });
+              if (off) {
+                if (off.name) updateSheet.getRange(rowIdx, 5).setValue(off.name);
+                if (off.empId) updateSheet.getRange(rowIdx, 6).setValue(off.empId);
+                if (off.gameId && off.gameId !== "-") updateSheet.getRange(rowIdx, 7).setValue(off.gameId);
+              }
 
               if (data.dept) updateSheet.getRange(rowIdx, 3).setValue(data.dept);
               if (data.wa) updateSheet.getRange(rowIdx, 4).setValue(data.wa);
@@ -900,8 +922,10 @@ function doPost(e) {
         if (m.role && m.role.indexOf("Official 1") !== -1) off1Url = cardUrl;
         if (m.isCaptain) capUrl = cardUrl;
 
+        var gameIdStr = (m.gameId && m.gameId !== "-" && m.gameId !== "undefined") ? (", Game ID: " + m.gameId) : "";
         var line = (i + 1) + ". " + m.role + ": " + m.name + 
                    ' (IGN: ' + (m.nickname || "-") + 
+                   gameIdStr +
                    ", NIP: " + (m.empId || "-") + 
                    ", " + (m.isOrganik ? "Organik" : "Non-Organik") + 
                    (m.isCaptain ? " [KAPTEN]" : "") + 
