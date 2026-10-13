@@ -505,6 +505,19 @@ function doGet(e) {
     var mcggSheet = ss.getSheetByName("Pendaftaran MCGG");
     if (mcggSheet && mcggSheet.getLastRow() > 1) {
       var mcggData = mcggSheet.getDataRange().getValues();
+      var mcggHeaders = mcggData[0] || [];
+      var nickColIdx = -1;
+      for (var h = 0; h < mcggHeaders.length; h++) {
+        var hText = mcggHeaders[h] ? mcggHeaders[h].toString().toLowerCase() : "";
+        if (hText.indexOf("nickname") !== -1 || hText.indexOf("ign") !== -1) {
+          nickColIdx = h;
+          break;
+        }
+      }
+      if (nickColIdx === -1 && mcggHeaders.length >= 10) {
+        nickColIdx = 9; // Kolom J: Mobile Game Nickname (0-indexed 9)
+      }
+
       for (var j = 1; j < mcggData.length; j++) {
         var mRow = mcggData[j];
         if (!mRow || mRow.length < 2) continue;
@@ -520,6 +533,22 @@ function doGet(e) {
         var pOrg = (mRow[6] ? mRow[6].toString().trim() : "") === "Organik";
         var pStatus = (mRow[7] && mRow[7].toString().trim()) ? mRow[7].toString().trim() : "PENDING";
         
+        // Ambil Nickname dari Kolom J (Mobile Game Nickname) atau kolom ber-header Nickname/IGN
+        var pNickname = "";
+        if (nickColIdx !== -1 && mRow[nickColIdx]) {
+          pNickname = mRow[nickColIdx].toString().trim();
+        }
+        // Jika belum ada di kolom J, coba parse dari nama jika berformat "Nama (IGN: Nick)"
+        if (!pNickname || pNickname === "-") {
+          var ignMatch = pName.match(/\(IGN:\s*([^)]+)\)/i) || pName.match(/\(([^)]+)\)/);
+          if (ignMatch) {
+            pNickname = ignMatch[1].trim();
+          }
+        }
+        if (!pNickname || pNickname === "-") {
+          pNickname = pName; // fallback jika belum diisi IGN
+        }
+        
         // Cari Link ID Card di kolom manapun yang mengandung link http/drive
         var pIdCard = "";
         for (var col = 0; col < mRow.length; col++) {
@@ -532,7 +561,7 @@ function doGet(e) {
         if (!pIdCard && mRow[8] && mRow[8].toString().indexOf("http") !== -1) {
           pIdCard = mRow[8].toString().trim();
         }
-        var pNotes = (mRow[8] && mRow[8].toString().indexOf("http") === -1) ? mRow[8].toString().trim() : (mRow[9] ? mRow[9].toString().trim() : "");
+        var pNotes = (mRow[8] && mRow[8].toString().indexOf("http") === -1) ? mRow[8].toString().trim() : (mRow[9] && mRow[9].toString().indexOf("http") === -1 && nickColIdx !== 9 ? mRow[9].toString().trim() : "");
 
         // Jika belum ada link di sheet, cari berkas di Google Drive [MCGG] Berkas ID Card Pemain Solo
         if (!pIdCard && mainFolder) {
@@ -572,14 +601,20 @@ function doGet(e) {
 
         if (existingIdx !== -1) {
           var existing = result.participants[existingIdx];
+          if (pNickname && pNickname !== "-") {
+            existing.nickname = pNickname;
+            if (existing.roster && existing.roster[0]) existing.roster[0].nickname = pNickname;
+          }
           if (pIdCard) {
             existing.idCard = pIdCard;
             if (existing.roster && existing.roster[0]) existing.roster[0].idCard = pIdCard;
           }
           if (pEmpId !== "-" && pEmpId) {
+            existing.empId = pEmpId;
             if (existing.roster && existing.roster[0]) existing.roster[0].empId = pEmpId;
           }
           if (pGameId !== "-" && pGameId) {
+            existing.gameId = pGameId;
             if (existing.roster && existing.roster[0]) existing.roster[0].gameId = pGameId;
           }
           if (pDept !== "-" && pDept) existing.dept = pDept;
@@ -590,9 +625,11 @@ function doGet(e) {
             rowIndex: j + 1,
             category: "MCGG",
             name: pName,
-            nickname: pName,
+            nickname: pNickname,
             dept: pDept,
             wa: pWa,
+            empId: pEmpId,
+            gameId: pGameId,
             logo: "",
             idCard: pIdCard,
             status: pStatus,
@@ -600,7 +637,7 @@ function doGet(e) {
             roster: [{
               role: "Pemain Solo",
               name: pName,
-              nickname: pName,
+              nickname: pNickname,
               empId: pEmpId,
               gameId: pGameId,
               isOrganik: pOrg,
@@ -618,7 +655,8 @@ function doGet(e) {
       customRules: null,
       tournamentFormat: null,
       groupStageData: null,
-      mcggLobbies: null
+      mcggLobbies: null,
+      adminPassword: null
     };
 
     if (configSheet && configSheet.getLastRow() >= 2) {
@@ -632,8 +670,14 @@ function doGet(e) {
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
           if (key === "groupStageData") appConfig.groupStageData = JSON.parse(val);
           if (key === "mcggLobbies") appConfig.mcggLobbies = JSON.parse(val);
+          if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
+            appConfig.adminPassword = val.toString().trim();
+          }
         } catch(e) {
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
+          if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
+            appConfig.adminPassword = val.toString().trim();
+          }
         }
       }
     }
@@ -696,7 +740,8 @@ function doPost(e) {
         { key: "customRules", val: data.customRules ? JSON.stringify(data.customRules) : null },
         { key: "tournamentFormat", val: data.tournamentFormat || null },
         { key: "groupStageData", val: data.groupStageData ? JSON.stringify(data.groupStageData) : null },
-        { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null }
+        { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null },
+        { key: "adminpassword", val: data.adminPassword || null }
       ];
 
       itemsToSave.forEach(function(item) {
@@ -811,10 +856,14 @@ function doPost(e) {
                 }
               }
 
+              if (data.name) updateSheet.getRange(rowIdx, 2).setValue(data.name);
               if (data.dept) updateSheet.getRange(rowIdx, 3).setValue(data.dept);
               if (data.wa) updateSheet.getRange(rowIdx, 4).setValue(data.wa);
+              if (data.empId) updateSheet.getRange(rowIdx, 5).setValue(data.empId);
+              if (data.gameId) updateSheet.getRange(rowIdx, 6).setValue(data.gameId);
               if (data.status) updateSheet.getRange(rowIdx, 8).setValue(data.status);
               if (data.notes) updateSheet.getRange(rowIdx, 9).setValue(data.notes);
+              if (data.nickname) updateSheet.getRange(rowIdx, 10).setValue(data.nickname);
             }
           }
       }
@@ -885,12 +934,15 @@ function doPost(e) {
     } else {
       var sheet = ss.getSheetByName("Pendaftaran MCGG");
       var playerName = data.name || "Pemain MCGG";
+      var mcggNickname = data.nickname || (data.roster && data.roster[0] ? data.roster[0].nickname : "-") || "-";
+      var mcggGameId = data.gameId || (data.roster && data.roster[0] ? data.roster[0].gameId : "-") || "-";
+      var mcggEmpId = data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "-";
       
       var mcggFolderName = "[MCGG] Berkas ID Card Pemain Solo";
       var mcggFolder = getOrCreateSubFolder(mainFolder, mcggFolderName);
 
       var safePlayerName = playerName.replace(/[^a-zA-Z0-9]/g, "_");
-      var safeEmp = (data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "").toString().replace(/[^a-zA-Z0-9]/g, "_");
+      var safeEmp = mcggEmpId.toString().replace(/[^a-zA-Z0-9]/g, "_");
       var mcggIdCardUrl = saveBase64Image(data.idCard || (data.roster && data.roster[0] ? data.roster[0].idCard : ""), "IDCard_MCGG_" + safeEmp + "_" + safePlayerName + ".jpg", mcggFolder);
 
       sheet.appendRow([
@@ -898,11 +950,12 @@ function doPost(e) {
         playerName,
         data.dept || "-",
         data.wa || "-",
-        data.empId || "-",
-        data.gameId || "-",
+        mcggEmpId,
+        mcggGameId,
         data.isOrganik ? "Organik" : "Non-Organik",
         "PENDING",
-        mcggIdCardUrl !== "-" ? mcggIdCardUrl : ""
+        mcggIdCardUrl !== "-" ? mcggIdCardUrl : "",
+        mcggNickname
       ]);
     }
 
