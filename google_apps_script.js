@@ -40,6 +40,11 @@ function doGet(e) {
       participants: []
     };
 
+    var mainFolder = null;
+    try {
+      mainFolder = DriveApp.getFolderById(TARGET_FOLDER_ID);
+    } catch(e) {}
+
     // A. BACA TAB PENDAFTARAN MLBB
     var mlbbSheet = ss.getSheetByName("Pendaftaran MLBB");
     if (mlbbSheet && mlbbSheet.getLastRow() > 1) {
@@ -75,9 +80,32 @@ function doGet(e) {
         if (folderMatch && folderMatch[1]) {
           try {
             tFolder = DriveApp.getFolderById(folderMatch[1]);
-            var logoFiles = tFolder.getFilesByName("Logo_" + teamName + ".jpg");
-            if (logoFiles.hasNext()) {
-              logoUrl = logoFiles.next().getUrl();
+          } catch(err) {}
+        }
+        if (!tFolder && mainFolder) {
+          try {
+            var cleanTName = teamName.toLowerCase().replace(/[^a-z0-9]/g, "");
+            var subFolders = mainFolder.getFolders();
+            while (subFolders.hasNext()) {
+              var sf = subFolders.next();
+              var sfName = sf.getName().toLowerCase().replace(/[^a-z0-9]/g, "");
+              if (sfName.indexOf(cleanTName) !== -1) {
+                tFolder = sf;
+                break;
+              }
+            }
+          } catch(err) {}
+        }
+        if (tFolder) {
+          try {
+            var logoFiles = tFolder.getFiles();
+            while (logoFiles.hasNext()) {
+              var lf = logoFiles.next();
+              var lfn = lf.getName().toLowerCase();
+              if (lfn.indexOf("logo") !== -1) {
+                logoUrl = lf.getUrl();
+                break;
+              }
             }
           } catch(err) {}
         }
@@ -160,12 +188,23 @@ function doGet(e) {
             }
             rosterList.forEach(function(m) {
               if (!m.idCard) {
+                var cleanEmpId = (m.empId || "").toString().replace(/[^0-9]/g, "");
                 var cleanMemberName = (m.name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-                for (var df = 0; df < driveFiles.length; df++) {
-                  var cdfName = driveFiles[df].name.replace(/[^a-z0-9]/g, "");
-                  if (cleanMemberName.length > 2 && cdfName.indexOf(cleanMemberName) !== -1) {
-                    m.idCard = driveFiles[df].url;
-                    break;
+                if (cleanEmpId.length >= 4) {
+                  for (var df = 0; df < driveFiles.length; df++) {
+                    if (driveFiles[df].name.indexOf(cleanEmpId) !== -1) {
+                      m.idCard = driveFiles[df].url;
+                      break;
+                    }
+                  }
+                }
+                if (!m.idCard && cleanMemberName.length > 2) {
+                  for (var df = 0; df < driveFiles.length; df++) {
+                    var cdfName = driveFiles[df].name.replace(/[^a-z0-9]/g, "");
+                    if (cdfName.indexOf(cleanMemberName) !== -1) {
+                      m.idCard = driveFiles[df].url;
+                      break;
+                    }
                   }
                 }
               }
@@ -245,16 +284,24 @@ function doGet(e) {
         var pNotes = (mRow[8] && mRow[8].toString().indexOf("http") === -1) ? mRow[8].toString().trim() : (mRow[9] ? mRow[9].toString().trim() : "");
 
         // Jika belum ada link di sheet, cari berkas di Google Drive [MCGG] Berkas ID Card Pemain Solo
-        if (!pIdCard) {
+        if (!pIdCard && mainFolder) {
           try {
             var mcggFolderSearch = mainFolder.getFoldersByName("[MCGG] Berkas ID Card Pemain Solo");
             if (mcggFolderSearch.hasNext()) {
               var mFol = mcggFolderSearch.next();
               var mFiles = mFol.getFiles();
               var cleanPName = pName.toLowerCase().replace(/[^a-z0-9]/g, "");
+              var cleanPEmpId = (pEmpId || "").toString().replace(/[^0-9]/g, "");
               while (mFiles.hasNext()) {
                 var mf = mFiles.next();
-                var cmf = mf.getName().toLowerCase().replace(/[^a-z0-9]/g, "");
+                var mfName = mf.getName().toLowerCase();
+                var cmf = mfName.replace(/[^a-z0-9]/g, "");
+                // Prioritas 1: Cocokkan ID Pegawai (NIP / empId)
+                if (cleanPEmpId.length >= 4 && mfName.indexOf(cleanPEmpId) !== -1) {
+                  pIdCard = mf.getUrl();
+                  break;
+                }
+                // Prioritas 2: Cocokkan Nama Pemain
                 if (cleanPName.length > 2 && cmf.indexOf(cleanPName) !== -1) {
                   pIdCard = mf.getUrl();
                   break;
@@ -478,7 +525,8 @@ function doPost(e) {
                 var memberName = m.name || ("Anggota_" + (i + 1));
                 var safeRole = (m.role || "Pemain").replace(/[^a-zA-Z0-9]/g, "_");
                 var safeName = memberName.replace(/[^a-zA-Z0-9]/g, "_");
-                var cardFileName = "IDCard_" + safeRole + "_" + safeName + ".jpg";
+                var safeEmp = (m.empId || "-").toString().replace(/[^a-zA-Z0-9]/g, "_");
+                var cardFileName = "IDCard_" + safeRole + "_" + safeEmp + "_" + safeName + ".jpg";
 
                 var cardUrl = "-";
                 if (m.idCard && m.idCard.indexOf("data:image") !== -1) {
@@ -515,10 +563,11 @@ function doPost(e) {
               }
 
               var safePlayerName = playerName.replace(/[^a-zA-Z0-9]/g, "_");
+              var safeEmp = (data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "").toString().replace(/[^a-zA-Z0-9]/g, "_");
               var cardBase64 = data.idCard || (data.roster && data.roster[0] ? data.roster[0].idCard : "");
               
               if (cardBase64 && cardBase64.indexOf("data:image") !== -1) {
-                var mcggIdCardUrl = saveBase64Image(cardBase64, "IDCard_MCGG_" + safePlayerName + ".jpg", mcggFolder);
+                var mcggIdCardUrl = saveBase64Image(cardBase64, "IDCard_MCGG_" + safeEmp + "_" + safePlayerName + ".jpg", mcggFolder);
                 if (mcggIdCardUrl !== "-") {
                   updateSheet.getRange(rowIdx, 9).setValue(mcggIdCardUrl);
                 }
@@ -557,7 +606,8 @@ function doPost(e) {
         var memberName = m.name || ("Anggota_" + (i + 1));
         var safeRole = (m.role || "Pemain").replace(/[^a-zA-Z0-9]/g, "_");
         var safeName = memberName.replace(/[^a-zA-Z0-9]/g, "_");
-        var cardFileName = "IDCard_" + safeRole + "_" + safeName + ".jpg";
+        var safeEmp = (m.empId || "-").toString().replace(/[^a-zA-Z0-9]/g, "_");
+        var cardFileName = "IDCard_" + safeRole + "_" + safeEmp + "_" + safeName + ".jpg";
 
         var cardUrl = saveBase64Image(m.idCard, cardFileName, teamFolder);
 
@@ -610,7 +660,8 @@ function doPost(e) {
       }
 
       var safePlayerName = playerName.replace(/[^a-zA-Z0-9]/g, "_");
-      var mcggIdCardUrl = saveBase64Image(data.idCard || (data.roster && data.roster[0] ? data.roster[0].idCard : ""), "IDCard_MCGG_" + safePlayerName + ".jpg", mcggFolder);
+      var safeEmp = (data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "").toString().replace(/[^a-zA-Z0-9]/g, "_");
+      var mcggIdCardUrl = saveBase64Image(data.idCard || (data.roster && data.roster[0] ? data.roster[0].idCard : ""), "IDCard_MCGG_" + safeEmp + "_" + safePlayerName + ".jpg", mcggFolder);
 
       sheet.appendRow([
         now,

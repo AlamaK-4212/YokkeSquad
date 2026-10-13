@@ -327,7 +327,150 @@ function formatDriveImageUrl(url) {
   return url;
 }
 
-// Fetch registered participants from Google Sheets via doGet Webhook
+// ========================================================
+// HELPER PEMETAAN ID CARD DENGAN ID PEGAWAI & LOGO TIM
+// ========================================================
+
+// Pemetaan ID Card berdasarkan ID Pegawai (NIP / empId) dan Nama
+function getIdCardMap() {
+  let map = JSON.parse(localStorage.getItem('yokke_idcard_map') || '{}');
+  if (typeof DEFAULT_PARTICIPANTS !== 'undefined' && Array.isArray(DEFAULT_PARTICIPANTS)) {
+    DEFAULT_PARTICIPANTS.forEach(p => {
+      if (p.category === 'MCGG' && p.idCard) {
+        if (p.empId && p.empId !== '-') {
+          const raw = p.empId.toString().trim();
+          const clean = raw.replace(/[^a-zA-Z0-9]/g, '');
+          map['emp_' + raw] = p.idCard;
+          if (clean) map['emp_' + clean] = p.idCard;
+        }
+        if (p.name) {
+          const rawN = p.name.toString().trim().toLowerCase();
+          const cleanN = rawN.replace(/[^a-z0-9]/gi, '');
+          map['name_' + rawN] = p.idCard;
+          if (cleanN) map['name_' + cleanN] = p.idCard;
+        }
+      }
+      (p.roster || []).forEach(m => {
+        if (m.idCard) {
+          if (m.empId && m.empId !== '-') {
+            const raw = m.empId.toString().trim();
+            const clean = raw.replace(/[^a-zA-Z0-9]/g, '');
+            map['emp_' + raw] = m.idCard;
+            if (clean) map['emp_' + clean] = m.idCard;
+          }
+          if (m.name) {
+            const rawN = m.name.toString().trim().toLowerCase();
+            const cleanN = rawN.replace(/[^a-z0-9]/gi, '');
+            map['name_' + rawN] = m.idCard;
+            if (cleanN) map['name_' + cleanN] = m.idCard;
+          }
+        }
+      });
+    });
+  }
+  return map;
+}
+
+function saveIdCardToMap(empId, name, cardUrl) {
+  if (!cardUrl) return;
+  let map = getIdCardMap();
+  if (empId && empId !== '-' && empId.toString().trim().length >= 3) {
+    const raw = empId.toString().trim();
+    const clean = raw.replace(/[^a-zA-Z0-9]/g, '');
+    map['emp_' + raw] = cardUrl;
+    if (clean) map['emp_' + clean] = cardUrl;
+  }
+  if (name && name.toString().trim().length > 1) {
+    const rawN = name.toString().trim().toLowerCase();
+    const cleanN = rawN.replace(/[^a-z0-9]/gi, '');
+    map['name_' + rawN] = cardUrl;
+    if (cleanN) map['name_' + cleanN] = cardUrl;
+  }
+  localStorage.setItem('yokke_idcard_map', JSON.stringify(map));
+}
+
+function findIdCardByEmpIdOrName(empId, name) {
+  const map = getIdCardMap();
+  if (empId && empId !== '-' && empId.toString().trim().length >= 3) {
+    const raw = empId.toString().trim();
+    const clean = raw.replace(/[^a-zA-Z0-9]/g, '');
+    if (map['emp_' + raw]) return map['emp_' + raw];
+    if (clean && map['emp_' + clean]) return map['emp_' + clean];
+  }
+  if (name && name.toString().trim().length > 1) {
+    const rawN = name.toString().trim().toLowerCase();
+    const cleanN = rawN.replace(/[^a-z0-9]/gi, '');
+    if (map['name_' + rawN]) return map['name_' + rawN];
+    if (cleanN && map['name_' + cleanN]) return map['name_' + cleanN];
+  }
+  return '';
+}
+
+// Pemetaan Logo sesuai Nama Tim (MLBB)
+function getLogoMap() {
+  let map = JSON.parse(localStorage.getItem('yokke_logo_map') || '{}');
+  if (typeof DEFAULT_PARTICIPANTS !== 'undefined' && Array.isArray(DEFAULT_PARTICIPANTS)) {
+    DEFAULT_PARTICIPANTS.forEach(p => {
+      if (p.category === 'MLBB' && p.logo && p.name) {
+        const cleanKey = p.name.toString().replace(/[^a-z0-9]/gi, '').toLowerCase();
+        map['team_' + cleanKey] = p.logo;
+        map['team_' + p.name.toString().trim().toLowerCase()] = p.logo;
+      }
+    });
+  }
+  return map;
+}
+
+function saveLogoToMap(teamName, logoUrl) {
+  if (!logoUrl || !teamName) return;
+  let map = getLogoMap();
+  const cleanKey = teamName.toString().replace(/[^a-z0-9]/gi, '').toLowerCase();
+  map['team_' + cleanKey] = logoUrl;
+  map['team_' + teamName.toString().trim().toLowerCase()] = logoUrl;
+  localStorage.setItem('yokke_logo_map', JSON.stringify(map));
+}
+
+function findLogoByTeamName(teamName) {
+  if (!teamName) return '';
+  const map = getLogoMap();
+  const cleanKey = teamName.toString().replace(/[^a-z0-9]/gi, '').toLowerCase();
+  return map['team_' + cleanKey] || map['team_' + teamName.toString().trim().toLowerCase()] || '';
+}
+
+// Otomatis hubungkan aset ID Card & Logo untuk semua peserta yang ada
+function autoLinkParticipantsAssets() {
+  if (!Array.isArray(participants)) return;
+  participants.forEach(p => {
+    // 1. Hubungkan Logo berdasarkan Nama Tim (MLBB)
+    if (p.category === 'MLBB') {
+      const resolvedLogo = p.logo || findLogoByTeamName(p.name);
+      if (resolvedLogo) {
+        p.logo = resolvedLogo;
+        saveLogoToMap(p.name, resolvedLogo);
+      }
+    }
+    // 2. Hubungkan ID Card untuk Solo MCGG
+    if (p.category === 'MCGG') {
+      const resolvedCard = p.idCard || findIdCardByEmpIdOrName(p.empId, p.name) || (p.roster && p.roster[0] ? p.roster[0].idCard : '');
+      if (resolvedCard) {
+        p.idCard = resolvedCard;
+        saveIdCardToMap(p.empId, p.name, resolvedCard);
+        if (p.roster && p.roster[0]) {
+          p.roster[0].idCard = resolvedCard;
+        }
+      }
+    }
+    // 3. Hubungkan ID Card per Anggota Roster berdasarkan ID Pegawai (NIP / empId) atau Nama
+    (p.roster || []).forEach(m => {
+      const resolvedCard = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (p.category === 'MCGG' ? (p.idCard || findIdCardByEmpIdOrName(p.empId, p.name)) : '');
+      if (resolvedCard) {
+        m.idCard = resolvedCard;
+        saveIdCardToMap(m.empId, m.name, resolvedCard);
+      }
+    });
+  });
+}
+
 // Fetch registered participants from Google Sheets via doGet Webhook
 // Google Sheets menjadi Single Source of Truth: data yang dihapus di sheet tidak akan dimunculkan kembali.
 async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false) {
@@ -377,10 +520,10 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
         const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
         const localItem = !isPure ? (localMap[itemKey] || localMap[nameKey]) : null;
 
-        // Hubungkan dengan Master Default Assets (Yokke.AANG dan pendaftar ber-ID card)
+        // Hubungkan dengan Master Default Assets berdasarkan nama tim atau nama peserta
         const defaultItem = DEFAULT_PARTICIPANTS.find(d => 
           d.category === sheetItem.category && 
-          (d.name || '').trim().toLowerCase() === (sheetItem.name || '').trim().toLowerCase()
+          (d.name || '').replace(/[^a-z0-9]/gi, '').toLowerCase() === (sheetItem.name || '').replace(/[^a-z0-9]/gi, '').toLowerCase()
         );
 
         // Pertahankan status lokal jika sudah pernah diubah
@@ -388,23 +531,43 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           ? localItem.status 
           : (sheetItem.status || (localItem ? localItem.status : '') || (defaultItem ? defaultItem.status : '') || 'PENDING');
 
-        // Prioritas Logo: sheetItem -> localItem -> defaultItem
-        const finalLogo = sheetItem.logo || (localItem ? localItem.logo : '') || (defaultItem ? defaultItem.logo : '') || '';
+        // Hubungkan LOGO SESUAI NAMA TIM
+        const teamLogo = sheetItem.logo || (localItem ? localItem.logo : '') || findLogoByTeamName(sheetItem.name) || (defaultItem ? defaultItem.logo : '') || '';
+        if (teamLogo) {
+          saveLogoToMap(sheetItem.name, teamLogo);
+        }
 
-        // Prioritas ID Card (MCGG / root level): sheetItem -> localItem -> defaultItem
-        const rootIdCard = sheetItem.idCard || (localItem ? localItem.idCard : '') || (defaultItem ? defaultItem.idCard : '') || '';
+        // Hubungkan ID CARD DENGAN ID PEGAWAI (NIP) / Nama untuk solo player
+        const rootIdCard = sheetItem.idCard || (localItem ? localItem.idCard : '') || findIdCardByEmpIdOrName(sheetItem.empId, sheetItem.name) || (defaultItem ? defaultItem.idCard : '') || '';
+        if (rootIdCard) {
+          saveIdCardToMap(sheetItem.empId, sheetItem.name, rootIdCard);
+        }
 
-        // Hubungkan roster anggota dengan ID Card lengkap
+        // Hubungkan roster anggota dengan ID Card sesuai ID Pegawai (NIP / empId)
         let mergedRoster = [];
         if (sheetItem.roster && sheetItem.roster.length > 0) {
           mergedRoster = sheetItem.roster.map((sM, idx) => {
-            const lM = localItem?.roster ? (localItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) || localItem.roster[idx]) : null;
-            const dM = defaultItem?.roster ? (defaultItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) || defaultItem.roster[idx]) : null;
+            // Cocokkan lM berdasarkan ID Pegawai (empId) terlebih dahulu, baru nama atau index
+            const lM = localItem?.roster ? (
+              localItem.roster.find(m => m.empId && sM.empId && m.empId.toString().trim() === sM.empId.toString().trim()) ||
+              localItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) ||
+              localItem.roster[idx]
+            ) : null;
 
-            // Prioritas ID Card anggota: sM (sheet/Drive) -> lM (edit lokal) -> dM (master default)
-            let mIdCard = sM.idCard || (lM ? lM.idCard : '') || (dM ? dM.idCard : '') || '';
+            // Cocokkan dM berdasarkan ID Pegawai (empId) terlebih dahulu, baru nama atau index
+            const dM = defaultItem?.roster ? (
+              defaultItem.roster.find(m => m.empId && sM.empId && m.empId.toString().trim() === sM.empId.toString().trim()) ||
+              defaultItem.roster.find(m => m.name && sM.name && m.name.trim().toLowerCase() === sM.name.trim().toLowerCase()) ||
+              defaultItem.roster[idx]
+            ) : null;
+
+            // Cari ID Card: sheet/Drive -> localItem -> ID Pegawai map -> master default
+            let mIdCard = sM.idCard || (lM ? lM.idCard : '') || findIdCardByEmpIdOrName(sM.empId, sM.name) || (dM ? dM.idCard : '') || '';
             if (!mIdCard && sheetItem.category === 'MCGG') {
               mIdCard = rootIdCard;
+            }
+            if (mIdCard) {
+              saveIdCardToMap(sM.empId, sM.name, mIdCard);
             }
             const mDriveUrl = sM.driveUrl || (lM ? lM.driveUrl : '') || (dM ? dM.driveUrl : '') || '';
 
@@ -434,7 +597,7 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           rowIndex: sheetItem.rowIndex || (localItem ? localItem.rowIndex : undefined),
           status: finalStatus,
           notes: (localItem && localItem.notes) ? localItem.notes : (sheetItem.notes || (defaultItem ? defaultItem.notes : '')),
-          logo: finalLogo,
+          logo: teamLogo,
           idCard: finalRootIdCard,
           hasLocalEdits: (localItem && localItem.hasLocalEdits) || false,
           roster: mergedRoster
@@ -466,6 +629,7 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
       }
 
       participants = merged;
+      autoLinkParticipantsAssets();
       cleanOrphanedTournamentData();
       saveState();
       renderParticipants();
@@ -1357,7 +1521,7 @@ function openEditParticipantModal(id) {
   document.getElementById('editNotes').value = p.notes || '';
 
   // Logo Preview in Edit Modal
-  currentEditLogoBase64 = p.logo || '';
+  currentEditLogoBase64 = p.logo || findLogoByTeamName(p.name) || '';
   const logoGroup = document.getElementById('editLogoGroup');
   const logoPreviewBox = document.getElementById('editLogoPreviewBox');
   if (logoGroup) {
@@ -1373,12 +1537,14 @@ function openEditParticipantModal(id) {
 
   editRosterIdCards = {};
   (p.roster || []).forEach((m, idx) => {
-    editRosterIdCards[idx] = m.idCard || '';
+    editRosterIdCards[idx] = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (p.category === 'MCGG' ? (p.idCard || findIdCardByEmpIdOrName(p.empId, p.name)) : '') || '';
   });
 
   // Render Roster in Edit Modal
   const tbody = document.getElementById('editRosterTableBody');
-  tbody.innerHTML = (p.roster || []).map((m, idx) => `
+  tbody.innerHTML = (p.roster || []).map((m, idx) => {
+    const nipLabel = (m.empId && m.empId !== '-') ? ` (NIP: ${m.empId})` : '';
+    return `
     <tr>
       <td><span style="font-size:0.8rem; font-weight:700;">${m.role}</span></td>
       <td><input type="text" id="edit_m_${idx}_name" value="${m.name || ''}" style="width:130px; padding:0.3rem 0.4rem; font-size:0.8rem;"></td>
@@ -1389,14 +1555,15 @@ function openEditParticipantModal(id) {
       <td style="text-align:center;"><input type="radio" name="edit_captain_radio" value="${idx}" ${m.isCaptain ? 'checked' : ''}></td>
       <td>
         <div style="display:flex; align-items:center; gap:0.4rem;">
-          <div class="idcard-thumb-sm" id="edit_m_${idx}_thumb" onclick="if(editRosterIdCards[${idx}]) openIdCardLightbox(editRosterIdCards[${idx}], '🪪 ID Card: ${m.name}')">
+          <div class="idcard-thumb-sm" id="edit_m_${idx}_thumb" onclick="if(editRosterIdCards[${idx}]) openIdCardLightbox(editRosterIdCards[${idx}], '🪪 ID Card: ${m.name}${nipLabel}')">
             ${editRosterIdCards[idx] ? `<img src="${formatDriveImageUrl(editRosterIdCards[idx])}">` : '<span style="font-size:0.65rem;color:var(--text-muted)">-</span>'}
           </div>
           <input type="file" accept="image/*" style="font-size:0.7rem; width:120px;" onchange="handleEditRosterIdCardUpload(event, ${idx})">
         </div>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   document.getElementById('editParticipantModal').classList.add('active');
 }
@@ -1445,6 +1612,7 @@ function saveParticipantEdit() {
   p.notes = document.getElementById('editNotes').value.trim();
   if (currentEditLogoBase64) {
     p.logo = currentEditLogoBase64;
+    saveLogoToMap(p.name, currentEditLogoBase64);
   }
   p.hasLocalEdits = true;
 
@@ -1466,6 +1634,9 @@ function saveParticipantEdit() {
 
     if (editRosterIdCards[idx] !== undefined) {
       m.idCard = editRosterIdCards[idx];
+      if (m.idCard) {
+        saveIdCardToMap(m.empId, m.name, m.idCard);
+      }
     }
 
     if (m.isCaptain) {
@@ -1478,6 +1649,7 @@ function saveParticipantEdit() {
     p.nickname = p.roster[0].nickname;
   }
 
+  autoLinkParticipantsAssets();
   saveState();
   closeEditParticipantModal();
   renderCurrentMLBBFormat();
@@ -1512,11 +1684,12 @@ function viewRosterDetail(id) {
   const team = participants.find(p => p.id === id);
   if (!team) return;
 
+  const teamLogoSrc = team.logo || findLogoByTeamName(team.name);
   const logoBox = document.getElementById('modalTeamLogoBox');
-  if (team.logo) {
-    logoBox.innerHTML = `<img src="${formatDriveImageUrl(team.logo)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+  if (teamLogoSrc) {
+    logoBox.innerHTML = `<img src="${formatDriveImageUrl(teamLogoSrc)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
   } else {
-    const initials = team.name.substring(0, 2).toUpperCase();
+    const initials = (team.name || 'YT').substring(0, 2).toUpperCase();
     logoBox.innerHTML = `<div style="background:linear-gradient(135deg,#00d2ff,#7209b7);width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;">${initials}</div>`;
   }
 
@@ -1531,10 +1704,11 @@ function viewRosterDetail(id) {
   const tbody = document.getElementById('modalRosterList');
   tbody.innerHTML = (team.roster || []).map(m => {
     let idCardHtml = '<span style="font-size:0.75rem; color:var(--text-muted);">-</span>';
-    const cardSrc = m.idCard || (team.category === 'MCGG' ? team.idCard : '');
+    const cardSrc = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (team.category === 'MCGG' ? (team.idCard || findIdCardByEmpIdOrName(team.empId, team.name)) : '');
     if (cardSrc) {
+      const nipLabel = (m.empId && m.empId !== '-') ? ` (NIP: ${m.empId})` : '';
       idCardHtml = `
-        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--yokke-cyan); display:inline-flex; align-items:center; gap:0.4rem;" onclick="openIdCardLightbox('${cardSrc}', '🪪 ID Card: ${m.name} (${m.role})', '${m.driveUrl || team.idCard || ''}')">
+        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--yokke-cyan); display:inline-flex; align-items:center; gap:0.4rem;" onclick="openIdCardLightbox('${cardSrc}', '🪪 ID Card: ${m.name}${nipLabel}', '${m.driveUrl || team.idCard || ''}')">
           <div class="idcard-thumb-sm"><img src="${formatDriveImageUrl(cardSrc)}"></div>
           <span>Lihat ID</span>
         </button>
@@ -1571,6 +1745,7 @@ function closeDetailModal() {
 
 // Render Participant Table (Featuring Nickname, ID Card count per-player, and Admin Edit Action)
 function renderParticipants() {
+  autoLinkParticipantsAssets();
   const tbody = document.getElementById('participantList');
   const filtered = participants.filter(p => currentFilter === 'ALL' || p.category === currentFilter);
 
@@ -1590,7 +1765,10 @@ function renderParticipants() {
     }
 
     const totalRoster = (p.roster && p.roster.length) ? p.roster.length : 1;
-    const cardsUploaded = (p.roster || []).filter(m => !!m.idCard || (p.category === 'MCGG' && !!p.idCard)).length;
+    const cardsUploaded = (p.roster || []).filter(m => {
+      const card = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (p.category === 'MCGG' ? (p.idCard || findIdCardByEmpIdOrName(p.empId, p.name)) : '');
+      return !!card;
+    }).length;
     const allCardsUploaded = cardsUploaded >= totalRoster && cardsUploaded > 0;
 
     const idCardSummaryHtml = `
@@ -1602,7 +1780,8 @@ function renderParticipants() {
     const memberCount = `${totalRoster} Orang`;
 
     let logoHtml = '';
-    const formattedLogo = formatDriveImageUrl(p.logo);
+    const teamLogoSrc = p.logo || findLogoByTeamName(p.name);
+    const formattedLogo = formatDriveImageUrl(teamLogoSrc);
     if (formattedLogo && formattedLogo.trim() !== '') {
       logoHtml = `<div class="team-logo-thumb"><img src="${formattedLogo}" alt="Logo"></div>`;
     } else {
@@ -2352,6 +2531,7 @@ function loadSampleData() {
     }
   ];
 
+  autoLinkParticipantsAssets();
   saveState();
   renderCurrentMLBBFormat();
   syncMCGGPlayers();
@@ -2374,6 +2554,7 @@ function clearAllData() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  autoLinkParticipantsAssets();
   renderPlayersFormInputs();
   fetchParticipantsFromGoogleSheet(true);
   toggleCategoryForm();
