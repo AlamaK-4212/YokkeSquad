@@ -896,6 +896,71 @@ function doPost(e) {
     if (data.category === "MLBB") {
       var sheet = ss.getSheetByName("Pendaftaran MLBB");
       var teamName = data.teamName || data.name || "Tim MLBB";
+      var roster = data.roster || [];
+
+      var officials = roster.filter(function(m){ return (m.role || '').indexOf('Official') !== -1; });
+      var players = roster.filter(function(m){ return (m.role || '').indexOf('Official') === -1; });
+
+      // Validasi 1: Foto ID Card wajib untuk setiap anggota yang terdaftar (Official & Pemain)
+      for (var r = 0; r < roster.length; r++) {
+        var mCheck = roster[r];
+        if (!mCheck.idCard || mCheck.idCard.trim() === "" || mCheck.idCard === "-") {
+          return ContentService.createTextOutput(JSON.stringify({
+            status: "error",
+            message: "Pendaftaran ditolak: Foto ID Card " + (mCheck.role || "Anggota") + " (" + (mCheck.name || "-") + ") wajib diunggah!"
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+
+      // Validasi 2: Official tidak boleh merangkap sebagai pemain (berdasarkan NIP, Nama, atau kesamaan foto ID Card)
+      for (var o = 0; o < officials.length; o++) {
+        var offItem = officials[o];
+        var offNip = (offItem.empId || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        var offName = (offItem.name || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+        for (var p = 0; p < players.length; p++) {
+          var playItem = players[p];
+          var playNip = (playItem.empId || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+          var playName = (playItem.name || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+          if (offNip && offNip.length >= 3 && offNip === playNip) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "error",
+              message: "Pendaftaran ditolak: " + offItem.role + " (" + offItem.name + ", NIP: " + offItem.empId + ") tidak boleh merangkap sebagai pemain (" + playItem.role + ")!"
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+          if (offName && offName.length >= 3 && offName === playName) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "error",
+              message: "Pendaftaran ditolak: " + offItem.role + " (" + offItem.name + ") tidak boleh terdaftar sebagai pemain (" + playItem.role + ")!"
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+          if (offItem.idCard && playItem.idCard && offItem.idCard === playItem.idCard) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "error",
+              message: "Pendaftaran ditolak: Foto ID Card " + offItem.role + " tidak boleh sama dengan foto ID Card " + playItem.role + "!"
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+
+      // Validasi 3: Cek duplikasi NIP antar pemain dalam satu tim
+      for (var pi = 0; pi < players.length; pi++) {
+        var p1 = players[pi];
+        var nip1 = (p1.empId || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        if (!nip1 || nip1.length < 3) continue;
+
+        for (var pj = pi + 1; pj < players.length; pj++) {
+          var p2 = players[pj];
+          var nip2 = (p2.empId || '').toString().replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+          if (nip1 === nip2) {
+            return ContentService.createTextOutput(JSON.stringify({
+              status: "error",
+              message: "Pendaftaran ditolak: NIP Pegawai '" + p1.empId + "' terdaftar ganda pada " + p1.role + " (" + p1.name + ") dan " + p2.role + " (" + p2.name + ")!"
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
       
       var teamFolderName = "[MLBB] " + teamName + " - " + (data.dept || "Yokke");
       var teamFolder = getOrCreateSubFolder(mainFolder, teamFolderName);
@@ -903,7 +968,6 @@ function doPost(e) {
 
       var logoUrl = saveBase64Image(data.logo, "Logo_" + teamName + ".jpg", teamFolder);
 
-      var roster = data.roster || [];
       var rosterSummaryList = [];
 
       var off1Url = "-";
@@ -957,6 +1021,16 @@ function doPost(e) {
     } else {
       var sheet = ss.getSheetByName("Pendaftaran MCGG");
       var playerName = data.name || "Pemain MCGG";
+      var mcggCard = data.idCard || (data.roster && data.roster[0] ? data.roster[0].idCard : "");
+
+      // Validasi: Foto ID Card Pegawai Wajib untuk MCGG
+      if (!mcggCard || mcggCard.trim() === "" || mcggCard === "-") {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Pendaftaran ditolak: Foto ID Card Pegawai Yokke wajib diunggah untuk pendaftaran solo MCGG!"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       var mcggNickname = data.nickname || (data.roster && data.roster[0] ? data.roster[0].nickname : "-") || "-";
       var mcggGameId = data.gameId || (data.roster && data.roster[0] ? data.roster[0].gameId : "-") || "-";
       var mcggEmpId = data.empId || (data.roster && data.roster[0] ? data.roster[0].empId : "-") || "-";

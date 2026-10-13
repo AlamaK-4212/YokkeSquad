@@ -829,7 +829,7 @@ function renderPlayersFormInputs() {
             <input type="text" id="p${i}_gameid" placeholder="Contoh: 12345678 (210${i})" ${reqAttr}>
           </div>
           <div class="form-group" style="grid-column: 1 / -1;">
-            <label>Upload Foto ID Card Pegawai Yokke Pemain ${i} (PNG/JPG) ${isCore ? '*' : ''}</label>
+            <label>Upload Foto ID Card Pegawai Yokke Pemain ${i} (PNG/JPG) ${isCore ? '<span style="color:var(--yokke-red)">*Wajib</span>' : '<span style="color:var(--text-muted);font-weight:normal">(Wajib jika didaftarkan)</span>'}</label>
             <div class="idcard-upload-wrapper">
               <div class="idcard-preview-box" id="p${i}_idcard_preview">
                 <span class="logo-preview-placeholder">ID Card</span>
@@ -1050,9 +1050,6 @@ async function handleRegister(e) {
   const category = document.getElementById('gameCategory').value;
   const submitBtn = document.getElementById('submitBtn');
 
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Mengirim ke Google Drive... ⏳";
-
   let teamName = "";
   let dept = "";
   let wa = "";
@@ -1066,6 +1063,11 @@ async function handleRegister(e) {
     dept = document.getElementById('teamDept').value.trim();
     wa = document.getElementById('contactWa').value.trim();
 
+    if (!teamName || !dept || !wa) {
+      alert("⚠️ Harap lengkapi Nama Tim, Divisi, dan Nomor WhatsApp aktif!");
+      return;
+    }
+
     // Official 1 (Wajib)
     const off1Name = document.getElementById('off1_name').value.trim();
     const off1EmpId = document.getElementById('off1_empid').value.trim();
@@ -1073,6 +1075,19 @@ async function handleRegister(e) {
     const off1GameId = document.getElementById('off1_gameid').value.trim();
     const off1Organik = document.getElementById('off1_organik').checked;
     const off1IdCard = regOfficialIdCards.off1 || "";
+
+    if (!off1Name || !off1EmpId) {
+      alert("⚠️ Harap lengkapi Nama Lengkap dan NIP Pegawai Official 1 (Utama)!");
+      document.getElementById('off1_name')?.focus();
+      return;
+    }
+
+    // WAJIB ID CARD OFFICIAL 1
+    if (!off1IdCard) {
+      alert("❌ PENDAFTARAN DITOLAK:\nFoto ID Card Official 1 (Utama) WAJIB diunggah!\nSilakan unggah foto ID Card sebelum mengirim pendaftaran.");
+      document.getElementById('off1_idcard_file')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     officialData = {
       name: off1Name,
@@ -1082,6 +1097,10 @@ async function handleRegister(e) {
       isOrganik: off1Organik,
       idCard: off1IdCard
     };
+
+    const officialsList = [
+      { role: 'Official 1 (Utama)', name: off1Name, empId: off1EmpId, idCard: off1IdCard }
+    ];
 
     roster.push({
       role: 'Official 1 (Utama)',
@@ -1104,23 +1123,51 @@ async function handleRegister(e) {
       const off2Organik = document.getElementById('off2_organik').checked;
       const off2IdCard = regOfficialIdCards.off2 || "";
 
-      if (off2Name) {
-        roster.push({
-          role: 'Official 2 (Asisten)',
-          name: off2Name,
-          nickname: off2Nickname || '-',
-          empId: off2EmpId || '-',
-          gameId: off2GameId || '-',
-          isOrganik: off2Organik,
-          isCaptain: false,
-          idCard: off2IdCard
-        });
+      if (!off2Name || !off2EmpId) {
+        alert("⚠️ Official 2 dicentang aktif! Harap lengkapi Nama Lengkap dan NIP Pegawai Official 2, atau hilangkan centang jika tidak ada.");
+        document.getElementById('off2_name')?.focus();
+        return;
       }
+
+      // WAJIB ID CARD OFFICIAL 2
+      if (!off2IdCard) {
+        alert("❌ PENDAFTARAN DITOLAK:\nOfficial 2 diaktifkan, maka Foto ID Card Official 2 WAJIB diunggah!\nSilakan unggah foto ID Card atau hilangkan centang Official 2.");
+        document.getElementById('off2_idcard_file')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const off1NipClean = off1EmpId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      const off2NipClean = off2EmpId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      if (off1NipClean && off1NipClean === off2NipClean) {
+        alert(`❌ PENDAFTARAN DITOLAK:\nOfficial 1 dan Official 2 tidak boleh orang yang sama (NIP duplikat: ${off1EmpId})!`);
+        return;
+      }
+
+      officialsList.push({
+        role: 'Official 2 (Asisten)',
+        name: off2Name,
+        empId: off2EmpId,
+        idCard: off2IdCard
+      });
+
+      roster.push({
+        role: 'Official 2 (Asisten)',
+        name: off2Name,
+        nickname: off2Nickname || '-',
+        empId: off2EmpId || '-',
+        gameId: off2GameId || '-',
+        isOrganik: off2Organik,
+        isCaptain: false,
+        idCard: off2IdCard
+      });
     }
 
     const captainSelected = document.querySelector('input[name="captain_select"]:checked')?.value || "1";
+    const playersList = [];
 
+    // Validasi Pemain 1 sampai 8
     for (let i = 1; i <= 8; i++) {
+      const isCore = i <= 5;
       const pName = document.getElementById(`p${i}_name`).value.trim();
       const pNickname = document.getElementById(`p${i}_nickname`).value.trim();
       const pEmpId = document.getElementById(`p${i}_empid`).value.trim();
@@ -1128,10 +1175,25 @@ async function handleRegister(e) {
       const pOrganik = document.getElementById(`p${i}_organik`).checked;
       const isCaptain = (captainSelected === i.toString());
       const pIdCard = regPlayersIdCards[i] || "";
+      const roleLabel = isCore ? `Pemain Inti ${i}` : `Pemain Cadangan ${i - 5}`;
 
-      if (pName) {
+      if (isCore) {
+        // Pemain Inti Wajib Lengkap
+        if (!pName || !pEmpId || !pNickname || !pGameId) {
+          alert(`⚠️ Harap lengkapi seluruh kolom (Nama, NIP, IGN, dan Mobile Game ID) untuk ${roleLabel}!`);
+          document.getElementById(`p${i}_name`)?.focus();
+          return;
+        }
+
+        // WAJIB FOTO ID CARD PEMAIN INTI
+        if (!pIdCard) {
+          alert(`❌ PENDAFTARAN DITOLAK:\nFoto ID Card Pegawai ${roleLabel} (${pName}) WAJIB diunggah!\nPendaftaran tanpa foto ID Card akan ditolak.`);
+          document.getElementById(`p${i}_idcard_file`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+
         const pObj = {
-          role: i <= 5 ? `Pemain Inti ${i}` : `Pemain Cadangan ${i - 5}`,
+          role: roleLabel,
           name: pName,
           nickname: pNickname || '-',
           empId: pEmpId || '-',
@@ -1140,11 +1202,94 @@ async function handleRegister(e) {
           isCaptain: isCaptain,
           idCard: pIdCard
         };
+        playersList.push(pObj);
         roster.push(pObj);
         if (isCaptain) captainData = pObj;
+
+      } else {
+        // Pemain Cadangan (jika ada salah satu kolom diisi, maka seluruh kolom wajib diisi termasuk ID card)
+        if (pName || pEmpId || pNickname || pGameId || pIdCard) {
+          if (!pName || !pEmpId || !pNickname || !pGameId) {
+            alert(`⚠️ Harap lengkapi seluruh data (Nama, NIP, IGN, Game ID) untuk ${roleLabel}!`);
+            document.getElementById(`p${i}_name`)?.focus();
+            return;
+          }
+
+          // WAJIB FOTO ID CARD PEMAIN CADANGAN JIKA DIDAFTARKAN
+          if (!pIdCard) {
+            alert(`❌ PENDAFTARAN DITOLAK:\nFoto ID Card Pegawai ${roleLabel} (${pName}) WAJIB diunggah!`);
+            document.getElementById(`p${i}_idcard_file`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
+          const pObj = {
+            role: roleLabel,
+            name: pName,
+            nickname: pNickname || '-',
+            empId: pEmpId || '-',
+            gameId: pGameId || '-',
+            isOrganik: pOrganik,
+            isCaptain: isCaptain,
+            idCard: pIdCard
+          };
+          playersList.push(pObj);
+          roster.push(pObj);
+          if (isCaptain) captainData = pObj;
+        }
       }
     }
+
+    // ========================================================
+    // ATURAN 1: ID CARD / IDENTITAS OFFICIAL TIDAK BOLEH JADI PEMAIN
+    // ========================================================
+    for (const off of officialsList) {
+      const offNipClean = (off.empId || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      const offNameClean = (off.name || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+      for (const play of playersList) {
+        const playNipClean = (play.empId || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const playNameClean = (play.name || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+        // Cek kesamaan NIP
+        if (offNipClean && offNipClean.length >= 3 && offNipClean === playNipClean) {
+          alert(`❌ PENDAFTARAN DITOLAK:\n${off.role} (${off.name}, NIP: ${off.empId}) TIDAK BOLEH merangkap sebagai pemain (${play.role})!\nOfficial dan Pemain harus orang yang berbeda.`);
+          return;
+        }
+
+        // Cek kesamaan Nama Lengkap
+        if (offNameClean && offNameClean.length >= 3 && offNameClean === playNameClean) {
+          alert(`❌ PENDAFTARAN DITOLAK:\n${off.role} (${off.name}) tidak boleh terdaftar ganda sebagai pemain (${play.role})!\nOfficial dan Pemain harus orang yang berbeda.`);
+          return;
+        }
+
+        // Cek kesamaan berkas foto ID Card
+        if (off.idCard && play.idCard && off.idCard === play.idCard) {
+          alert(`❌ PENDAFTARAN DITOLAK:\nFoto ID Card ${off.role} (${off.name}) tidak boleh sama dengan foto ID Card ${play.role} (${play.name})!\nSetiap orang wajib mengunggah foto ID Card masing-masing.`);
+          return;
+        }
+      }
+    }
+
+    // ========================================================
+    // ATURAN 2: CEK NIP DUPLIKAT ANTAR PEMAIN DALAM SATU TIM
+    // ========================================================
+    for (let i = 0; i < playersList.length; i++) {
+      const p1 = playersList[i];
+      const nip1 = (p1.empId || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      if (!nip1 || nip1.length < 3) continue;
+
+      for (let j = i + 1; j < playersList.length; j++) {
+        const p2 = playersList[j];
+        const nip2 = (p2.empId || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        if (nip1 === nip2) {
+          alert(`❌ PENDAFTARAN DITOLAK:\nNIP Pegawai "${p1.empId}" terdaftar ganda pada ${p1.role} (${p1.name}) dan ${p2.role} (${p2.name})!\nSetiap pemain harus merupakan karyawan yang berbeda.`);
+          return;
+        }
+      }
+    }
+
   } else {
+    // KATEGORI MCGG (SOLO)
     teamName = document.getElementById('mcgg_name').value.trim();
     const mcggNickname = document.getElementById('mcgg_nickname').value.trim();
     dept = document.getElementById('mcgg_dept').value.trim();
@@ -1153,6 +1298,18 @@ async function handleRegister(e) {
     const mcggGameId = document.getElementById('mcgg_gameid').value.trim();
     const mcggOrganik = document.getElementById('mcgg_organik').checked;
     const mcggIdCard = regMcggIdCard || "";
+
+    if (!teamName || !mcggNickname || !dept || !wa || !mcggEmpId || !mcggGameId) {
+      alert("⚠️ Harap lengkapi seluruh kolom formulir pendaftaran solo MCGG!");
+      return;
+    }
+
+    // WAJIB ID CARD UNTUK MCGG
+    if (!mcggIdCard) {
+      alert("❌ PENDAFTARAN DITOLAK:\nFoto ID Card Pegawai Yokke WAJIB diunggah untuk pendaftaran solo MCGG!\nPendaftaran tanpa foto ID Card akan ditolak.");
+      document.getElementById('mcgg_idcard_file')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     roster.push({
       role: 'Pemain Solo',
@@ -1171,23 +1328,9 @@ async function handleRegister(e) {
     };
   }
 
-  const newParticipant = {
-    id: Date.now(),
-    category,
-    name: teamName,
-    nickname: (captainData && captainData.nickname) || (roster[0] && roster[0].nickname) || '-',
-    captainNickname: (captainData && captainData.nickname) || '-',
-    captainName: (captainData && captainData.name) || '-',
-    dept,
-    wa,
-    logo: logoData,
-    notes: '',
-    status: 'PENDING',
-    roster: roster
-  };
-
-  participants.push(newParticipant);
-  saveState();
+  // JIKA LOLOS SELURUH VALIDASI, MULAI PENGIRIMAN
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Mengirim ke Google Drive... ⏳";
 
   const payload = {
     category: category,
@@ -1207,14 +1350,39 @@ async function handleRegister(e) {
   };
 
   try {
-    await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     });
+    const result = await res.json();
+    if (result && result.status === 'error') {
+      alert(`❌ PENDAFTARAN DITOLAK OLEH SERVER:\n${result.message || 'Validasi server gagal.'}`);
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Kirim Pendaftaran";
+      return;
+    }
   } catch (err) {
     console.warn("Koneksi Google Sheets:", err);
   }
+
+  const newParticipant = {
+    id: Date.now(),
+    category,
+    name: teamName,
+    nickname: (captainData && captainData.nickname) || (roster[0] && roster[0].nickname) || '-',
+    captainNickname: (captainData && captainData.nickname) || '-',
+    captainName: (captainData && captainData.name) || '-',
+    dept,
+    wa,
+    logo: logoData,
+    notes: '',
+    status: 'PENDING',
+    roster: roster
+  };
+
+  participants.push(newParticipant);
+  saveState();
 
   submitBtn.disabled = false;
   submitBtn.innerText = "Kirim Pendaftaran";
