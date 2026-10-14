@@ -434,6 +434,12 @@ input:focus, select:focus, textarea:focus {
   border: none;
   transition: all 0.2s ease;
 }
+.btn:disabled, button:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  filter: grayscale(30%);
+}
 .btn-primary {
   background: linear-gradient(135deg, #00d2ff, #0077b6);
   color: #fff;
@@ -689,6 +695,195 @@ tr:hover {
   margin-right: 5px;
   border: 1px solid var(--yokke-purple);
   background: #111a33;
+}
+
+/* Dua Lingkaran Commander (1 Hero, 1 Alter) */
+.commander-dual-circles {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  vertical-align: middle;
+}
+
+.commander-circle-avatar,
+.border-hero {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yokke-gold);
+  background: #111a33;
+  display: inline-block;
+  box-shadow: 0 0 4px rgba(255, 183, 3, 0.3);
+}
+
+.commander-circle-avatar.alter-circle,
+.border-alter {
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 0 4px rgba(0, 210, 255, 0.3);
+}
+
+.commander-card-dual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 0.5rem;
+}
+
+.commander-card-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yokke-gold);
+  background: #111a33;
+  box-shadow: 0 2px 6px rgba(255, 183, 3, 0.25);
+  display: block;
+  margin: 0 auto;
+}
+
+.commander-card-circle.alter-circle {
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 2px 6px rgba(0, 210, 255, 0.25);
+}
+
+.commander-circle-sublabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+  text-align: center;
+}
+.commander-circle-sublabel.hero-sublabel {
+  color: var(--yokke-gold);
+}
+.commander-circle-sublabel.alter-sublabel {
+  color: var(--yokke-cyan);
+}
+
+/* Group Match Fixtures (Bagan Pertandingan Fase Grup MLBB) */
+.group-fixtures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.group-match-card {
+  background: #0f172a;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.85rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.group-match-card:hover {
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 4px 14px rgba(0, 210, 255, 0.1);
+}
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.match-team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.match-team-row.winner {
+  background: rgba(6, 214, 160, 0.12);
+  border-left: 3px solid var(--yokke-green);
+  font-weight: 700;
+  color: var(--yokke-green);
+}
+
+.match-admin-scores {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-score-mini {
+  padding: 0.2rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 4px;
+  background: #1e293b;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-score-mini:hover, .btn-score-mini.active {
+  background: var(--yokke-cyan);
+  color: #0b0f19;
+  border-color: var(--yokke-cyan);
+}
+
+/* MCGG Multi-Lobby Standings on One Page */
+.mcgg-lobby-section {
+  margin-bottom: 2rem;
+  background: #090e1c;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mcgg-lobby-section.grand-final-section {
+  border: 1px solid var(--yokke-gold);
+  box-shadow: 0 0 20px rgba(255, 183, 3, 0.12);
+}
+
+.mcgg-lobby-header {
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mcgg-lobby-header.theme-a {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 119, 182, 0.1));
+  border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+}
+
+.mcgg-lobby-header.theme-b {
+  background: linear-gradient(135deg, rgba(181, 23, 158, 0.2), rgba(114, 9, 183, 0.1));
+  border-bottom: 1px solid rgba(181, 23, 158, 0.3);
+}
+
+.mcgg-lobby-header.theme-gf {
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.25), rgba(251, 133, 0, 0.15));
+  border-bottom: 1px solid var(--yokke-gold);
+}
+
+.mcgg-lobby-header.theme-lower {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.15), rgba(71, 85, 105, 0.1));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 footer {

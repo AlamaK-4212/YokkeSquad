@@ -860,7 +860,8 @@ function doGet(e) {
       tournamentFormat: null,
       groupStageData: null,
       mcggLobbies: null,
-      adminPassword: null
+      adminPassword: null,
+      isRegistrationClosed: false
     };
 
     if (configSheet && configSheet.getLastRow() >= 2) {
@@ -873,12 +874,18 @@ function doGet(e) {
           if (key === "customRules") appConfig.customRules = JSON.parse(val);
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
           if (key === "groupStageData") appConfig.groupStageData = JSON.parse(val);
+          if (key === "groupMatchResults") appConfig.groupMatchResults = JSON.parse(val);
+          if (key === "groupPlayoffMatches") appConfig.groupPlayoffMatches = JSON.parse(val);
           if (key === "mcggLobbies") appConfig.mcggLobbies = JSON.parse(val);
+          if (key === "mcggDrawState") appConfig.mcggDrawState = JSON.parse(val);
+          if (key === "tournamentStageState") appConfig.tournamentStageState = JSON.parse(val);
+          if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
           if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
             appConfig.adminPassword = val.toString().trim();
           }
         } catch(e) {
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
+          if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
           if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
             appConfig.adminPassword = val.toString().trim();
           }
@@ -887,8 +894,11 @@ function doGet(e) {
     }
     result.config = appConfig;
 
-    // D. BACA TAB MCGG MATCH SET UP (HERO, ALTER NAME, TIER LIST)
-    var setupSheet = ss.getSheetByName("MCGG Match Set Up");
+    // D. BACA TAB MCGG MATCH SET UP (HERO, ALTER NAME, TIER LIST, URL GAMBAR HERO & ALTER)
+    var setupSheet = ss.getSheetByName("MCGG Match Set Up") || 
+                     ss.getSheetByName("mcgg set up") || 
+                     ss.getSheetByName("MCGG Set Up") || 
+                     ss.getSheetByName("MCGG Setup");
     var mcggCommanderSetup = [];
     if (setupSheet && setupSheet.getLastRow() > 1) {
       var sData = setupSheet.getDataRange().getValues();
@@ -898,13 +908,37 @@ function doGet(e) {
         var hero = sRow[0] ? sRow[0].toString().trim() : "";
         var alterName = sRow[1] ? sRow[1].toString().trim() : "";
         var tier = sRow[2] ? sRow[2].toString().trim() : "";
+
+        // Baca URL gambar hero dan alter jika diisi di kolom D/E/seterusnya
+        var heroImage = "";
+        var alterImage = "";
+        for (var col = 3; col < sRow.length; col++) {
+          var val = sRow[col] ? sRow[col].toString().trim() : "";
+          if (val.indexOf("http") === 0) {
+            if (!heroImage) {
+              heroImage = val;
+            } else if (!alterImage) {
+              alterImage = val;
+            }
+          }
+        }
+
         if (hero || alterName) {
+          var formattedName = hero;
+          if (hero && alterName && hero.toLowerCase() !== alterName.toLowerCase()) {
+            formattedName = hero + " [" + alterName + "]";
+          } else if (!hero && alterName) {
+            formattedName = alterName;
+          }
+
           mcggCommanderSetup.push({
             hero: hero,
             alterName: alterName,
             tier: tier || "Normal",
-            name: alterName || hero,
-            displayName: alterName ? (alterName + " (" + hero + ")") : hero
+            name: hero || alterName,
+            displayName: formattedName,
+            heroImage: heroImage,
+            alterImage: alterImage
           });
         }
       }
@@ -947,6 +981,32 @@ function doPost(e) {
     var sheets = ensureRelationalSheetsExist(ss);
     var now = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
+    // Validasi Keamanan Server: Setiap request perubahan administratif wajib menyertakan adminPin yang valid
+    if (data.action === "SAVE_CONFIG" || data.action === "DELETE") {
+      var reqPin = (data.adminPin || data.adminPassword || "").toString().trim();
+      var validPins = ["YOKKE2026_", "YOKKE2026"];
+      
+      // Ambil PIN kustom dari sheet Pengaturan Turnamen jika ada
+      var cfgSheetCheck = ss.getSheetByName("Pengaturan Turnamen");
+      if (cfgSheetCheck && cfgSheetCheck.getLastRow() >= 2) {
+        var cData = cfgSheetCheck.getDataRange().getValues();
+        for (var c = 1; c < cData.length; c++) {
+          var kName = cData[c][0] ? cData[c][0].toString().trim().toLowerCase() : "";
+          if (kName === "adminpassword" || kName === "admin_password" || kName === "admin_pin") {
+            if (cData[c][1]) validPins.push(cData[c][1].toString().trim());
+          }
+        }
+      }
+
+      if (!validPins.includes(reqPin)) {
+        return ContentService.createTextOutput(JSON.stringify({
+          success: false,
+          status: "error",
+          message: "Akses ditolak: PIN Panitia tidak valid atau tidak disertakan."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
     var mainFolder = getOrCreateUploadFolder();
 
     function saveBase64Image(base64Data, fileName, targetFolder) {
@@ -986,7 +1046,12 @@ function doPost(e) {
         { key: "customRules", val: data.customRules ? JSON.stringify(data.customRules) : null },
         { key: "tournamentFormat", val: data.tournamentFormat || null },
         { key: "groupStageData", val: data.groupStageData ? JSON.stringify(data.groupStageData) : null },
+        { key: "groupMatchResults", val: data.groupMatchResults ? JSON.stringify(data.groupMatchResults) : null },
+        { key: "groupPlayoffMatches", val: data.groupPlayoffMatches ? JSON.stringify(data.groupPlayoffMatches) : null },
         { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null },
+        { key: "mcggDrawState", val: data.mcggDrawState ? JSON.stringify(data.mcggDrawState) : null },
+        { key: "tournamentStageState", val: data.tournamentStageState ? JSON.stringify(data.tournamentStageState) : null },
+        { key: "isRegistrationClosed", val: data.isRegistrationClosed !== undefined ? (data.isRegistrationClosed ? "true" : "false") : null },
         { key: "adminpassword", val: data.adminPassword || null }
       ];
 
@@ -1001,23 +1066,27 @@ function doPost(e) {
         }
       });
 
-      // Otomatis sinkronkan sheet turnamen
+      // Otomatis sinkronkan 3 Sheet Turnamen Terpisah (Tabel Murni + MVP)
       try {
-        createOrUpdateAllTournamentSheets(data.groupStageData, data.mcggLobbies);
+        var payloadForSync = data.config || data;
+        syncDedicatedTournamentSheets(ss, payloadForSync);
       } catch(sheetErr) {
         Logger.log("Peringatan sinkronisasi sheet turnamen: " + sheetErr.toString());
       }
 
       return ContentService.createTextOutput(JSON.stringify({ 
         status: "success", 
-        message: "Pengaturan turnamen serta Sheet List Bagan, List Point, dan List Point & Commander MCGG berhasil diperbarui!" 
+        message: "Pengaturan turnamen serta Sheet MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP berhasil diperbarui!" 
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     if (data.action === "CREATE_TOURNAMENT_SHEETS") {
-      var syncMsg = createOrUpdateAllTournamentSheets(data.groupStageData, data.mcggLobbies);
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: syncMsg }))
-        .setMimeType(ContentService.MimeType.JSON);
+      var payloadForSync = data.config || data;
+      syncDedicatedTournamentSheets(ss, payloadForSync);
+      return ContentService.createTextOutput(JSON.stringify({ 
+        status: "success", 
+        message: "Berhasil membuat & memperbarui 3 Sheet: MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP!" 
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
     if (data.action === "DELETE") {
@@ -1466,8 +1535,8 @@ function doPost(e) {
 }
 
 // ========================================================
-// 3. FUNGSI GENERASI OTOMATIS: LIST BAGAN, LIST POINT,
-//    DAN LIST POINT + COMMANDER MCGG
+// 3. FUNGSI GENERASI OTOMATIS: 3 SHEET TURNAMEN TERPISAH
+//    (MLBB - Klasemen & Point, MLBB - Bagan & MVP, MCGG - Point, Commander & MVP)
 // ========================================================
 
 /**
@@ -1482,485 +1551,268 @@ function getOrCreateSheet(ss, sheetName) {
 }
 
 /**
- * Membuat & memperbarui sheet 'List Bagan'
- * Berisi:
- * 1. Bagan Babak Fase Grup MLBB (Group Stage)
- * 2. Bagan Playoff & Knockout Stage MLBB (Double Elimination)
- * 3. Bagan Lobi MCGG (Lobby A, Lobby B, Grand Final)
+ * Merender data bagan, poin, commander, dan MVP langsung ke 3 Sheet Terpisah
+ * Dipanggil otomatis saat action === 'SAVE_CONFIG' atau 'CREATE_TOURNAMENT_SHEETS'
  */
-function syncListBagan(ss, groupStageData, mcggLobbies) {
-  var sheet = getOrCreateSheet(ss, "List Bagan");
-  sheet.clear();
-  
-  // Title Header
-  sheet.getRange("A1:G1").merge();
-  sheet.getRange("A1").setValue("🏆 BAGAN TURNAMEN RESMI YOKKE SQUAD E-SPORTS 2026 (YMC S4)")
-    .setFontWeight("bold").setFontSize(14).setBackground("#0f172a").setFontColor("#38bdf8")
-    .setHorizontalAlignment("center").setVerticalAlignment("middle");
-  sheet.setRowHeight(1, 36);
+function syncDedicatedTournamentSheets(ss, payload) {
+  if (!ss) ss = getTargetSpreadsheet();
+  payload = payload || {};
+  const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
 
-  sheet.getRange("A2:G2").merge();
-  sheet.getRange("A2").setValue("Terakhir Diperbarui: " + new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }) + " WIB | Format: Babak Grup BO3 -> Playoff Double Elimination & Lobi MCGG")
-    .setFontItalic(true).setFontSize(9).setBackground("#1e293b").setFontColor("#94a3b8")
-    .setHorizontalAlignment("center");
-  sheet.setRowHeight(2, 22);
+  // =========================================================
+  // 1. SHEET: "MLBB - Klasemen & Point"
+  // =========================================================
+  let sheetMLBBPoint = ss.getSheetByName('MLBB - Klasemen & Point');
+  if (!sheetMLBBPoint) sheetMLBBPoint = ss.insertSheet('MLBB - Klasemen & Point');
+  sheetMLBBPoint.clearContents();
 
-  var currRow = 4;
-
-  // SECTION 1: MLBB GROUP STAGE
-  sheet.getRange(currRow, 1, 1, 6).merge();
-  sheet.getRange(currRow, 1).setValue("1. BABAK FASE GRUP MLBB (GROUP STAGE - BEST OF 3)")
-    .setFontWeight("bold").setFontSize(11).setBackground("#1e293b").setFontColor("#fbbf24");
-  currRow++;
-
-  var groups = (groupStageData && typeof groupStageData === "object" && Object.keys(groupStageData).length > 0) 
-    ? groupStageData 
-    : { "Grup A": [], "Grup B": [] };
-
-  for (var gName in groups) {
-    sheet.getRange(currRow, 1, 1, 6).merge();
-    sheet.getRange(currRow, 1).setValue("📌 " + gName.toUpperCase())
-      .setFontWeight("bold").setBackground("#334155").setFontColor("#ffffff");
-    currRow++;
-
-    sheet.getRange(currRow, 1, 1, 6).setValues([[
-      "Slot / Pos", "Nama Tim", "Unit / Departemen", "No. WhatsApp", "Kapten", "Official / Manager"
-    ]]).setFontWeight("bold").setBackground("#475569").setFontColor("#ffffff").setHorizontalAlignment("center");
-    currRow++;
-
-    var tList = groups[gName] || [];
-    if (tList.length === 0) {
-      sheet.getRange(currRow, 1, 1, 6).setValues([["-", "Belum ada tim yang diundi di grup ini", "-", "-", "-", "-"]])
-        .setFontItalic(true).setHorizontalAlignment("center");
-      currRow++;
-    } else {
-      for (var t = 0; t < tList.length; t++) {
-        var team = tList[t];
-        sheet.getRange(currRow, 1, 1, 6).setValues([[
-          (t + 1),
-          team.name || ("Slot " + (t + 1)),
-          team.dept || "-",
-          team.wa || "-",
-          team.captain || "-",
-          team.official || "-"
-        ]]).setHorizontalAlignment("center");
-        sheet.getRange(currRow, 2).setHorizontalAlignment("left").setFontWeight("bold");
-        currRow++;
-      }
-    }
-    currRow++; // empty spacing row
-  }
-
-  // SECTION 2: MLBB PLAYOFF BRACKET (DOUBLE ELIMINATION)
-  sheet.getRange(currRow, 1, 1, 6).merge();
-  sheet.getRange(currRow, 1).setValue("2. BAGAN PLAYOFF & KNOCKOUT STAGE MLBB (DOUBLE ELIMINATION)")
-    .setFontWeight("bold").setFontSize(11).setBackground("#1e293b").setFontColor("#38bdf8");
-  currRow++;
-
-  sheet.getRange(currRow, 1, 1, 6).setValues([[
-    "Bracket / Tahap", "Format", "Match Up (Pertandingan)", "Alur Pemenang", "Alur Kalah", "Status"
-  ]]).setFontWeight("bold").setBackground("#475569").setFontColor("#ffffff").setHorizontalAlignment("center");
-  currRow++;
-
-  var playoffFixtures = [
-    ["Upper Bracket Semifinal 1", "BO3", "Juara Grup A vs Runner-up Grup B", "Maju ke Upper Bracket Final", "Turun ke Lower Bracket Semifinal", "Scheduled"],
-    ["Upper Bracket Semifinal 2", "BO3", "Juara Grup B vs Runner-up Grup A", "Maju ke Upper Bracket Final", "Turun ke Lower Bracket Semifinal", "Scheduled"],
-    ["Upper Bracket Final", "BO5", "Pemenang UB Semi 1 vs Pemenang UB Semi 2", "Maju ke Grand Final", "Turun ke Lower Bracket Final", "Scheduled"],
-    ["Lower Bracket Round 1", "BO3", "Peringkat 3 Grup A vs Peringkat 3 Grup B", "Maju ke Lower Bracket Semifinal", "Gugur dari Turnamen", "Scheduled"],
-    ["Lower Bracket Semifinal", "BO3", "Pemenang LB R1 vs Tim Kalah UB Semi", "Maju ke Lower Bracket Final", "Gugur dari Turnamen", "Scheduled"],
-    ["Lower Bracket Final", "BO5", "Pemenang LB Semifinal vs Tim Kalah UB Final", "Maju ke Grand Final", "Juara 3 (Bronze)", "Scheduled"],
-    ["Grand Final MLBB", "BO5", "Juara Upper Bracket vs Juara Lower Bracket", "🏆 CHAMPION YMC S4 MLBB", "🥈 RUNNER UP MLBB", "Scheduled"]
+  const mlbbPointHeaders = [
+    'Grup', 'Peringkat', 'Nama Tim', 'Match Dimainkan', 
+    'Menang (W)', 'Kalah (L)', 'Total Poin', 'Status Kelolosan', 'Total MVP Tim'
   ];
+  const mlbbPointRows = [mlbbPointHeaders];
 
-  for (var pf = 0; pf < playoffFixtures.length; pf++) {
-    sheet.getRange(currRow, 1, 1, 6).setValues([playoffFixtures[pf]])
-      .setHorizontalAlignment("center");
-    sheet.getRange(currRow, 1).setFontWeight("bold");
-    sheet.getRange(currRow, 3).setFontWeight("bold").setHorizontalAlignment("left");
-    if (playoffFixtures[pf][0].indexOf("Grand Final") !== -1) {
-      sheet.getRange(currRow, 1, 1, 6).setBackground("#fef9c3");
+  const groupData = payload.groupStageData || {};
+  const matchResults = payload.groupMatchResults || {};
+
+  // Hitung frekuensi MVP per tim dari hasil match
+  const teamMvpCount = {};
+  Object.keys(matchResults).forEach(mId => {
+    const m = matchResults[mId];
+    if (m.mvpTeam) {
+      teamMvpCount[m.mvpTeam] = (teamMvpCount[m.mvpTeam] || 0) + 1;
+    } else if (m.mvpPlayer && m.winner) {
+      teamMvpCount[m.winner] = (teamMvpCount[m.winner] || 0) + 1;
     }
-    currRow++;
+  });
+
+  Object.keys(groupData).forEach(gName => {
+    const sorted = (groupData[gName] || []).slice().sort((a, b) => (b.pts || 0) - (a.pts || 0));
+    sorted.forEach((t, idx) => {
+      const mp = (parseInt(t.win) || 0) + (parseInt(t.lose) || 0);
+      const status = (idx < 2 && t.pts > 0) ? 'Lolos Playoff' : (t.pts > 0 ? 'Gugur' : 'Menunggu Match');
+      mlbbPointRows.push([
+        gName,
+        `#${idx + 1}`,
+        t.name || '-',
+        mp,
+        t.win || 0,
+        t.lose || 0,
+        t.pts || 0,
+        status,
+        teamMvpCount[t.name] || t.mvpCount || 0
+      ]);
+    });
+  });
+
+  if (mlbbPointRows.length > 0) {
+    sheetMLBBPoint.getRange(1, 1, mlbbPointRows.length, mlbbPointHeaders.length).setValues(mlbbPointRows);
+    sheetMLBBPoint.getRange(1, 1, 1, mlbbPointHeaders.length)
+      .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
+    sheetMLBBPoint.setRowHeight(1, 32);
+    for (var c1 = 1; c1 <= mlbbPointHeaders.length; c1++) {
+      try { sheetMLBBPoint.autoResizeColumn(c1); } catch(e) {}
+    }
   }
-  currRow++;
 
-  // SECTION 3: MCGG LOBBIES
-  sheet.getRange(currRow, 1, 1, 6).merge();
-  sheet.getRange(currRow, 1).setValue("3. BAGAN LOBI MCGG (MAGIC CHESS GO GO - 8 PLAYER PER LOBBY)")
-    .setFontWeight("bold").setFontSize(11).setBackground("#1e293b").setFontColor("#a855f7");
-  currRow++;
+  // =========================================================
+  // 2. SHEET: "MLBB - Bagan & MVP"
+  // =========================================================
+  let sheetMLBBBagan = ss.getSheetByName('MLBB - Bagan & MVP');
+  if (!sheetMLBBBagan) sheetMLBBBagan = ss.insertSheet('MLBB - Bagan & MVP');
+  sheetMLBBBagan.clearContents();
 
-  var mcLobbies = (mcggLobbies && typeof mcggLobbies === "object") ? mcggLobbies : {};
-  var lobbyKeys = [
-    { key: "LOBBY_A", title: "LOBBY A (Penyisihan Grup 1 - 8 Player)" },
-    { key: "LOBBY_B", title: "LOBBY B (Penyisihan Grup 2 - 8 Player)" },
-    { key: "GRAND_FINAL", title: "GRAND FINAL MCGG (Top 4 Lobby A + Top 4 Lobby B)" }
+  const mlbbBaganHeaders = [
+    'ID Match', 'Tahap / Fase', 'Format', 'Tim A', 'Skor A', 
+    'Skor B', 'Tim B', 'Pemenang Match', 'MVP Match (IGN / Nama)', 'Hero MVP', 'Status Match'
   ];
+  const mlbbBaganRows = [mlbbBaganHeaders];
 
-  for (var lk = 0; lk < lobbyKeys.length; lk++) {
-    var lInfo = lobbyKeys[lk];
-    var lPlayers = mcLobbies[lInfo.key] || [];
+  // A. Masukkan Jadwal & Hasil Fase Grup
+  Object.keys(matchResults).forEach((mId, i) => {
+    const m = matchResults[mId];
+    mlbbBaganRows.push([
+      m.matchId || `GRP_${i + 1}`,
+      `Fase Grup - ${m.gName || ''}`,
+      'BO3',
+      m.teamA || '-',
+      m.scoreA !== null && m.scoreA !== undefined ? m.scoreA : '-',
+      m.scoreB !== null && m.scoreB !== undefined ? m.scoreB : '-',
+      m.teamB || '-',
+      m.winner || 'TBD',
+      m.mvpPlayer || '-',
+      m.mvpHero || '-',
+      m.winner ? 'FINISHED' : 'SCHEDULED'
+    ]);
+  });
 
-    sheet.getRange(currRow, 1, 1, 6).merge();
-    sheet.getRange(currRow, 1).setValue("♟️ " + lInfo.title)
-      .setFontWeight("bold").setBackground("#334155").setFontColor("#ffffff");
-    currRow++;
+  // B. Masukkan Bagan Playoff (Semifinal & Grand Final)
+  const playoffRounds = payload.groupPlayoffMatches || [];
+  const roundNames = playoffRounds.length === 3 
+    ? ['Perempat Final (8 Besar)', 'Semifinal (4 Besar)', 'Grand Final'] 
+    : ['Semifinal (4 Besar)', 'Grand Final'];
 
-    sheet.getRange(currRow, 1, 1, 6).setValues([[
-      "Slot", "Nama Pemain", "Nickname (IGN)", "ID Game", "Skenario Commander", "Ketentuan Kelolosan"
-    ]]).setFontWeight("bold").setBackground("#475569").setFontColor("#ffffff").setHorizontalAlignment("center");
-    currRow++;
+  playoffRounds.forEach((round, rIdx) => {
+    const phaseName = roundNames[rIdx] || `Playoff Ronde ${rIdx + 1}`;
+    const formatStr = phaseName.includes('Grand Final') ? 'BO5' : 'BO3';
+    (round || []).forEach((m, mIdx) => {
+      mlbbBaganRows.push([
+        `PO_R${rIdx + 1}_M${mIdx + 1}`,
+        phaseName,
+        formatStr,
+        m.teamA || 'TBD',
+        m.scoreA !== undefined ? m.scoreA : '-',
+        m.scoreB !== undefined ? m.scoreB : '-',
+        m.teamB || 'TBD',
+        m.winner || 'TBD',
+        m.mvpPlayer || '-',
+        m.mvpHero || '-',
+        m.winner ? 'FINISHED' : 'SCHEDULED'
+      ]);
+    });
+  });
 
-    if (lPlayers.length === 0) {
-      sheet.getRange(currRow, 1, 1, 6).setValues([["-", "Pemain belum dialokasikan ke lobi ini", "-", "-", "-", "-"]])
-        .setFontItalic(true).setHorizontalAlignment("center");
-      currRow++;
-    } else {
-      for (var lp = 0; lp < lPlayers.length; lp++) {
-        var ply = lPlayers[lp];
-        var ruleNote = (lInfo.key === "GRAND_FINAL") 
-          ? (lp < 3 ? "Juara " + (lp + 1) : "Finalis") 
-          : (lp < 4 ? "Lolos ke Grand Final (Top 4)" : "Gugur Fase Lobi");
-        sheet.getRange(currRow, 1, 1, 6).setValues([[
-          (lp + 1),
-          ply.name || ("Pemain " + (lp + 1)),
-          ply.nickname || "-",
-          ply.gameId || "-",
-          "M1: Preset S7 | M2: Random | M3: Draft Ban",
-          ruleNote
-        ]]).setHorizontalAlignment("center");
-        sheet.getRange(currRow, 2).setHorizontalAlignment("left").setFontWeight("bold");
-        currRow++;
-      }
+  if (mlbbBaganRows.length > 0) {
+    sheetMLBBBagan.getRange(1, 1, mlbbBaganRows.length, mlbbBaganHeaders.length).setValues(mlbbBaganRows);
+    sheetMLBBBagan.getRange(1, 1, 1, mlbbBaganHeaders.length)
+      .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
+    sheetMLBBBagan.setRowHeight(1, 32);
+    for (var c2 = 1; c2 <= mlbbBaganHeaders.length; c2++) {
+      try { sheetMLBBBagan.autoResizeColumn(c2); } catch(e) {}
     }
-    currRow++;
   }
 
-  // Formatting widths
-  sheet.setColumnWidth(1, 160);
-  sheet.setColumnWidth(2, 220);
-  sheet.setColumnWidth(3, 240);
-  sheet.setColumnWidth(4, 200);
-  sheet.setColumnWidth(5, 200);
-  sheet.setColumnWidth(6, 180);
-}
+  // =========================================================
+  // 3. SHEET: "MCGG - Point, Commander & MVP"
+  // =========================================================
+  let sheetMCGG = ss.getSheetByName('MCGG - Point, Commander & MVP');
+  if (!sheetMCGG) sheetMCGG = ss.insertSheet('MCGG - Point, Commander & MVP');
+  sheetMCGG.clearContents();
 
-/**
- * Membuat & memperbarui sheet 'List Point' (Klasemen Babak Grup MLBB)
- * Aturan: Menang = +2 Poin, Kalah = 0 Poin
- */
-function syncListPoint(ss, groupStageData) {
-  var sheet = getOrCreateSheet(ss, "List Point");
-  sheet.clear();
+  const mcggHeaders = [
+    'Tahap Lobi', 'Peringkat Lobi', 'Nama Lengkap Pemain', 'Nickname (IGN)', 'Game ID',
+    'Ronde 1 - Commander', 'Ronde 1 - Rank & Poin',
+    'Ronde 2 - Commander', 'Ronde 2 - Rank & Poin',
+    'Ronde 3 - Commander', 'Ronde 3 - Rank & Poin',
+    'Poin Sanksi / Penalti', 'Total Poin Akhir',
+    'Jumlah Top 4', 'Jumlah Juara 1 (MVP Ronde)', 'Status / Gelar'
+  ];
+  const mcggRows = [mcggHeaders];
 
-  // Title Header
-  sheet.getRange("A1:H1").merge();
-  sheet.getRange("A1").setValue("📊 KLASEMEN PEROLEHAN POIN MLBB (YMC S4 2026)")
-    .setFontWeight("bold").setFontSize(14).setBackground("#0f172a").setFontColor("#38bdf8")
-    .setHorizontalAlignment("center").setVerticalAlignment("middle");
-  sheet.setRowHeight(1, 36);
+  const lobbies = payload.mcggLobbies || {};
+  ['LOBBY_A', 'LOBBY_B', 'GRAND_FINAL'].forEach(lobbyKey => {
+    const list = (lobbies[lobbyKey] || []).slice();
+    if (list.length === 0) return;
 
-  sheet.getRange("A2:H2").merge();
-  sheet.getRange("A2").setValue("Aturan Poin: Menang (W) = +2 Poin | Kalah (L) = 0 Poin. Peringkat 1 & 2 -> Upper Bracket, Peringkat 3 -> Lower Bracket, Peringkat 4 -> Gugur.")
-    .setFontItalic(true).setFontSize(9).setBackground("#1e293b").setFontColor("#94a3b8")
-    .setHorizontalAlignment("center");
-  sheet.setRowHeight(2, 22);
-
-  var currRow = 4;
-  var groups = (groupStageData && typeof groupStageData === "object" && Object.keys(groupStageData).length > 0)
-    ? groupStageData
-    : { "Grup A": [], "Grup B": [] };
-
-  for (var gName in groups) {
-    sheet.getRange(currRow, 1, 1, 8).merge();
-    sheet.getRange(currRow, 1).setValue("🏆 KLASEMEN " + gName.toUpperCase())
-      .setFontWeight("bold").setFontSize(11).setBackground("#1e293b").setFontColor("#fbbf24");
-    currRow++;
-
-    sheet.getRange(currRow, 1, 1, 8).setValues([[
-      "Grup", "Pos", "Nama Tim", "Main (M)", "Menang (W)", "Kalah (L)", "Poin (PTS)", "Status Kualifikasi"
-    ]]).setFontWeight("bold").setBackground("#334155").setFontColor("#ffffff").setHorizontalAlignment("center");
-    currRow++;
-
-    var tList = (groups[gName] || []).slice();
-    // Sort descending by pts (win * 2)
-    tList.sort(function(a, b) {
-      var ptsA = (a.win || 0) * 2;
-      var ptsB = (b.win || 0) * 2;
-      if (ptsB !== ptsA) return ptsB - ptsA;
-      return (a.loss || 0) - (b.loss || 0);
+    // Sort sesuai aturan Tie-Breaker resmi
+    list.sort((a, b) => {
+      if ((b.total || 0) !== (a.total || 0)) return (b.total || 0) - (a.total || 0);
+      const aTop4 = [a.r1, a.r2, a.r3].filter(r => r >= 1 && r <= 4).length;
+      const bTop4 = [b.r1, b.r2, b.r3].filter(r => r >= 1 && r <= 4).length;
+      if (bTop4 !== aTop4) return bTop4 - aTop4;
+      if ((b.penalty || 0) !== (a.penalty || 0)) return (b.penalty || 0) - (a.penalty || 0);
+      const aWin = [a.r1, a.r2, a.r3].filter(r => r === 1).length;
+      const bWin = [b.r1, b.r2, b.r3].filter(r => r === 1).length;
+      return bWin - aWin;
     });
 
-    if (tList.length === 0) {
-      sheet.getRange(currRow, 1, 1, 8).setValues([[gName, "-", "Belum ada tim di grup ini", 0, 0, 0, 0, "-"]])
-        .setFontItalic(true).setHorizontalAlignment("center");
-      currRow++;
-    } else {
-      for (var t = 0; t < tList.length; t++) {
-        var tm = tList[t];
-        var win = tm.win || 0;
-        var loss = tm.loss || 0;
-        var played = win + loss;
-        var pts = win * 2;
-        var status = "-";
-        var bg = "#ffffff";
-        var fg = "#000000";
-
-        if (t === 0 || t === 1) {
-          status = "Lolos ke Upper Bracket (Peringkat " + (t + 1) + ")";
-          bg = "#dcfce7"; // light green
-          fg = "#166534";
-        } else if (t === 2) {
-          status = "Lolos ke Lower Bracket (Peringkat 3)";
-          bg = "#fef9c3"; // light yellow
-          fg = "#854d0e";
-        } else {
-          status = "Gugur Babak Grup";
-          bg = "#fee2e2"; // light red
-          fg = "#991b1b";
-        }
-
-        sheet.getRange(currRow, 1, 1, 8).setValues([[
-          gName,
-          (t + 1),
-          tm.name || ("Slot " + (t + 1)),
-          played,
-          win,
-          loss,
-          pts,
-          status
-        ]]).setHorizontalAlignment("center");
-
-        sheet.getRange(currRow, 3).setHorizontalAlignment("left").setFontWeight("bold");
-        sheet.getRange(currRow, 7).setFontWeight("bold");
-        sheet.getRange(currRow, 8).setBackground(bg).setFontColor(fg).setFontWeight("bold");
-
-        currRow++;
-      }
-    }
-    currRow++; // empty spacing
-  }
-
-  sheet.setColumnWidth(1, 100);
-  sheet.setColumnWidth(2, 60);
-  sheet.setColumnWidth(3, 220);
-  sheet.setColumnWidth(4, 90);
-  sheet.setColumnWidth(5, 100);
-  sheet.setColumnWidth(6, 90);
-  sheet.setColumnWidth(7, 100);
-  sheet.setColumnWidth(8, 240);
-}
-
-/**
- * Membuat & memperbarui sheet 'List Point & Commander MCGG'
- * Kolom: Lobi, Rank, Nama, IGN, Game ID, M1 Cmd, M1 Rank, M1 Pts, M2 Cmd, M2 Rank, M2 Pts, M3 Cmd, M3 Rank, M3 Pts, Penalti, Total Poin, Top 4 Finishes, Status
- */
-function syncListPointAndCommanderMCGG(ss, mcggLobbies) {
-  var sheet = getOrCreateSheet(ss, "List Point & Commander MCGG");
-  sheet.clear();
-
-  // Title Header
-  sheet.getRange("A1:R1").merge();
-  sheet.getRange("A1").setValue("♟️ KLASEMEN POIN & PENGGUNAAN COMMANDER MCGG - YMC S4 2026")
-    .setFontWeight("bold").setFontSize(14).setBackground("#0f172a").setFontColor("#a855f7")
-    .setHorizontalAlignment("center").setVerticalAlignment("middle");
-  sheet.setRowHeight(1, 36);
-
-  sheet.getRange("A2:R2").merge();
-  sheet.getRange("A2").setValue("Sistem Poin: Juara 1 (+4), Juara 2 (+3), Juara 3 (+2), Juara 4 (+1), Pos 5 (-1), Pos 6 (-2), Pos 7 (-3), Pos 8 (-4) | Penalti Commander: -2 Poin | Penalti Chat All: -10 Poin")
-    .setFontItalic(true).setFontSize(9).setBackground("#1e293b").setFontColor("#94a3b8")
-    .setHorizontalAlignment("center");
-  sheet.setRowHeight(2, 22);
-
-  var pointMap = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
-
-  var lobbyDefs = [
-    { key: "LOBBY_A", title: "KLASEMEN LOBBY A (Penyisihan 8 Player)" },
-    { key: "LOBBY_B", title: "KLASEMEN LOBBY B (Penyisihan 8 Player)" },
-    { key: "GRAND_FINAL", title: "KLASEMEN GRAND FINAL MCGG (8 Player Terbaik)" }
-  ];
-
-  var currRow = 4;
-  var lobbies = (mcggLobbies && typeof mcggLobbies === "object") ? mcggLobbies : {};
-
-  for (var ld = 0; ld < lobbyDefs.length; ld++) {
-    var def = lobbyDefs[ld];
-    var pList = (lobbies[def.key] || []).slice();
-
-    sheet.getRange(currRow, 1, 1, 18).merge();
-    sheet.getRange(currRow, 1).setValue("📌 " + def.title)
-      .setFontWeight("bold").setFontSize(11).setBackground("#1e293b").setFontColor("#fbbf24");
-    currRow++;
-
-    sheet.getRange(currRow, 1, 1, 18).setValues([[
-      "Lobi", "Rank", "Nama Peserta", "Nickname (IGN)", "ID Game",
-      "M1 Commander", "M1 Rank", "M1 Pts",
-      "M2 Commander", "M2 Rank", "M2 Pts",
-      "M3 Commander", "M3 Rank", "M3 Pts",
-      "Penalti", "Total Poin", "Top 4 Finishes", "Status Kualifikasi"
-    ]]).setFontWeight("bold").setBackground("#334155").setFontColor("#ffffff").setHorizontalAlignment("center");
-    currRow++;
-
-    // Calculate details and Sort players according to Tie-Breaker
-    var enriched = pList.map(function(p) {
-      var r1 = p.r1 || 0;
-      var r2 = p.r2 || 0;
-      var r3 = p.r3 || 0;
-      var pts1 = pointMap[r1] || 0;
-      var pts2 = pointMap[r2] || 0;
-      var pts3 = pointMap[r3] || 0;
-      var penalty = p.penalty || 0;
-      var totalPts = pts1 + pts2 + pts3 - penalty;
-
-      var top4Count = [r1, r2, r3].filter(function(r) { return r >= 1 && r <= 4; }).length;
-      var bestRank = Math.min(r1 || 99, r2 || 99, r3 || 99);
-
-      return {
-        raw: p,
-        r1: r1, r2: r2, r3: r3,
-        c1: p.c1 || "-", c2: p.c2 || "-", c3: p.c3 || "-",
-        pts1: pts1, pts2: pts2, pts3: pts3,
-        penalty: penalty,
-        totalPts: totalPts,
-        top4Count: top4Count,
-        bestRank: bestRank
+    list.forEach((p, idx) => {
+      const fmtRank = (r) => {
+        const rk = parseInt(r) || 0;
+        if (!rk) return '-';
+        const pt = POINT_MAP[rk] || 0;
+        return `Rank ${rk} (${pt > 0 ? '+' + pt : pt} pt)`;
       };
-    });
 
-    enriched.sort(function(a, b) {
-      if (b.totalPts !== a.totalPts) return b.totalPts - a.totalPts;
-      if (b.top4Count !== a.top4Count) return b.top4Count - a.top4Count;
-      if (a.penalty !== b.penalty) return a.penalty - b.penalty;
-      return a.bestRank - b.bestRank;
-    });
+      const top4Count = [p.r1, p.r2, p.r3].filter(r => r >= 1 && r <= 4).length;
+      const rank1MvpCount = [p.r1, p.r2, p.r3].filter(r => r === 1).length;
+      const allRoundsPlayed = (p.r1 > 0 && p.r2 > 0 && p.r3 > 0);
 
-    if (enriched.length === 0) {
-      sheet.getRange(currRow, 1, 1, 18).setValues([[def.key, "-", "Belum ada pemain di lobi ini", "-", "-", "-", "-", 0, "-", "-", 0, "-", "-", 0, 0, 0, 0, "-"]])
-        .setFontItalic(true).setHorizontalAlignment("center");
-      currRow++;
-    } else {
-      for (var ep = 0; ep < enriched.length; ep++) {
-        var item = enriched[ep];
-        var ply = item.raw;
-        var rank = ep + 1;
-        var status = "-";
-        var bg = "#ffffff";
-        var fg = "#000000";
-
-        if (def.key === "GRAND_FINAL") {
-          if (rank === 1) {
-            status = "🏆 JUARA 1 (CHAMPION)";
-            bg = "#fef08a"; fg = "#854d0e";
-          } else if (rank === 2) {
-            status = "🥈 JUARA 2 (RUNNER-UP)";
-            bg = "#e2e8f0"; fg = "#1e293b";
-          } else if (rank === 3) {
-            status = "🥉 JUARA 3";
-            bg = "#ffedd5"; fg = "#9a3412";
-          } else if (rank === 4) {
-            status = "PERINGKAT 4";
-            bg = "#f3e8ff"; fg = "#6b21a8";
-          } else {
-            status = "FINALIS (Peringkat " + rank + ")";
-            bg = "#f8fafc"; fg = "#64748b";
-          }
-        } else {
-          if (rank <= 4) {
-            status = "LOLOS KE GRAND FINAL (Top " + rank + ")";
-            bg = "#dcfce7"; fg = "#166534";
-          } else {
-            status = "Gugur Fase Lobi";
-            bg = "#fee2e2"; fg = "#991b1b";
-          }
+      let statusLabel = 'TBD';
+      if (lobbyKey === 'GRAND_FINAL') {
+        if (allRoundsPlayed) {
+          if (idx === 0) statusLabel = '🏆 JUARA 1 + ⭐ MVP MCGG';
+          else if (idx === 1) statusLabel = '🥈 JUARA 2';
+          else if (idx === 2) statusLabel = '🥉 JUARA 3';
+          else statusLabel = `Finalis (#${idx + 1})`;
         }
-
-        sheet.getRange(currRow, 1, 1, 18).setValues([[
-          def.key,
-          rank,
-          ply.name || "-",
-          ply.nickname || "-",
-          ply.gameId || "-",
-          item.c1, item.r1 ? ("Rank " + item.r1) : "-", item.pts1,
-          item.c2, item.r2 ? ("Rank " + item.r2) : "-", item.pts2,
-          item.c3, item.r3 ? ("Rank " + item.r3) : "-", item.pts3,
-          item.penalty > 0 ? ("-" + item.penalty) : "0",
-          item.totalPts,
-          item.top4Count,
-          status
-        ]]).setHorizontalAlignment("center");
-
-        sheet.getRange(currRow, 3).setHorizontalAlignment("left").setFontWeight("bold");
-        sheet.getRange(currRow, 16).setFontWeight("bold");
-        sheet.getRange(currRow, 18).setBackground(bg).setFontColor(fg).setFontWeight("bold");
-
-        currRow++;
+      } else {
+        if (allRoundsPlayed) {
+          statusLabel = idx < 4 ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        }
       }
-    }
-    currRow++; // empty spacing
-  }
 
-  sheet.setColumnWidth(1, 90);
-  sheet.setColumnWidth(2, 50);
-  sheet.setColumnWidth(3, 180);
-  sheet.setColumnWidth(4, 140);
-  sheet.setColumnWidth(5, 110);
-  sheet.setColumnWidth(6, 120);
-  sheet.setColumnWidth(7, 70);
-  sheet.setColumnWidth(8, 60);
-  sheet.setColumnWidth(9, 120);
-  sheet.setColumnWidth(10, 70);
-  sheet.setColumnWidth(11, 60);
-  sheet.setColumnWidth(12, 120);
-  sheet.setColumnWidth(13, 70);
-  sheet.setColumnWidth(14, 60);
-  sheet.setColumnWidth(15, 70);
-  sheet.setColumnWidth(16, 90);
-  sheet.setColumnWidth(17, 100);
-  sheet.setColumnWidth(18, 220);
+      mcggRows.push([
+        lobbyKey,
+        `#${idx + 1}`,
+        p.name || 'TBD',
+        p.nickname || '-',
+        p.gameId || '-',
+        p.c1 ? p.c1.toUpperCase() : '-',
+        fmtRank(p.r1),
+        p.c2 ? p.c2.toUpperCase() : '-',
+        fmtRank(p.r2),
+        p.c3 ? p.c3.toUpperCase() : '-',
+        fmtRank(p.r3),
+        p.penalty || 0,
+        p.total || 0,
+        top4Count,
+        rank1MvpCount,
+        statusLabel
+      ]);
+    });
+  });
+
+  if (mcggRows.length > 0) {
+    sheetMCGG.getRange(1, 1, mcggRows.length, mcggHeaders.length).setValues(mcggRows);
+    sheetMCGG.getRange(1, 1, 1, mcggHeaders.length)
+      .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
+    sheetMCGG.setRowHeight(1, 32);
+    for (var c3 = 1; c3 <= mcggHeaders.length; c3++) {
+      try { sheetMCGG.autoResizeColumn(c3); } catch(e) {}
+    }
+  }
 }
 
 /**
- * ========================================================
- * MASTER FUNCTION: BUAT / PERBARUI SEMUA SHEET TURNAMEN
- * ========================================================
- * Fungsi ini dapat dijalankan langsung dari toolbar Apps Script,
- * atau dipanggil otomatis saat website menekan tombol simpan perubahan.
+ * Wrapper kompatibilitas untuk pemicu manual / lama
  */
-function createOrUpdateAllTournamentSheets(explicitGroupStageData, explicitMcggLobbies) {
-  Logger.log("--- MEMULAI GENERASI SEMUA SHEET TURNAMEN ---");
+function syncListBagan(ss, groupData, mcggData) {
+  return syncDedicatedTournamentSheets(ss, { groupStageData: groupData, mcggLobbies: mcggData });
+}
+
+function syncListPoint(ss, groupData) {
+  return syncDedicatedTournamentSheets(ss, { groupStageData: groupData });
+}
+
+function syncListPointAndCommanderMCGG(ss, mcggData) {
+  return syncDedicatedTournamentSheets(ss, { mcggLobbies: mcggData });
+}
+
+function createOrUpdateAllTournamentSheets(groupStageData, mcggLobbies) {
   var ss = getTargetSpreadsheet();
+  var payload = {
+    groupStageData: groupStageData,
+    mcggLobbies: mcggLobbies
+  };
 
-  var groupData = explicitGroupStageData;
-  var mcggData = explicitMcggLobbies;
-
-  // Jika tidak dipassing dari POST, baca dari sheet 'Pengaturan Turnamen'
-  if (!groupData || !mcggData) {
-    var cfgSheet = ss.getSheetByName("Pengaturan Turnamen");
-    if (cfgSheet && cfgSheet.getLastRow() >= 2) {
-      var cData = cfgSheet.getDataRange().getValues();
-      for (var c = 1; c < cData.length; c++) {
-        var key = cData[c][0] ? cData[c][0].toString().trim() : "";
-        var val = cData[c][1] ? cData[c][1].toString() : "";
-        try {
-          if (!groupData && key === "groupStageData") groupData = JSON.parse(val);
-          if (!mcggData && key === "mcggLobbies") mcggData = JSON.parse(val);
-        } catch(e) {}
-      }
+  // Baca pelengkap dari Pengaturan Turnamen jika ada
+  var cfgSheet = ss.getSheetByName("Pengaturan Turnamen");
+  if (cfgSheet && cfgSheet.getLastRow() >= 2) {
+    var cData = cfgSheet.getDataRange().getValues();
+    for (var c = 1; c < cData.length; c++) {
+      var key = cData[c][0] ? cData[c][0].toString().trim() : "";
+      var val = cData[c][1] ? cData[c][1].toString() : "";
+      try {
+        if (!payload.groupStageData && key === "groupStageData") payload.groupStageData = JSON.parse(val);
+        if (!payload.mcggLobbies && key === "mcggLobbies") payload.mcggLobbies = JSON.parse(val);
+        if (!payload.groupMatchResults && key === "groupMatchResults") payload.groupMatchResults = JSON.parse(val);
+        if (!payload.groupPlayoffMatches && key === "groupPlayoffMatches") payload.groupPlayoffMatches = JSON.parse(val);
+        if (!payload.tournamentStageState && key === "tournamentStageState") payload.tournamentStageState = JSON.parse(val);
+      } catch(e) {}
     }
   }
 
-  // 1. Sync List Bagan
-  syncListBagan(ss, groupData, mcggData);
-  Logger.log("1. Sheet 'List Bagan' berhasil dibuat/diperbarui!");
-
-  // 2. Sync List Point
-  syncListPoint(ss, groupData);
-  Logger.log("2. Sheet 'List Point' berhasil dibuat/diperbarui!");
-
-  // 3. Sync List Point & Commander MCGG
-  syncListPointAndCommanderMCGG(ss, mcggData);
-  Logger.log("3. Sheet 'List Point & Commander MCGG' berhasil dibuat/diperbarui!");
-
-  Logger.log("=== SEMUA SHEET TURNAMEN SELESAI DIPERBARUI ===");
-  return "Berhasil membuat & memperbarui 3 Sheet: List Bagan, List Point, dan List Point & Commander MCGG!";
+  syncDedicatedTournamentSheets(ss, payload);
+  return "Berhasil membuat & memperbarui 3 Sheet: MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP!";
 }
