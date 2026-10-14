@@ -65,7 +65,9 @@
             <div class="form-grid" style="margin-bottom: 1.25rem;">
               <div class="form-group">
                 <label>Nama Tim MLBB *</label>
-                <input type="text" id="teamName" placeholder="Contoh: Yokke Alpha Esports">
+                <input type="text" id="teamName" list="registeredTeamsDatalist" oninput="handleTeamNameInput(this.value)" placeholder="Pilih tim terdaftar atau ketik baru...">
+                <datalist id="registeredTeamsDatalist"></datalist>
+                <div id="teamNameUpdateNotice" style="display: none; margin-top: 0.4rem; font-size: 0.82rem; color: var(--yokke-cyan); background: rgba(0, 210, 255, 0.08); padding: 0.45rem 0.65rem; border-radius: 6px; border-left: 3px solid var(--yokke-cyan); line-height: 1.4;"></div>
               </div>
               <div class="form-group">
                 <label>Divisi / Unit Kerja Yokke *</label>
@@ -210,7 +212,9 @@
               <div class="form-grid">
                 <div class="form-group">
                   <label>Nama Lengkap Pemain *</label>
-                  <input type="text" id="mcgg_name" placeholder="Contoh: Budi Santoso">
+                  <input type="text" id="mcgg_name" list="registeredMcggDatalist" oninput="handleMcggNameInput(this.value)" placeholder="Pilih pemain terdaftar atau ketik baru...">
+                  <datalist id="registeredMcggDatalist"></datalist>
+                  <div id="mcggNameUpdateNotice" style="display: none; margin-top: 0.4rem; font-size: 0.82rem; color: var(--yokke-purple); background: rgba(181, 23, 158, 0.08); padding: 0.45rem 0.65rem; border-radius: 6px; border-left: 3px solid var(--yokke-purple); line-height: 1.4;"></div>
                 </div>
                 <div class="form-group">
                   <label>Nickname Game / IGN *</label>
@@ -436,16 +440,54 @@
           </div>
         </div>
 
+        <!-- PANEL PENGUNDIAN COMMANDER MCGG (SESUAI REGULASI) -->
+        <div class="commander-lottery-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="color: var(--yokke-gold); margin: 0; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🎲</span> <span>Mesin Undian Commander MCGG (Resmi)</span>
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0.2rem 0 0;">
+                Undi commander per-match sesuai regulasi. Wajib digunakan oleh pemain (pelanggaran = -2 poin).
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;" onclick="drawMatchCommanders(1)">
+                🎲 Undi Match 1 (Preset Non-Meta S7)
+              </button>
+              <button class="btn btn-gold" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;" onclick="drawMatchCommanders(2)">
+                🎲 Undi Match 2 (Random 8 Full Pool)
+              </button>
+              <button class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;" onclick="showMatch3DraftInfo()">
+                ⚔️ Match 3 (Draft Pick & Ban)
+              </button>
+              <button id="btnCopyDrawResult" class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.82rem; display: none;" onclick="copyCommanderDrawText()">
+                📋 Salin Hasil Undian
+              </button>
+            </div>
+          </div>
+
+          <!-- HASIL KARTU UNDIAN COMMANDER -->
+          <div id="commanderDrawResults" style="display: none; margin-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span id="commanderDrawTitle" style="font-weight: 700; color: var(--yokke-cyan); font-size: 0.88rem;"></span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Sanksi jika tidak memakai: <strong style="color:var(--yokke-red)">-2 Poin</strong></span>
+            </div>
+            <div id="commanderCardsGrid" class="commander-grid"></div>
+          </div>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th style="width: 50px;">Pos</th>
+                <th style="width: 45px;">Pos</th>
                 <th>Nama & Nickname Pemain</th>
-                <th>Ronde 1</th>
-                <th>Ronde 2</th>
-                <th>Ronde 3</th>
-                <th>Total Poin</th>
+                <th>Ronde 1 (Commander & Hasil)</th>
+                <th>Ronde 2 (Commander & Hasil)</th>
+                <th>Ronde 3 (Commander & Hasil)</th>
+                <th style="text-align: center; width: 100px;">Penalti</th>
+                <th style="text-align: center; width: 90px;">Total Poin</th>
                 <th>Status Kualifikasi</th>
               </tr>
             </thead>

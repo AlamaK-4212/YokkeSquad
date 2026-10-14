@@ -625,6 +625,72 @@ tr:hover {
   overflow-y: auto;
 }
 
+/* Commander Lottery & Selectors */
+.commander-lottery-panel {
+  background: linear-gradient(135deg, rgba(114, 9, 183, 0.12), rgba(0, 180, 216, 0.08));
+  border: 1px solid rgba(114, 9, 183, 0.35);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.commander-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.commander-card {
+  background: #090e1c;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 0.4rem;
+  text-align: center;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.commander-card:hover {
+  border-color: var(--yokke-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(114, 9, 183, 0.3);
+}
+
+.commander-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yokke-purple);
+  margin: 0 auto 0.4rem;
+  display: block;
+  background: #111a33;
+}
+
+.commander-badge-s7 {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.62rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(255, 183, 3, 0.2);
+  color: var(--yokke-gold);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+}
+
+.commander-select-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+  margin-right: 5px;
+  border: 1px solid var(--yokke-purple);
+  background: #111a33;
+}
+
 footer {
   text-align: center;
   padding: 2rem;
