@@ -1,6 +1,6 @@
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxGzs_chXB5htGnHg469rXI-bR5e5uF-Q1yuXMLoVfC37DPVFECcHpBPbdDbpDEnYSY/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycby74OVX8jcHOo8IvXHF4fR8YeloZGqR8uB-JkCBeylaCbahfVp4tHb30_RFcO4I_Kw/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
