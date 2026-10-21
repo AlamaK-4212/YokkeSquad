@@ -861,6 +861,7 @@ function doGet(e) {
       groupStageData: null,
       mcggLobbies: null,
       adminPassword: null,
+      invitedTeams: null,
       isRegistrationClosed: false
     };
 
@@ -879,6 +880,7 @@ function doGet(e) {
           if (key === "mcggLobbies") appConfig.mcggLobbies = JSON.parse(val);
           if (key === "mcggDrawState") appConfig.mcggDrawState = JSON.parse(val);
           if (key === "tournamentStageState") appConfig.tournamentStageState = JSON.parse(val);
+          if (key === "invitedTeams") appConfig.invitedTeams = JSON.parse(val);
           if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
           if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
             appConfig.adminPassword = val.toString().trim();
@@ -1590,7 +1592,15 @@ function syncDedicatedTournamentSheets(ss, payload) {
     const sorted = (groupData[gName] || []).slice().sort((a, b) => (b.pts || 0) - (a.pts || 0));
     sorted.forEach((t, idx) => {
       const mp = (parseInt(t.win) || 0) + (parseInt(t.lose) || 0);
-      const status = (idx < 2 && t.pts > 0) ? 'Lolos Playoff' : (t.pts > 0 ? 'Gugur' : 'Menunggu Match');
+      const is8Group = Object.keys(groupData).length === 8;
+      let status = 'Menunggu Match';
+      if (t.pts > 0) {
+        if (is8Group) {
+          status = (idx < 2) ? 'Lolos Upper Bracket' : (idx === 2 ? 'Lolos Lower Bracket' : 'Gugur');
+        } else {
+          status = (idx < 2) ? 'Lolos Playoff' : 'Gugur';
+        }
+      }
       mlbbPointRows.push([
         gName,
         `#${idx + 1}`,
@@ -1648,16 +1658,20 @@ function syncDedicatedTournamentSheets(ss, payload) {
 
   // B. Masukkan Bagan Playoff (Semifinal & Grand Final)
   const playoffRounds = payload.groupPlayoffMatches || [];
-  const roundNames = playoffRounds.length === 3 
-    ? ['Perempat Final (8 Besar)', 'Semifinal (4 Besar)', 'Grand Final'] 
-    : ['Semifinal (4 Besar)', 'Grand Final'];
+  const roundNames = playoffRounds.length === 5
+    ? ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower SF/Final (Hari 5)', 'Grand Final (Hari 5)']
+    : (playoffRounds.length === 3 
+        ? ['Perempat Final (8 Besar)', 'Semifinal (4 Besar)', 'Grand Final'] 
+        : ['Semifinal (4 Besar)', 'Grand Final']);
 
   playoffRounds.forEach((round, rIdx) => {
-    const phaseName = roundNames[rIdx] || `Playoff Ronde ${rIdx + 1}`;
-    const formatStr = phaseName.includes('Grand Final') ? 'BO5' : 'BO3';
+    const defaultPhase = roundNames[rIdx] || `Playoff Ronde ${rIdx + 1}`;
     (round || []).forEach((m, mIdx) => {
+      const matchLabel = m.matchLabel || `PO_R${rIdx + 1}_M${mIdx + 1}`;
+      const phaseName = m.phaseName || defaultPhase;
+      const formatStr = phaseName.includes('Grand Final') ? 'BO5' : 'BO3';
       mlbbBaganRows.push([
-        `PO_R${rIdx + 1}_M${mIdx + 1}`,
+        matchLabel,
         phaseName,
         formatStr,
         m.teamA || 'TBD',
@@ -1700,7 +1714,11 @@ function syncDedicatedTournamentSheets(ss, payload) {
   const mcggRows = [mcggHeaders];
 
   const lobbies = payload.mcggLobbies || {};
-  ['LOBBY_A', 'LOBBY_B', 'GRAND_FINAL'].forEach(lobbyKey => {
+  const lobbyKeysOrder = Object.keys(lobbies).length > 0 
+    ? Object.keys(lobbies) 
+    : ['LOBBY_A', 'LOBBY_B', 'LOBBY_C', 'LOBBY_D', 'LOBBY_E', 'SEMI_A', 'SEMI_B', 'GRAND_FINAL'];
+
+  lobbyKeysOrder.forEach(lobbyKey => {
     const list = (lobbies[lobbyKey] || []).slice();
     if (list.length === 0) return;
 
@@ -1736,9 +1754,18 @@ function syncDedicatedTournamentSheets(ss, payload) {
           else if (idx === 2) statusLabel = '🥉 JUARA 3';
           else statusLabel = `Finalis (#${idx + 1})`;
         }
-      } else {
+      } else if (lobbyKey.indexOf('SEMI_') === 0) {
         if (allRoundsPlayed) {
           statusLabel = idx < 4 ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        }
+      } else {
+        if (allRoundsPlayed) {
+          const hasSemis = !!lobbies.SEMI_A;
+          if (hasSemis) {
+            statusLabel = idx < 3 ? 'LOLOS KE SEMIFINAL' : (idx === 3 ? 'KANDIDAT BEST 4TH' : ('GUGUR (Peringkat ' + (idx + 1) + ')'));
+          } else {
+            statusLabel = idx < 4 ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+          }
         }
       }
 

@@ -886,6 +886,112 @@ tr:hover {
   border-bottom: 1px solid rgba(148, 163, 184, 0.3);
 }
 
+/* ========================================================
+   MCGG COMMANDER LOTTERY STEP-BY-STEP WORKFLOW UI
+   ======================================================== */
+.mcgg-lottery-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.lottery-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.lottery-step-pill.active {
+  background: rgba(0, 210, 255, 0.15);
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.25);
+}
+
+.lottery-step-pill.completed {
+  background: rgba(6, 214, 160, 0.15);
+  border-color: var(--yokke-green);
+  color: var(--yokke-green);
+}
+
+.lottery-pool-box {
+  background: rgba(11, 15, 25, 0.75);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 0.65rem;
+}
+
+.lottery-pool-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.commander-pool-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 16px;
+  background: #111a33;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  transition: transform 0.15s ease;
+}
+
+.commander-pool-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--yokke-gold);
+}
+
+.commander-pool-chip img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--yokke-gold);
+}
+
+.tier-tag {
+  font-size: 0.62rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tier-tag.tier-meta { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.tier-tag.tier-high { background: rgba(255, 183, 3, 0.2); color: var(--yokke-gold); border: 1px solid rgba(255, 183, 3, 0.4); }
+.tier-tag.tier-mid  { background: rgba(0, 210, 255, 0.2); color: var(--yokke-cyan); border: 1px solid rgba(0, 210, 255, 0.4); }
+.tier-tag.tier-normal { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }
+
+.commander-card.assigned-card {
+  border-color: rgba(6, 214, 160, 0.4);
+  box-shadow: 0 4px 10px rgba(6, 214, 160, 0.12);
+}
+
+.commander-card.locked-card {
+  border-color: rgba(255, 183, 3, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 183, 3, 0.15);
+}
+
+
 footer {
   text-align: center;
   padding: 2rem;
@@ -893,4 +999,245 @@ footer {
   font-size: 0.85rem;
   border-top: 1px solid var(--border-color);
   margin-top: auto;
+}
+
+/* ========================================================
+   GROUP CAROUSEL & 3-GROUP NAVIGATION BAR (MLBB & MCGG)
+   ======================================================== */
+.group-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  background: rgba(11, 15, 25, 0.9);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+.group-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.btn-group-nav {
+  padding: 0.38rem 0.85rem !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.group-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.group-nav-pill {
+  padding: 0.22rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.group-nav-pill:hover {
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.group-nav-pill.active {
+  background: rgba(0, 210, 255, 0.18);
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.group-nav-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--yokke-cyan);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mcgg-3group-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 1366px) {
+  .mcgg-3group-container {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .mcgg-3group-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================================
+   CAROUSEL 3 GRUP DENGAN TOMBOL PANAH SAMPING (SESUAI SKETSA)
+   ======================================================== */
+.carousel-outer-wrapper {
+  display: flex;
+  align-items: stretch;
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+  position: relative;
+  width: 100%;
+}
+
+.carousel-arrow-btn {
+  flex: 0 0 52px;
+  width: 52px;
+  background: linear-gradient(180deg, #111a33, #0b0f19);
+  border: 2px solid var(--yokke-cyan);
+  border-radius: 12px;
+  color: var(--yokke-cyan);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  align-self: center;
+  height: 96px;
+  user-select: none;
+}
+
+.carousel-arrow-btn:hover:not(:disabled) {
+  background: rgba(0, 210, 255, 0.22);
+  color: #fff;
+  border-color: #38bdf8;
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+}
+
+.carousel-arrow-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.carousel-arrow-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  box-shadow: none;
+  transform: none;
+}
+
+.carousel-cards-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  min-width: 0;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .carousel-cards-container {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+  .carousel-arrow-btn {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-outer-wrapper {
+    gap: 0.4rem;
+  }
+  .carousel-cards-container {
+    grid-template-columns: 1fr;
+  }
+  .carousel-arrow-btn {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 54px;
+    border-radius: 8px;
+  }
+}
+
+/* ========================================================
+   TAMPILAN VERTIKAL 3 GRUP (MAKSIMAL & LEGA SESUAI PERMINTAAN USER)
+   ======================================================== */
+.carousel-cards-container,
+.mcgg-3group-container,
+.group-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.5rem !important;
+  width: 100% !important;
+}
+
+.carousel-outer-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.carousel-arrow-btn {
+  display: none !important; /* Tombol panah kini terintegrasi di toolbar navigasi & tab */
+}
+
+.group-box {
+  width: 100% !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.group-box:hover {
+  border-color: rgba(0, 210, 255, 0.45);
+}
+
+.mcgg-lobby-section {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+/* Style Tab Aktif & Nonaktif */
+.group-nav-tab-btn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.group-nav-tab-btn:hover {
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.group-nav-tab-btn.active {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 119, 182, 0.3));
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.35);
 }
