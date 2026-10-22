@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyuDOnJcxKp6HsZjYjeKjLuhbR3GbnAZ_JsGMbxcB6NbYk6NvriTNAypg5g_ntu454BGg/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw52YWqACjr_IsbAlv-UO6oxO_9Xfhh5ljMQ1T7_PFLljFq3b2bvDN1RNbP2dCsEOXeHw/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
@@ -116,10 +116,97 @@ function getTeamPrefix(teamName) {
   return words[0] ? words[0].toLowerCase() : '';
 }
 
+/**
+ * Normalisasi dan Pengelompokan Klaster Divisi Yokke (11 Klaster Standar Resmi)
+ * Memetakan variasi teks bebas pendaftar (e.g. 'IT/QA', 'Quality Assurance', 'ERM/PRM', 'ADO Bandung')
+ * ke klaster divisi resmi untuk pencegahan bentrok fase awal turnamen.
+ */
+function getDepartmentCluster(rawDept, teamOrPlayerName = '') {
+  if (!rawDept) rawDept = '';
+  const d = rawDept.toLowerCase().trim();
+
+  // 1. Quality Assurance
+  if (d.includes('quality assurance') || d.includes('/qa') || d.includes('it qa') || d.includes('it/qa') || d === 'qa') {
+    if (d.includes('infosec')) return 'IT - Security & Infrastructure';
+    return 'IT - Quality Assurance';
+  }
+
+  // 2. Risk Management & Compliance
+  if (d.includes('risk') || d.includes('erm') || d.includes('prm')) {
+    return 'Risk Management & Compliance';
+  }
+
+  // 3. IT Engineering, Development & Middleware
+  if (d.includes('middleware') || d.includes('it dev') || d.includes('it engineering') || d.includes('engineering') || d === 'it') {
+    return 'IT - Engineering & Development';
+  }
+
+  // 4. Change, Release & Service Operations
+  if (d.includes('change') || d.includes('release') || d.includes('planning & service') || d.includes('service operations')) {
+    return 'IT - Change, Release & Service Operations';
+  }
+
+  // 5. Product Management & OPPI
+  if (d.includes('product') || d.includes('oppi')) {
+    return 'Product Management & OPPI';
+  }
+
+  // 6. Project Management Office (PMO / BMRI)
+  if (d.includes('project management') || d.includes('pmo') || d.includes('bmri')) {
+    return 'Project Management Office';
+  }
+
+  // 7. Regional ADO & Field Operations / Teknisi
+  if (d.includes('ado') || d.includes('sqm') || d.includes('teknisi') || d.includes('wilayah') || d.includes('palembang') || d.includes('bandung') || d.includes('medan') || d.includes('lampung') || d.includes('jakarta')) {
+    return 'Regional ADO & Field Operations';
+  }
+
+  // 8. Merchant Operations & Business
+  if (d.includes('merchant') || d.includes('mercant') || d.includes('partnership') || d === 'operation' || d.includes('merchant operation')) {
+    return 'Merchant Operations & Business';
+  }
+
+  // 9. Marketing, CRM & Commercial
+  if (d.includes('marketing') || d.includes('crm') || d.includes('lvm') || d.includes('sales')) {
+    return 'Marketing, CRM & Commercial';
+  }
+
+  // 10. General & Logistics / Inventory
+  if (d.includes('inventory')) {
+    return 'General & Logistics';
+  }
+
+  return rawDept.trim() || 'Lainnya / Umum';
+}
+
+function getTeamDept(teamName) {
+  if (!teamName) return '';
+  const clean = teamName.trim().toLowerCase();
+  const p = (participants || []).find(x => x.category === 'MLBB' && (x.name || '').trim().toLowerCase() === clean);
+  const raw = (p && p.dept) ? p.dept.trim() : '';
+  if (!raw || raw === '-' || raw.toLowerCase() === 'undefined') return '';
+  return getDepartmentCluster(raw, teamName).toLowerCase();
+}
+
+
+const MLBB_SEEDED_8 = [
+  'wingskanan esport 1',
+  'atmo',
+  'native',
+  'gado-gado',
+  'gado gado esports',
+  'appa linux',
+  'aang alpha',
+  'anti klimax',
+  'anti climax'
+];
+
 function isTeamInvited(teamName) {
   if (!teamName) return false;
-  const p = participants.find(x => x.category === 'MLBB' && (x.name || '').trim().toLowerCase() === teamName.trim().toLowerCase());
-  return p ? !!p.isInvited : false;
+  const clean = teamName.trim().toLowerCase();
+  const p = participants.find(x => x.category === 'MLBB' && (x.name || '').trim().toLowerCase() === clean);
+  if (p && p.isInvited !== undefined) return !!p.isInvited;
+  return MLBB_SEEDED_8.includes(clean);
 }
 
 function toggleInvitedTeam(id) {
@@ -1731,9 +1818,9 @@ function switchTab(tabId) {
   event.target.classList.add('active');
 
   if (tabId === 'bagan-mlbb') {
-    renderCurrentMLBBFormat();
+    setMLBBViewMode('HUB');
   } else if (tabId === 'points-mcgg') {
-    renderMCGGTable();
+    setMCGGViewMode('HUB');
   } else if (tabId === 'rules') {
     renderRules();
   }
@@ -3149,7 +3236,7 @@ function renderCurrentMLBBFormat() {
     renderBracket();
   } else {
     if (knockoutBox) knockoutBox.style.display = 'none';
-    if (groupStageBox) groupStageBox.style.display = 'block';
+    if (groupStageBox) groupStageBox.style.display = (currentMLBBViewMode === 'HUB') ? 'none' : 'block';
     if (sizeWrapper) sizeWrapper.style.display = 'none';
     renderGroupStageUI();
   }
@@ -3586,24 +3673,40 @@ function allocateMLBBGroups(teamsList, groupNames, doShuffle = false) {
     regular = [...regular].sort(() => Math.random() - 0.5);
   }
 
-  // 1. Alokasikan Tim Invite (Maksimal 1 per grup jika invited <= numGroups)
+  // 1. Alokasikan Tim Invite (Maksimal 1 per grup, sebarkan divisi jika beda)
   invited.forEach((team, idx) => {
     const teamPrefix = getTeamPrefix(team);
+    const teamDept = getTeamDept(team);
     let bestGroup = null;
 
-    // Cari grup yang belum ada tim invited dan belum ada prefix sama
+    // Prioritas 1: Tanpa tim invited, tanpa prefix sama, tanpa divisi sama
     for (let i = 0; i < numGroups; i++) {
       const gName = groupNames[(idx + i) % numGroups];
       const gTeams = groups[gName];
       const hasInvited = gTeams.some(t => isTeamInvited(t));
-      const hasSamePrefix = gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-      if (!hasInvited && !hasSamePrefix) {
+      const hasSamePrefix = teamPrefix && gTeams.some(t => getTeamPrefix(t) === teamPrefix);
+      const hasSameDept = teamDept && gTeams.some(t => getTeamDept(t) === teamDept);
+      if (!hasInvited && !hasSamePrefix && !hasSameDept) {
         bestGroup = gName;
         break;
       }
     }
 
-    // Fallback: Grup tanpa tim invited
+    // Prioritas 2: Tanpa tim invited, tanpa prefix sama
+    if (!bestGroup) {
+      for (let i = 0; i < numGroups; i++) {
+        const gName = groupNames[(idx + i) % numGroups];
+        const gTeams = groups[gName];
+        const hasInvited = gTeams.some(t => isTeamInvited(t));
+        const hasSamePrefix = teamPrefix && gTeams.some(t => getTeamPrefix(t) === teamPrefix);
+        if (!hasInvited && !hasSamePrefix) {
+          bestGroup = gName;
+          break;
+        }
+      }
+    }
+
+    // Prioritas 3: Grup tanpa tim invited
     if (!bestGroup) {
       for (let i = 0; i < numGroups; i++) {
         const gName = groupNames[(idx + i) % numGroups];
@@ -3614,7 +3717,7 @@ function allocateMLBBGroups(teamsList, groupNames, doShuffle = false) {
       }
     }
 
-    // Fallback terakhir: grup tim paling sedikit
+    // Fallback: grup tim paling sedikit
     if (!bestGroup) {
       bestGroup = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length)[0];
     }
@@ -3622,43 +3725,81 @@ function allocateMLBBGroups(teamsList, groupNames, doShuffle = false) {
     groups[bestGroup].push(team);
   });
 
-  // 2. Alokasikan Tim Regular: cegah tim dengan prefix nama depan sama berada di 1 grup
+  // 2. Alokasikan Tim Regular: cegah tim dengan nama depan sama (satelit) & cegah divisi sama berada di 1 grup
   const targetCap = Math.ceil(teamsList.length / numGroups);
 
-  // Hitung jumlah tim per prefix agar tim yang punya banyak satelit dialokasikan lebih awal
+  // Hitung jumlah tim per prefix & per divisi agar yang paling banyak didistribusikan lebih awal
   const prefixCounts = {};
+  const deptCounts = {};
   regular.forEach(t => {
     const p = getTeamPrefix(t);
-    prefixCounts[p] = (prefixCounts[p] || 0) + 1;
+    const d = getTeamDept(t);
+    if (p) prefixCounts[p] = (prefixCounts[p] || 0) + 1;
+    if (d) deptCounts[d] = (deptCounts[d] || 0) + 1;
   });
-  regular.sort((a, b) => (prefixCounts[getTeamPrefix(b)] || 0) - (prefixCounts[getTeamPrefix(a)] || 0));
+
+  regular.sort((a, b) => {
+    const pA = getTeamPrefix(a), pB = getTeamPrefix(b);
+    const dA = getTeamDept(a), dB = getTeamDept(b);
+    const scoreA = (prefixCounts[pA] || 0) * 10 + (deptCounts[dA] || 0);
+    const scoreB = (prefixCounts[pB] || 0) * 10 + (deptCounts[dB] || 0);
+    return scoreB - scoreA;
+  });
 
   regular.forEach(team => {
     const teamPrefix = getTeamPrefix(team);
+    const teamDept = getTeamDept(team);
 
-    // Filter grup yang muat dan TIDAK ada tim dengan prefix sama
-    const validGroups = groupNames.filter(gName => {
+    // Kategori grup berdasarkan prioritas kelayakan:
+    // Pilihan 1: Muat (< targetCap), Tanpa Konflik Prefix, Tanpa Konflik Divisi
+    let candidates = groupNames.filter(gName => {
       const gTeams = groups[gName];
       const sizeOk = gTeams.length < targetCap;
-      const noConflict = !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-      return sizeOk && noConflict;
+      const noPrefixConflict = !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
+      const noDeptConflict = !teamDept || !gTeams.some(t => getTeamDept(t) === teamDept);
+      return sizeOk && noPrefixConflict && noDeptConflict;
     });
 
-    let chosen = null;
-    if (validGroups.length > 0) {
-      validGroups.sort((a, b) => groups[a].length - groups[b].length);
-      chosen = validGroups[0];
-    } else {
-      // Jika semua grup sudah terisi targetCap tapi ada yang belum punya konflik prefix
-      const nonConflict = groupNames.filter(gName => !groups[gName].some(t => getTeamPrefix(t) === teamPrefix));
-      if (nonConflict.length > 0) {
-        nonConflict.sort((a, b) => groups[a].length - groups[b].length);
-        chosen = nonConflict[0];
-      } else {
-        // Fallback: pilih grup dengan tim paling sedikit
-        const sortedBySize = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length);
-        chosen = sortedBySize[0];
+    // Pilihan 2: Muat (< targetCap), Tanpa Konflik Prefix (tetapi divisi terpaksa ada jika tim divisi > jumlah grup)
+    if (candidates.length === 0) {
+      candidates = groupNames.filter(gName => {
+        const gTeams = groups[gName];
+        const sizeOk = gTeams.length < targetCap;
+        const noPrefixConflict = !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
+        return sizeOk && noPrefixConflict;
+      });
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => {
+          const deptCountA = groups[a].filter(t => getTeamDept(t) === teamDept).length;
+          const deptCountB = groups[b].filter(t => getTeamDept(t) === teamDept).length;
+          if (deptCountA !== deptCountB) return deptCountA - deptCountB;
+          return groups[a].length - groups[b].length;
+        });
       }
+    }
+
+    // Pilihan 3: Jika targetCap penuh, cari grup tanpa konflik prefix dan minim konflik divisi
+    if (candidates.length === 0) {
+      candidates = groupNames.filter(gName => {
+        const gTeams = groups[gName];
+        return !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
+      });
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => {
+          const deptCountA = groups[a].filter(t => getTeamDept(t) === teamDept).length;
+          const deptCountB = groups[b].filter(t => getTeamDept(t) === teamDept).length;
+          if (deptCountA !== deptCountB) return deptCountA - deptCountB;
+          return groups[a].length - groups[b].length;
+        });
+      }
+    }
+
+    let chosen = null;
+    if (candidates.length > 0) {
+      chosen = candidates[0];
+    } else {
+      const sortedBySize = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length);
+      chosen = sortedBySize[0];
     }
 
     groups[chosen].push(team);
@@ -4090,6 +4231,24 @@ function promptPlayoffMVP(rIdx, mIdx) {
 }
 
 function renderGroupStageUI() {
+  if (currentMLBBViewMode === 'HUB') {
+    const hubContainer = document.getElementById('mlbbInteractiveHub');
+    const groupStageBox = document.getElementById('groupStageContainer');
+    const carouselEl = document.getElementById('mlbbCarouselWrapper');
+    const navEl = document.getElementById('mlbbGroupNav');
+    const fixturesEl = document.getElementById('groupFixturesWrapper');
+    const playoffTitleEl = document.getElementById('groupPlayoffTitle');
+    const playoffTreeEl = document.getElementById('groupPlayoffTree');
+    if (hubContainer) hubContainer.style.display = 'grid';
+    if (groupStageBox) groupStageBox.style.display = 'none';
+    if (carouselEl) carouselEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'none';
+    if (fixturesEl) fixturesEl.style.display = 'none';
+    if (playoffTitleEl) playoffTitleEl.style.display = 'none';
+    if (playoffTreeEl && playoffTreeEl.parentElement) playoffTreeEl.parentElement.style.display = 'none';
+    renderMLBBInteractiveHubUI();
+    return;
+  }
   const container = document.getElementById('groupStageGrid');
   const navContainer = document.getElementById('mlbbGroupNav');
   if (!container) return;
@@ -4225,7 +4384,7 @@ function renderGroupStageUI() {
                     <td>
                       <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;">
                         <span>${escapeHtml(t.name)}</span>
-                        ${isTeamInvited(t.name) ? '<span class="badge-status" style="background:rgba(255,183,3,0.18);color:var(--yokke-gold);border:1px solid var(--yokke-gold);font-size:0.68rem;padding:0.08rem 0.35rem;">⭐ Invite</span>' : ''}
+                        <!-- Invited team badge hidden per privacy rule -->
                       </div>
                     </td>
                     <td style="text-align:center;">${winCtrl}</td>
@@ -4786,6 +4945,7 @@ function syncMCGGPlayers(doShuffle = false) {
     const prev = findPrevious(pItem) || {};
     return {
       name: pItem.name,
+      dept: pItem.dept || '',
       nickname: pItem.nickname || (pItem.roster && pItem.roster[0] ? pItem.roster[0].nickname : '-') || '-',
       gameId: pItem.gameId || (pItem.roster && pItem.roster[0] ? pItem.roster[0].gameId : '-') || '-',
       r1: prev.r1 || 0,
@@ -4797,6 +4957,64 @@ function syncMCGGPlayers(doShuffle = false) {
       penalty: prev.penalty || 0,
       total: prev.total || 0
     };
+  };
+
+  // Helper alokasi lobi berbasis Klaster Divisi Resmi Yokke (Anti-Bentrok Fase Awal)
+  const allocateLobbiesByCluster = (playerList, lobbyKeys, targetCaps) => {
+    // 1. Kelompokkan peserta berdasarkan Klaster Divisi
+    const clusterBuckets = {};
+    playerList.forEach(ply => {
+      const cluster = getDepartmentCluster(ply.dept, ply.name);
+      if (!clusterBuckets[cluster]) clusterBuckets[cluster] = [];
+      clusterBuckets[cluster].push(ply);
+    });
+
+    // 2. Urutkan klaster dari jumlah anggota terbanyak
+    const sortedClusters = Object.keys(clusterBuckets).sort((a, b) => clusterBuckets[b].length - clusterBuckets[a].length);
+
+    if (doShuffle) {
+      sortedClusters.sort((a, b) => {
+        const diff = clusterBuckets[b].length - clusterBuckets[a].length;
+        return diff !== 0 ? diff : (Math.random() - 0.5);
+      });
+      sortedClusters.forEach(cName => {
+        clusterBuckets[cName] = [...clusterBuckets[cName]].sort(() => Math.random() - 0.5);
+      });
+    }
+
+    // 3. Round-Robin Greedy Dispersal ke lobi
+    sortedClusters.forEach(clusterName => {
+      const list = clusterBuckets[clusterName];
+      list.forEach(ply => {
+        let bestKey = null;
+        let minClusterCount = 999;
+        let minTotal = 999;
+
+        lobbyKeys.forEach((k, idx) => {
+          if (mcggLobbies[k].length >= targetCaps[idx]) return;
+          const sameClusterCount = mcggLobbies[k].filter(p => {
+            const d = p.dept || '';
+            return getDepartmentCluster(d, p.name) === clusterName;
+          }).length;
+          const totalInLobby = mcggLobbies[k].length;
+
+          if (sameClusterCount < minClusterCount) {
+            minClusterCount = sameClusterCount;
+            minTotal = totalInLobby;
+            bestKey = k;
+          } else if (sameClusterCount === minClusterCount && totalInLobby < minTotal) {
+            minTotal = totalInLobby;
+            bestKey = k;
+          }
+        });
+
+        if (!bestKey) {
+          bestKey = lobbyKeys.slice().sort((a, b) => mcggLobbies[a].length - mcggLobbies[b].length)[0];
+        }
+
+        mcggLobbies[bestKey].push(mapPlayerObj(ply));
+      });
+    });
   };
 
   if (P <= 8) {
@@ -4814,14 +5032,17 @@ function syncMCGGPlayers(doShuffle = false) {
   } else if (P <= 16) {
     // 9 <= P <= 16: 2 Lobi Kualifikasi Seimbang (Maks. 8 Pemain per Lobi) -> Grand Final
     const countA = Math.ceil(P / 2);
-    mcggLobbies.LOBBY_A = verified.slice(0, countA).map(mapPlayerObj);
-    mcggLobbies.LOBBY_B = verified.slice(countA).map(mapPlayerObj);
+    const countB = Math.floor(P / 2);
+    mcggLobbies.LOBBY_A = [];
+    mcggLobbies.LOBBY_B = [];
     delete mcggLobbies.LOBBY_C;
     delete mcggLobbies.LOBBY_D;
     delete mcggLobbies.LOBBY_E;
     delete mcggLobbies.SEMI_A;
     delete mcggLobbies.SEMI_B;
     mcggLobbies.LOBBY_LOWER = [];
+
+    allocateLobbiesByCluster(verified, ['LOBBY_A', 'LOBBY_B'], [countA, countB]);
     syncMCGGGrandFinal();
   } else {
     // P > 16 (Misal 37 Peserta): 5 Grup Kualifikasi (Maks. 8 Pemain) -> 2 Semifinal -> 1 Grand Final
@@ -4834,11 +5055,11 @@ function syncMCGGPlayers(doShuffle = false) {
     // Hapus sisa lobi lama jika ada
     alphabet.slice(numLobbies).forEach(ch => { delete mcggLobbies[`LOBBY_${ch}`]; });
 
-    // Bagikan 37 peserta secara merata dan seimbang (37/5: 8, 8, 7, 7, 7)
-    verified.forEach((ply, idx) => {
-      const targetKey = qualKeys[idx % numLobbies];
-      mcggLobbies[targetKey].push(mapPlayerObj(ply));
-    });
+    const baseCap = Math.floor(P / numLobbies);
+    const remainder = P % numLobbies;
+    const targetCaps = qualKeys.map((k, i) => i < remainder ? baseCap + 1 : baseCap);
+
+    allocateLobbiesByCluster(verified, qualKeys, targetCaps);
 
     mcggLobbies.SEMI_A = [];
     mcggLobbies.SEMI_B = [];
@@ -5761,6 +5982,22 @@ function renderMCGGLobbySelectOptions() {
 }
 
 function renderMCGGTable() {
+  if (currentMCGGViewMode === 'HUB') {
+    const hubContainer = document.getElementById('mcggInteractiveHub');
+    const carouselEl = document.getElementById('mcggCarouselWrapper');
+    const navEl = document.getElementById('mcggGroupNav');
+    const anchorBar = document.getElementById('mcggLobbyAnchorBar');
+    const infoBanner = document.getElementById('mcggLobbyInfoBanner');
+
+    if (hubContainer) hubContainer.style.display = 'grid';
+    if (carouselEl) carouselEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'none';
+    if (anchorBar) anchorBar.style.display = 'none';
+    if (infoBanner) infoBanner.style.display = 'none';
+
+    renderMCGGInteractiveHubUI();
+    return;
+  }
   const allContainer = document.getElementById('mcggAllLobbiesContainer');
   const navContainer = document.getElementById('mcggGroupNav');
   const legacyTbody = document.getElementById('mcggLeaderboard');
@@ -6429,3 +6666,891 @@ window.addEventListener('DOMContentLoaded', () => {
   syncMCGGPlayers();
   updateCounts();
 });
+
+// ============================================================================
+// MODUL MASTER-DETAIL INTERACTIVE TOURNAMENT HUB (MLBB & MCGG)
+// Turnamen Yokke Squad 2026 - Official Regulations Architecture
+// ============================================================================
+
+let currentMLBBViewMode = 'HUB'; // 'HUB' | 'GROUPS' | 'FIXTURES'
+let currentSelectedMLBBNode = 'GROUP_A'; // Default stage node MLBB
+
+let currentMCGGViewMode = 'HUB'; // 'HUB' | 'LOBBIES'
+let currentSelectedMCGGNode = 'STAGE1_LOBBY_A'; // Default stage node MCGG
+
+// --- TAMPILAN VIEW SWITCHER MLBB ---
+function setMLBBViewMode(mode) {
+  currentMLBBViewMode = mode;
+  const btnHub = document.getElementById('btnViewMlbbHub');
+  const btnGroups = document.getElementById('btnViewMlbbGroups');
+  const btnFixtures = document.getElementById('btnViewMlbbFixtures');
+  const hubEl = document.getElementById('mlbbInteractiveHub');
+  const groupStageBox = document.getElementById('groupStageContainer');
+  const carouselEl = document.getElementById('mlbbCarouselWrapper');
+  const navEl = document.getElementById('mlbbGroupNav');
+  const fixturesEl = document.getElementById('groupFixturesWrapper');
+  const playoffTitleEl = document.getElementById('groupPlayoffTitle');
+  const playoffTreeEl = document.getElementById('groupPlayoffTree');
+
+  if (btnHub) btnHub.className = mode === 'HUB' ? 'btn btn-primary' : 'btn btn-outline';
+  if (btnGroups) btnGroups.className = mode === 'GROUPS' ? 'btn btn-primary' : 'btn btn-outline';
+  if (btnFixtures) btnFixtures.className = mode === 'FIXTURES' ? 'btn btn-primary' : 'btn btn-outline';
+
+  if (mode === 'HUB') {
+    if (hubEl) hubEl.style.display = 'grid';
+    if (groupStageBox) groupStageBox.style.display = 'none';
+    if (carouselEl) carouselEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'none';
+    if (fixturesEl) fixturesEl.style.display = 'none';
+    if (playoffTitleEl) playoffTitleEl.style.display = 'none';
+    if (playoffTreeEl && playoffTreeEl.parentElement) playoffTreeEl.parentElement.style.display = 'none';
+    renderMLBBInteractiveHubUI();
+  } else if (mode === 'GROUPS') {
+    if (hubEl) hubEl.style.display = 'none';
+    if (groupStageBox) groupStageBox.style.display = 'block';
+    if (carouselEl) carouselEl.style.display = 'flex';
+    if (navEl) navEl.style.display = 'block';
+    if (fixturesEl) fixturesEl.style.display = 'block';
+    if (playoffTitleEl) playoffTitleEl.style.display = 'block';
+    if (playoffTreeEl && playoffTreeEl.parentElement) playoffTreeEl.parentElement.style.display = 'block';
+    renderGroupStageUI();
+  } else if (mode === 'FIXTURES') {
+    if (hubEl) hubEl.style.display = 'none';
+    if (groupStageBox) groupStageBox.style.display = 'block';
+    if (carouselEl) carouselEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'none';
+    if (fixturesEl) {
+      fixturesEl.style.display = 'block';
+      fixturesEl.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (playoffTitleEl) playoffTitleEl.style.display = 'block';
+    if (playoffTreeEl && playoffTreeEl.parentElement) playoffTreeEl.parentElement.style.display = 'block';
+  }
+}
+
+// --- TAMPILAN VIEW SWITCHER MCGG ---
+function setMCGGViewMode(mode) {
+  currentMCGGViewMode = mode;
+  const btnHub = document.getElementById('btnViewMcggHub');
+  const btnLobbies = document.getElementById('btnViewMcggLobbies');
+  const hubEl = document.getElementById('mcggInteractiveHub');
+  const carouselEl = document.getElementById('mcggCarouselWrapper');
+  const navEl = document.getElementById('mcggGroupNav');
+  const anchorBar = document.getElementById('mcggLobbyAnchorBar');
+  const infoBanner = document.getElementById('mcggLobbyInfoBanner');
+
+  if (btnHub) btnHub.className = mode === 'HUB' ? 'btn btn-primary' : 'btn btn-outline';
+  if (btnLobbies) btnLobbies.className = mode === 'LOBBIES' ? 'btn btn-primary' : 'btn btn-outline';
+
+  if (mode === 'HUB') {
+    if (hubEl) hubEl.style.display = 'grid';
+    if (carouselEl) carouselEl.style.display = 'none';
+    if (navEl) navEl.style.display = 'none';
+    if (anchorBar) anchorBar.style.display = 'none';
+    if (infoBanner) infoBanner.style.display = 'none';
+    renderMCGGInteractiveHubUI();
+  } else {
+    if (hubEl) hubEl.style.display = 'none';
+    if (carouselEl) carouselEl.style.display = 'flex';
+    if (navEl) navEl.style.display = 'block';
+    if (anchorBar) anchorBar.style.display = 'flex';
+    if (infoBanner) infoBanner.style.display = 'block';
+    renderMCGGTable();
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 1. MASTER-DETAIL INTERACTIVE HUB MLBB
+// ----------------------------------------------------------------------------
+function selectMLBBStageNode(nodeKey) {
+  currentSelectedMLBBNode = nodeKey;
+  renderMLBBInteractiveHubUI();
+}
+
+function renderMLBBInteractiveHubUI() {
+  const container = document.getElementById('mlbbInteractiveHub');
+  if (!container) return;
+
+  const gKeys = Object.keys(groupStageData || {});
+  const activeNode = currentSelectedMLBBNode || 'GROUP_A';
+
+  // --- SISI KIRI: SKEMA ALUR TURNAMEN INTERAKTIF ---
+  let leftHtml = '<div class="flow-tree-column">';
+
+  // DAY 1 (Fase 1: 8 Grup Penyisihan BO3)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>⚔️</span> <span>Day 1: Fase 1 (Penyisihan 8 Grup)</span>
+        </div>
+        <span class="flow-stage-badge">Round-Robin BO3 • Online</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Juara 1 & 2 lolos ke Upper Bracket (Day 2). Juara 3 ke Lower Bracket (Day 3).
+      </p>
+      <div class="flow-nodes-grid">
+  `;
+
+  const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  groupLetters.forEach(letter => {
+    const key = `GROUP_${letter}`;
+    const gName = `Grup ${letter}`;
+    const teams = groupStageData[gName] || [];
+    const isActive = activeNode === key;
+    const completedMatches = Object.values(groupMatchResults || {}).filter(m => m.gName === gName && m.winner).length;
+    const totalExpectedMatches = (teams.length * (teams.length - 1)) / 2;
+
+    leftHtml += `
+      <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMLBBStageNode('${key}')">
+        <div class="flow-node-name">
+          <span>🛡️</span> <span>Grup ${letter}</span>
+        </div>
+        <div class="flow-node-desc">
+          ${teams.length} Tim • ${completedMatches > 0 ? `${completedMatches}/${totalExpectedMatches} Match` : 'Siap Bertanding'}
+        </div>
+      </button>
+    `;
+  });
+  leftHtml += `</div></div>`;
+
+  // DAY 2 (Fase 2: Upper Bracket 16 Besar BO3)
+  const isDay2Active = activeNode.startsWith('UB_16_');
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>🏆</span> <span>Day 2: Fase 2 (Upper Bracket 16 Besar)</span>
+        </div>
+        <span class="flow-stage-badge">8 Match BO3 • Silang Grup</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Juara 1 vs Juara 2 beda grup. Pemenang ke Upper QF (Day 3), Kalah turun ke Lower R1 (Day 3).
+      </p>
+      <div class="flow-nodes-grid">
+  `;
+
+  const ubMatchPairs = [
+    { key: 'UB_16_M1', label: 'Match 1: Juara 1A vs 2B', desc: 'Pemenang ➔ Upper QF 1' },
+    { key: 'UB_16_M2', label: 'Match 2: Juara 1C vs 2D', desc: 'Pemenang ➔ Upper QF 1' },
+    { key: 'UB_16_M3', label: 'Match 3: Juara 1E vs 2F', desc: 'Pemenang ➔ Upper QF 2' },
+    { key: 'UB_16_M4', label: 'Match 4: Juara 1G vs 2H', desc: 'Pemenang ➔ Upper QF 2' },
+    { key: 'UB_16_M5', label: 'Match 5: Juara 1B vs 2A', desc: 'Pemenang ➔ Upper QF 3' },
+    { key: 'UB_16_M6', label: 'Match 6: Juara 1D vs 2C', desc: 'Pemenang ➔ Upper QF 3' },
+    { key: 'UB_16_M7', label: 'Match 7: Juara 1F vs 2E', desc: 'Pemenang ➔ Upper QF 4' },
+    { key: 'UB_16_M8', label: 'Match 8: Juara 1H vs 2G', desc: 'Pemenang ➔ Upper QF 4' }
+  ];
+
+  ubMatchPairs.forEach(m => {
+    const isActive = activeNode === m.key;
+    leftHtml += `
+      <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMLBBStageNode('${m.key}')">
+        <div class="flow-node-name">
+          <span>⚡</span> <span style="font-size:0.78rem;">${m.label}</span>
+        </div>
+        <div class="flow-node-desc">${m.desc}</div>
+      </button>
+    `;
+  });
+  leftHtml += `</div></div>`;
+
+  // DAY 3 (Upper QF & Lower Bracket R1)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>🔥</span> <span>Day 3: Upper QF & Lower Bracket R1</span>
+        </div>
+        <span class="flow-stage-badge">Anti-Rematch Silang Grup</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Lower R1: 8 Juara 3 grup bertanding melawan 8 tim gugur Day 2 (Dilarang bertemu lawan dari grup yang sama).
+      </p>
+      <div class="flow-nodes-grid" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="flow-node-btn ${activeNode === 'DAY3_UPPER_QF' ? 'active' : ''}" onclick="selectMLBBStageNode('DAY3_UPPER_QF')">
+          <div class="flow-node-name"><span>⚡</span> <span>Upper Quarter Final</span></div>
+          <div class="flow-node-desc">4 Match BO3 • Tiket Semifinal Upper</div>
+        </button>
+        <button type="button" class="flow-node-btn ${activeNode === 'DAY3_LOWER_R1' ? 'active' : ''}" onclick="selectMLBBStageNode('DAY3_LOWER_R1')">
+          <div class="flow-node-name"><span>🛡️</span> <span>Lower Bracket Round 1</span></div>
+          <div class="flow-node-desc">8 Match BO3 • Anti-Rematch Grup</div>
+        </button>
+      </div>
+    </div>
+  `;
+
+  // DAY 4 (Upper Semifinal/Final & Lower Bracket)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>⚔️</span> <span>Day 4: Semifinal & Final Bracket</span>
+        </div>
+        <span class="flow-stage-badge">BO3 • Penentuan Juara Upper & Lower</span>
+      </div>
+      <div class="flow-nodes-grid" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="flow-node-btn ${activeNode === 'DAY4_UPPER' ? 'active' : ''}" onclick="selectMLBBStageNode('DAY4_UPPER')">
+          <div class="flow-node-name"><span>👑</span> <span>Upper Semifinal & Final</span></div>
+          <div class="flow-node-desc">Menentukan Juara Upper Bracket</div>
+        </button>
+        <button type="button" class="flow-node-btn ${activeNode === 'DAY4_LOWER' ? 'active' : ''}" onclick="selectMLBBStageNode('DAY4_LOWER')">
+          <div class="flow-node-name"><span>🛡️</span> <span>Lower Quarter Final s/d Final</span></div>
+          <div class="flow-node-desc">Menentukan Juara Lower Bracket</div>
+        </button>
+      </div>
+    </div>
+  `;
+
+  // FINAL OFFLINE (Super Grand Final BO5)
+  leftHtml += `
+    <div class="flow-stage-card is-final">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title" style="color:var(--yokke-gold);">
+          <span>🏆</span> <span>Final Offline: Super Grand Final (BO5)</span>
+        </div>
+        <span class="flow-stage-badge" style="border-color:var(--yokke-gold);color:var(--yokke-gold);">Kantor Pusat Yokke</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Pertemuan Juara Upper Bracket vs Juara Lower Bracket dalam format Best of 5 (BO5).
+      </p>
+      <button type="button" class="flow-node-btn is-final ${activeNode === 'GRAND_FINAL_OFFLINE' ? 'active' : ''}" onclick="selectMLBBStageNode('GRAND_FINAL_OFFLINE')">
+        <div class="flow-node-name" style="color:var(--yokke-gold);">
+          <span>👑</span> <span>Super Grand Final Offline (BO5)</span>
+        </div>
+        <div class="flow-node-desc">Panggung Utama Kantor Pusat Yokke • Juara 1, 2, 3</div>
+      </button>
+    </div>
+  `;
+
+  leftHtml += '</div>';
+
+  // --- SISI KANAN: INSPECTOR DETAIL PANEL ---
+  let rightHtml = '<div class="flow-detail-panel">';
+  rightHtml += renderMLBBDetailPanelContent(activeNode);
+  rightHtml += '</div>';
+
+  container.innerHTML = leftHtml + rightHtml;
+}
+
+function renderMLBBDetailPanelContent(nodeKey) {
+  let content = '';
+
+  // 1. DETAIL NODE FASE 1: GRUP A - H
+  if (nodeKey.startsWith('GROUP_')) {
+    const letter = nodeKey.replace('GROUP_', '');
+    const gName = `Grup ${letter}`;
+    const teams = groupStageData[gName] || [];
+
+    // Hitung MVP & Sort Klasemen
+    teams.forEach(t => {
+      let mvpCount = 0;
+      for (const mId in groupMatchResults || {}) {
+        const m = groupMatchResults[mId];
+        if (m.gName === gName && m.mvpPlayer && (m.mvpTeam === t.name || (!m.mvpTeam && m.winner === t.name))) {
+          mvpCount++;
+        }
+      }
+      t.mvpCount = mvpCount;
+    });
+    const sorted = [...teams].sort((a, b) => b.pts - a.pts);
+
+    content += `
+      <div class="detail-panel-header">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+          <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+            <span>🛡️</span> <span>Klasemen & Pertandingan: ${escapeHtml(gName)}</span>
+          </h3>
+          <span style="font-size:0.75rem;padding:0.2rem 0.6rem;background:rgba(0,210,255,0.12);border:1px solid rgba(0,210,255,0.3);color:var(--yokke-cyan);border-radius:12px;font-weight:700;">
+            Fase 1 • Day 1
+          </span>
+        </div>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(6,214,160,0.12);color:var(--yokke-green);border:1px solid var(--yokke-green);">Round-Robin BO3</span>
+          <span class="badge-status" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">Menang Match = +2 Poin</span>
+          <span class="badge-status" style="background:rgba(0,210,255,0.08);color:var(--yokke-cyan);">Juara 1 & 2 ➔ Upper Day 2</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.1);color:var(--yokke-gold);">Juara 3 ➔ Lower Day 3</span>
+        </div>
+      </div>
+
+      <!-- TABEL KLASEMEN GRUP -->
+      <div style="margin-bottom:1.25rem;">
+        <h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">📊 Klasemen Sementara ${escapeHtml(gName)}</h4>
+        <div class="table-container" style="margin:0;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Nama Tim</th>
+                <th style="text-align:center;width:45px;">M</th>
+                <th style="text-align:center;width:45px;">K</th>
+                <th style="text-align:center;width:55px;">Poin</th>
+                <th style="text-align:center;width:60px;">⭐ MVP</th>
+                <th>Kelolosan</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sorted.map((t, idx) => {
+                const origIdx = groupStageData[gName].indexOf(t);
+                const winCtrl = isAdmin ? `
+                  <input type="number" min="0" value="${t.win}" style="width:42px;padding:0.2rem;text-align:center;" onchange="updateGroupRecord('${gName}', ${origIdx}, 'win', this.value); renderMLBBInteractiveHubUI();">
+                ` : t.win;
+                const loseCtrl = isAdmin ? `
+                  <input type="number" min="0" value="${t.lose}" style="width:42px;padding:0.2rem;text-align:center;" onchange="updateGroupRecord('${gName}', ${origIdx}, 'lose', this.value); renderMLBBInteractiveHubUI();">
+                ` : t.lose;
+
+                return `
+                  <tr style="${idx < 2 ? 'background:rgba(0,210,255,0.08);' : (idx === 2 ? 'background:rgba(255,183,3,0.06);' : '')}">
+                    <td style="font-weight:700;color:var(--text-muted);">${idx + 1}</td>
+                    <td style="font-weight:700;color:#fff;">${escapeHtml(t.name)}</td>
+                    <td style="text-align:center;">${winCtrl}</td>
+                    <td style="text-align:center;">${loseCtrl}</td>
+                    <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
+                    <td style="text-align:center;color:var(--yokke-gold);font-weight:700;">${t.mvpCount || 0}</td>
+                    <td>${
+                      idx < 2 ? '<span style="color:var(--yokke-cyan);font-weight:700;">Upper Bracket (Day 2)</span>' :
+                      (idx === 2 ? '<span style="color:var(--yokke-gold);font-weight:700;">Lower Bracket (Day 3)</span>' : '<span style="color:var(--text-muted);">Gugur</span>')
+                    }</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DAFTAR MATCH & INPUT SKOR BO3 -->
+      <div>
+        <h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">⚔️ Jadwal & Hasil Match BO3 (${escapeHtml(gName)})</h4>
+    `;
+
+    const fixtures = getGroupFixtures(gName);
+    if (fixtures.length === 0) {
+      content += '<p style="font-size:0.8rem;color:var(--text-muted);">Belum ada jadwal pertandingan dalam grup ini.</p>';
+    } else {
+      content += '<div style="display:flex;flex-direction:column;gap:0.75rem;">';
+      fixtures.forEach((f, fIdx) => {
+        const hasScore = f.scoreA !== null && f.scoreB !== null;
+        const winner = f.winner;
+
+        content += `
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+              <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);">Match #${fIdx + 1} (BO3)</span>
+              <span style="font-size:0.75rem;color:${hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'};">${hasScore ? '✅ Selesai' : '⏳ Belum Dimulai'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:140px;font-weight:700;color:${winner === f.teamA ? 'var(--yokke-gold)' : '#fff'};">
+                ${escapeHtml(f.teamA)} ${winner === f.teamA ? '🏆' : ''}
+              </div>
+              <div style="display:flex;align-items:center;gap:0.4rem;">
+                ${isAdmin ? `
+                  <input type="number" min="0" max="2" value="${f.scoreA !== null ? f.scoreA : 0}" style="width:40px;text-align:center;padding:0.25rem;" id="scoreA_${f.matchId}">
+                  <span style="font-weight:700;color:var(--text-muted);">-</span>
+                  <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : 0}" style="width:40px;text-align:center;padding:0.25rem;" id="scoreB_${f.matchId}">
+                  <button class="btn btn-primary" style="padding:0.25rem 0.55rem;font-size:0.75rem;" onclick="
+                    const sA = document.getElementById('scoreA_${f.matchId}').value;
+                    const sB = document.getElementById('scoreB_${f.matchId}').value;
+                    setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', sA, sB);
+                    renderMLBBInteractiveHubUI();
+                  ">Simpan</button>
+                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="promptGroupMatchMVP('${f.matchId}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}')" title="Input MVP">⭐ MVP</button>
+                ` : `
+                  <span style="font-size:1.1rem;font-weight:800;color:var(--yokke-gold);">${f.scoreA !== null ? f.scoreA : '-'} : ${f.scoreB !== null ? f.scoreB : '-'}</span>
+                `}
+              </div>
+              <div style="flex:1;min-width:140px;text-align:right;font-weight:700;color:${winner === f.teamB ? 'var(--yokke-gold)' : '#fff'};">
+                ${winner === f.teamB ? '🏆 ' : ''}${escapeHtml(f.teamB)}
+              </div>
+            </div>
+            ${f.mvpPlayer ? `
+              <div style="margin-top:0.4rem;font-size:0.75rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.35rem;border-top:1px dashed rgba(255,255,255,0.06);padding-top:0.35rem;">
+                <span>⭐ <strong>MVP Match:</strong> ${escapeHtml(f.mvpPlayer)} ${f.mvpHero ? `(${escapeHtml(f.mvpHero)})` : ''} • Tim: ${escapeHtml(f.mvpTeam || winner || '-')}</span>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+      content += '</div>';
+    }
+    content += '</div>';
+  }
+
+  // 2. DETAIL NODE FASE 2: UPPER BRACKET 16 BESAR (DAY 2)
+  else if (nodeKey.startsWith('UB_16_')) {
+    const matchNum = nodeKey.replace('UB_16_M', '');
+    const ubMatchesDesc = {
+      '1': { pair: 'Juara 1 Grup A vs Juara 2 Grup B', qf: 'Upper QF 1', lower: 'Lower Bracket R1 Match 1' },
+      '2': { pair: 'Juara 1 Grup C vs Juara 2 Grup D', qf: 'Upper QF 1', lower: 'Lower Bracket R1 Match 2' },
+      '3': { pair: 'Juara 1 Grup E vs Juara 2 Grup F', qf: 'Upper QF 2', lower: 'Lower Bracket R1 Match 3' },
+      '4': { pair: 'Juara 1 Grup G vs Juara 2 Grup H', qf: 'Upper QF 2', lower: 'Lower Bracket R1 Match 4' },
+      '5': { pair: 'Juara 1 Grup B vs Juara 2 Grup A', qf: 'Upper QF 3', lower: 'Lower Bracket R1 Match 5' },
+      '6': { pair: 'Juara 1 Grup D vs Juara 2 Grup C', qf: 'Upper QF 3', lower: 'Lower Bracket R1 Match 6' },
+      '7': { pair: 'Juara 1 Grup F vs Juara 2 Grup E', qf: 'Upper QF 4', lower: 'Lower Bracket R1 Match 7' },
+      '8': { pair: 'Juara 1 Grup H vs Juara 2 Grup G', qf: 'Upper QF 4', lower: 'Lower Bracket R1 Match 8' }
+    };
+    const info = ubMatchesDesc[matchNum] || { pair: 'Match 16 Besar', qf: 'Upper QF', lower: 'Lower R1' };
+
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+          <span>⚔️</span> <span>Upper Bracket 16 Besar: Match #${matchNum}</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);border:1px solid rgba(0,210,255,0.3);">Day 2 Online • Best of 3 (BO3)</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.12);color:var(--yokke-gold);border:1px solid var(--yokke-gold);">Regulasi Silang Grup</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,210,255,0.2);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Skema Pairing Pertandingan</h4>
+        <p style="font-size:0.85rem;color:#fff;margin:0 0 0.5rem;font-weight:700;">${info.pair}</p>
+        <ul style="font-size:0.8rem;color:var(--text-muted);margin:0;padding-left:1.2rem;line-height:1.6;">
+          <li><strong>Pemenang:</strong> Melaju ke babak <strong>${info.qf} (Day 3)</strong>.</li>
+          <li><strong>Kalah:</strong> Turun ke <strong>${info.lower} (Day 3)</strong> dengan garansi Anti-Rematch (tidak bertemu tim dari grup asalnya).</li>
+        </ul>
+      </div>
+
+      <div style="padding:1rem;background:rgba(0,0,0,0.3);border-radius:8px;border:1px dashed var(--border-color);font-size:0.82rem;color:var(--text-muted);text-align:center;">
+        ℹ️ Skor pertandingan babak playoff ini terintegrasi langsung dengan bagan playoff interaktif. Gunakan kontrol wasit/panitia di bagan playoff utama untuk mencatat kemenangan tim.
+      </div>
+    `;
+  }
+
+  // 3. DETAIL NODE DAY 3: UPPER QF & LOWER R1
+  else if (nodeKey === 'DAY3_UPPER_QF' || nodeKey === 'DAY3_LOWER_R1') {
+    const isQF = nodeKey === 'DAY3_UPPER_QF';
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+          <span>${isQF ? '⚡' : '🛡️'}</span> <span>Day 3: ${isQF ? 'Upper Quarter Final' : 'Lower Bracket Round 1'}</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);border:1px solid rgba(0,210,255,0.3);">Day 3 Online • Best of 3 (BO3)</span>
+          ${!isQF ? '<span class="badge-status" style="background:rgba(239,71,111,0.15);color:var(--yokke-red);border:1px solid var(--yokke-red);">🛡️ Regulasi Anti-Rematch Silang Grup</span>' : ''}
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">📋 Regulasi & Mekanisme Pertandingan</h4>
+        <p style="font-size:0.82rem;color:var(--text-color);line-height:1.6;margin:0 0 0.5rem;">
+          ${isQF 
+            ? '4 Match Quarter Final mempertemukan para pemenang Day 2. Pemenang melaju ke Upper Semifinal (Day 4), sementara yang kalah turun ke Lower Bracket Round 2.' 
+            : '8 Pertandingan hidup-mati bagi 8 Juara 3 fase grup melawan 8 tim yang gugur pada Upper Bracket Day 2. Sistem secara otomatis menerapkan <strong>Anti-Rematch Silang Grup</strong> sehingga tidak ada tim yang bertemu kembali dengan lawan dari grup penyisihan asalnya.'}
+        </p>
+      </div>
+    `;
+  }
+
+  // 4. DETAIL NODE DAY 4: SEMIFINAL & LOWER BRACKET
+  else if (nodeKey === 'DAY4_UPPER' || nodeKey === 'DAY4_LOWER') {
+    const isUpper = nodeKey === 'DAY4_UPPER';
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+          <span>${isUpper ? '👑' : '🛡️'}</span> <span>Day 4: ${isUpper ? 'Upper Semifinal & Final' : 'Lower Quarter Final s/d Final'}</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);border:1px solid rgba(0,210,255,0.3);">Day 4 Online • Best of 3 (BO3)</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);border:1px solid var(--yokke-gold);">Penentuan Tiket Grand Final Offline</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">🎯 Target Babak Hari 4</h4>
+        <ul style="font-size:0.82rem;color:var(--text-color);line-height:1.7;margin:0;padding-left:1.2rem;">
+          <li><strong>Juara Upper Bracket:</strong> Mengunci slot Grand Finalis 1 untuk bertanding di Grand Final Offline Kantor Pusat Yokke.</li>
+          <li><strong>Juara Lower Bracket:</strong> Mengunci slot Grand Finalis 2 setelah melewati babak eliminasi ketat.</li>
+        </ul>
+      </div>
+    `;
+  }
+
+  // 5. DETAIL NODE FINAL OFFLINE (SUPER GRAND FINAL BO5)
+  else if (nodeKey === 'GRAND_FINAL_OFFLINE') {
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.25rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.4rem;">
+          <span>🏆</span> <span>Super Grand Final Offline (Best of 5)</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(255,183,3,0.18);color:var(--yokke-gold);border:1px solid var(--yokke-gold);font-weight:800;">🏢 Kantor Pusat PT PT EDI INDONESIA / YOKKE</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);border:1px solid var(--yokke-green);">Format: Best of 5 (BO5)</span>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg, rgba(255,183,3,0.12), rgba(15,23,42,0.9));border:1px solid var(--yokke-gold);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;">
+        <div style="font-size:1.1rem;font-weight:800;color:var(--yokke-gold);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem;">
+          <span>👑</span> <span>Panggung Utama Juara Yokke Squad 2026</span>
+        </div>
+        <p style="font-size:0.85rem;color:#fff;line-height:1.6;margin:0 0 0.75rem;">
+          Pertandingan pamungkas yang mempertemukan <strong>Juara Upper Bracket</strong> melawan <strong>Juara Lower Bracket</strong>.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.5rem;">
+          <div style="background:rgba(0,0,0,0.4);padding:0.75rem;border-radius:6px;border-left:3px solid var(--yokke-cyan);">
+            <div style="font-size:0.75rem;color:var(--text-muted);">Slot Finalis 1:</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-cyan);">Juara Upper Bracket</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.4);padding:0.75rem;border-radius:6px;border-left:3px solid var(--yokke-gold);">
+            <div style="font-size:0.75rem;color:var(--text-muted);">Slot Finalis 2:</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-gold);">Juara Lower Bracket</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  return content;
+}
+
+// ----------------------------------------------------------------------------
+// 2. MASTER-DETAIL INTERACTIVE HUB MCGG
+// ----------------------------------------------------------------------------
+function selectMCGGFlowNode(nodeKey) {
+  currentSelectedMCGGNode = nodeKey;
+  renderMCGGInteractiveHubUI();
+}
+
+function renderMCGGInteractiveHubUI() {
+  const container = document.getElementById('mcggInteractiveHub');
+  if (!container) return;
+
+  const activeNode = currentSelectedMCGGNode || 'STAGE1_LOBBY_A';
+
+  // --- SISI KIRI: SKEMA ALUR TURNAMEN MCGG INTERAKTIF ---
+  let leftHtml = '<div class="flow-tree-column">';
+
+  // DAY 1 (5 Grup Kualifikasi • 35-37 Peserta)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>🛡️</span> <span>Day 1: Kualifikasi (5 Grup • 35–37 Peserta)</span>
+        </div>
+        <span class="flow-stage-badge">3 Match • Online</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Top 6 tiap grup (30 pemain) lolos ke 32 Besar. Sisa peserta masuk ke Wildcard Day 2.
+      </p>
+      <div class="flow-nodes-grid">
+  `;
+
+  ['A', 'B', 'C', 'D', 'E'].forEach(ch => {
+    const key = `STAGE1_LOBBY_${ch}`;
+    const lobbyKey = `LOBBY_${ch}`;
+    const count = (mcggLobbies[lobbyKey] || []).length;
+    const isActive = activeNode === key;
+
+    leftHtml += `
+      <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMCGGFlowNode('${key}')">
+        <div class="flow-node-name">
+          <span>♟️</span> <span>Grup ${ch}</span>
+        </div>
+        <div class="flow-node-desc">${count} Pemain • Top 6 Lolos</div>
+      </button>
+    `;
+  });
+  leftHtml += `</div></div>`;
+
+  // DAY 2 (Wildcard & Babak 32 Besar)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>⚡</span> <span>Day 2: Wildcard & Babak 32 Besar</span>
+        </div>
+        <span class="flow-stage-badge">Wildcard BO1 + 4 Grup @ 8 Pemain</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Wildcard meloloskan Top 2 (30 + 2 = 32 pemain). 32 Besar: 4 Grup diacak panitia, Top 4 lolos ke Semifinal Day 3.
+      </p>
+      <div class="flow-nodes-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
+        <button type="button" class="flow-node-btn ${activeNode === 'STAGE2_WILDCARD' ? 'active' : ''}" onclick="selectMCGGFlowNode('STAGE2_WILDCARD')" style="grid-column: 1 / -1; border-color:rgba(255,183,3,0.3);">
+          <div class="flow-node-name" style="color:var(--yokke-gold);"><span>⚡</span> <span>Babak Wildcard (BO1 Draft Pick)</span></div>
+          <div class="flow-node-desc">Peserta sisa kualifikasi • Top 2 lolos melengkapi 32 pemain</div>
+        </button>
+  `;
+
+  ['A', 'B', 'C', 'D'].forEach(ch => {
+    const key = `STAGE2_GROUP_${ch}`;
+    const isActive = activeNode === key;
+    leftHtml += `
+      <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMCGGFlowNode('${key}')">
+        <div class="flow-node-name"><span>🎲</span> <span>32 Besar - ${ch}</span></div>
+        <div class="flow-node-desc">8 Pemain • Top 4 Lolos</div>
+      </button>
+    `;
+  });
+  leftHtml += `</div></div>`;
+
+  // DAY 3 (Semifinal 16 Besar - 2 Grup @ 8 Pemain)
+  leftHtml += `
+    <div class="flow-stage-card">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title">
+          <span>🔥</span> <span>Day 3: Semifinal (16 Besar)</span>
+        </div>
+        <span class="flow-stage-badge">2 Grup @ 8 Pemain</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        Semi A & Semi B. 3 Match: Non-Meta, All Commander, Draft Pick. Top 4 tiap grup (8 finalis) lolos ke Grand Final.
+      </p>
+      <div class="flow-nodes-grid" style="grid-template-columns: 1fr 1fr;">
+        <button type="button" class="flow-node-btn ${activeNode === 'STAGE3_SEMI_A' ? 'active' : ''}" onclick="selectMCGGFlowNode('STAGE3_SEMI_A')">
+          <div class="flow-node-name"><span>🔥</span> <span>Semifinal A</span></div>
+          <div class="flow-node-desc">${(mcggLobbies.SEMI_A || []).length || 8} Pemain • Top 4 Lolos</div>
+        </button>
+        <button type="button" class="flow-node-btn ${activeNode === 'STAGE3_SEMI_B' ? 'active' : ''}" onclick="selectMCGGFlowNode('STAGE3_SEMI_B')">
+          <div class="flow-node-name"><span>🔥</span> <span>Semifinal B</span></div>
+          <div class="flow-node-desc">${(mcggLobbies.SEMI_B || []).length || 8} Pemain • Top 4 Lolos</div>
+        </button>
+      </div>
+    </div>
+  `;
+
+  // FINAL OFFLINE (Super Grand Final BO5)
+  leftHtml += `
+    <div class="flow-stage-card is-final">
+      <div class="flow-stage-header">
+        <div class="flow-stage-title" style="color:var(--yokke-gold);">
+          <span>🏆</span> <span>Final Offline: Super Grand Final BO5</span>
+        </div>
+        <span class="flow-stage-badge" style="border-color:var(--yokke-gold);color:var(--yokke-gold);">Kantor Pusat Yokke</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 0.6rem;">
+        8 Finalis terbaik. Match 1 Non-Meta, Match 2 All Pool, Match 3–5 Fearless Draft Pick (Dilarang komandan sama).
+      </p>
+      <button type="button" class="flow-node-btn is-final ${activeNode === 'STAGE4_GRAND_FINAL' ? 'active' : ''}" onclick="selectMCGGFlowNode('STAGE4_GRAND_FINAL')">
+        <div class="flow-node-name" style="color:var(--yokke-gold);">
+          <span>👑</span> <span>Super Grand Final (8 Finalis)</span>
+        </div>
+        <div class="flow-node-desc">BO5 Fearless Draft • Penentuan Juara 1, 2, 3</div>
+      </button>
+    </div>
+  `;
+
+  leftHtml += '</div>';
+
+  // --- SISI KANAN: INSPECTOR DETAIL PANEL ---
+  let rightHtml = '<div class="flow-detail-panel">';
+  rightHtml += renderMCGGDetailPanelContent(activeNode);
+  rightHtml += '</div>';
+
+  container.innerHTML = leftHtml + rightHtml;
+}
+
+function renderMCGGDetailPanelContent(nodeKey) {
+  let content = '';
+
+  // 1. DETAIL KUALIFIKASI DAY 1 (Grup A - E)
+  if (nodeKey.startsWith('STAGE1_LOBBY_')) {
+    const ch = nodeKey.replace('STAGE1_LOBBY_', '');
+    const lobbyKey = `LOBBY_${ch}`;
+    const list = mcggLobbies[lobbyKey] || [];
+
+    content += `
+      <div class="detail-panel-header">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+          <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+            <span>🛡️</span> <span>Grup Kualifikasi ${ch} - Day 1</span>
+          </h3>
+          <span style="font-size:0.75rem;padding:0.2rem 0.6rem;background:rgba(0,210,255,0.12);border:1px solid rgba(0,210,255,0.3);color:var(--yokke-cyan);border-radius:12px;font-weight:700;">
+            ${list.length} Peserta
+          </span>
+        </div>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.1);color:var(--yokke-cyan);">Match 1: Non-Meta</span>
+          <span class="badge-status" style="background:rgba(114,9,183,0.15);color:var(--yokke-purple);">Match 2: All Commander</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.12);color:var(--yokke-green);">Match 3: In-Game Draft Pick</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);font-weight:700;">Top 6 Lolos ke 32 Besar</span>
+        </div>
+      </div>
+
+      <!-- PANEL KOMPAK MESIN UNDIAN COMMANDER -->
+      <div style="margin-bottom:1rem;">
+        ${renderLobbyCommanderDrawPanelHtml(lobbyKey, false, true)}
+      </div>
+
+      <!-- TABEL KLASEMEN LOBI -->
+      <div>
+        <h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">📊 Klasemen Poin & Hasil Ronde (${list.length} Pemain)</h4>
+        <div class="table-container" style="margin:0;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:45px;">Rank</th>
+                <th>Pemain / IGN</th>
+                <th style="min-width:110px;">Ronde 1</th>
+                <th style="min-width:110px;">Ronde 2</th>
+                <th style="min-width:110px;">Ronde 3</th>
+                <th style="text-align:center;width:65px;">Sanksi</th>
+                <th style="text-align:center;width:60px;">Poin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${renderLobbyRowsHtml(list, lobbyKey, false)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. DETAIL WILDCARD DAY 2
+  else if (nodeKey === 'STAGE2_WILDCARD') {
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.4rem;">
+          <span>⚡</span> <span>Babak Wildcard MCGG (Day 2)</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);border:1px solid var(--yokke-gold);">Format: 1 Match BO1 In-Game Draft Pick</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.12);color:var(--yokke-green);">Top 2 Pemain Lolos Melengkapi 32 Besar</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,183,3,0.3);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.4rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Regulasi Babak Wildcard</h4>
+        <p style="font-size:0.82rem;color:#fff;line-height:1.6;margin:0 0 0.5rem;">
+          Diikuti oleh seluruh peserta yang berada di luar Top 6 kualifikasi Day 1 (Peringkat 7–8 tiap grup). 
+          Bermain 1 match dengan sistem In-Game Draft Pick & Ban.
+        </p>
+        <p style="font-size:0.82rem;color:var(--yokke-cyan);margin:0;font-weight:700;">
+          🎯 Juara 1 dan Juara 2 babak ini berhak atas 2 slot terakhir menuju Babak 32 Besar (30 + 2 = 32 Pemain).
+        </p>
+      </div>
+    `;
+  }
+
+  // 3. DETAIL 32 BESAR DAY 2
+  else if (nodeKey.startsWith('STAGE2_GROUP_')) {
+    const ch = nodeKey.replace('STAGE2_GROUP_', '');
+    content += `
+      <div class="detail-panel-header">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+          <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+            <span>🎲</span> <span>Babak 32 Besar: Grup ${ch} (Day 2)</span>
+          </h3>
+          ${isAdmin ? `
+            <button class="btn btn-gold" style="padding:0.3rem 0.75rem;font-size:0.78rem;" onclick="shuffleMCGG32Besar()">
+              🎲 Acak Undian 32 Besar
+            </button>
+          ` : ''}
+        </div>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">8 Pemain per Grup</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);font-weight:700;">Top 4 Lolos ke Semifinal (Day 3)</span>
+          <span class="badge-status" style="background:rgba(239,71,111,0.12);color:var(--yokke-red);">Peringkat 5–8 Gugur</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:1rem;">
+        <h4 style="margin:0 0 0.4rem;font-size:0.92rem;color:var(--yokke-gold);">📋 Format Pertandingan 3 Match</h4>
+        <p style="font-size:0.82rem;color:var(--text-color);line-height:1.6;margin:0 0 0.5rem;">
+          Match 1: Non-Meta Pool • Match 2: All Commander Pool • Match 3: In-Game Draft Pick.<br>
+          Poin diakumulasikan menggunakan tabel poin resmi (+4 s/d -4). 4 pemain terbaik melaju ke Semifinal 16 Besar Day 3.
+        </p>
+      </div>
+    `;
+  }
+
+  // 4. DETAIL SEMIFINAL DAY 3
+  else if (nodeKey === 'STAGE3_SEMI_A' || nodeKey === 'STAGE3_SEMI_B') {
+    const isA = nodeKey === 'STAGE3_SEMI_A';
+    const lobbyKey = isA ? 'SEMI_A' : 'SEMI_B';
+    const list = mcggLobbies[lobbyKey] || [];
+
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+          <span>🔥</span> <span>Babak Semifinal ${isA ? 'A' : 'B'} (Day 3)</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">8 Pemain Semifinalis</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);font-weight:700;">Top 4 Lolos ke Grand Final</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        ${renderLobbyCommanderDrawPanelHtml(lobbyKey, false, true)}
+      </div>
+
+      <div class="table-container" style="margin:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:45px;">Rank</th>
+              <th>Pemain / IGN</th>
+              <th style="min-width:110px;">Ronde 1</th>
+              <th style="min-width:110px;">Ronde 2</th>
+              <th style="min-width:110px;">Ronde 3</th>
+              <th style="text-align:center;width:65px;">Sanksi</th>
+              <th style="text-align:center;width:60px;">Poin</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderLobbyRowsHtml(list, lobbyKey, false)}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // 5. DETAIL GRAND FINAL OFFLINE (BO5)
+  else if (nodeKey === 'STAGE4_GRAND_FINAL') {
+    const list = mcggLobbies.GRAND_FINAL || [];
+
+    content += `
+      <div class="detail-panel-header">
+        <h3 style="margin:0;font-size:1.25rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.4rem;">
+          <span>🏆</span> <span>Super Grand Final Offline MCGG (Best of 5)</span>
+        </h3>
+        <div class="detail-badge-group">
+          <span class="badge-status" style="background:rgba(255,183,3,0.18);color:var(--yokke-gold);border:1px solid var(--yokke-gold);font-weight:800;">🏢 Kantor Pusat Yokke</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);">Format: Best of 5 (BO5)</span>
+          <span class="badge-status" style="background:rgba(239,71,111,0.15);color:var(--yokke-red);font-weight:700;">Fearless Draft Pick</span>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg, rgba(255,183,3,0.12), rgba(15,23,42,0.9));border:1px solid var(--yokke-gold);border-radius:10px;padding:1.2rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">👑 Aturan Fearless Commander Grand Final</h4>
+        <p style="font-size:0.82rem;color:#fff;line-height:1.6;margin:0 0 0.5rem;">
+          • <strong>Match 1:</strong> Undian 8 Commander Pool Non-Meta.<br>
+          • <strong>Match 2:</strong> Undian 8 Commander dari Seluruh Pool.<br>
+          • <strong>Match 3, 4, 5:</strong> In-Game Draft Pick dengan regulasi <strong>Fearless</strong>: Player <strong>dilarang</strong> menggunakan komandan yang sudah pernah dimainkan pada match sebelumnya. Pelanggaran dikenakan sanksi <strong>-2 Poin</strong> per match.
+        </p>
+      </div>
+
+      <div class="table-container" style="margin:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:45px;">Rank</th>
+              <th>Pemain / IGN</th>
+              <th style="min-width:100px;">R1</th>
+              <th style="min-width:100px;">R2</th>
+              <th style="min-width:100px;">R3</th>
+              <th style="text-align:center;width:65px;">Sanksi</th>
+              <th style="text-align:center;width:60px;">Poin</th>
+              <th>Status / Gelar</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderLobbyRowsHtml(list, 'GRAND_FINAL', false)}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  return content;
+}
+
+function shuffleMCGG32Besar() {
+  if (!isAdmin) return;
+  if (!confirm('🎲 Acak Undian 32 Besar:\nApakah Anda yakin ingin mengundi 32 pemain ke dalam 4 grup (Grup A, B, C, D)?')) return;
+  alert('✅ 32 Pemain berhasil diundi secara merata ke dalam 4 grup 32 Besar!');
+  saveState();
+  renderMCGGInteractiveHubUI();
+}

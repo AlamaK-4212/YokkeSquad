@@ -387,16 +387,22 @@ function getMlbbTimListing(ss) {
     var folderUrl = "";
     var status = "PENDING";
     var notes = "";
+    var isInvited = false;
+    var SEEDED_TEAMS = ["wingskanan esport 1", "atmo", "native", "gado-gado", "gado gado esports", "appa linux", "aang alpha", "anti klimax", "anti climax"];
 
     if (isNormalized) {
-      // MLBB - Tim: Col A: Timestamp, B: Nama Tim, C: Divisi Yokke, D: WhatsApp, E: Folder Drive, F: Status, G: Catatan
+      // MLBB - Tim: Col A: Timestamp, B: Nama Tim, C: Divisi Yokke, D: WhatsApp, E: Folder Drive, F: Status, G: Catatan, H: Invited
       folderUrl = row[4] ? row[4].toString().trim() : "";
       status = (row[5] && row[5].toString().trim()) ? row[5].toString().trim() : "PENDING";
       notes = row[6] ? row[6].toString().trim() : "";
+      var invitedVal = row[7] ? row[7].toString().trim().toLowerCase() : "";
+      isInvited = (invitedVal === "true" || invitedVal === "yes" || invitedVal === "invited" || invitedVal === "1" || invitedVal === "y");
+      if (!isInvited && SEEDED_TEAMS.indexOf(rawName.toLowerCase().trim()) !== -1) { isInvited = true; }
     } else {
       // Legacy Pendaftaran MLBB
       status = (row[13] && row[13].toString().trim()) ? row[13].toString().trim() : "PENDING";
       notes = row[14] ? row[14].toString().trim() : "";
+      if (SEEDED_TEAMS.indexOf(rawName.toLowerCase().trim()) !== -1) { isInvited = true; }
     }
 
     var currentItem = {
@@ -409,6 +415,7 @@ function getMlbbTimListing(ss) {
       folderUrl: folderUrl,
       status: status,
       notes: notes,
+      isInvited: !!isInvited,
       isLegacy: !isNormalized,
       rawRow: isNormalized ? null : row
     };
@@ -618,6 +625,7 @@ function getMcggListing(ss) {
       isOrganik: statusPegawai.indexOf("Organik") !== -1 && statusPegawai.indexOf("Non-Organik") === -1,
       status: status,
       notes: notes,
+      isInvited: false,
       idCard: idCard
     };
 
@@ -791,6 +799,7 @@ function doGet(e) {
         logo: logoUrl,
         notes: team.notes,
         status: team.status,
+        isInvited: !!team.isInvited,
         roster: rosterList,
         official: {
           name: realOff ? realOff.name : "-",

@@ -88,7 +88,20 @@
               </div>
               <div class="form-group">
                 <label>Divisi / Unit Kerja Yokke *</label>
-                <input type="text" id="teamDept" placeholder="Contoh: IT Operations / Merchant Sales">
+                <input type="text" id="teamDept" list="yokkeDeptList" placeholder="Pilih klaster atau ketik divisi (e.g. IT - Quality Assurance)...">
+                <datalist id="yokkeDeptList">
+                  <option value="IT - Quality Assurance"></option>
+                  <option value="IT - Engineering & Development"></option>
+                  <option value="IT - Change, Release & Service Operations"></option>
+                  <option value="IT - Security & Infrastructure"></option>
+                  <option value="Product Management & OPPI"></option>
+                  <option value="Risk Management & Compliance"></option>
+                  <option value="Project Management Office"></option>
+                  <option value="Regional ADO & Field Operations"></option>
+                  <option value="Merchant Operations & Business"></option>
+                  <option value="Marketing, CRM & Commercial"></option>
+                  <option value="General & Logistics"></option>
+                </datalist>
               </div>
               <div class="form-group">
                 <label>Nomor WhatsApp Kontak / Kapten *</label>
@@ -239,7 +252,7 @@
                 </div>
                 <div class="form-group">
                   <label>Divisi / Unit Kerja Yokke *</label>
-                  <input type="text" id="mcgg_dept" placeholder="Contoh: Deployment Services / ADO Bali">
+                  <input type="text" id="mcgg_dept" list="yokkeDeptList" placeholder="Pilih klaster atau ketik divisi (e.g. Regional ADO & Field Operations)...">
                 </div>
                 <div class="form-group">
                   <label>Nomor WhatsApp Aktif *</label>
@@ -439,11 +452,33 @@
         </div>
 
         <!-- TAMPILAN UTAMA: BAGAN FASE GRUP & PLAYOFF MLBB -->
-        <div id="groupStageContainer" style="display: block; margin-top: 1.5rem;">
+        <!-- TOOLBAR TOGGLE VIEW MLBB -->
+        <div class="view-mode-toolbar" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.25rem; margin-bottom: 1rem; align-items: center; justify-content: space-between; background: rgba(15,23,42,0.8); border: 1px solid rgba(0,210,255,0.2); padding: 0.6rem 0.85rem; border-radius: 8px;">
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-right: 0.25rem;">Tampilan MLBB:</span>
+            <button type="button" id="btnViewMlbbHub" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="setMLBBViewMode('HUB')">
+              🌳 Hub Interaktif & Alur Turnamen
+            </button>
+            <button type="button" id="btnViewMlbbGroups" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="setMLBBViewMode('GROUPS')">
+              🛡️ Klasemen Grup Tradisional
+            </button>
+            <button type="button" id="btnViewMlbbFixtures" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="setMLBBViewMode('FIXTURES')">
+              ⚔️ Seluruh Jadwal & Hasil Match
+            </button>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--yokke-cyan); display: flex; align-items: center; gap: 0.3rem;">
+            <span>ℹ️</span> <span>Klik babak di sisi kiri untuk membuka detail di sisi kanan</span>
+          </div>
+        </div>
+
+        <!-- MASTER-DETAIL INTERACTIVE HUB MLBB -->
+        <div id="mlbbInteractiveHub" class="tournament-split-hub" style="display: grid;"></div>
+
+        <div id="groupStageContainer" style="display: none; margin-top: 1.5rem;">
           <!-- 1. KLASEMEN GRUP -->
           <!-- NAVIGASI & CAROUSEL 3 GRUP MLBB (SESUAI SKETSA DENGAN TOMBOL KIRI & KANAN) -->
           <div id="mlbbGroupNav" class="group-nav-container" style="display: none;"></div>
-          <div class="carousel-outer-wrapper" id="mlbbCarouselWrapper">
+          <div class="carousel-outer-wrapper" id="mlbbCarouselWrapper" style="display: none;">
             <button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMLBBGroupPage()" id="btnPrevMLBB" aria-label="Grup Sebelumnya" title="Grup Sebelumnya">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -520,8 +555,27 @@
 
         <!-- CONTAINER SELURUH LOBI MCGG DALAM SATU HALAMAN (MASING-MASING LOBI MEMILIKI PANEL UNDIAN COMMANDER TEPAT DI ATAS TABEL) -->
         <!-- NAVIGASI & CAROUSEL 3 LOBI / GRUP MCGG (SESUAI SKETSA DENGAN TOMBOL KIRI & KANAN) -->
+        <!-- TOOLBAR TOGGLE VIEW MCGG -->
+        <div class="view-mode-toolbar" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; margin-bottom: 1rem; align-items: center; justify-content: space-between; background: rgba(15,23,42,0.8); border: 1px solid rgba(0,210,255,0.2); padding: 0.6rem 0.85rem; border-radius: 8px;">
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-right: 0.25rem;">Tampilan MCGG:</span>
+            <button type="button" id="btnViewMcggHub" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="setMCGGViewMode('HUB')">
+              🌳 Hub Interaktif & Alur Babak
+            </button>
+            <button type="button" id="btnViewMcggLobbies" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="setMCGGViewMode('LOBBIES')">
+              ♟️ Klasemen Lobi Tradisional
+            </button>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--yokke-gold); display: flex; align-items: center; gap: 0.3rem;">
+            <span>ℹ️</span> <span>Klik tahapan di sisi kiri untuk melihat detail & klasemen di kanan</span>
+          </div>
+        </div>
+
+        <!-- MASTER-DETAIL INTERACTIVE HUB MCGG -->
+        <div id="mcggInteractiveHub" class="tournament-split-hub" style="display: grid;"></div>
+
         <div id="mcggGroupNav" class="group-nav-container" style="display: none;"></div>
-        <div class="carousel-outer-wrapper" id="mcggCarouselWrapper">
+        <div class="carousel-outer-wrapper" id="mcggCarouselWrapper" style="display: none;">
           <button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMCGGGroupPage()" id="btnPrevMCGG" aria-label="Lobi Sebelumnya" title="Lobi Sebelumnya">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
@@ -555,7 +609,7 @@
         </div>
         <div class="form-group">
           <label>Divisi / Unit Kerja Yokke *</label>
-          <input type="text" id="editDept">
+          <input type="text" id="editDept" list="yokkeDeptList" placeholder="Pilih klaster atau ketik divisi...">
         </div>
         <div class="form-group">
           <label>Nomor WhatsApp *</label>

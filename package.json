@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Yokke Squad E-Sports Tournament 2026 (MLBB & Magic Chess Go Go)",
   "scripts": {
+    "build": "node tests/syntax_check.js && node scripts/generate_function_index.js",
     "test": "node tests/functional_tests.js",
     "docs": "node scripts/generate_function_index.js",
     "docs:watch": "node scripts/generate_function_index.js --watch",
