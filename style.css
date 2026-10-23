@@ -1420,3 +1420,106 @@ footer {
   flex-wrap: wrap;
   margin-top: 0.4rem;
 }
+
+/* ========================================================================= */
+/* FULLSCREEN INITIAL LIVE SYNC LOADER (Cyber Dark Theme)                   */
+/* ========================================================================= */
+.app-global-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #fff;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s;
+}
+.app-global-loader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader-content {
+  text-align: center;
+  max-width: 440px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.loader-logo-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+.loader-cyber-icon {
+  font-size: 3rem;
+  z-index: 2;
+  filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.8));
+  animation: cyberIconFloat 2s ease-in-out infinite;
+}
+.loader-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--yokke-cyan, #00d2ff);
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.5);
+  animation: cyberPulseRing 1.8s ease-out infinite;
+}
+@keyframes cyberPulseRing {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes cyberIconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.loader-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #00d2ff 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+.loader-status {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin: 0 0 1.25rem;
+  font-weight: 500;
+}
+.loader-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  margin-bottom: 0.85rem;
+}
+.loader-bar-fill {
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(90deg, #00d2ff, #7209b7, #00d2ff);
+  background-size: 200% 100%;
+  border-radius: 10px;
+  animation: cyberLoadBarMove 1.5s linear infinite;
+}
+@keyframes cyberLoadBarMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+.loader-subtext {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-style: italic;
+}

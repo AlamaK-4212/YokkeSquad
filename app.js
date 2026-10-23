@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw52YWqACjr_IsbAlv-UO6oxO_9Xfhh5ljMQ1T7_PFLljFq3b2bvDN1RNbP2dCsEOXeHw/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyl35ZFfmbHlHeWQGsD8fwdbWeRtHmrNLQiJIamXw7BRjpkQGbBTaJG3vDWG7yNR2wZ3g/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
@@ -242,6 +242,35 @@ if (tournamentFormat === 'KNOCKOUT') {
   localStorage.setItem('yokke_mlbb_format', 'AUTO');
 }
 // Status Pendaftaran Turnamen (Buka / Tutup)
+
+// Kontrol Loading Screen Fullscreen (Sinkronisasi Data Murni Google Sheets)
+function showGlobalLoader(msg = "Menyinkronkan data turnamen dari Google Sheets...") {
+  const loader = document.getElementById("appGlobalLoader");
+  const txt = document.getElementById("loaderStatusText");
+  if (txt) txt.innerText = msg;
+  if (loader) {
+    loader.classList.remove("fade-out");
+    loader.style.display = "flex";
+  }
+  clearTimeout(window._loaderTimeout);
+  window._loaderTimeout = setTimeout(() => {
+    hideGlobalLoader();
+  }, 8000); // Batas aman 8 detik
+}
+
+function hideGlobalLoader() {
+  clearTimeout(window._loaderTimeout);
+  const loader = document.getElementById("appGlobalLoader");
+  if (loader) {
+    loader.classList.add("fade-out");
+    setTimeout(() => {
+      if (loader.classList.contains("fade-out")) {
+        loader.style.display = "none";
+      }
+    }, 500);
+  }
+}
+
 let isRegistrationClosed = localStorage.getItem('yokke_reg_closed') === 'true';
 
 let groupStageData = JSON.parse(localStorage.getItem('yokke_group_data') || '{}');
@@ -250,12 +279,68 @@ let groupPlayoffMatches = [];
 
 // MCGG Multi-Lobby State
 let currentMCGGLobby = 'LOBBY_A';
-let mcggLobbies = JSON.parse(localStorage.getItem('yokke_mcgg_lobbies') || JSON.stringify({
-  LOBBY_A: [],
-  LOBBY_B: [],
-  GRAND_FINAL: [],
-  LOBBY_LOWER: []
-}));
+// 5 Lobi Kualifikasi Resmi MCGG Turnamen Yokke Squad 2026 (Sesuai Hasil Acak Ground Truth GSheet)
+const DEFAULT_MCGG_LOBBIES = {
+  LOBBY_A: [
+    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Yudhistira Pratama Ramadhan', nickname: 'Yudhistira Pratama Ramadhan', gameId: '3266192 (4113)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Dandy Nasri', nickname: 'Dandy Nasri', gameId: '3180808 (4068)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+  ],
+  LOBBY_B: [
+    { name: 'Bagus Setiawan', nickname: 'BagasST', gameId: '3501438 (4089)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Faldi Rasis Purnomo', nickname: 'Faldi Rasis Purnomo', gameId: '1645656 (4002)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+  ],
+  LOBBY_C: [
+    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Irza Muttaqin', nickname: 'Irza Muttaqin', gameId: '10610516(4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+  ],
+  LOBBY_D: [
+    { name: 'Muhammad Harits Eldrid', nickname: 'Eldrid', gameId: '111771260', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Muh Asrul', nickname: 'Odet tiktok', gameId: '13492185 (4170)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Rani Tiara Putri', nickname: 'Queen•', gameId: '86774755 (4070)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Setyo Haryo Alifianto', nickname: 'whyJude', gameId: '9585223 (4098)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Laga Al Ahli', nickname: 'Laga Al Ahli', gameId: '1605612 (1007)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Cikal Yulanda', nickname: 'Oweysis', gameId: '13862548 (4154)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'David Iskandar', nickname: 'David Iskandar', gameId: '5633899 & 4199', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+  ],
+  LOBBY_E: [
+    { name: 'Rendy Wibi Pratama', nickname: 'EhhChaky', gameId: '3221758 (4129)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Elham Yudhistira', nickname: 'KoncoKentel', gameId: '2559856 (4081)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Eko Marwanto Putro', nickname: 'Eko Marwanto Putro', gameId: '5730333 (4059)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Fardhan Mauladi', nickname: 'Yokke.DHANNKEBOT', gameId: '111118942(4283)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Alvin Elshadai Pangaribuan', gameId: '20564452 (4150)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
+    { name: 'Muhamad Fajar Samudra', nickname: 'Muhamad Fajar Samudra', gameId: '4881010 (4163)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+  ],
+  SEMI_A: [],
+  SEMI_B: [],
+  GRAND_FINAL: []
+};
+
+let savedLobbies = null;
+try {
+  savedLobbies = JSON.parse(localStorage.getItem('yokke_mcgg_lobbies'));
+} catch (e) {}
+
+let mcggLobbies = (savedLobbies && Object.keys(savedLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER').length >= 5)
+  ? savedLobbies
+  : JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES));
 
 // State Kontrol Tahapan Turnamen (Stage Machine ala Challonge)
 let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') || JSON.stringify({
@@ -725,9 +810,15 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
   }
 
   try {
-    const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    const noCacheUrl = GOOGLE_SHEET_WEBHOOK_URL + (GOOGLE_SHEET_WEBHOOK_URL.includes('?') ? '&' : '?') + '_nocache=' + Date.now();
+    const res = await fetch(noCacheUrl, {
       method: 'GET',
-      mode: 'cors'
+      mode: 'cors',
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
     });
     const data = await res.json();
     if (data && data.status === 'online' && Array.isArray(data.participants) && data.participants.length > 0) {
@@ -742,12 +833,8 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
       };
 
       // Filter sheet data agar yang sudah dihapus secara lokal tidak masuk lagi (kecuali mode pure)
-      const activeSheetParticipants = isPure ? data.participants : data.participants.filter(sheetItem => {
-        const rowKey = sheetItem.rowIndex ? `${sheetItem.category}_row_${sheetItem.rowIndex}` : null;
-        const idKey = sheetItem.id ? `${sheetItem.category}_id_${sheetItem.id}` : null;
-        const nameKey = `${sheetItem.category}_${(sheetItem.name || '').trim().toLowerCase()}`;
-        return !deletedList.includes(rowKey) && !deletedList.includes(idKey) && !deletedList.includes(nameKey);
-      });
+      // Ground Truth: Seluruh data dari Google Sheets wajib ditampilkan (tidak boleh tersembunyi oleh cache lokal)
+      const activeSheetParticipants = data.participants;
 
       // Intelligent Merge: Pertahankan foto Base64 atau edit lokal HANYA jika data masih ada di Google Sheets
       const localMap = {};
@@ -771,9 +858,10 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
         );
 
         // Pertahankan status lokal jika sudah pernah diubah
-        const finalStatus = (localItem && localItem.status && localItem.status !== 'PENDING') 
-          ? localItem.status 
-          : (sheetItem.status || (localItem ? localItem.status : '') || (defaultItem ? defaultItem.status : '') || 'PENDING');
+        // Status dari Google Sheets adalah sumber kebenaran mutlak
+        const finalStatus = (sheetItem.status && sheetItem.status.trim() !== '')
+          ? sheetItem.status
+          : ((localItem && localItem.status) ? localItem.status : 'PENDING');
 
         // Hubungkan LOGO SESUAI NAMA TIM
         const teamLogo = sheetItem.logo || (localItem ? localItem.logo : '') || findLogoByTeamName(sheetItem.name) || (defaultItem ? defaultItem.logo : '') || '';
@@ -920,19 +1008,8 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           localStorage.setItem('yokke_commander_draw', JSON.stringify(mcggDrawState));
         }
         if (data.config.mcggLobbies && Object.keys(data.config.mcggLobbies).length > 0) {
-          const remoteMCGGLobbies = data.config.mcggLobbies;
-          const mcggActiveCount = (merged || []).filter(p => p.category === 'MCGG' && p.status !== 'REJECTED').length;
-          const expectedQualCount = Math.ceil(mcggActiveCount / 8);
-          const remoteQualCount = Object.keys(remoteMCGGLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER').length;
-
-          // Jika peserta aktif > 16 (misal 37 peserta butuh 5 grup kualifikasi A-E), namun config remote GSheet masih format lama (2 grup A & B),
-          // jangan menimpa dengan 2 grup lama. Biarkan syncMCGGPlayers() membagikannya secara proporsional.
-          if (mcggActiveCount > 16 && remoteQualCount < expectedQualCount) {
-            console.log(`Mengupgrade lobi MCGG ke format ${expectedQualCount} grup (${mcggActiveCount} peserta aktif).`);
-          } else {
-            mcggLobbies = remoteMCGGLobbies;
-            localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
-          }
+          mcggLobbies = data.config.mcggLobbies;
+          localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
           renderMCGGTable();
         }
         if (data.config.isRegistrationClosed !== undefined && data.config.isRegistrationClosed !== null) {
@@ -3189,6 +3266,10 @@ function getActiveMLBBFormat() {
   if (tournamentFormat && tournamentFormat !== 'AUTO') {
     return tournamentFormat;
   }
+  const numGroups = Object.keys(groupStageData || {}).length;
+  if (numGroups === 8) return 'GROUP_8';
+  if (numGroups === 4) return 'GROUP_4';
+  if (numGroups === 2) return 'GROUP_2';
   const verifiedTeams = getVerifiedMLBBTeams();
   const N = verifiedTeams.length;
   if (N >= 32) {
@@ -5064,6 +5145,66 @@ function syncMCGGPlayers(doShuffle = false) {
     });
   };
 
+  const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
+  const existingPlayerCount = qualKeys.reduce((sum, k) => sum + (mcggLobbies[k] ? mcggLobbies[k].length : 0), 0);
+
+  // Jika TIDAK sedang acak ulang (doShuffle === false) dan kursi lobi SUDAH terisi (misal dari GSheet / cache):
+  // JANGAN me-reset lobi! Pertahankan posisi pemain di lobi masing-masing, hanya sinkronkan metadata & peserta baru.
+  if (!doShuffle && existingPlayerCount > 0) {
+    // 1. Update metadata pemain yang sudah ada di lobi
+    qualKeys.forEach(k => {
+      mcggLobbies[k] = (mcggLobbies[k] || []).filter(p => {
+        if (!p || !p.name || p.name.includes('(TBD)')) return true;
+        const cleanN = p.name.trim().toLowerCase();
+        const found = participants.find(part => (part.name || '').trim().toLowerCase() === cleanN);
+        return found ? found.status !== 'REJECTED' : true;
+      }).map(p => {
+        if (!p || !p.name || p.name.includes('(TBD)')) return p;
+        const found = participants.find(part => (part.name || '').trim().toLowerCase() === (p.name || '').trim().toLowerCase());
+        return {
+          ...p,
+          dept: (found && found.dept) ? found.dept : (p.dept || ''),
+          nickname: (found && found.nickname && found.nickname !== '-') ? found.nickname : (p.nickname || '-'),
+          gameId: (found && found.gameId && found.gameId !== '-') ? found.gameId : (p.gameId || '-')
+        };
+      });
+    });
+
+    // 2. Tambahkan peserta terverifikasi baru yang belum dapat lobi
+    const allAssignedNames = new Set();
+    const allAssignedGameIds = new Set();
+    qualKeys.forEach(k => {
+      (mcggLobbies[k] || []).forEach(p => {
+        if (p && p.name && !p.name.includes('(TBD)')) {
+          allAssignedNames.add(p.name.trim().toLowerCase());
+          if (p.gameId && p.gameId !== '-') allAssignedGameIds.add(p.gameId.trim().toLowerCase());
+        }
+      });
+    });
+
+    const unassigned = verified.filter(v => {
+      const n = (v.name || '').trim().toLowerCase();
+      const g = (v.gameId || '').trim().toLowerCase();
+      return !allAssignedNames.has(n) && (g === '-' || !allAssignedGameIds.has(g));
+    });
+
+    if (unassigned.length > 0) {
+      unassigned.forEach(uPly => {
+        const sortedLobbies = qualKeys.slice().sort((a, b) => (mcggLobbies[a] || []).length - (mcggLobbies[b] || []).length);
+        if (sortedLobbies[0]) {
+          mcggLobbies[sortedLobbies[0]].push(mapPlayerObj(uPly));
+        }
+      });
+    }
+
+    syncMCGGSemiFinal();
+    syncMCGGGrandFinal();
+    saveState();
+    renderMCGGLobbySelectOptions();
+    renderMCGGTable();
+    return;
+  }
+
   if (P <= 8) {
     // P <= 8: 1 Lobi Tunggal (Langsung Penentuan Juara)
     mcggLobbies.LOBBY_A = verified.map(mapPlayerObj);
@@ -6694,24 +6835,23 @@ function clearAllData() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  showGlobalLoader('Menyinkronkan data terkini dari Google Sheets...');
   autoLinkParticipantsAssets();
   renderPlayersFormInputs();
-  fetchParticipantsFromGoogleSheet(true);
   toggleCategoryForm();
   toggleOfficial2Form();
   renderRules();
   updateAuthUI();
-  renderParticipants();
-  renderCurrentMLBBFormat();
-  // Auto-upgrade jika cache lokal masih format 2 grup lama padahal peserta > 16
-  const mcggP = participants.filter(p => p.category === 'MCGG' && p.status !== 'REJECTED').length;
-  const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
-  if (mcggP > 16 && qualKeys.length < Math.ceil(mcggP / 8)) {
-    syncMCGGPlayers();
+
+  try {
+    // Sinkronkan 100% data live dari Google Sheets (tanpa cache)
+    await fetchParticipantsFromGoogleSheet(true, true);
+  } catch (err) {
+    console.warn('Gagal initial sync Google Sheets:', err);
+  } finally {
+    hideGlobalLoader();
   }
-  syncMCGGPlayers();
-  updateCounts();
 });
 
 // ============================================================================

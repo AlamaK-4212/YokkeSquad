@@ -903,6 +903,152 @@ function doGet(e) {
         }
       }
     }
+    // C.1. BACA SHEET KHUSUS "MCGG - Point, Commander & MVP" (Ground Truth Undian & Poin MCGG)
+    var sheetMCGG = ss.getSheetByName("MCGG - Point, Commander & MVP");
+    if (sheetMCGG && sheetMCGG.getLastRow() > 1) {
+      var mcggDataRange = sheetMCGG.getDataRange().getValues();
+      var sheetLobbies = {};
+      var helperParseRank = function(val) {
+        if (!val || val === "-" || val === "undefined") return 0;
+        var str = val.toString().trim();
+        var match = str.match(/Rank\s*(\d+)/i);
+        if (match) return parseInt(match[1], 10);
+        var parsed = parseInt(str, 10);
+        return isNaN(parsed) ? 0 : parsed;
+      };
+
+      for (var mr = 1; mr < mcggDataRange.length; mr++) {
+        var mRow = mcggDataRange[mr];
+        if (!mRow || mRow.length < 3) continue;
+        var rawLKey = mRow[0] ? mRow[0].toString().trim() : "";
+        var pName = mRow[2] ? mRow[2].toString().trim() : "";
+        if (!rawLKey || !pName || pName === "TBD" || pName === "-") continue;
+
+        var lKey = rawLKey;
+        var upL = rawLKey.toUpperCase().replace(/[\s-]+/g, "_");
+        if (upL === "A" || upL === "LOBI_A" || upL === "LOBBY_A" || upL === "GRUP_A") lKey = "LOBBY_A";
+        else if (upL === "B" || upL === "LOBI_B" || upL === "LOBBY_B" || upL === "GRUP_B") lKey = "LOBBY_B";
+        else if (upL === "C" || upL === "LOBI_C" || upL === "LOBBY_C" || upL === "GRUP_C") lKey = "LOBBY_C";
+        else if (upL === "D" || upL === "LOBI_D" || upL === "LOBBY_D" || upL === "GRUP_D") lKey = "LOBBY_D";
+        else if (upL === "E" || upL === "LOBI_E" || upL === "LOBBY_E" || upL === "GRUP_E") lKey = "LOBBY_E";
+        else if (upL.indexOf("SEMI_A") !== -1 || upL === "SEMIFINAL_A") lKey = "SEMI_A";
+        else if (upL.indexOf("SEMI_B") !== -1 || upL === "SEMIFINAL_B") lKey = "SEMI_B";
+        else if (upL.indexOf("GRAND_FINAL") !== -1 || upL === "FINAL") lKey = "GRAND_FINAL";
+
+        if (!sheetLobbies[lKey]) sheetLobbies[lKey] = [];
+
+        var pDept = "";
+        for (var pi = 0; pi < result.participants.length; pi++) {
+          var part = result.participants[pi];
+          if (part.category === "MCGG") {
+            if ((part.name && part.name.trim().toLowerCase() === pName.toLowerCase()) ||
+                (part.nickname && mRow[3] && part.nickname.trim().toLowerCase() === mRow[3].toString().trim().toLowerCase()) ||
+                (part.gameId && mRow[4] && part.gameId.toString().trim() === mRow[4].toString().trim())) {
+              pDept = part.dept || "";
+              break;
+            }
+          }
+        }
+
+        var c1Val = mRow[5] ? mRow[5].toString().trim() : "";
+        var c2Val = mRow[7] ? mRow[7].toString().trim() : "";
+        var c3Val = mRow[9] ? mRow[9].toString().trim() : "";
+        if (c1Val === "-") c1Val = "";
+        if (c2Val === "-") c2Val = "";
+        if (c3Val === "-") c3Val = "";
+
+        sheetLobbies[lKey].push({
+          name: pName,
+          dept: pDept,
+          nickname: mRow[3] ? mRow[3].toString().trim() : "-",
+          gameId: mRow[4] ? mRow[4].toString().trim() : "-",
+          c1: c1Val,
+          r1: helperParseRank(mRow[6]),
+          c2: c2Val,
+          r2: helperParseRank(mRow[8]),
+          c3: c3Val,
+          r3: helperParseRank(mRow[10]),
+          penalty: parseFloat(mRow[11]) || 0,
+          total: parseFloat(mRow[12]) || 0
+        });
+      }
+
+      var qualKeysFromSheet = Object.keys(sheetLobbies).filter(function(k) {
+        return k.indexOf("LOBBY_") === 0 && k !== "LOBBY_LOWER";
+      });
+      if (qualKeysFromSheet.length > 0) {
+        appConfig.mcggLobbies = sheetLobbies;
+      }
+    }
+
+    // C.2. BACA SHEET KHUSUS "MLBB - Klasemen & Point" (Ground Truth Klasemen & Grup MLBB)
+    var sheetMLBBPoint = ss.getSheetByName("MLBB - Klasemen & Point");
+    if (sheetMLBBPoint && sheetMLBBPoint.getLastRow() > 1) {
+      var pData = sheetMLBBPoint.getDataRange().getValues();
+      var sheetGroupData = {};
+      for (var pr = 1; pr < pData.length; pr++) {
+        var pRow = pData[pr];
+        if (!pRow || pRow.length < 3) continue;
+        var rawGName = pRow[0] ? pRow[0].toString().trim() : "";
+        var tName = pRow[2] ? pRow[2].toString().trim() : "";
+        if (!rawGName || !tName || tName === "-" || tName.indexOf("(TBD)") !== -1) continue;
+
+        var gName = rawGName;
+        var matchG = rawGName.match(/(?:Grup|Group)?\s*([A-H])/i);
+        if (matchG) {
+          gName = "Grup " + matchG[1].toUpperCase();
+        }
+
+        if (!sheetGroupData[gName]) sheetGroupData[gName] = [];
+        sheetGroupData[gName].push({
+          name: tName,
+          win: parseInt(pRow[4], 10) || 0,
+          lose: parseInt(pRow[5], 10) || 0,
+          pts: parseInt(pRow[6], 10) || 0
+        });
+      }
+      if (Object.keys(sheetGroupData).length > 0) {
+        appConfig.groupStageData = sheetGroupData;
+      }
+    }
+
+    // C.3. BACA SHEET KHUSUS "MLBB - Bagan & MVP" (Ground Truth Jadwal, Skor & MVP MLBB)
+    var sheetMLBBBagan = ss.getSheetByName("MLBB - Bagan & MVP");
+    if (sheetMLBBBagan && sheetMLBBBagan.getLastRow() > 1) {
+      var bData = sheetMLBBBagan.getDataRange().getValues();
+      var sheetMatchResults = {};
+      for (var br = 1; br < bData.length; br++) {
+        var bRow = bData[br];
+        if (!bRow || bRow.length < 8) continue;
+        var mId = bRow[0] ? bRow[0].toString().trim() : "";
+        var phase = bRow[1] ? bRow[1].toString().trim() : "";
+        var teamA = bRow[3] ? bRow[3].toString().trim() : "";
+        var teamB = bRow[6] ? bRow[6].toString().trim() : "";
+        if (!mId || !teamA || !teamB || teamA === "-" || teamB === "-") continue;
+
+        var sA = (bRow[4] !== "-" && bRow[4] !== "" && !isNaN(parseInt(bRow[4], 10))) ? parseInt(bRow[4], 10) : null;
+        var sB = (bRow[5] !== "-" && bRow[5] !== "" && !isNaN(parseInt(bRow[5], 10))) ? parseInt(bRow[5], 10) : null;
+        var winner = (bRow[7] && bRow[7] !== "TBD" && bRow[7] !== "-") ? bRow[7].toString().trim() : null;
+        var mvpPlayer = (bRow[8] && bRow[8] !== "-") ? bRow[8].toString().trim() : "";
+        var mvpHero = (bRow[9] && bRow[9] !== "-") ? bRow[9].toString().trim() : "";
+
+        sheetMatchResults[mId] = {
+          matchId: mId,
+          gName: phase.replace("Fase Grup - ", "").trim(),
+          teamA: teamA,
+          teamB: teamB,
+          scoreA: sA,
+          scoreB: sB,
+          winner: winner,
+          mvpPlayer: mvpPlayer,
+          mvpHero: mvpHero
+        };
+      }
+      if (Object.keys(sheetMatchResults).length > 0) {
+        appConfig.groupMatchResults = sheetMatchResults;
+      }
+    }
+
     result.config = appConfig;
 
     // D. BACA TAB MCGG MATCH SET UP (HERO, ALTER NAME, TIER LIST, URL GAMBAR HERO & ALTER)
