@@ -814,11 +814,7 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
     const res = await fetch(noCacheUrl, {
       method: 'GET',
       mode: 'cors',
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      }
+      redirect: 'follow'
     });
     const data = await res.json();
     if (data && data.status === 'online' && Array.isArray(data.participants) && data.participants.length > 0) {
