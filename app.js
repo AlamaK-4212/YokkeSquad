@@ -3655,154 +3655,201 @@ function renderBracket() {
 // --- DINAMIS GROUP STAGE & PLAYOFF LOGIC ---
 
 /**
- * Algoritma Pembagian Grup MLBB:
- * 1. Tim Invite ditempatkan 1 per grup (Seeded terpisah sehingga tidak bertemu di penyisihan).
- * 2. Tim Satelit (berdasarkan nama depan sama, misal 'aang alpha' & 'aang beta') TIDAK BOLEH dalam 1 grup.
- * 3. Kapasitas grup terdistribusi secara seimbang dan adil.
+ * Alokasi grup MLBB dengan Alur Siklus Round-Robin Bertingkat (Flow Regulasi):
+ * 1. Acak tim invited ke masing-masing group (tidak boleh ada di group yang sama).
+ * 2. Acak urutan tim sisanya (tim reguler).
+ * 3. Masukkan tim sesuai urutan acak ke masing-masing group:
+ *    - Penempatan tim selalu memprioritaskan grup dengan jumlah peserta/tim terkecil terlebih dahulu.
+ *    - Siklus 1: Cek nama depan sama (satelit) ATAU divisi sama -> jika bentrok, ke next group.
+ *    - Siklus 2: Jika dalam 1 cycle tetap tidak dapat group -> masukkan ke group berikutnya jika tidak ada nama depan sama (aturan divisi dilanggar terlebih dahulu).
+ *    - Siklus 3: Jika dalam 1 cycle berikutnya masih tidak dapat -> masukkan ke group berikutnya (aturan satelit dilanggar demi menjaga keseimbangan kapasitas).
+ * Invarian Mutlak: Keseimbangan kapasitas grup dijaga ketat (misal 41 tim ke 8 grup = tepat 7 grup isi 5 tim dan 1 grup isi 6 tim).
  */
 function allocateMLBBGroups(teamsList, groupNames, doShuffle = false) {
+  if (!Array.isArray(groupNames) || groupNames.length === 0) return {};
+  if (!Array.isArray(teamsList) || teamsList.length === 0) {
+    const emptyGroups = {};
+    groupNames.forEach(g => { emptyGroups[g] = []; });
+    return emptyGroups;
+  }
+
   const numGroups = groupNames.length;
   const groups = {};
   groupNames.forEach(g => { groups[g] = []; });
 
-  let invited = teamsList.filter(t => isTeamInvited(t));
-  let regular = teamsList.filter(t => !isTeamInvited(t));
+  const getPrefix = (team) => {
+    if (typeof getTeamPrefix === 'function') return getTeamPrefix(team);
+    if (!team) return '';
+    const clean = team.trim().replace(/^[^a-zA-Z0-9]+/, '');
+    const words = clean.split(/\s+/);
+    return words[0] ? words[0].toLowerCase() : '';
+  };
+
+  const getDept = (team) => {
+    if (typeof getTeamDept === 'function') {
+      const d = getTeamDept(team);
+      if (d) {
+        if (typeof getDepartmentCluster === 'function') return getDepartmentCluster(d, team).toLowerCase();
+        return d.toLowerCase();
+      }
+    }
+    return '';
+  };
+
+  const isInvited = (team) => {
+    if (typeof isTeamInvited === 'function') return isTeamInvited(team);
+    return false;
+  };
+
+  let invited = teamsList.filter(t => isInvited(t));
+  let regular = teamsList.filter(t => !isInvited(t));
 
   if (doShuffle) {
     invited = [...invited].sort(() => Math.random() - 0.5);
     regular = [...regular].sort(() => Math.random() - 0.5);
   }
 
-  // 1. Alokasikan Tim Invite (Maksimal 1 per grup, sebarkan divisi jika beda)
+  // 1. Acak tim invited ke masing-masing group (tidak boleh ada di group yang sama)
+  let invitedGroupOrder = [...groupNames];
+  if (doShuffle) {
+    invitedGroupOrder.sort(() => Math.random() - 0.5);
+  }
   invited.forEach((team, idx) => {
-    const teamPrefix = getTeamPrefix(team);
-    const teamDept = getTeamDept(team);
-    let bestGroup = null;
+    const teamPrefix = getPrefix(team);
+    const teamDept = getDept(team);
+    let targetGroup = null;
 
-    // Prioritas 1: Tanpa tim invited, tanpa prefix sama, tanpa divisi sama
+    // Cari grup yang belum ada tim invited, tanpa prefix sama, tanpa dept sama
     for (let i = 0; i < numGroups; i++) {
-      const gName = groupNames[(idx + i) % numGroups];
-      const gTeams = groups[gName];
-      const hasInvited = gTeams.some(t => isTeamInvited(t));
-      const hasSamePrefix = teamPrefix && gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-      const hasSameDept = teamDept && gTeams.some(t => getTeamDept(t) === teamDept);
-      if (!hasInvited && !hasSamePrefix && !hasSameDept) {
-        bestGroup = gName;
-        break;
-      }
+      const g = invitedGroupOrder[(idx + i) % numGroups];
+      const hasInv = groups[g].some(t => isInvited(t));
+      const hasPre = teamPrefix && groups[g].some(t => getPrefix(t) === teamPrefix);
+      const hasDep = teamDept && groups[g].some(t => getDept(t) === teamDept);
+      if (!hasInv && !hasPre && !hasDep) { targetGroup = g; break; }
     }
-
-    // Prioritas 2: Tanpa tim invited, tanpa prefix sama
-    if (!bestGroup) {
+    // Relaksasi Dept (Aturan 3)
+    if (!targetGroup) {
       for (let i = 0; i < numGroups; i++) {
-        const gName = groupNames[(idx + i) % numGroups];
-        const gTeams = groups[gName];
-        const hasInvited = gTeams.some(t => isTeamInvited(t));
-        const hasSamePrefix = teamPrefix && gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-        if (!hasInvited && !hasSamePrefix) {
-          bestGroup = gName;
-          break;
-        }
+        const g = invitedGroupOrder[(idx + i) % numGroups];
+        const hasInv = groups[g].some(t => isInvited(t));
+        const hasPre = teamPrefix && groups[g].some(t => getPrefix(t) === teamPrefix);
+        if (!hasInv && !hasPre) { targetGroup = g; break; }
       }
     }
-
-    // Prioritas 3: Grup tanpa tim invited
-    if (!bestGroup) {
+    // Relaksasi Prefix (Aturan 2)
+    if (!targetGroup) {
       for (let i = 0; i < numGroups; i++) {
-        const gName = groupNames[(idx + i) % numGroups];
-        if (!groups[gName].some(t => isTeamInvited(t))) {
-          bestGroup = gName;
-          break;
-        }
+        const g = invitedGroupOrder[(idx + i) % numGroups];
+        if (!groups[g].some(t => isInvited(t))) { targetGroup = g; break; }
       }
     }
-
-    // Fallback: grup tim paling sedikit
-    if (!bestGroup) {
-      bestGroup = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length)[0];
+    // Fallback jika invited > numGroups: cari grup paling sedikit yang bebas bentrok prefix
+    if (!targetGroup) {
+      const sorted = groupNames.slice().sort((a, b) => {
+        const lenDiff = groups[a].length - groups[b].length;
+        if (lenDiff !== 0) return lenDiff;
+        const pCountA = teamPrefix ? groups[a].filter(t => getPrefix(t) === teamPrefix).length : 0;
+        const pCountB = teamPrefix ? groups[b].filter(t => getPrefix(t) === teamPrefix).length : 0;
+        return pCountA - pCountB;
+      });
+      targetGroup = sorted[0];
     }
-
-    groups[bestGroup].push(team);
+    groups[targetGroup].push(team);
   });
 
-  // 2. Alokasikan Tim Regular: cegah tim dengan nama depan sama (satelit) & cegah divisi sama berada di 1 grup
-  const targetCap = Math.ceil(teamsList.length / numGroups);
+  // 2. Acak urutan tim sisanya (telah diacak di regular di atas jika doShuffle)
+  // 3. Masukkan tim sesuai urutan acak ke masing-masing group:
+  //    "penempatan team dari group dengan jumlah peserta terkecil dulu ya"
+  const N = teamsList.length;
+  const baseCap = Math.floor(N / numGroups);
+  const remainder = N % numGroups;
 
-  // Hitung jumlah tim per prefix & per divisi agar yang paling banyak didistribusikan lebih awal
+  const getOverBaseCount = () => groupNames.filter(g => groups[g].length > baseCap).length;
+
+  const canAccept = (g) => {
+    const curLen = groups[g].length;
+    if (curLen < baseCap) return true;
+    if (curLen === baseCap) {
+      return getOverBaseCount() < remainder;
+    }
+    return false;
+  };
+
+  // Pointer untuk menjaga keadilan urutan saat ukuran grup sama
+  let pointer = 0;
+
+  // Prioritaskan tim yang memiliki banyak satelit / anggota divisi sama agar terdistribusi mulus
   const prefixCounts = {};
   const deptCounts = {};
-  regular.forEach(t => {
-    const p = getTeamPrefix(t);
-    const d = getTeamDept(t);
+  teamsList.forEach(t => {
+    const p = getPrefix(t);
+    const d = getDept(t);
     if (p) prefixCounts[p] = (prefixCounts[p] || 0) + 1;
     if (d) deptCounts[d] = (deptCounts[d] || 0) + 1;
   });
 
   regular.sort((a, b) => {
-    const pA = getTeamPrefix(a), pB = getTeamPrefix(b);
-    const dA = getTeamDept(a), dB = getTeamDept(b);
+    const pA = getPrefix(a), pB = getPrefix(b);
+    const dA = getDept(a), dB = getDept(b);
     const scoreA = (prefixCounts[pA] || 0) * 10 + (deptCounts[dA] || 0);
     const scoreB = (prefixCounts[pB] || 0) * 10 + (deptCounts[dB] || 0);
-    return scoreB - scoreA;
+    return (scoreB - scoreA) || (doShuffle ? (Math.random() - 0.5) : 0);
   });
 
   regular.forEach(team => {
-    const teamPrefix = getTeamPrefix(team);
-    const teamDept = getTeamDept(team);
+    const teamPrefix = getPrefix(team);
+    const teamDept = getDept(team);
 
-    // Kategori grup berdasarkan prioritas kelayakan:
-    // Pilihan 1: Muat (< targetCap), Tanpa Konflik Prefix, Tanpa Konflik Divisi
-    let candidates = groupNames.filter(gName => {
-      const gTeams = groups[gName];
-      const sizeOk = gTeams.length < targetCap;
-      const noPrefixConflict = !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-      const noDeptConflict = !teamDept || !gTeams.some(t => getTeamDept(t) === teamDept);
-      return sizeOk && noPrefixConflict && noDeptConflict;
+    const hasPrefixConflict = (g) => teamPrefix && groups[g].some(t => getPrefix(t) === teamPrefix);
+    const hasDeptConflict = (g) => teamDept && groups[g].some(t => getDept(t) === teamDept);
+
+    // Dapatkan urutan evaluasi grup: "penempatan team dari group dengan jumlah peserta terkecil dulu"
+    // Diurutkan berdasarkan:
+    // 1. Jumlah anggota grup terkecil dulu (groups[a].length - groups[b].length)
+    // 2. Jika sama, ikuti pointer urutan acak / round-robin
+    const sortedGroups = groupNames.filter(canAccept).sort((a, b) => {
+      const lenDiff = groups[a].length - groups[b].length;
+      if (lenDiff !== 0) return lenDiff;
+      const idxA = (groupNames.indexOf(a) - pointer + numGroups) % numGroups;
+      const idxB = (groupNames.indexOf(b) - pointer + numGroups) % numGroups;
+      return idxA - idxB;
     });
 
-    // Pilihan 2: Muat (< targetCap), Tanpa Konflik Prefix (tetapi divisi terpaksa ada jika tim divisi > jumlah grup)
-    if (candidates.length === 0) {
-      candidates = groupNames.filter(gName => {
-        const gTeams = groups[gName];
-        const sizeOk = gTeams.length < targetCap;
-        const noPrefixConflict = !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-        return sizeOk && noPrefixConflict;
-      });
-      if (candidates.length > 0) {
-        candidates.sort((a, b) => {
-          const deptCountA = groups[a].filter(t => getTeamDept(t) === teamDept).length;
-          const deptCountB = groups[b].filter(t => getTeamDept(t) === teamDept).length;
-          if (deptCountA !== deptCountB) return deptCountA - deptCountB;
-          return groups[a].length - groups[b].length;
-        });
+    let chosenGroup = null;
+
+    // SIKLUS 1: Cek nama depan sama (satelit) ATAU divisi sama -> jika bentrok ke next group
+    for (const g of sortedGroups) {
+      if (!hasPrefixConflict(g) && !hasDeptConflict(g)) {
+        chosenGroup = g;
+        break;
       }
     }
 
-    // Pilihan 3: Jika targetCap penuh, cari grup tanpa konflik prefix dan minim konflik divisi
-    if (candidates.length === 0) {
-      candidates = groupNames.filter(gName => {
-        const gTeams = groups[gName];
-        return !teamPrefix || !gTeams.some(t => getTeamPrefix(t) === teamPrefix);
-      });
-      if (candidates.length > 0) {
-        candidates.sort((a, b) => {
-          const deptCountA = groups[a].filter(t => getTeamDept(t) === teamDept).length;
-          const deptCountB = groups[b].filter(t => getTeamDept(t) === teamDept).length;
-          if (deptCountA !== deptCountB) return deptCountA - deptCountB;
-          return groups[a].length - groups[b].length;
-        });
+    // SIKLUS 2: Jika 1 cycle tetap ga dapet -> masukkan ke group jika tidak ada nama depan sama (langgar divisi)
+    if (!chosenGroup) {
+      for (const g of sortedGroups) {
+        if (!hasPrefixConflict(g)) {
+          chosenGroup = g;
+          break;
+        }
       }
     }
 
-    let chosen = null;
-    if (candidates.length > 0) {
-      chosen = candidates[0];
-    } else {
-      const sortedBySize = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length);
-      chosen = sortedBySize[0];
+    // SIKLUS 3: Jika 1 cycle lagi ga dapet -> masukkan ke group setelah cycle (langgar satelit)
+    if (!chosenGroup) {
+      if (sortedGroups.length > 0) {
+        chosenGroup = sortedGroups[0];
+      }
     }
 
-    groups[chosen].push(team);
+    // Fallback absolut jika seluruh sortedGroups kosong:
+    if (!chosenGroup) {
+      const allSorted = groupNames.slice().sort((a, b) => groups[a].length - groups[b].length);
+      chosenGroup = allSorted[0];
+    }
+
+    groups[chosenGroup].push(team);
+    pointer = (groupNames.indexOf(chosenGroup) + 1) % numGroups;
   });
 
   return groups;
