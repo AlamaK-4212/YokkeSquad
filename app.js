@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyl35ZFfmbHlHeWQGsD8fwdbWeRtHmrNLQiJIamXw7BRjpkQGbBTaJG3vDWG7yNR2wZ3g/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxmXNtV4KTMkje26qUgMJ7sm2GBB1ZArlr6YIEypvytsz_zPIRYHF9hFvMFU8CmRBeCWg/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
@@ -4575,31 +4575,205 @@ function renderGroupStageUI() {
   renderGroupPlayoffTree();
 }
 
-// --- BAGAN PERTANDINGAN FASE GRUP (ROUND-ROBIN BO3) ---
-function getGroupFixtures(gName) {
+// --- ALUR JADWAL RESMI TURNAMEN YOKKE SQUAD MLBB (3 MINGGU) ---
+const MLBB_TOURNAMENT_WEEKS = {
+  WEEK_1: {
+    title: 'Week 1: Fase Grup 8 Grup (5 Hari)',
+    badge: 'Fase Grup • 5 Hari',
+    subtitle: 'Babak Penyisihan 41 Tim • Tanpa Tim Bermain 2x Sehari (Maks 1 match/tim per hari) • 16 Upper & 8 Lower',
+    days: [
+      { day: 1, label: 'Hari 1 (Matchday 1)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
+      { day: 2, label: 'Hari 2 (Matchday 2)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
+      { day: 3, label: 'Hari 3 (Matchday 3)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
+      { day: 4, label: 'Hari 4 (Matchday 4)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
+      { day: 5, label: 'Hari 5 (Matchday 5)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Penentuan Klasemen Akhir Juara 1, 2, 3 Grup • Tiap tim main maks 1x' }
+    ]
+  },
+  WEEK_2: {
+    title: 'Week 2: Playoff 16 Besar s/d Semifinal (4 Hari)',
+    badge: 'Playoff • 4 Hari',
+    subtitle: 'Babak Gugur Double Elimination • 16 Tim Upper Bracket & 8 Tim Lower Bracket',
+    days: [
+      { day: 6, label: 'Hari 6 (Playoff Day 1)', phase: 'Upper Bracket Round 1 (16 Besar)', desc: '8 Pertandingan BO3 • 16 Juara 1 & 2 Grup' },
+      { day: 7, label: 'Hari 7 (Playoff Day 2)', phase: 'Lower Bracket Round 1', desc: '8 Pertandingan BO3 • 8 Juara 3 Grup vs 8 Tim Turun dari UB R1' },
+      { day: 8, label: 'Hari 8 (Playoff Day 3)', phase: 'Upper Bracket QF & Lower Bracket R2', desc: '4 Match UB QF + 4 Match LB R2' },
+      { day: 9, label: 'Hari 9 (Playoff Day 4)', phase: 'Upper Bracket SF & Lower Bracket QF', desc: '2 Match UB SF (Menentukan Finalis UB) + 4 Match LB QF' }
+    ]
+  },
+  WEEK_3: {
+    title: 'Week 3: Final Stage & Super Grand Final (4 Hari)',
+    badge: 'Final Stage • 4 Hari',
+    subtitle: 'Perebutan Gelar Juara Turnamen Yokke Squad 2026 • Live Offline di Kantor Pusat Yokke',
+    days: [
+      { day: 10, label: 'Hari 10 (Final Stage Day 1)', phase: 'Lower Bracket Semifinal & Upper Bracket Final', desc: '2 Match LB Semifinal (BO3) + 1 Match UB Final (BO5)' },
+      { day: 11, label: 'Hari 11 (Final Stage Day 2)', phase: 'Lower Bracket Final', desc: '1 Pertandingan BO5 (Penentuan Finalis ke Grand Final)' },
+      { day: 12, label: 'Hari 12 (Final Stage Day 3)', phase: 'Bronze Match (Perebutan Juara 3)', desc: '1 Pertandingan BO5 (Penentuan Juara 3 & Juara 4)' },
+      { day: 13, label: 'Hari 13 (Final Stage Day 4)', phase: 'Super Grand Final Offline', desc: 'Best of 7 (BO7) Offline di Kantor Pusat Yokke • Penentuan Juara 1 & Juara 2' }
+    ]
+  }
+};
+
+let mlbbActiveWeek = 'WEEK_1'; // 'WEEK_1' | 'WEEK_2' | 'WEEK_3'
+let mlbbActiveDayFilter = 'ALL'; // 'ALL' | 1 | 2 | 3 | 4
+let mlbbActiveGroupFilter = 'ALL'; // 'ALL' | 'Grup A' | ...
+
+function setMLBBActiveWeek(weekKey) {
+  mlbbActiveWeek = weekKey;
+  if (weekKey !== 'WEEK_1') {
+    mlbbActiveDayFilter = 'ALL';
+  }
+  renderGroupFixturesUI();
+}
+
+function setMLBBActiveDayFilter(day) {
+  mlbbActiveDayFilter = day;
+  renderGroupFixturesUI();
+}
+
+function setMLBBActiveGroupFilter(gName) {
+  mlbbActiveGroupFilter = gName;
+  renderGroupFixturesUI();
+}
+
+// --- BAGAN PERTANDINGAN FASE GRUP TERDISTRIBUSI 4 HARI (ROUND-ROBIN BO3) ---
+function getGroupFixtures(gName, dayFilter = null) {
   const teams = (groupStageData[gName] || []).map(t => t.name);
-  const fixtures = [];
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = i + 1; j < teams.length; j++) {
-      const teamA = teams[i];
-      const teamB = teams[j];
-      const matchId = `${gName}_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
-      const saved = groupMatchResults[matchId] || {};
-      fixtures.push({
-        matchId: matchId,
-        gName: gName,
-        teamA: teamA,
-        teamB: teamB,
-        scoreA: saved.scoreA !== undefined ? saved.scoreA : null,
-        scoreB: saved.scoreB !== undefined ? saved.scoreB : null,
-        winner: saved.winner || null,
-        mvpPlayer: saved.mvpPlayer || null,
-        mvpHero: saved.mvpHero || null,
-        mvpTeam: saved.mvpTeam || null
-      });
+  const n = teams.length;
+  if (n < 2) return [];
+
+  // Pola distribusi jadwal 4 Hari (Week 1)
+  // Menjamin di Hari 1 dan 2 seluruh tim bertanding MAKSIMAL 1x per hari.
+  // Di Hari 3 dan 4, jeda antar sesi diberikan jika ada tim yang memainkan match kedua.
+  // Pola distribusi jadwal 5 Hari (Week 1): Maksimal 2 Sesi per Hari (Sesi 1: 19:00 WIB, Sesi 2: 20:30 WIB)
+  // Mendukung hingga 2 pertandingan paralel (simultan) di sesi yang sama dalam grup yang sama (Stream 1 & Stream 2).
+  // Menjamin 100% TIDAK ADA TIM YANG BERMAIN 2 KALI DALAM SATU HARI (Maksimal 1 match per tim per hari).
+  const pattern5 = [
+    // Hari 1: 2 match simultan di Sesi 1 (T4 istirahat / BYE) -> Total 1 sesi
+    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 3 },
+    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 1, b: 2 },
+
+    // Hari 2: 2 match simultan di Sesi 1 (T3 istirahat / BYE) -> Total 1 sesi
+    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 4, b: 2 },
+    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 0, b: 1 },
+
+    // Hari 3: 2 match simultan di Sesi 1 (T2 istirahat / BYE) -> Total 1 sesi
+    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 3, b: 1 },
+    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 4, b: 0 },
+
+    // Hari 4: 2 match simultan di Sesi 1 (T1 istirahat / BYE) -> Total 1 sesi
+    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 2, b: 0 },
+    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 3, b: 4 },
+
+    // Hari 5: 2 match simultan di Sesi 1 (T0 istirahat / BYE) -> Total 1 sesi
+    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 1, b: 4 },
+    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 2, b: 3 }
+  ];
+
+  const pattern6 = [
+    // Hari 1: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
+    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 5 },
+    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 1, b: 4 },
+    { day: 1, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 2, b: 3 },
+
+    // Hari 2: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
+    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 4 },
+    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 5, b: 3 },
+    { day: 2, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 1, b: 2 },
+
+    // Hari 3: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
+    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 3 },
+    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 4, b: 2 },
+    { day: 3, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 5, b: 1 },
+
+    // Hari 4: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
+    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 2 },
+    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 3, b: 1 },
+    { day: 4, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 4, b: 5 },
+
+    // Hari 5: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
+    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 1 },
+    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 2, b: 5 },
+    { day: 5, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 3, b: 4 }
+  ];
+
+  const pattern = (n === 6) ? pattern6 : (n === 5 ? pattern5 : null);
+  const rawPairs = [];
+
+  if (pattern) {
+    pattern.forEach((item, idx) => {
+      if (item.a < n && item.b < n) {
+        rawPairs.push({
+          matchOrder: idx + 1,
+          teamA: teams[item.a],
+          teamB: teams[item.b],
+          day: item.day,
+          session: item.session,
+          time: item.time,
+          room: item.room || 'Stream 1'
+        });
+      }
+    });
+  } else {
+    let count = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        count++;
+        const d = ((count - 1) % 4) + 1;
+        const s = Math.floor((count - 1) / 4) + 1;
+        rawPairs.push({
+          matchOrder: count,
+          teamA: teams[i],
+          teamB: teams[j],
+          day: d,
+          session: s,
+          time: `${18 + s}:00 WIB`
+        });
+      }
     }
   }
+
+  const fixtures = [];
+  rawPairs.forEach(p => {
+    if (dayFilter && dayFilter !== 'ALL' && parseInt(dayFilter, 10) !== p.day) return;
+
+    // Cari hasil yang sudah tersimpan dengan matchId normal atau terbalik
+    const matchId = `${gName}_${p.teamA}_vs_${p.teamB}`.replace(/\s+/g, '_');
+    const matchIdRev = `${gName}_${p.teamB}_vs_${p.teamA}`.replace(/\s+/g, '_');
+    const saved = groupMatchResults[matchId] || groupMatchResults[matchIdRev] || {};
+
+    fixtures.push({
+      matchId: matchId,
+      gName: gName,
+      teamA: p.teamA,
+      teamB: p.teamB,
+      week: 1,
+      day: p.day,
+      session: p.session,
+      sessionTime: p.time,
+      streamRoom: p.room || 'Stream 1',
+      matchOrder: p.matchOrder,
+      scoreA: saved.scoreA !== undefined ? saved.scoreA : null,
+      scoreB: saved.scoreB !== undefined ? saved.scoreB : null,
+      winner: saved.winner || null,
+      mvpPlayer: saved.mvpPlayer || null,
+      mvpHero: saved.mvpHero || null,
+      mvpTeam: saved.mvpTeam || null
+    });
+  });
+
   return fixtures;
+}
+
+// Mendapatkan daftar tim yang istirahat (tidak bermain) pada hari tertentu di grup tertentu
+function getGroupRestingTeams(gName, day) {
+  const teams = (groupStageData[gName] || []).map(t => t.name).filter(t => t && !t.includes('(TBD)'));
+  const dayFixtures = getGroupFixtures(gName, day);
+  const playingTeams = new Set();
+  dayFixtures.forEach(f => {
+    playingTeams.add(f.teamA);
+    playingTeams.add(f.teamB);
+  });
+  return teams.filter(t => !playingTeams.has(t));
 }
 
 function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
@@ -4719,66 +4893,197 @@ function renderGroupFixturesUI() {
 
   const allGKeys = Object.keys(groupStageData);
   const totalGroups = allGKeys.length;
-  const startIndex = mlbbGroupPageIndex * 3;
-  const active3Keys = allGKeys.slice(startIndex, startIndex + 3);
-  const gKeys = showAllMLBBFixtures ? allGKeys : (totalGroups > 3 ? active3Keys : allGKeys);
-  if (gKeys.length === 0) {
+
+  let html = '';
+
+  // 1. HEADER SWITCHER 3 MINGGU (ROADMAP RESMI TURNAMEN YOKKE SQUAD)
+  html += `
+    <div class="schedule-week-tabs">
+      <div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_1' ? 'active' : ''}" onclick="setMLBBActiveWeek('WEEK_1')">
+        <span class="week-badge">Week 1</span>
+        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">Fase Grup (5 Hari)</div>
+        <div style="font-size: 0.75rem; opacity: 0.85;">Hari 1–5 • 8 Grup • Nol tim main 2x sehari</div>
+      </div>
+      <div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_2' ? 'active' : ''}" onclick="setMLBBActiveWeek('WEEK_2')">
+        <span class="week-badge">Week 2</span>
+        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">Playoff s/d Semifinal (4 Hari)</div>
+        <div style="font-size: 0.75rem; opacity: 0.85;">Hari 6–9 • Upper QF & Lower Bracket R1–QF</div>
+      </div>
+      <div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_3' ? 'active' : ''}" onclick="setMLBBActiveWeek('WEEK_3')">
+        <span class="week-badge">Week 3</span>
+        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.2rem;">Final Stage & Grand Final (4 Hari)</div>
+        <div style="font-size: 0.75rem; opacity: 0.85;">Hari 10–13 • UB/LB Final, Bronze & Grand Final Offline</div>
+      </div>
+    </div>
+  `;
+
+  // JIKA MEMILIH WEEK 2: TAMPILKAN JADWAL PLAYOFF HINGGA SEMIFINAL
+  if (mlbbActiveWeek === 'WEEK_2') {
+    const w2 = MLBB_TOURNAMENT_WEEKS.WEEK_2;
+    html += `
+      <div style="background: rgba(114, 9, 183, 0.08); border: 1px solid rgba(114, 9, 183, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+          <h4 style="margin:0; font-size:1.05rem; color:var(--yokke-purple); display:flex; align-items:center; gap:0.5rem;">
+            <span>🔥</span> <span>${w2.title}</span>
+          </h4>
+          <span class="badge" style="background:rgba(114,9,183,0.2); color:#fff;">Double Elimination</span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">${w2.subtitle}</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+    `;
+
+    w2.days.forEach(d => {
+      html += `
+        <div style="background: #090e1c; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem;">
+            <span style="font-weight:800; color:var(--yokke-cyan); font-size:0.9rem;">📅 ${d.label}</span>
+            <span class="badge" style="font-size:0.7rem; background:rgba(0,210,255,0.12); color:var(--yokke-cyan);">BO3</span>
+          </div>
+          <div style="font-weight:700; color:#fff; font-size:0.85rem; margin-bottom:0.4rem;">${d.phase}</div>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin:0 0 0.75rem;">${d.desc}</p>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:0.5rem 0.75rem; font-size:0.75rem; color:var(--text-muted);">
+            ⚔️ Tim yang bertanding diambil otomatis dari hasil klasemen Fase Grup (Juara 1, 2, dan 3).
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  // JIKA MEMILIH WEEK 3: TAMPILKAN JADWAL FINAL STAGE & GRAND FINAL
+  if (mlbbActiveWeek === 'WEEK_3') {
+    const w3 = MLBB_TOURNAMENT_WEEKS.WEEK_3;
+    html += `
+      <div style="background: linear-gradient(135deg, rgba(255, 183, 3, 0.12), rgba(15, 23, 42, 0.8)); border: 1px solid var(--yokke-gold); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+          <h4 style="margin:0; font-size:1.05rem; color:var(--yokke-gold); display:flex; align-items:center; gap:0.5rem;">
+            <span>👑</span> <span>${w3.title}</span>
+          </h4>
+          <span class="badge" style="background:var(--yokke-gold); color:#0b1120; font-weight:800;">🏢 Grand Final Offline</span>
+        </div>
+        <p style="font-size:0.82rem; color:#fff; margin:0;">${w3.subtitle}</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+    `;
+
+    w3.days.forEach(d => {
+      const isGrandFinal = d.day === 13;
+      html += `
+        <div style="background: #090e1c; border: 1px solid ${isGrandFinal ? 'var(--yokke-gold)' : 'var(--border-color)'}; border-radius: 8px; padding: 1rem; ${isGrandFinal ? 'box-shadow: 0 0 15px rgba(255,183,3,0.15);' : ''}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem;">
+            <span style="font-weight:800; color:${isGrandFinal ? 'var(--yokke-gold)' : 'var(--yokke-cyan)'}; font-size:0.9rem;">📅 ${d.label}</span>
+            <span class="badge" style="font-size:0.7rem; ${isGrandFinal ? 'background:rgba(255,183,3,0.2); color:var(--yokke-gold);' : 'background:rgba(0,210,255,0.12); color:var(--yokke-cyan);'}">${isGrandFinal ? 'BO7' : 'BO5'}</span>
+          </div>
+          <div style="font-weight:700; color:#fff; font-size:0.85rem; margin-bottom:0.4rem;">${d.phase}</div>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin:0 0 0.75rem;">${d.desc}</p>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:0.5rem 0.75rem; font-size:0.75rem; color:var(--text-muted);">
+            ${isGrandFinal ? '🏆 Pemenang dinobatkan sebagai Juara 1 Turnamen Yokke Squad 2026!' : '⚔️ Menentukan tim yang berhak melaju ke Super Grand Final.'}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  // --- WEEK 1: FASE GRUP 8 GRUP (4 HARI • REST RULE AKTIF) ---
+  if (totalGroups === 0) {
     container.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;">Belum ada grup yang dibentuk. Silakan lakukan undian tim.</p>`;
     return;
   }
 
-  let html = '';
-  if (gKeys.length === 8) {
-    html += `
-      <div style="background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-        <div style="font-size: 0.85rem; font-weight: 700; color: var(--yokke-cyan); display: flex; align-items: center; gap: 0.5rem;">
-          <span>📅</span> <span>Alur Jadwal 5 Hari MLBB (Peserta > 40 Tim):</span>
+  // BANNER REST RULE & INFO WEEK 1
+  html += `
+    <div style="background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.25); border-radius: 8px; padding: 0.85rem 1.1rem; margin-bottom: 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+        <div style="font-size: 0.92rem; font-weight: 800; color: var(--yokke-cyan); display: flex; align-items: center; gap: 0.5rem;">
+          <span>📅</span> <span>Jadwal Fase Grup MLBB: 5 Hari Pertandingan</span>
         </div>
-        <div style="font-size: 0.78rem; color: #e2e8f0; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <span class="badge" style="background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 4px;">Hari 1: Grup A-D</span>
-          <span class="badge" style="background: rgba(255,255,255,0.08); padding: 0.2rem 0.5rem; border-radius: 4px;">Hari 2: Grup E-H + Tie-Breaker</span>
-          <span class="badge" style="background: rgba(0,210,255,0.15); color: var(--yokke-cyan); padding: 0.2rem 0.5rem; border-radius: 4px;">Hari 3: Upper QF & Lower R1</span>
-          <span class="badge" style="background: rgba(255,183,3,0.15); color: var(--yokke-gold); padding: 0.2rem 0.5rem; border-radius: 4px;">Hari 4: Upper SF & Lower R2/QF</span>
-          <span class="badge" style="background: rgba(6,214,160,0.15); color: var(--yokke-green); padding: 0.2rem 0.5rem; border-radius: 4px;">Hari 5: Final & Grand Final</span>
-        </div>
+        <span class="badge" style="background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3); font-size:0.75rem;">
+          ✨ Regulasi Rest Rule Aktif
+        </span>
       </div>
-    `;
-  }
+      <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0 0 0.6rem; line-height: 1.5;">
+        Week 1 Fase Grup berlangsung selama <strong>5 hari</strong> (Hari 1–5) dengan maksimal <strong>2 sesi per hari</strong> (Sesi 1: 19:00 WIB & Sesi 2: 20:30 WIB). Dalam grup yang sama, <strong>dapat berlangsung 2 pertandingan secara simultan/paralel</strong> (Stream 1 & Stream 2). <strong>Nol tim bertanding 2 kali dalam satu hari</strong> (tiap tim bertanding maksimal 1x per hari di seluruh matchday).
+      </p>
 
-  gKeys.forEach((gName, gIdx) => {
-    const fixtures = getGroupFixtures(gName);
-    const dayLabel = gKeys.length === 8 
-      ? (gIdx < 4 ? '📅 HARI 1 (Penyisihan Grup A - D)' : '📅 HARI 2 (Penyisihan Grup E - H)')
-      : '';
+      <!-- FILTER HARI (DAY PILLS) -->
+      <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap; padding-top:0.4rem; border-top:1px dashed rgba(255,255,255,0.1);">
+        <span style="font-size:0.75rem; font-weight:700; color:var(--yokke-gold); margin-right:0.25rem;">Filter Hari:</span>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 'ALL' ? 'active' : ''}" onclick="setMLBBActiveDayFilter('ALL')">
+          Semua Hari (1–5)
+        </button>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 1 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(1)">
+          Hari 1
+        </button>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 2 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(2)">
+          Hari 2
+        </button>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 3 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(3)">
+          Hari 3
+        </button>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 4 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(4)">
+          Hari 4
+        </button>
+        <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 5 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(5)">
+          Hari 5
+        </button>
 
-    const showDayHeader = gKeys.length === 8 && (gIdx === 0 || gIdx === 4);
-    if (showDayHeader) {
-      html += `
-        <div style="margin: 1.25rem 0 0.75rem 0; padding: 0.5rem 0.85rem; background: linear-gradient(90deg, rgba(17,26,51,0.9), transparent); border-left: 4px solid var(--yokke-gold); border-radius: 4px;">
-          <span style="font-size: 0.92rem; font-weight: 800; color: var(--yokke-gold); letter-spacing: 0.5px;">${dayLabel}</span>
+        <!-- FILTER GRUP -->
+        <span style="font-size:0.75rem; font-weight:700; color:var(--yokke-cyan); margin-left:0.5rem; margin-right:0.25rem;">Filter Grup:</span>
+        <select onchange="setMLBBActiveGroupFilter(this.value)" style="background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:6px; font-size:0.75rem; padding:0.25rem 0.5rem; outline:none;">
+          <option value="ALL" ${mlbbActiveGroupFilter === 'ALL' ? 'selected' : ''}>Seluruh Grup (A–H)</option>
+          ${allGKeys.map(k => `<option value="${k}" ${mlbbActiveGroupFilter === k ? 'selected' : ''}>${k}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  `;
+
+  const targetGroupKeys = (mlbbActiveGroupFilter && mlbbActiveGroupFilter !== 'ALL')
+    ? [mlbbActiveGroupFilter]
+    : allGKeys;
+
+  targetGroupKeys.forEach((gName, gIdx) => {
+    const fixtures = getGroupFixtures(gName, mlbbActiveDayFilter);
+    const dayLabel = mlbbActiveDayFilter === 'ALL' 
+      ? 'Seluruh Hari (Hari 1–5)'
+      : `Hari ${mlbbActiveDayFilter}`;
+
+    html += `
+      <div style="background: #090e1c; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem; flex-wrap:wrap; gap:0.4rem;">
+          <h4 style="color: var(--yokke-cyan); margin: 0; font-size: 1rem; display:flex; align-items:center; gap:0.4rem;">
+            <span>🛡️</span> <span>Jadwal ${escapeHtml(gName)} • ${dayLabel}</span>
+          </h4>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight:700;">
+            ${fixtures.length} Pertandingan BO3
+          </span>
         </div>
-      `;
+    `;
+
+    // TAMPILKAN TIM YANG ISTIRAHAT (BYE) JIKA SEDANG MEMFILTER HARI TERTENTU
+    if (mlbbActiveDayFilter !== 'ALL') {
+      const resting = getGroupRestingTeams(gName, parseInt(mlbbActiveDayFilter, 10));
+      if (resting.length > 0) {
+        html += `
+          <div class="resting-team-banner">
+            <span>☕</span> <span><strong>Tim Istirahat Hari ${mlbbActiveDayFilter}:</strong> ${resting.map(t => escapeHtml(t)).join(', ')}</span>
+          </div>
+        `;
+      }
     }
 
-    html += `
-      <div style="background: #090e1c; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem;">
-          <h4 style="color: var(--yokke-cyan); margin: 0; font-size: 1rem; display:flex; align-items:center; gap:0.4rem;">
-            <span>🛡️</span> <span>Jadwal & Hasil Pertandingan: ${escapeHtml(gName)}</span>
-          </h4>
-          <div style="display:flex; align-items:center; gap:0.5rem;">
-            <button type="button" class="btn btn-outline" style="font-size:0.7rem; padding:0.2rem 0.55rem; color:var(--yokke-cyan); border-color:rgba(0,210,255,0.3);" onclick="toggleAllMLBBFixtures()">
-              ${showAllMLBBFixtures ? '🎯 Tampilkan 3 Grup Saja' : '👁️ Tampilkan Seluruh Grup'}
-            </button>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">${fixtures.length} Pertandingan BO3</span>
-          </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem;">
-    `;
-
     if (fixtures.length === 0) {
-      html += `<p style="color:var(--text-muted);font-size:0.85rem;">Belum cukup tim untuk membuat jadwal di grup ini.</p>`;
+      html += `<p style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;">Tidak ada pertandingan di ${dayLabel} untuk ${escapeHtml(gName)}.</p>`;
     } else {
+      html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem;">`;
+
       fixtures.forEach((f, idx) => {
         const isDone = f.winner !== null;
         const safeMatchId = f.matchId.replace(/'/g, "\\'");
@@ -4789,9 +5094,11 @@ function renderGroupFixturesUI() {
         html += `
           <div class="group-match-card">
             <div class="match-card-header">
-              <span style="font-weight:700; color:var(--yokke-gold);">MATCH ${idx + 1} (BO3)</span>
+              <span style="font-weight:700; color:var(--yokke-gold); font-size:0.75rem;">
+                HARI ${f.day} • SESI ${f.session} (${f.sessionTime}) • ${f.streamRoom || 'Stream 1'}
+              </span>
               <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'}">
-                ${isDone ? 'SELESAI' : 'JADWAL'}
+                ${isDone ? 'SELESAI' : 'BO3'}
               </span>
             </div>
             <div class="match-team-row ${f.winner === f.teamA ? 'winner' : ''}">
@@ -4810,29 +5117,27 @@ function renderGroupFixturesUI() {
             ` : ''}
             ${isAdmin ? `
               <div class="match-admin-scores" style="margin-top:0.4rem;">
-                <span style="font-size:0.7rem; color:var(--text-muted); margin-right:auto;">Set Skor BO3:</span>
-                <button class="btn-score-mini ${f.scoreA===2 && f.scoreB===0 ? 'active' : ''}" onclick="setGroupMatchScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 2, 0)">2-0</button>
-                <button class="btn-score-mini ${f.scoreA===2 && f.scoreB===1 ? 'active' : ''}" onclick="setGroupMatchScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 2, 1)">2-1</button>
-                <button class="btn-score-mini ${f.scoreA===1 && f.scoreB===2 ? 'active' : ''}" onclick="setGroupMatchScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 1, 2)">1-2</button>
-                <button class="btn-score-mini ${f.scoreA===0 && f.scoreB===2 ? 'active' : ''}" onclick="setGroupMatchScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 0, 2)">0-2</button>
-                <button class="btn-score-mini" style="color:var(--yokke-red);" onclick="resetGroupMatchScore('${safeMatchId}')">Reset</button>
-                ${isDone ? `<button class="btn-score-mini" style="color:var(--yokke-gold); border-color:rgba(255,215,0,0.4);" onclick="promptGroupMatchMVP('${safeMatchId}', '${safeTeamA}', '${safeTeamB}')">⭐ ${f.mvpPlayer ? 'Ubah MVP' : 'Set MVP'}</button>` : ''}
+                <span style="font-size:0.7rem; color:var(--text-muted);">Skor BO3:</span>
+                <input type="number" min="0" max="2" value="${f.scoreA !== null ? f.scoreA : ''}" id="scA_${safeMatchId}" style="width:38px; text-align:center; padding:2px; font-size:0.75rem;" placeholder="0">
+                <span style="font-size:0.75rem; color:var(--text-muted);">-</span>
+                <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : ''}" id="scB_${safeMatchId}" style="width:38px; text-align:center; padding:2px; font-size:0.75rem;" placeholder="0">
+                <button type="button" class="btn btn-primary" style="font-size:0.68rem; padding:2px 8px;" onclick="saveGroupFixtureScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}')">Simpan</button>
+                ${isDone ? `
+                  <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 8px; color:var(--yokke-gold); border-color:rgba(255,183,3,0.4);" onclick="openMLBBGroupMvpModal('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', ${f.scoreA}, ${f.scoreB}, '${safeMatchId}')">⭐ MVP</button>
+                ` : ''}
               </div>
             ` : ''}
           </div>
         `;
       });
+      html += `</div>`;
     }
 
-    html += `
-        </div>
-      </div>
-    `;
+    html += `</div>`;
   });
 
   container.innerHTML = html;
 }
-
 function renderGroupPlayoffTree() {
   const tree = document.getElementById('groupPlayoffTree');
   if (!tree) return;
@@ -7218,8 +7523,8 @@ function renderMLBBDetailPanelContent(nodeKey) {
         content += `
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
-              <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);">Match #${fIdx + 1} (BO3)</span>
-              <span style="font-size:0.75rem;color:${hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'};">${hasScore ? '✅ Selesai' : '⏳ Belum Dimulai'}</span>
+              <span style="font-size:0.75rem;font-weight:700;color:var(--yokke-gold);">Hari ${f.day} • Sesi ${f.session} (${f.sessionTime}) • ${f.streamRoom || 'Stream 1'}</span>
+              <span style="font-size:0.75rem;color:${hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'};">${hasScore ? '✅ Selesai' : '⏳ BO3'}</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
               <div style="flex:1;min-width:140px;font-weight:700;color:${winner === f.teamA ? 'var(--yokke-gold)' : '#fff'};">

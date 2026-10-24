@@ -8,8 +8,9 @@ Portal web turnamen all-in-one tanpa server (*serverless*) untuk menyelenggaraka
 
 ### 1. 🚀 Fullscreen Live Sync Loader & Eliminasi Cache (Ground Truth 100% GSheet)
 - **Layar Pemuat Awal Interaktif (`#appGlobalLoader`)**: Saat halaman pertama kali dibuka atau di-reload, portal menampilkan layar pemuat bernuansa Cyberpunk Dark Yokke Esports secara penuh.
-- **Eliminasi Cache Total**: 
-  - `fetch` ke Google Apps Script dilengkapi URL parameter anti-cache `_nocache=${Date.now()}` serta header `Cache-Control: no-cache, no-store`.
+- **Eliminasi Cache Total & Kompatibilitas Vercel Production**: 
+  - `fetch` ke Google Apps Script menggunakan standar *CORS Simple Request* dengan URL parameter anti-cache `_nocache=${Date.now()}` dan `redirect: 'follow'` tanpa custom request headers (`Cache-Control` / `Pragma`).
+  - Mencegah preflight `OPTIONS` yang ditolak oleh Google Apps Script di environment produksi seperti Vercel (`https://yokkesquad.vercel.app/`), sekaligus menjamin tidak ada respons yang dicache oleh browser.
   - Sistem meng-`await` pengambilan data murni dari Google Sheets secara tuntas sebelum menutup layar pemuat dan merender UI.
   - Seluruh status verifikasi, pendaftar, lobi MCGG, dan grup MLBB diperbarui langsung dari Google Sheets ke memori/localStorage tanpa ada data usang (*stale cache*) yang sempat terlihat oleh pengguna.
 - **Toggle Buka / Tutup Pendaftaran**: Tombol kontrol pendaftaran tersedia langsung di Top Bar, Tab Peserta, **Tab Bagan MLBB**, dan **Tab Poin MCGG**.
@@ -21,30 +22,27 @@ Portal web turnamen all-in-one tanpa server (*serverless*) untuk menyelenggaraka
 - **↩️ Reset Poin & Undian (MCGG)**: Mengosongkan nilai ronde 1–3, poin sanksi, dan hasil undian commander di seluruh lobi MCGG.
 - **↩️ Reset ke Tahap 1 (MLBB Playoff)**: Mengembalikan bagan dari fase playoff ke fase grup jika panitia perlu mengoreksi skor grup.
 
-### 3. ⚔️ Modul Turnamen MLBB (8-Grup 5-Hari & Master-Detail Hub)
-- **Format 8 Grup (5 Hari Kompetisi)**:
-  - `Day 1`: Babak Penyisihan 8 Grup (Grup A s/d H) sistem *Round-Robin* Best of 3 (BO3).
-  - `Day 2`: Upper Bracket Babak 16 Besar (Juara 1 & 2 tiap grup).
-  - `Day 3`: Lower Bracket Babak 8 Besar (Juara 3 tiap grup).
-  - `Day 4`: Semifinal Upper & Lower Bracket.
-  - `Day 5`: Grand Final Offline.
+### 3. ⚔️ Modul Turnamen MLBB (Roadmap Resmi 3 Minggu & Master-Detail Hub)
+- **Roadmap Resmi Turnamen MLBB 3 Minggu**:
+  - **🏆 Week 1: Fase Grup 8 Grup (5 Hari • Matchday 1–5)**:
+    - Babak Penyisihan 8 Grup (Grup A s/d H, 41 Tim) sistem *Round-Robin* Best of 3 (BO3).
+    - **Batasan Sesi Harian**: Maksimal **2 sesi per hari** (Sesi 1: 19:00 WIB & Sesi 2: 20:30 WIB).
+    - **Dua Pertandingan Simultan per Sesi**: Dalam grup yang sama, dapat berlangsung **2 pertandingan secara bersamaan/paralel** (`Stream 1 (Room A)` dan `Stream 2 (Room B)`).
+    - **Regulasi Rest Rule Mutlak (Nol Tim Main 2 Kali Sehari)**: Distribusi jadwal 5 hari menjamin **100% tidak ada tim yang bermain 2 kali dalam satu hari** di seluruh Matchday 1–5. Setiap tim bertanding tepat 1 kali pada hari aktif mereka (dan mendapat 1 hari istirahat/BYE untuk grup 5 tim).
+    - Menghasilkan **16 Tim Upper Bracket** (Juara 1 & 2 tiap grup) dan **8 Tim Lower Bracket** (Juara 3 tiap grup).
+    - Dilengkapi banner tim yang istirahat (*BYE*) per hari (`☕ Tim Istirahat Hari X: [Nama Tim]`).
+  - **🔥 Week 2: Playoff 16 Besar s/d Semifinal (4 Hari • Double Elimination)**:
+    - `Hari 6`: Upper Bracket Round 1 (16 Besar - 8 Match BO3).
+    - `Hari 7`: Lower Bracket Round 1 (8 Match BO3).
+    - `Hari 8`: Upper Bracket QF & Lower Bracket Round 2 (8 Match BO3).
+    - `Hari 9`: Upper Bracket SF (Penentuan Finalis UB) & Lower Bracket QF.
+  - **👑 Week 3: Final Stage & Super Grand Final (4 Hari • Offline Final)**:
+    - `Hari 10`: Lower Bracket Semifinal (BO3) & Upper Bracket Final (BO5).
+    - `Hari 11`: Lower Bracket Final (BO5).
+    - `Hari 12`: Bronze Match (Perebutan Juara 3 & 4 - BO5).
+    - `Hari 13`: Super Grand Final Offline Best of 7 (BO7) di Kantor Pusat Yokke!
 - **Ground Truth Sinkronisasi Sheet Dedicated MLBB**:
-  - `google_apps_script.js` membaca langsung sheet **`MLBB - Klasemen & Point`** (pembagian grup, skor, match played, W/L) dan **`MLBB - Bagan & MVP`** (jadwal fixture, skor BO3, pemenang, dan MVP) saat `GET /exec`.
-  - Tampilan bagan dan klasemen MLBB di website 100% identik dengan sheet Google Sheets tanpa risiko ter-overwrite oleh algoritma undian lokal.
-- **Master-Detail Interactive Tournament Hub (1:3 Split Pane)**:
-  - Sisi kiri: Pohon alur navigasi tahapan kompetisi dengan lencana ringkasan metrik instan.
-  - Sisi kanan: Panel detail dinamis yang menampilkan klasemen langsung, jadwal BO3, dan form skor pertandingan.
-- **Hierarki 3 Aturan Emas Undian & Relaksasi Bertingkat (*Cascading Relaxation*)**:
-  1. **Aturan 1 (Invited Teams)**: Maksimal 1 tim undangan/unggulan per grup, dialokasikan pertama kali.
-  2. **Aturan 2 (Tim Satelit / Prefix Sama)**: Tim dengan kata depan identik (contoh: `AANG Alpha` vs `AANG Beta`) dilarang satu grup.
-  3. **Aturan 3 (Anti-Bentrok Divisi)**: Tim dari klaster divisi yang sama disebar ke grup berbeda.
-  - **Mekanisme Penempatan & 3 Siklus Relaksasi**:
-    - Penempatan tim reguler selalu memprioritaskan grup dengan jumlah peserta terkecil terlebih dahulu (*Least-Filled Group First*), menggunakan *circular pointer* sebagai *tie-breaker*.
-    - *Siklus 1 (Strict)*: Wajib memenuhi Aturan 2 (Satelit) dan Aturan 3 (Divisi).
-    - *Siklus 2 (Relaksasi Divisi)*: Jika 1 putaran penuh gagal menemukan slot kosong, Aturan 3 (Divisi) dilonggarkan terlebih dahulu, sementara Aturan 2 (Satelit) tetap dijaga ketat.
-    - *Siklus 3 (Relaksasi Satelit)*: Jika 2 putaran gagal, Aturan 2 (Satelit) dilonggarkan demi menjaga **keseimbangan kapasitas grup mutlak**.
-- **Jaminan Strict Balance**: Untuk $N=41$ tim pada format 8 grup, sistem menjamin pembagian kapasitas mutlak: tepat **7 grup beranggotakan 5 tim** dan **1 grup beranggotakan 6 tim**.
-- **Penetapan MVP Match & Hero**: Panitia dapat mencatat MVP dan hero pilihan untuk tiap match yang selesai dipertandingkan.
+  - `google_apps_script.js` membaca langsung sheet **`MLBB - Klasemen & Point`` (pembagian grup, skor, match played, W/L) dan **`MLBB - Bagan & MVP`` (jadwal fixture, hari, sesi, stream room, skor BO3, pemenang, dan MVP) saat `GET` request.
 
 ### 4. ♟️ Modul Turnamen MCGG (Multi-Lobby, Ground Truth & Undian Komandan)
 - **Ground Truth Sinkronisasi Sheet Dedicated MCGG**:
@@ -108,7 +106,7 @@ Aplikasi terhubung ke Google Sheets menggunakan Google Apps Script Webhook denga
 
 ## 🧪 Pengujian Fungsional (Automated Test Suite)
 
-Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **80 skenario fungsional (100% Lulus)**:
+Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **81 skenario fungsional (100% Lulus)**:
 
 ```powershell
 npm test
@@ -125,7 +123,7 @@ Cakupan pengujian meliputi:
 - **Suite 8**: Pemisahan 3 Sheet Dedicated, MVP Turnamen & Undian Per-Lobi (4 test case).
 - **Suite 9**: Tutup/Buka Pendaftaran & Reset Poin/Undian MCGG (4 test case).
 - **Suite 10**: Format 8 Grup MLBB 5 Hari, Undian Match 2 MCGG, Hierarki Aturan Undian, Relaksasi Bertingkat & Strict Balance (14 test case).
-- **Suite 11**: Master-Detail Hub, Ground Truth Sinkronisasi GSheet & Fullscreen Loader (8 test case).
+- **Suite 11**: Master-Detail Hub, Ground Truth Sinkronisasi GSheet, Fullscreen Loader & Jadwal 3 Minggu MLBB (9 test case).
 
 ---
 

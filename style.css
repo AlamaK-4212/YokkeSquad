@@ -1523,3 +1523,79 @@ footer {
   color: #64748b;
   font-style: italic;
 }
+/* --- MLBB 3-WEEK TOURNAMENT SCHEDULE TABS & PILLS --- */
+.schedule-week-tabs {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+}
+.schedule-week-btn {
+  flex: 1;
+  min-width: 220px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #94a3b8;
+}
+.schedule-week-btn:hover {
+  border-color: var(--yokke-cyan);
+  background: rgba(0, 210, 255, 0.05);
+}
+.schedule-week-btn.active {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(114, 9, 183, 0.15));
+  border-color: var(--yokke-cyan);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+.schedule-week-btn .week-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  margin-bottom: 0.35rem;
+}
+.schedule-week-btn.active .week-badge {
+  background: var(--yokke-cyan);
+  color: #0b1120;
+}
+.schedule-day-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.schedule-day-pill:hover {
+  border-color: var(--yokke-gold);
+  color: #fff;
+}
+.schedule-day-pill.active {
+  background: var(--yokke-gold);
+  border-color: var(--yokke-gold);
+  color: #0b1120;
+}
+.resting-team-banner {
+  background: rgba(255, 183, 3, 0.08);
+  border: 1px dashed rgba(255, 183, 3, 0.35);
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--yokke-gold);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
