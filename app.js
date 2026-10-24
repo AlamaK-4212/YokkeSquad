@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxmXNtV4KTMkje26qUgMJ7sm2GBB1ZArlr6YIEypvytsz_zPIRYHF9hFvMFU8CmRBeCWg/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwoThOWtWRE0EfH_BmxbjIHlJTL-fT8hHfXTUZO5upHNQmUIldBIMKNHbjowqPnnsIAXg/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
@@ -611,37 +611,355 @@ let customRules = JSON.parse(localStorage.getItem('yokke_custom_rules') || JSON.
   mcgg: DEFAULT_RULES_MCGG
 }));
 
-// Client-side image compressor: compresses smartphone photos to clean ~80-120KB JPEG
-function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+// Client-side image compressor: compresses smartphone photos using HTML5 Canvas (<= 1200px, quality 0.75)
+function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
   return new Promise((resolve) => {
+    if (!file) return resolve('');
+    if (typeof FileReader === 'undefined' || typeof document === 'undefined') {
+      return resolve(typeof file === 'string' ? file : '');
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
+      const rawDataUrl = e.target.result || '';
+      try {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            let width = img.width || 0;
+            let height = img.height || 0;
+            if (!width || !height) return resolve(rawDataUrl);
+
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return resolve(rawDataUrl);
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } catch (canvasErr) {
+            resolve(rawDataUrl);
           }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
+        };
+        img.onerror = () => {
+          resolve(rawDataUrl);
+        };
+        img.src = rawDataUrl;
+      } catch (err) {
+        resolve(rawDataUrl);
+      }
+    };
+    reader.onerror = () => {
+      resolve('');
+    };
+    try {
+      reader.readAsDataURL(file);
+    } catch (readErr) {
+      resolve(typeof file === 'string' ? file : '');
+    }
+  });
+}
+
+// Client-side image compression helper (Canvas <= 1200px, quality 0.75)
+function compressImageFile(file, maxWidth = 1200, quality = 0.75) {
+  return compressImage(file, maxWidth, maxWidth, quality);
+}
+
+// ========================================================
+// TOAST NOTIFICATIONS (CYBERPUNK DARK)
+// ========================================================
+function showToast(msg, type = 'info', duration = 4000) {
+  if (typeof document === 'undefined') return;
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-item toast-' + type;
+  let icon = 'ℹ️';
+  if (type === 'success') icon = '✅';
+  else if (type === 'error' || type === 'danger') icon = '❌';
+  else if (type === 'warning') icon = '⚠️';
+
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <span class="toast-msg">${escapeHtml(msg).replace(/\n/g, '<br>')}</span>
+    <button type="button" class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('toast-fadeout');
+    setTimeout(() => {
+      if (toast.parentElement) toast.remove();
+    }, 350);
+  }, duration);
+}
+
+// Modal Glosarium Istilah Turnamen
+function openGlossaryModal() {
+  const modal = document.getElementById('glossaryModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeGlossaryModal() {
+  const modal = document.getElementById('glossaryModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Modal Reset Bagan dengan Verifikasi Password/PIN
+function openResetBaganModal() {
+  const modal = document.getElementById('resetBaganModal');
+  const input = document.getElementById('resetBaganPinInput');
+  const err = document.getElementById('resetBaganError');
+  if (input) input.value = '';
+  if (err) err.style.display = 'none';
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeResetBaganModal() {
+  const modal = document.getElementById('resetBaganModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function confirmResetBaganWithPin() {
+  const input = document.getElementById('resetBaganPinInput');
+  const enteredPin = input ? input.value.trim() : '';
+  const err = document.getElementById('resetBaganError');
+
+  if (enteredPin !== currentAdminPin && enteredPin !== 'YOKKE2026_' && enteredPin !== 'YOKKE2026') {
+    if (err) {
+      err.innerText = 'PIN Panitia salah! Reset bagan dibatalkan.';
+      err.style.display = 'block';
+    }
+    showToast('PIN Panitia salah! Tindakan reset dibatalkan.', 'error');
+    return;
+  }
+
+  closeResetBaganModal();
+
+  // 1. Kosongkan seluruh state data grup & bagan MLBB
+  groupStageData = {};
+  groupMatchResults = {};
+  groupPlayoffMatches = [];
+  bracketMatches = [];
+  tournamentStageState.mlbb.stage = 'STAGE_1_GROUP';
+  tournamentStageState.mlbb.isGroupLocked = false;
+  tournamentStageState.mlbb.tieBreaker = { needed: false, group: '', teamA: '', teamB: '', winner: null };
+
+  // 2. Bersihkan dan simpan ke LocalStorage
+  localStorage.removeItem('yokke_group_data');
+  localStorage.removeItem('yokke_group_match_results');
+  saveStageStateLocal();
+  saveState();
+
+  // 3. Render ulang UI
+  renderCurrentMLBBFormat();
+  updateAuthUI();
+
+  // 4. Sinkronisasi perubahan ke Google Sheets
+  saveTournamentStateOnly(true);
+  showToast('✅ Seluruh pembagian grup, jadwal, skor match, dan bagan playoff MLBB berhasil direset total!', 'success');
+}
+
+// Global Loader Emergency Bypass with Local/Offline Cache
+let globalFetchAbortController = null;
+
+function bypassLoaderWithCache() {
+  if (globalFetchAbortController) {
+    try { globalFetchAbortController.abort(); } catch(e) {}
+  }
+  renderParticipants();
+  renderCurrentMLBBFormat();
+  renderMCGGTable();
+  updateCounts();
+  hideGlobalLoader();
+  showToast('Memuat turnamen menggunakan data lokal / cache offline.', 'info', 4000);
+}
+
+// Instant Participant Search
+let participantSearchQuery = '';
+
+function handleParticipantSearch(query) {
+  participantSearchQuery = (query || '').trim().toLowerCase();
+  renderParticipants();
+}
+
+// ========================================================
+// AUTOSAVE & RESTORE FORM DRAFT (LOCALSTORAGE)
+// ========================================================
+function saveFormDraft(formType) {
+  if (typeof localStorage === 'undefined') return;
+  const cat = formType || document.getElementById('gameCategory')?.value || 'MLBB';
+
+  if (cat === 'MLBB') {
+    const draft = {
+      teamName: document.getElementById('teamName')?.value || '',
+      teamDept: document.getElementById('teamDept')?.value || '',
+      contactWa: document.getElementById('contactWa')?.value || '',
+      uploadedLogoBase64: uploadedLogoBase64 || '',
+      off1: {
+        name: document.getElementById('off1_name')?.value || '',
+        empid: document.getElementById('off1_empid')?.value || '',
+        nickname: document.getElementById('off1_nickname')?.value || '',
+        gameid: document.getElementById('off1_gameid')?.value || '',
+        organik: !!document.getElementById('off1_organik')?.checked,
+        idCard: regOfficialIdCards.off1 || ''
+      },
+      hasOff2: !!document.getElementById('has_official_2')?.checked,
+      off2: {
+        name: document.getElementById('off2_name')?.value || '',
+        empid: document.getElementById('off2_empid')?.value || '',
+        nickname: document.getElementById('off2_nickname')?.value || '',
+        gameid: document.getElementById('off2_gameid')?.value || '',
+        organik: !!document.getElementById('off2_organik')?.checked,
+        idCard: regOfficialIdCards.off2 || ''
+      },
+      players: {},
+      captainIndex: document.querySelector('input[name="captain_select"]:checked')?.value || '1'
+    };
+    for (let i = 1; i <= 8; i++) {
+      draft.players[i] = {
+        name: document.getElementById(`p${i}_name`)?.value || '',
+        nickname: document.getElementById(`p${i}_nickname`)?.value || '',
+        empid: document.getElementById(`p${i}_empid`)?.value || '',
+        gameid: document.getElementById(`p${i}_gameid`)?.value || '',
+        organik: !!document.getElementById(`p${i}_organik`)?.checked,
+        idCard: regPlayersIdCards[i] || ''
+      };
+    }
+    localStorage.setItem('yokke_form_draft_mlbb', JSON.stringify(draft));
+  } else if (cat === 'MCGG') {
+    const draft = {
+      name: document.getElementById('mcgg_name')?.value || '',
+      nickname: document.getElementById('mcgg_nickname')?.value || '',
+      dept: document.getElementById('mcgg_dept')?.value || '',
+      wa: document.getElementById('mcgg_wa')?.value || '',
+      empid: document.getElementById('mcgg_empid')?.value || '',
+      gameid: document.getElementById('mcgg_gameid')?.value || '',
+      organik: !!document.getElementById('mcgg_organik')?.checked,
+      idCard: regMcggIdCard || ''
+    };
+    localStorage.setItem('yokke_form_draft_mcgg', JSON.stringify(draft));
+  }
+}
+
+function restoreFormDraft(formType) {
+  if (typeof localStorage === 'undefined') return;
+  const cat = formType || document.getElementById('gameCategory')?.value || 'MLBB';
+
+  if (cat === 'MLBB') {
+    const raw = localStorage.getItem('yokke_form_draft_mlbb');
+    if (!raw) return;
+    try {
+      const draft = JSON.parse(raw);
+      if (draft.teamName && document.getElementById('teamName')) document.getElementById('teamName').value = draft.teamName;
+      if (draft.teamDept && document.getElementById('teamDept')) document.getElementById('teamDept').value = draft.teamDept;
+      if (draft.contactWa && document.getElementById('contactWa')) document.getElementById('contactWa').value = draft.contactWa;
+      if (draft.uploadedLogoBase64) {
+        uploadedLogoBase64 = draft.uploadedLogoBase64;
+        const box = document.getElementById('logoPreviewBox');
+        if (box) box.innerHTML = `<img src="${uploadedLogoBase64}" alt="Logo Preview">`;
+      }
+      if (draft.off1) {
+        if (document.getElementById('off1_name')) document.getElementById('off1_name').value = draft.off1.name || '';
+        if (document.getElementById('off1_empid')) document.getElementById('off1_empid').value = draft.off1.empid || '';
+        if (document.getElementById('off1_nickname')) document.getElementById('off1_nickname').value = draft.off1.nickname || '';
+        if (document.getElementById('off1_gameid')) document.getElementById('off1_gameid').value = draft.off1.gameid || '';
+        if (document.getElementById('off1_organik')) document.getElementById('off1_organik').checked = draft.off1.organik !== false;
+        if (draft.off1.idCard) {
+          regOfficialIdCards.off1 = draft.off1.idCard;
+          const box = document.getElementById('off1_idcard_preview');
+          if (box) box.innerHTML = `<img src="${draft.off1.idCard}" alt="ID Card">`;
+        }
+      }
+      if (draft.hasOff2) {
+        const chk = document.getElementById('has_official_2');
+        if (chk) {
+          chk.checked = true;
+          toggleOfficial2Form();
+        }
+        if (draft.off2) {
+          if (document.getElementById('off2_name')) document.getElementById('off2_name').value = draft.off2.name || '';
+          if (document.getElementById('off2_empid')) document.getElementById('off2_empid').value = draft.off2.empid || '';
+          if (document.getElementById('off2_nickname')) document.getElementById('off2_nickname').value = draft.off2.nickname || '';
+          if (document.getElementById('off2_gameid')) document.getElementById('off2_gameid').value = draft.off2.gameid || '';
+          if (document.getElementById('off2_organik')) document.getElementById('off2_organik').checked = draft.off2.organik !== false;
+          if (draft.off2.idCard) {
+            regOfficialIdCards.off2 = draft.off2.idCard;
+            const box = document.getElementById('off2_idcard_preview');
+            if (box) box.innerHTML = `<img src="${draft.off2.idCard}" alt="ID Card">`;
           }
         }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+      }
+      if (draft.players) {
+        for (let i = 1; i <= 8; i++) {
+          const p = draft.players[i];
+          if (!p) continue;
+          if (document.getElementById(`p${i}_name`)) document.getElementById(`p${i}_name`).value = p.name || '';
+          if (document.getElementById(`p${i}_nickname`)) document.getElementById(`p${i}_nickname`).value = p.nickname || '';
+          if (document.getElementById(`p${i}_empid`)) document.getElementById(`p${i}_empid`).value = p.empid || '';
+          if (document.getElementById(`p${i}_gameid`)) document.getElementById(`p${i}_gameid`).value = p.gameid || '';
+          if (document.getElementById(`p${i}_organik`)) document.getElementById(`p${i}_organik`).checked = p.organik !== false;
+          if (p.idCard) {
+            regPlayersIdCards[i] = p.idCard;
+            const box = document.getElementById(`p${i}_idcard_preview`);
+            if (box) box.innerHTML = `<img src="${p.idCard}" alt="ID Card">`;
+          }
+        }
+      }
+      if (draft.captainIndex) {
+        const rad = document.querySelector(`input[name="captain_select"][value="${draft.captainIndex}"]`);
+        if (rad) rad.checked = true;
+      }
+    } catch(e) {}
+  } else if (cat === 'MCGG') {
+    const raw = localStorage.getItem('yokke_form_draft_mcgg');
+    if (!raw) return;
+    try {
+      const draft = JSON.parse(raw);
+      if (draft.name && document.getElementById('mcgg_name')) document.getElementById('mcgg_name').value = draft.name;
+      if (draft.nickname && document.getElementById('mcgg_nickname')) document.getElementById('mcgg_nickname').value = draft.nickname;
+      if (draft.dept && document.getElementById('mcgg_dept')) document.getElementById('mcgg_dept').value = draft.dept;
+      if (draft.wa && document.getElementById('mcgg_wa')) document.getElementById('mcgg_wa').value = draft.wa;
+      if (draft.empid && document.getElementById('mcgg_empid')) document.getElementById('mcgg_empid').value = draft.empid;
+      if (draft.gameid && document.getElementById('mcgg_gameid')) document.getElementById('mcgg_gameid').value = draft.gameid;
+      if (document.getElementById('mcgg_organik')) document.getElementById('mcgg_organik').checked = draft.organik !== false;
+      if (draft.idCard) {
+        regMcggIdCard = draft.idCard;
+        const box = document.getElementById('mcgg_idcard_preview');
+        if (box) box.innerHTML = `<img src="${draft.idCard}" alt="ID Card">`;
+      }
+    } catch(e) {}
+  }
+}
+
+function clearFormDraft(formType) {
+  if (typeof localStorage === 'undefined') return;
+  if (!formType || formType === 'MLBB') localStorage.removeItem('yokke_form_draft_mlbb');
+  if (!formType || formType === 'MCGG') localStorage.removeItem('yokke_form_draft_mcgg');
+}
+
+let _draftSaveTimeout = null;
+function handleFormDraftChange() {
+  clearTimeout(_draftSaveTimeout);
+  _draftSaveTimeout = setTimeout(() => {
+    saveFormDraft();
+  }, 400);
 }
 
 
@@ -809,13 +1127,19 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
     syncBtn.innerText = 'Memuat Data... ⏳';
   }
 
+  const controller = new AbortController();
+  globalFetchAbortController = controller;
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
   try {
     const noCacheUrl = GOOGLE_SHEET_WEBHOOK_URL + (GOOGLE_SHEET_WEBHOOK_URL.includes('?') ? '&' : '?') + '_nocache=' + Date.now();
     const res = await fetch(noCacheUrl, {
       method: 'GET',
       mode: 'cors',
-      redirect: 'follow'
+      redirect: 'follow',
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     const data = await res.json();
     if (data && data.status === 'online' && Array.isArray(data.participants) && data.participants.length > 0) {
       
@@ -1038,9 +1362,15 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
       alert('ℹ️ Webhook aktif, tetapi belum ada data peserta yang dikembalikan.');
     }
   } catch (err) {
-    console.warn('Gagal fetch data dari Google Sheets:', err);
-    if (!isSilent) {
-      alert('⚠️ Gagal mengambil data dari Google Sheets.');
+    clearTimeout(timeoutId);
+    if (err && err.name === 'AbortError') {
+      console.warn('Sinkronisasi Google Sheets timeout (8s)');
+      showToast('Koneksi ke Google Sheets lambat. Menggunakan data cache lokal.', 'info');
+    } else {
+      console.warn('Gagal fetch data dari Google Sheets:', err);
+      if (!isSilent) {
+        showToast('⚠️ Gagal mengambil data dari Google Sheets.', 'error');
+      }
     }
   } finally {
     if (syncBtn) {
@@ -1179,9 +1509,12 @@ async function saveAllChangesToGoogleSheet() {
 
   saveState();
 
+  const totalParticipants = participants.length;
+  let syncSuccess = false;
+
+  // 1. PENDEKATAN PRIMER: BATCH UPDATE PAYLOAD TUNGGAL
   try {
-    // Kirim pembaruan setiap peserta yang memiliki status atau edit lokal
-    const updatePromises = participants.map(p => {
+    const batchUpdates = participants.map(p => {
       const activeNickname = (p.category === 'MCGG')
         ? (p.nickname || (p.roster && p.roster[0] ? p.roster[0].nickname : ''))
         : (p.captainNickname || '');
@@ -1192,33 +1525,101 @@ async function saveAllChangesToGoogleSheet() {
         ? (p.empId || (p.roster && p.roster[0] ? p.roster[0].empId : ''))
         : '';
 
-      return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'UPDATE',
-          isUpdate: true,
-          category: p.category,
-          rowIndex: p.rowIndex || undefined,
-          id: p.id,
-          teamName: p.name,
-          name: p.name,
-          dept: p.dept,
-          wa: p.wa,
-          empId: activeEmpId,
-          gameId: activeGameId,
-          nickname: activeNickname,
-          status: p.status,
-          notes: p.notes,
-          logo: p.logo || '',
-          idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
-          roster: p.roster || []
-        })
-      }).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
+      return {
+        category: p.category,
+        rowIndex: p.rowIndex || undefined,
+        id: p.id,
+        teamName: p.name,
+        name: p.name,
+        dept: p.dept,
+        wa: p.wa,
+        empId: activeEmpId,
+        gameId: activeGameId,
+        nickname: activeNickname,
+        status: p.status,
+        notes: p.notes
+      };
     });
 
-    // Simpan juga Konfigurasi Turnamen, Peraturan & Bagan Skor ke Google Sheets
-    const configPromise = fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    if (saveBtn) saveBtn.innerText = 'Sinkronisasi Batch... ⏳';
+
+    const batchRes = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'BATCH_UPDATE_PARTICIPANTS',
+        adminPin: currentAdminPin,
+        adminPassword: currentAdminPin,
+        participants: batchUpdates
+      })
+    });
+    const batchJson = await batchRes.json();
+    if (batchJson && (batchJson.status === 'success' || batchJson.success === true)) {
+      syncSuccess = true;
+    }
+  } catch (batchErr) {
+    console.warn('Batch update tidak didukung atau gagal, beralih ke antrean serial:', batchErr);
+    syncSuccess = false;
+  }
+
+  // 2. FALLBACK: SERIAL QUEUE DENGAN CHUNKING & PROGRESS BAR VISUAL
+  if (!syncSuccess) {
+    showToast('Beralih ke sinkronisasi serial bertahap...', 'info', 3000);
+    const chunkSize = 2;
+    for (let i = 0; i < participants.length; i += chunkSize) {
+      const chunk = participants.slice(i, i + chunkSize);
+      const currentProgress = Math.min(i + chunk.length, totalParticipants);
+      const percent = Math.round((currentProgress / totalParticipants) * 100);
+
+      if (saveBtn) {
+        saveBtn.innerText = `Menyimpan: ${percent}% (${currentProgress}/${totalParticipants}) ⏳`;
+      }
+
+      await Promise.all(chunk.map(p => {
+        const activeNickname = (p.category === 'MCGG')
+          ? (p.nickname || (p.roster && p.roster[0] ? p.roster[0].nickname : ''))
+          : (p.captainNickname || '');
+        const activeGameId = (p.category === 'MCGG')
+          ? (p.gameId || (p.roster && p.roster[0] ? p.roster[0].gameId : ''))
+          : '';
+        const activeEmpId = (p.category === 'MCGG')
+          ? (p.empId || (p.roster && p.roster[0] ? p.roster[0].empId : ''))
+          : '';
+
+        return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'UPDATE',
+            isUpdate: true,
+            category: p.category,
+            rowIndex: p.rowIndex || undefined,
+            id: p.id,
+            teamName: p.name,
+            name: p.name,
+            dept: p.dept,
+            wa: p.wa,
+            empId: activeEmpId,
+            gameId: activeGameId,
+            nickname: activeNickname,
+            status: p.status,
+            notes: p.notes,
+            logo: p.logo || '',
+            idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+            roster: p.roster || []
+          })
+        }).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
+      }));
+
+      // Jeda 250ms untuk menghindari rate limit Google Apps Script
+      await new Promise(r => setTimeout(r, 250));
+    }
+  }
+
+  // 3. SIMPAN KONFIGURASI TURNAMEN & REKAP SKOR
+  try {
+    if (saveBtn) saveBtn.innerText = 'Menyimpan Pengaturan... ⏳';
+    await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
@@ -1238,11 +1639,10 @@ async function saveAllChangesToGoogleSheet() {
       })
     }).catch(err => console.warn('Gagal sync config ke Google Sheets:', err));
 
-    await Promise.all([...updatePromises, configPromise]);
-    alert('✅ Seluruh perubahan data, status, peraturan, serta Sheet List Bagan, List Point, dan List Point & Commander MCGG berhasil diperbarui di Google Sheets!');
+    showToast('✅ Seluruh perubahan data peserta, status, bagan, dan klasemen turnamen berhasil disimpan ke Google Sheets!', 'success', 5000);
   } catch (err) {
     console.warn('Gagal menyimpan perubahan ke Google Sheets:', err);
-    alert('⚠️ Terjadi kendala saat menyimpan ke Google Sheets, namun data lokal Anda tetap aman tersimpan.');
+    showToast('⚠️ Sebagian perubahan berhasil disinkronkan, data lokal Anda tetap aman.', 'warning', 5000);
   } finally {
     if (saveBtn) {
       saveBtn.disabled = false;
@@ -1378,7 +1778,8 @@ async function handleLogoPreview(event) {
   const previewBox = document.getElementById('logoPreviewBox');
 
   if (file) {
-    uploadedLogoBase64 = await compressImage(file, 250, 250, 0.85);
+    uploadedLogoBase64 = await compressImageFile(file, 1200, 0.75);
+    handleFormDraftChange();
     previewBox.innerHTML = `<img src="${uploadedLogoBase64}" alt="Logo Preview">`;
   } else {
     uploadedLogoBase64 = "";
@@ -1392,10 +1793,11 @@ async function handleSingleIdCardPreview(event, target) {
   const previewBox = document.getElementById(`${target}_idcard_preview`);
 
   if (file) {
-    const compressed = await compressImage(file, 900, 900, 0.8);
+    const compressed = await compressImageFile(file, 1200, 0.75);
     if (target === 'off1') regOfficialIdCards.off1 = compressed;
     else if (target === 'off2') regOfficialIdCards.off2 = compressed;
     else if (target === 'mcgg') regMcggIdCard = compressed;
+    handleFormDraftChange();
 
     previewBox.innerHTML = `<img src="${compressed}" alt="ID Card">`;
   } else {
@@ -1413,8 +1815,9 @@ async function handlePlayerIdCardPreview(event, playerIdx) {
   const previewBox = document.getElementById(`p${playerIdx}_idcard_preview`);
 
   if (file) {
-    const compressed = await compressImage(file, 900, 900, 0.8);
+    const compressed = await compressImageFile(file, 1200, 0.75);
     regPlayersIdCards[playerIdx] = compressed;
+    handleFormDraftChange();
     previewBox.innerHTML = `<img src="${compressed}" alt="ID Card">`;
   } else {
     regPlayersIdCards[playerIdx] = "";
@@ -1646,8 +2049,8 @@ function renderRegistrationUI() {
       submitBtn.style.opacity = '1';
       submitBtn.style.cursor = 'pointer';
     }
-    if (mlbbNotice) mlbbNotice.style.display = 'block';
-    if (mcggNotice) mcggNotice.style.display = 'block';
+    if (mlbbNotice) mlbbNotice.style.display = (!isRegistrationClosed && isAdmin) ? 'block' : 'none';
+    if (mcggNotice) mcggNotice.style.display = (!isRegistrationClosed && isAdmin) ? 'block' : 'none';
   }
 }
 
@@ -2629,13 +3032,17 @@ async function handleRegister(e) {
     }
 
     if (result && (result.status === 'error' || result.success === false)) {
-      alert(`❌ PENDAFTARAN DITOLAK OLEH SERVER:\n${result.message || result.error || 'Validasi server gagal.'}`);
+      showToast(`❌ Pendaftaran ditolak: ${result.message || result.error || 'Validasi server gagal.'}`, 'error');
       submitBtn.disabled = false;
       submitBtn.innerText = "Kirim Pendaftaran";
       return;
     }
   } catch (err) {
     console.warn("Koneksi Google Sheets:", err);
+    showToast("⚠️ Gagal terhubung ke Google Sheets. Formulir Anda tetap tersimpan di draft lokal. Silakan coba kirim ulang saat koneksi stabil.", "error");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Kirim Pendaftaran";
+    return;
   }
 
   if (targetExisting) {
@@ -2696,6 +3103,7 @@ async function handleRegister(e) {
   const noticeMCGG = document.getElementById('mcggNameUpdateNotice');
   if (noticeMCGG) { noticeMCGG.style.display = 'none'; noticeMCGG.innerHTML = ''; }
 
+  clearFormDraft(category);
   renderPlayersFormInputs();
   toggleCategoryForm();
   toggleOfficial2Form();
@@ -3128,7 +3536,24 @@ function renderParticipants() {
   autoLinkParticipantsAssets();
   updateRegistrationDatalists();
   const tbody = document.getElementById('participantList');
-  const filtered = participants.filter(p => currentFilter === 'ALL' || p.category === currentFilter);
+  let filtered = participants.filter(p => currentFilter === 'ALL' || p.category === currentFilter);
+  if (participantSearchQuery) {
+    const q = participantSearchQuery;
+    filtered = filtered.filter(p => {
+      const matchName = (p.name || '').toLowerCase().includes(q);
+      const matchDept = (p.dept || '').toLowerCase().includes(q);
+      const matchNick = (p.nickname || '').toLowerCase().includes(q);
+      const matchCapNick = (p.captainNickname || '').toLowerCase().includes(q);
+      const matchEmp = (p.empId || '').toLowerCase().includes(q);
+      const matchRoster = Array.isArray(p.roster) && p.roster.some(m =>
+        (m.name || '').toLowerCase().includes(q) ||
+        (m.nickname || '').toLowerCase().includes(q) ||
+        (m.empId || '').toLowerCase().includes(q) ||
+        (m.gameId || '').toLowerCase().includes(q)
+      );
+      return matchName || matchDept || matchNick || matchCapNick || matchEmp || matchRoster;
+    });
+  }
 
   if (filtered.length === 0) {
     tbody.innerHTML = `<tr><td colspan="${isAdmin ? 8 : 7}" style="text-align: center; color: var(--text-muted);">Belum ada data pendaftar.</td></tr>`;
@@ -3216,7 +3641,7 @@ function renderParticipants() {
       <tr>
         <td>${idx + 1}</td>
         <td><span style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; background: ${p.category === 'MLBB' ? '#0077b6' : '#7209b7'}">${p.category}</span></td>
-        <td>
+        <td class="col-sticky-team">
           <div class="team-cell">
             ${logoHtml}
             <div>
@@ -3454,47 +3879,21 @@ function resetMLBBToStage1() {
 
 function resetTotalMLBBGroupAndBracket() {
   if (!isAdmin) {
-    alert('Akses ditolak: Hanya panitia yang dapat mereset pembagian grup & bagan turnamen MLBB.');
+    showToast('Akses ditolak: Hanya panitia yang dapat mereset pembagian grup & bagan turnamen MLBB.', 'error');
     return;
   }
   if (tournamentStageState.mlbb.isGroupLocked) {
-    alert('🔒 Pembagian grup MLBB sedang dikunci (Lock TM).\nHarap buka kunci grup terlebih dahulu jika ingin mereset pembagian grup dan bagan.');
+    showToast('🔒 Pembagian grup MLBB sedang dikunci (Lock TM). Harap buka kunci grup terlebih dahulu.', 'warning');
     return;
   }
   const hasData = Object.keys(groupStageData).length > 0 || Object.keys(groupMatchResults).length > 0 || (Array.isArray(groupPlayoffMatches) && groupPlayoffMatches.length > 0) || (Array.isArray(bracketMatches) && bracketMatches.length > 0);
   if (!hasData) {
-    alert('ℹ️ Pembagian grup dan bagan MLBB saat ini sudah dalam keadaan kosong/belum diundi.');
-    return;
-  }
-  if (!confirm('⚠️ PERINGATAN PANITIA TURNAMEN MLBB:\n\nApakah Anda yakin ingin MERESET TOTAL pembagian grup dan seluruh bagan pertandingan MLBB?\n\n• Seluruh grup yang telah dibentuk akan dikosongkan kembali.\n• Seluruh skor pertandingan fase grup (BO3) dan MVP akan dihapus.\n• Seluruh bagan Playoff dan Tie-Breaker akan direset.\n• Tim terverifikasi TETAP AMAN dan siap diundi ulang saat TM.')) {
-    return;
-  }
-  if (!confirm('Konfirmasi Terakhir: Anda benar-benar ingin mengosongkan pembagian grup dan bagan MLBB ke status awal (belum diundi)?')) {
+    showToast('ℹ️ Pembagian grup dan bagan MLBB saat ini sudah dalam keadaan kosong/belum diundi.', 'info');
     return;
   }
 
-  // 1. Kosongkan seluruh state data grup & bagan MLBB
-  groupStageData = {};
-  groupMatchResults = {};
-  groupPlayoffMatches = [];
-  bracketMatches = [];
-  tournamentStageState.mlbb.stage = 'STAGE_1_GROUP';
-  tournamentStageState.mlbb.isGroupLocked = false;
-  tournamentStageState.mlbb.tieBreaker = { needed: false, group: '', teamA: '', teamB: '', winner: null };
-
-  // 2. Bersihkan dan simpan ke LocalStorage
-  localStorage.removeItem('yokke_group_data');
-  localStorage.removeItem('yokke_group_match_results');
-  saveStageStateLocal();
-  saveState();
-
-  // 3. Render ulang UI
-  renderCurrentMLBBFormat();
-  updateAuthUI();
-
-  // 4. Sinkronisasi perubahan ke Google Sheets
-  saveTournamentStateOnly(true);
-  alert('✅ Seluruh pembagian grup, jadwal, skor match, dan bagan playoff MLBB berhasil direset total ke status awal (belum diundi)!');
+  // Proteksi verifikasi PIN / password panitia sebelum reset
+  openResetBaganModal();
 }
 
 function toggleLockMCGGLobbies() {
@@ -6087,15 +6486,23 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
       </div>
     `;
   } else if (!hasPool) {
-    cardsHtml = `
+    cardsHtml = isAdmin ? `
       <div style="margin-top:0.6rem; padding:0.75rem; border-top:1px dashed rgba(255,255,255,0.06); font-size:0.8rem; color:var(--text-muted); text-align:center;">
         🎲 Silakan klik tombol <strong>"Acak 8 Pool Commander (${activeMatch === 1 ? 'Non-Meta' : 'All'})"</strong> untuk mengundi pool 8 hero bagi ${lobbyLabel}.
       </div>
+    ` : `
+      <div style="margin-top:0.6rem; padding:0.75rem; border-top:1px dashed rgba(255,255,255,0.06); font-size:0.8rem; color:var(--text-muted); text-align:center;">
+        ⏳ Undian Commander untuk ${lobbyLabel} belum dilaksanakan oleh panitia turnamen.
+      </div>
     `;
   } else {
-    cardsHtml = `
+    cardsHtml = isAdmin ? `
       <div style="margin-top:0.6rem; padding:0.75rem; border-top:1px dashed rgba(255,255,255,0.06); font-size:0.8rem; color:var(--text-muted); text-align:center;">
         🎯 Pool 8 hero telah terbentuk! Klik tombol <strong>"Pasangkan ke Pemain"</strong> untuk membagikan hero secara acak ke masing-masing peserta.
+      </div>
+    ` : `
+      <div style="margin-top:0.6rem; padding:0.75rem; border-top:1px dashed rgba(255,255,255,0.06); font-size:0.8rem; color:var(--text-muted); text-align:center;">
+        ⏳ Menunggu panitia memasangkan pool commander ke masing-masing peserta.
       </div>
     `;
   }
@@ -7145,13 +7552,39 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderRules();
   updateAuthUI();
 
-  try {
-    // Sinkronkan 100% data live dari Google Sheets (tanpa cache)
-    await fetchParticipantsFromGoogleSheet(true, true);
-  } catch (err) {
-    console.warn('Gagal initial sync Google Sheets:', err);
-  } finally {
+  // Restore form draft jika ada
+  restoreFormDraft('MLBB');
+  restoreFormDraft('MCGG');
+
+  // Initial render dari data cache lokal agar UI langsung tampil tanpa menunggu jaringan
+  renderParticipants();
+  renderCurrentMLBBFormat();
+  renderMCGGTable();
+  updateCounts();
+
+  // Pasang autosave draft event listener pada form
+  const regFormEl = document.getElementById('regForm');
+  if (regFormEl) {
+    regFormEl.addEventListener('input', handleFormDraftChange);
+    regFormEl.addEventListener('change', handleFormDraftChange);
+  }
+
+  // Strategi Stale-While-Revalidate: Jika data cache lokal sudah ada, buka UI seketika (<100ms)
+  // dan jalankan sinkronisasi Google Sheets di latar belakang tanpa memblokir layar pengguna.
+  if (participants && participants.length > 0) {
     hideGlobalLoader();
+    fetchParticipantsFromGoogleSheet(true, true).catch(err => {
+      console.warn('Background sync Google Sheets:', err);
+    });
+  } else {
+    // Pengunjung baru tanpa cache: tunggu fetch awal dengan batas aman
+    try {
+      await fetchParticipantsFromGoogleSheet(true, true);
+    } catch (err) {
+      console.warn('Gagal initial sync Google Sheets:', err);
+    } finally {
+      hideGlobalLoader();
+    }
   }
 });
 
@@ -7253,6 +7686,12 @@ function setMCGGViewMode(mode) {
 function selectMLBBStageNode(nodeKey) {
   currentSelectedMLBBNode = nodeKey;
   renderMLBBInteractiveHubUI();
+  if (typeof window !== 'undefined' && typeof document !== 'undefined' && window.innerWidth <= 992) {
+    const detailEl = document.querySelector('.flow-detail-panel');
+    if (detailEl && typeof detailEl.scrollIntoView === 'function') {
+      detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
 function renderMLBBInteractiveHubUI() {
@@ -7264,6 +7703,49 @@ function renderMLBBInteractiveHubUI() {
 
   // --- SISI KIRI: SKEMA ALUR TURNAMEN INTERAKTIF ---
   let leftHtml = '<div class="flow-tree-column">';
+
+  // 1. SELECT DROPDOWN BABAK KHUSUS MOBILE (<= 992px)
+  leftHtml += `
+    <div class="mobile-stage-selector-wrap">
+      <label class="mobile-stage-label" for="mobileStageSelect">🎯 Pilih Babak Pertandingan:</label>
+      <select id="mobileStageSelect" class="mobile-stage-select" onchange="selectMLBBStageNode(this.value)">
+        <optgroup label="⚔️ Day 1: Fase 1 (Penyisihan 8 Grup)">
+          <option value="GROUP_A" ${activeNode === 'GROUP_A' ? 'selected' : ''}>🛡️ Grup A</option>
+          <option value="GROUP_B" ${activeNode === 'GROUP_B' ? 'selected' : ''}>🛡️ Grup B</option>
+          <option value="GROUP_C" ${activeNode === 'GROUP_C' ? 'selected' : ''}>🛡️ Grup C</option>
+          <option value="GROUP_D" ${activeNode === 'GROUP_D' ? 'selected' : ''}>🛡️ Grup D</option>
+          <option value="GROUP_E" ${activeNode === 'GROUP_E' ? 'selected' : ''}>🛡️ Grup E</option>
+          <option value="GROUP_F" ${activeNode === 'GROUP_F' ? 'selected' : ''}>🛡️ Grup F</option>
+          <option value="GROUP_G" ${activeNode === 'GROUP_G' ? 'selected' : ''}>🛡️ Grup G</option>
+          <option value="GROUP_H" ${activeNode === 'GROUP_H' ? 'selected' : ''}>🛡️ Grup H</option>
+        </optgroup>
+        <optgroup label="🏆 Day 2: Fase 2 (Upper Bracket 16 Besar)">
+          <option value="UB_16_M1" ${activeNode === 'UB_16_M1' ? 'selected' : ''}>⚡ Match 1 (1A vs 2B)</option>
+          <option value="UB_16_M2" ${activeNode === 'UB_16_M2' ? 'selected' : ''}>⚡ Match 2 (1C vs 2D)</option>
+          <option value="UB_16_M3" ${activeNode === 'UB_16_M3' ? 'selected' : ''}>⚡ Match 3 (1E vs 2F)</option>
+          <option value="UB_16_M4" ${activeNode === 'UB_16_M4' ? 'selected' : ''}>⚡ Match 4 (1G vs 2H)</option>
+          <option value="UB_16_M5" ${activeNode === 'UB_16_M5' ? 'selected' : ''}>⚡ Match 5 (1B vs 2A)</option>
+          <option value="UB_16_M6" ${activeNode === 'UB_16_M6' ? 'selected' : ''}>⚡ Match 6 (1D vs 2C)</option>
+          <option value="UB_16_M7" ${activeNode === 'UB_16_M7' ? 'selected' : ''}>⚡ Match 7 (1F vs 2E)</option>
+          <option value="UB_16_M8" ${activeNode === 'UB_16_M8' ? 'selected' : ''}>⚡ Match 8 (1H vs 2G)</option>
+        </optgroup>
+        <optgroup label="🔥 Day 3: Upper QF & Lower Bracket R1">
+          <option value="DAY3_UPPER_QF" ${activeNode === 'DAY3_UPPER_QF' ? 'selected' : ''}>⚡ Upper Quarter Final</option>
+          <option value="DAY3_LOWER_R1" ${activeNode === 'DAY3_LOWER_R1' ? 'selected' : ''}>🛡️ Lower Bracket Round 1</option>
+        </optgroup>
+        <optgroup label="👑 Day 4: Semifinal & Final Bracket">
+          <option value="DAY4_UPPER" ${activeNode === 'DAY4_UPPER' ? 'selected' : ''}>👑 Upper Semifinal & Final</option>
+          <option value="DAY4_LOWER" ${activeNode === 'DAY4_LOWER' ? 'selected' : ''}>🛡️ Lower Quarter Final s/d Final</option>
+        </optgroup>
+        <optgroup label="🏆 Final Offline Kantor Pusat">
+          <option value="GRAND_FINAL_OFFLINE" ${activeNode === 'GRAND_FINAL_OFFLINE' ? 'selected' : ''}>🏆 Super Grand Final (BO5)</option>
+        </optgroup>
+      </select>
+    </div>
+  `;
+
+  // 2. DESKTOP TREE CARDS (21 Interactive Nodes)
+  leftHtml += '<div class="flow-tree-desktop-cards">';
 
   // DAY 1 (Fase 1: 8 Grup Penyisihan BO3)
   leftHtml += `
@@ -7410,7 +7892,7 @@ function renderMLBBInteractiveHubUI() {
     </div>
   `;
 
-  leftHtml += '</div>';
+  leftHtml += '</div></div>';
 
   // --- SISI KANAN: INSPECTOR DETAIL PANEL ---
   let rightHtml = '<div class="flow-detail-panel">';

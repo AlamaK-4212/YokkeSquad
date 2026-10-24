@@ -661,14 +661,11 @@ function getMcggListing(ss) {
 function doGet(e) {
   try {
     var ss = getTargetSpreadsheet();
-    ensureRelationalSheetsExist(ss);
 
     var result = {
       status: "online",
       participants: []
     };
-
-    var mainFolder = getOrCreateUploadFolder();
 
     // A. BACA RELASIONAL MLBB (MLBB - Tim & MLBB - Peserta)
     var mlbbTimList = getMlbbTimListing(ss);
@@ -741,41 +738,8 @@ function doGet(e) {
         }
       }
 
-      // Cari Folder Google Drive Tim untuk Logo
-      var logoUrl = "";
-      var folderMatch = (team.folderUrl || team.notes || "").match(/folders\/([a-zA-Z0-9_-]+)/);
-      var tFolder = null;
-      if (folderMatch && folderMatch[1]) {
-        try {
-          tFolder = DriveApp.getFolderById(folderMatch[1]);
-        } catch(err) {}
-      }
-      if (!tFolder && mainFolder) {
-        try {
-          var subFolders = mainFolder.getFolders();
-          while (subFolders.hasNext()) {
-            var sf = subFolders.next();
-            var sfName = sf.getName().toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (sfName.indexOf(cleanTName) !== -1) {
-              tFolder = sf;
-              break;
-            }
-          }
-        } catch(err) {}
-      }
-      if (tFolder) {
-        try {
-          var logoFiles = tFolder.getFiles();
-          while (logoFiles.hasNext()) {
-            var lf = logoFiles.next();
-            var lfn = lf.getName().toLowerCase();
-            if (lfn.indexOf("logo") !== -1) {
-              logoUrl = lf.getUrl();
-              break;
-            }
-          }
-        } catch(err) {}
-      }
+      // Ambil URL logo/folder langsung dari data tim tanpa remote Drive scan yang lambat
+      var logoUrl = (team.folderUrl && team.folderUrl.trim() !== "-") ? team.folderUrl.trim() : "";
 
       var realCap = rosterList.find(function(m){ return m.isCaptain && (m.role || '').indexOf('Official') === -1; }) ||
                     rosterList.find(function(m){ return (m.role || '').indexOf('Pemain Inti 1') !== -1; }) ||
@@ -1139,7 +1103,7 @@ function doPost(e) {
     var now = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
     // Validasi Keamanan Server: Setiap request perubahan administratif wajib menyertakan adminPin yang valid
-    if (data.action === "SAVE_CONFIG" || data.action === "DELETE") {
+    if (data.action === "SAVE_CONFIG" || data.action === "DELETE" || data.action === "BATCH_UPDATE_PARTICIPANTS" || data.action === "BATCH_UPDATE_ALL") {
       var reqPin = (data.adminPin || data.adminPassword || "").toString().trim();
       var validPins = ["YOKKE2026_", "YOKKE2026"];
       
@@ -1243,6 +1207,61 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ 
         status: "success", 
         message: "Berhasil membuat & memperbarui 3 Sheet: MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP!" 
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // case 'BATCH_UPDATE_PARTICIPANTS': Pembaruan data peserta secara batch
+    if (data.action === "BATCH_UPDATE_PARTICIPANTS" || data.action === "BATCH_UPDATE_ALL") {
+      var updates = data.participants || data.updates || [];
+      var updatedCount = 0;
+      var timSheet = sheets.timSheet;
+      var mcSheet = sheets.mcggSheet;
+
+      var timVals = (timSheet && timSheet.getLastRow() > 1) ? timSheet.getDataRange().getValues() : [];
+      var mcVals = (mcSheet && mcSheet.getLastRow() > 1) ? mcSheet.getDataRange().getValues() : [];
+
+      updates.forEach(function(p) {
+        if (!p) return;
+        if (p.category === "MLBB") {
+          var targetTeamName = (p.name || p.teamName || "").toString().trim().toLowerCase();
+          for (var r = 1; r < timVals.length; r++) {
+            var rowTeam = (timVals[r][1] || "").toString().trim().toLowerCase();
+            if (rowTeam === targetTeamName) {
+              if (p.status) timSheet.getRange(r + 1, 6).setValue(p.status);
+              if (p.notes !== undefined) timSheet.getRange(r + 1, 7).setValue(p.notes);
+              if (p.dept) timSheet.getRange(r + 1, 3).setValue(p.dept);
+              if (p.wa) timSheet.getRange(r + 1, 4).setValue(p.wa);
+              timSheet.getRange(r + 1, 1).setValue(now);
+              updatedCount++;
+              break;
+            }
+          }
+        } else if (p.category === "MCGG") {
+          var targetName = (p.name || "").toString().trim().toLowerCase();
+          var targetNip = (p.empId || "").toString().replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+          for (var mr = 1; mr < mcVals.length; mr++) {
+            var rName = (mcVals[mr][1] || "").toString().trim().toLowerCase();
+            var rNip = (mcVals[mr][4] || "").toString().replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+            if ((targetNip && targetNip.length >= 3 && rNip === targetNip) || (rName && rName === targetName)) {
+              mcSheet.getRange(mr + 1, 1).setValue(now);
+              if (p.dept) mcSheet.getRange(mr + 1, 3).setValue(p.dept);
+              if (p.wa) mcSheet.getRange(mr + 1, 4).setValue(p.wa);
+              if (p.gameId) mcSheet.getRange(mr + 1, 6).setValue(p.gameId);
+              if (p.nickname) mcSheet.getRange(mr + 1, 7).setValue(p.nickname);
+              if (p.status) mcSheet.getRange(mr + 1, 10).setValue(p.status);
+              if (p.notes !== undefined) mcSheet.getRange(mr + 1, 11).setValue(p.notes);
+              updatedCount++;
+              break;
+            }
+          }
+        }
+      });
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        success: true,
+        updatedCount: updatedCount,
+        message: "Berhasil memperbarui " + updatedCount + " data peserta secara batch!"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
