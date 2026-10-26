@@ -1188,11 +1188,13 @@ async function runLiveIntegrationTests() {
     assert(appCode.includes('fetchRulesFromGoogleDoc'), 'app.js harus memiliki fungsi fetchRulesFromGoogleDoc');
   });
 
-  runTest('12.2 Peraturan Standar MLBB memuat regulasi resmi dari Google Docs', () => {
-    assert(appCode.includes('KETENTUAN PESERTA MLBB:'), 'Peraturan MLBB harus memuat ketentuan peserta');
-    assert(appCode.includes('KETENTUAN PERTANDINGAN MLBB:'), 'Peraturan MLBB harus memuat ketentuan pertandingan');
-    assert(appCode.includes("DO AND DON'T YMC S4 2026:"), 'Peraturan MLBB harus memuat DO and DONT');
-    assert(appCode.includes('Hanya player yang sudah melaporkan id card fisik hilang'), 'Peraturan MLBB harus memuat ketentuan id card fisik hilang');
+  runTest('12.2 Peraturan Standar MLBB memuat regulasi resmi 12 Poin dari Google Docs', () => {
+    assert(appCode.includes('KETENTUAN PESERTA MLBB'), 'Peraturan MLBB harus memuat ketentuan peserta');
+    assert(appCode.includes('KETENTUAN PERTANDINGAN MLBB'), 'Peraturan MLBB harus memuat ketentuan pertandingan');
+    assert(appCode.includes("DO AND DON'T YMC S4 2026"), 'Peraturan MLBB harus memuat DO and DONT');
+    assert(appCode.includes('12. Seluruh tim wajib mengikuti jadwal pertandingan yang telah ditetapkan oleh panitia'), 'Peraturan MLBB harus memuat 12 poin lengkap');
+    assert(appCode.includes('5. Koneksi jaringan internet merupakan tanggung jawab masing-masing peserta'), 'Peraturan MLBB poin 5 harus terpisah');
+    assert(appCode.includes('6. Setiap tim tidak bisa mengajukan pause'), 'Peraturan MLBB poin 6 harus terpisah');
   });
 
   runTest('12.3 Penonaktifan dropdown list tim/peserta pada form pendaftaran di index.html', () => {
@@ -1210,7 +1212,7 @@ async function runLiveIntegrationTests() {
   runTest('12.5 Konfigurasi Tab MCGG Google Docs (tab=t.ji56ljhdhzkr) & Regulasi Resmi MCGG', () => {
     assert(appCode.includes('GOOGLE_DOCS_RULES_MCGG_DOC_URL'), 'app.js harus memiliki konstanta GOOGLE_DOCS_RULES_MCGG_DOC_URL');
     assert(appCode.includes('tab=t.ji56ljhdhzkr'), 'app.js harus memuat id tab t.ji56ljhdhzkr untuk ekspor dokumen MCGG');
-    assert(appCode.includes('PERATURAN RESMI TURNAMEN MAGIC CHESS: GO GO (MCGG)'), 'DEFAULT_RULES_MCGG harus memuat judul dokumen resmi MCGG');
+    assert(appCode.includes('1. KETENTUAN UMUM & VERIFIKASI'), 'DEFAULT_RULES_MCGG harus memuat ketentuan umum');
     assert(appCode.includes('Undian Pool Commander Tier High & Mid'), 'DEFAULT_RULES_MCGG harus memuat regulasi resmi commander MCGG');
   });
 

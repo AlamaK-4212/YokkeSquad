@@ -506,74 +506,78 @@ const GOOGLE_DOCS_RULES_EXPORT_URL_MCGG = "https://docs.google.com/document/d/1b
 const GOOGLE_DOCS_RULES_EXPORT_URL = GOOGLE_DOCS_RULES_EXPORT_URL_MLBB;
 
 // Default Rules Sesuai Dokumen Resmi Google Docs YMC S4 2026
-const DEFAULT_RULES_MLBB = `KETENTUAN PESERTA MLBB:
-1. Player wajib pegawai MTI (min. bekerja 6 bulan sebagai pegawai MTI).
-2. Menunjukkan ID Card Pegawai Yokke (bukti fisik), atau e-Money Pegawai Yokke, atau surat keterangan atasan jika ID Card hilang (Surat keterangan dari atasan jika yang bersangkutan benar merupakan pegawai aktif).
+const DEFAULT_RULES_MLBB = `📋 KETENTUAN PESERTA MLBB
+1. Player wajib pegawai MTI (minimal bekerja 6 bulan sebagai pegawai MTI).
+2. Menunjukkan ID Card Pegawai Yokke (bukti fisik), atau e-Money Pegawai Yokke, atau surat keterangan atasan jika ID Card hilang (surat keterangan dari atasan jika yang bersangkutan benar merupakan pegawai aktif).
 3. Anggota tim yang telah didaftarkan tidak dapat diganti pada saat waktu pendaftaran telah ditutup.
 4. Menyertakan Nama Lengkap, Nickname, dan ID Game seluruh pemain saat pendaftaran.
 5. 1 (satu) Tim terdiri dari 8 (delapan) pemain (5 Inti + 3 Cadangan) + 2 (dua) Official (1 wajib, 1 opsional).
 6. Tidak ada maksimal dalam mendaftarkan tim dan tidak ada batasan 1 tim harus dari 1 Divisi/Unit (lintas divisi diperbolehkan).
 7. Untuk Official MLBB tidak diperkenankan mendaftar menjadi pemain MLBB.
 
-KETENTUAN PERTANDINGAN MLBB:
-1. Komposisi Roster Resmi: 2 Official/Manager + 8 Pemain (5 Pemain Inti + 3 Cadangan). Wajib memenuhi kuota komposisi internal Yokke.
+
+🏆 KETENTUAN PERTANDINGAN MLBB
+1. Komposisi Roster Resmi: 
+2 Official/Manager 
++ 8 Pemain (5 Pemain Inti + 3 Cadangan). 
+Wajib memenuhi kuota komposisi internal Yokke.
 2. Format Turnamen Resmi: Turnamen menggunakan sistem 2 tahap — Babak Fase Grup (Group Stage) terlebih dahulu, kemudian tim pemuncak klasemen melaju ke Bagan Turnamen Playoff (Knockout Stage, Semifinal Upper Lower, Final Upper Lower & Grand Final).
 3. Sistem Pertandingan:
-   - Babak Fase Grup: Pertandingan Best of 3 (BO3).
-   - Babak Knockout Stage: Best of 3 (BO3).
-   - Babak Semifinal Upper and Lower: Best of 3 (BO3).
-   - Babak Final Upper and Lower: Best of 5 (BO5).
-   - Babak Grand Final: Best of 5 (BO5).
+   * Babak Fase Grup: Pertandingan Best of 3 (BO3).
+   * Babak Knockout Stage: Best of 3 (BO3).
+   * Babak Semifinal Upper and Lower: Best of 3 (BO3).
+   * Babak Final Upper and Lower: Best of 5 (BO5).
+   * Babak Grand Final: Best of 5 (BO5).
 4. Penentuan Poin Grup: Tim menang memperoleh 2 poin, tim kalah memperoleh 0 poin. Peringkat 1 & 2 dari tiap grup berhak melaju ke Upper Bracket. Peringkat 3 dari tiap grup berhak melaju ke Lower Bracket.
-5. Dikarenakan koneksi jaringan internet merupakan tanggung jawab masing-masing peserta, setiap tim tidak bisa mengajukan pause.
-6. Pada tampilan on Cam, seluruh pemain wajib memperlihatkan wajah dengan jelas, posisi handphone/device harus terlihat, serta menggunakan posisi Camera ZoomOut yang dapat memperlihatkan kondisi sekeliling dari 5 pemain. Pastikan device untuk on Cam dan device untuk tanding berbeda.
-7. Tim dilarang mengganti pemain yang sudah terdaftar, termasuk pemain cadangan selama turnamen berlangsung.
-8. Dikarenakan tidak diperbolehkan untuk pause, jika terjadi pelanggaran di dalam ingame harap melakukan screenshot dan berikan kepada panitia evidence tersebut setelah pertandingan berakhir agar panitia melakukan tinjauan.
-9. Pembagian tim yang bertanding akan dilakukan pada saat Technical Meeting.
-10. Setelah pertandingan, Kapten Tim dari tim yang menang WAJIB screenshot Hasil Match dan Detail (tidak boleh menutup Hero, Item, nama akun, dan nilai pertandingan).
-11. Seluruh tim wajib mengikuti jadwal pertandingan yang telah ditetapkan oleh panitia.
+5. Koneksi jaringan internet merupakan tanggung jawab masing-masing peserta.
+6. Setiap tim tidak bisa mengajukan pause.
+7. Pada tampilan on Cam, seluruh pemain wajib memperlihatkan wajah dengan jelas, posisi handphone/device harus terlihat, serta menggunakan posisi Camera ZoomOut yang dapat memperlihatkan kondisi sekeliling dari 5 pemain. Pastikan device untuk on Cam dan device untuk tanding berbeda.
+8. Tim dilarang mengganti pemain yang sudah terdaftar, termasuk pemain cadangan selama turnamen berlangsung.
+9. Dikarenakan tidak diperbolehkan untuk pause, jika terjadi pelanggaran di dalam in-game harap melakukan screenshot dan berikan kepada panitia evidence tersebut setelah pertandingan berakhir agar panitia melakukan tinjauan.
+10. Pembagian tim yang bertanding akan dilakukan pada saat Technical Meeting.
+11. Setelah pertandingan, Kapten Tim dari tim yang menang WAJIB screenshot Hasil Match dan Detail (tidak boleh menutup Hero, Item, nama akun, dan nilai pertandingan).
+12. Seluruh tim wajib mengikuti jadwal pertandingan yang telah ditetapkan oleh panitia.
 
-DO AND DON'T YMC S4 2026:
-Do:
-✅ Peserta WAJIB on camera pada room Discord yang sudah ditentukan panitia saat pertandingan.
-✅ Seluruh pemain WAJIB terlihat dan device handphone yang digunakan pada saat on camera dan saat pertandingan berlangsung.
-✅ Wajib menggunakan akun yang sudah didaftarkan pada saat registrasi (nickname, id game, server, dll).
-✅ Wajib menunjukkan ID card Yokke (fisik bukan foto) dan ID game pada saat verifikasi pemain sebelum bertanding. Jika ID card Yokke (fisik berwarna putih biru) hilang, diperbolehkan menggunakan e-Money Yokke bergambar pegawai (fisik). Hanya player yang sudah melaporkan id card fisik hilang atau belum terima sebelumnya yang di whitelist oleh panitia untuk bertanding tanpa id card fisik.
-✅ Wajib melakukan verifikasi id card fisik dan id game kepada panitia/wasit yang bertugas apabila adanya pergantian player.
-✅ Tim yang sudah mendaftar wajib join Discord (untuk on cam pada saat tanding) dan grup WhatsApp (untuk informasi pertandingan).
-✅ Diperbolehkan melakukan recall-recall/taunting/emote-emote pada saat bertanding.
-✅ Diperbolehkan menggunakan skin apapun.
-✅ Apabila melakukan selebrasi pada saat menang, harap melakukan selebrasi tanpa menggunakan gesture SARA.
-✅ WAJIB unmute voice di Discord pada saat verifikasi player dan wajib mute Discord pada saat bertanding.
-✅ WAJIB bagi kedua team menunjukkan loading screen sebelum pertandingan dimulai.
-✅ WAJIB bagi kedua team menunjukkan screen hasil pertandingan (Victory/Defeat)).
-✅ WAJIB melakukan screenshot hasil pertandingan bagi tim yang menang dengan ketentuan Hero harus terlihat, Item terlihat, ID player terlihat dan skor terlihat.
-✅ WAJIB hadir di discord 30 menit (18.30 WIB)) sebelum jadwal pertandingan dimulai, berlaku juga untuk team yang akan tayang di live streaming youtube. Apabila team A vs Team B sebagai contoh sudah melakukan verifikasi pada discord di pukul 18.30 WIB, maka team A vs Team B sudah dapat segera melakukan pertandingan.
-✅ Team home yang membuat room custom dan WAJIB custom draft pick mythic. Untuk match kedua team away yang membuat room custom.
 
-Don't:
-⚠️ Jika player mematikan camera pada saat bertanding, wasit/panitia berhak memberhentikan pertandingan dan memberikan peringatan untuk segera menghidupkan camera. Jika player mematikan camera kembali baik sengaja maupun tidak sengaja, tim tersebut akan dianggap kalah di match tersebut.
-⚠️ Jika ada player dari suatu tim menggunakan akun yang tidak sesuai dengan akun yang didaftarkan pada saat registrasi, tim tersebut akan langsung didiskualifikasi.
-⚠️ Apabila ada tim yang ketahuan menggunakan joki atau menggunakan cheat, tim tersebut akan langsung didiskualifikasi & blacklist.
-⚠️ Apabila ID card Yokke (putih biru) dan e-Money Yokke bergambar pegawai hilang, harap membuat surat keterangan dari atasan player terkait yang menyatakan yang bersangkutan masih aktif sebagai pegawai Yokke (Nama lengkap, NIP, tanggal join MTI, asal Divisi/Unit dan status karyawan organik/insource/outsource). Dokumen dikirimkan ke grup WhatsApp agar bisa di-crosscheck oleh panitia.
-⚠️ Dilarang Chat All dan Notifikasi All. Apabila ketahuan ada tim yang Chat All dan Notifikasi All akan diberikan 1x peringatan oleh WASIT. Jika melakukannya kembali, maka tim tersebut akan dianggap kalah di match tersebut. Jika pada kesempatan match berikutnya masih melanggar, langsung dianggap kalah tanpa peringatan. Untuk Fase Grup tidak ada wasit yang join ke dalam in game sehingga pihak team yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOOT EVIDENCE.
-⚠️ Jika terdapat tim yang melakukan selebrasi on cam dengan gesture SARA, kemenangan akan dicabut dan tim tersebut dianggap kalah di match tersebut. Untuk Fase Grup tidak ada wasit yang join ke dalam in game sehingga pihak team yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOOT EVIDENCE.
-⚠️ Tidak ada pengulangan draft pick apapun yang terjadi.
-⚠️ Dilarang melakukan sensor apapun pada screenshot hasil pertandingan.
-⚠️ Apabila Team C vs Team D sebagai contoh baru Team C yang melakukan verifikasi di pukul 18.45 WIB dan Team D belum hadir di Discord, maka panitia akan menunggu Team D hingga pukul 19.00 WIB (19.00 WIB adalah batas terakhir untuk verifikasi match 1 dari BO3), jika Team D tidak muncul hingga waktu menunjukkan pukul 19.01 WIB maka Team D akan dianggap kalah (WO) di match 1. Team D akan ditunggu untuk verifikasi untuk match 2 hingga pukul 19.15 WIB (19.15 WIB adalah batas terakhir untuk verifikasi match 2 dari BO3). Jika Team D tidak muncul hingga waktu menunjukkan pukul 19.16 WIB maka Team D akan dianggap kalah (WO) di match 2.`;
+⚖️ DO AND DON'T YMC S4 2026
 
-const DEFAULT_RULES_MCGG = `PERATURAN RESMI TURNAMEN MAGIC CHESS: GO GO (MCGG)
-1. KETENTUAN UMUM & VERIFIKASI
+
+DO (Hal yang Wajib/Diperbolehkan):
+* Peserta WAJIB on camera pada room Discord yang sudah ditentukan panitia saat pertandingan.
+* Seluruh pemain WAJIB terlihat dan device handphone yang digunakan pada saat on camera dan saat pertandingan berlangsung.
+* Wajib menggunakan akun yang sudah didaftarkan pada saat registrasi (nickname, id game, server, dll).
+* Wajib menunjukkan ID card Yokke (fisik bukan foto) dan ID game pada saat verifikasi pemain sebelum bertanding. Jika ID card Yokke (fisik berwarna putih biru) hilang, diperbolehkan menggunakan e-Money Yokke bergambar pegawai (fisik). Hanya player yang sudah melaporkan ID card fisik hilang atau belum terima sebelumnya yang di-whitelist oleh panitia untuk bertanding tanpa ID card fisik.
+* Wajib melakukan verifikasi ID card fisik dan ID game kepada panitia/wasit yang bertugas apabila adanya pergantian player.
+* Tim yang sudah mendaftar wajib join Discord (untuk on cam pada saat tanding) dan grup WhatsApp (untuk informasi pertandingan).
+* Diperbolehkan melakukan recall-recall/taunting/emote-emote pada saat bertanding.
+* Diperbolehkan menggunakan skin apapun.
+* Apabila melakukan selebrasi pada saat menang, harap melakukan selebrasi tanpa menggunakan gesture SARA.
+* WAJIB unmute voice di Discord pada saat verifikasi player dan wajib mute Discord pada saat bertanding.
+* WAJIB bagi kedua tim menunjukkan loading screen sebelum pertandingan dimulai.
+* WAJIB bagi kedua tim menunjukkan screen hasil pertandingan (Victory/Defeat).
+* WAJIB melakukan screenshot hasil pertandingan bagi tim yang menang dengan ketentuan Hero harus terlihat, Item terlihat, ID player terlihat, dan skor terlihat.
+* WAJIB hadir di Discord 30 menit (18.30 WIB) sebelum jadwal pertandingan dimulai, berlaku juga untuk tim yang akan tayang di live streaming YouTube. Apabila tim A vs tim B sebagai contoh sudah melakukan verifikasi pada Discord di pukul 18.30 WIB, maka tim A vs tim B sudah dapat segera melakukan pertandingan.
+* Tim home yang membuat room custom dan WAJIB custom draft pick mythic. Untuk match kedua tim away yang membuat room custom.
+DON'T (Hal yang Dilarang/Sanksi):
+* Jika player mematikan kamera pada saat bertanding, wasit/panitia berhak memberhentikan pertandingan dan memberikan peringatan untuk segera menghidupkan kamera . Jika player mematikan kamera kembali baik sengaja maupun tidak sengaja, tim tersebut akan dianggap kalah di match tersebut.
+* Jika ada player dari suatu tim menggunakan akun yang tidak sesuai dengan akun yang didaftarkan pada saat registrasi, tim tersebut akan langsung didiskualifikasi.
+* Apabila ada tim yang ketahuan menggunakan joki atau menggunakan cheat, tim tersebut akan langsung didiskualifikasi & blacklist.
+* Apabila ID card Yokke (putih biru) dan e-Money Yokke bergambar pegawai hilang, harap membuat surat keterangan dari atasan player terkait yang menyatakan yang bersangkutan masih aktif sebagai pegawai Yokke (Nama lengkap, NIP, tanggal join MTI, asal Divisi/Unit, dan status karyawan organik/insource/outsource). Dokumen dikirimkan ke grup WhatsApp agar bisa di-crosscheck oleh panitia.
+* Dilarang Chat All dan Notifikasi All. Apabila ketahuan ada tim yang Chat All dan Notifikasi All akan diberikan 1x peringatan oleh WASIT. Jika melakukannya kembali, maka tim tersebut akan dianggap kalah di match tersebut. Jika pada kesempatan match berikutnya masih melanggar, langsung dianggap kalah tanpa peringatan. Untuk Fase Grup tidak ada wasit yang join ke dalam in-game, sehingga pihak tim yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOT EVIDENCE.
+* Jika terdapat tim yang melakukan selebrasi on cam dengan gesture SARA, kemenangan akan dicabut dan tim tersebut dianggap kalah di match tersebut. Untuk Fase Grup tidak ada wasit yang join ke dalam in-game, sehingga pihak tim yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOT EVIDENCE.
+* Tidak ada pengulangan draft pick apapun yang terjadi.
+* Dilarang melakukan sensor apapun pada screenshot hasil pertandingan.
+* Apabila Tim C vs Tim D sebagai contoh baru Tim C yang melakukan verifikasi di pukul 18.45 WIB dan Tim D belum hadir di Discord, maka panitia akan menunggu Tim D hingga pukul 19.00 WIB (19.00 WIB adalah batas terakhir untuk verifikasi match 1 dari BO3). Jika Tim D tidak muncul hingga waktu menunjukkan pukul 19.01 WIB, maka Tim D akan dianggap kalah (WO) di match 1. Tim D akan ditunggu untuk verifikasi untuk match 2 hingga pukul 19.15 WIB (19.15 WIB adalah batas terakhir untuk verifikasi match 2 dari BO3). Jika Tim D tidak muncul hingga waktu menunjukkan pukul 19.16 WIB, maka Tim D akan dianggap kalah (WO) di match 2.`;
+
+const DEFAULT_RULES_MCGG = `1. KETENTUAN UMUM & VERIFIKASI
 * Verifikasi Identitas: Seluruh peserta wajib memperlihatkan ID Card Yokke fisik kepada panitia sebelum pertandingan dimulai.
 * Kehadiran: Peserta wajib hadir di lobby 10 menit sebelum jadwal pertandingan.
    * Toleransi keterlambatan: Maksimal 10 menit. Lewat dari waktu tersebut, peserta dianggap gugur (menempati Peringkat 8 pada match tersebut).
 * Tanggung Jawab Teknis: Segala masalah teknis (koneksi internet, perangkat/device, lag) merupakan tanggung jawab penuh masing-masing peserta.
-
 2. FORMAT PERTANDINGAN & SISTEM GRUP
 * Sistem Grup: Terdiri dari 8 Player per grup.
 * Format Babak: Pertandingan menggunakan format BO3 atau BO5 (disesuaikan dengan tahap babak).
 * Sistem Kualifikasi: 4 Player dengan akumulasi poin tertinggi di akhir BO3/BO5 berhak lolos ke babak berikutnya dan diadu dengan 4 player dari grup sebelah. 4 player dengan poin terendah dinyatakan gugur.
-
 3. SISTEM PEROLEHAN POIN MATCH
 Perolehan poin dalam setiap match ditentukan berdasarkan posisi akhir (placement):
 * Juara 1: +4 Poin
@@ -584,22 +588,18 @@ Perolehan poin dalam setiap match ditentukan berdasarkan posisi akhir (placement
 * Peringkat 6: -2 Poin
 * Peringkat 7: -3 Poin
 * Peringkat 8: -4 Poin
-
 4. REGULASI COMMANDER (SKENARIO PILIHAN PANITIA)
 Sebelum pertandingan dimulai, panitia menetapkan skenario Commander berdasarkan Master Data Sheet MCGG Match Set Up (Tier High & Mid):
 * Match 1 (Undian Pool Commander Tier High & Mid): Pengundian 8 Commander dari daftar resmi (Chou, Fanny, Kagura/Saki, Lukas, Vale, Alice/Mavis, Alucard/Harper, Angela, Dyrroth, Gusion/Gujun, Kalea/Dubi, Lancelot/Remy, Layla, Moskov, Nana, Valir). Setiap player mendapatkan 1 Commander dari hasil undian mesin sebelum match dimulai.
 * Match 2 (Random Pool Commander Tier High & Mid): Pengundian acak 8 Commander dari daftar Tier High & Mid untuk 8 player di dalam lobby.
 * Match 3 (Draft Pick & Ban System): Sistem Draft Pick diaktifkan di dalam game. Setiap lobby diberikan kesempatan melakukan sistem Banning Commander sebelum fase pemilihan.
-
 5. SANKSI PELANGGARAN COMMANDER & IN-GAME
 * Pelanggaran Commander (Khusus Skenario 1 & 2): Jika peserta terbukti tidak menggunakan Commander hasil undian yang ditentukan panitia, akan dikenakan sanksi pengurangan 2 poin (-2 Poin) pada match tersebut.
 * Chat All / Voice All:
    * Peringatan pertama (1x): Teguran/Warning dari wasit.
    * Peringatan kedua (2x): Punishment -10 Poin untuk match tersebut.
-
 6. PELAPORAN HASIL MATCH
 * Pada setiap akhir match, peringkat 4 besar wajib mendokumentasikan hasil akhir (Screenshot placement) dan mengirimkannya ke grup koordinasi panitia.
-
 7. KETENTUAN TIE-BREAKER DAN PENENTUAN KELULUSAN
 Jika terdapat dua atau lebih player dengan total poin yang sama pada batas kelolosan, penentuan peringkat dilakukan berdasarkan kriteria berikut (secara berurutan):
 1. Jumlah Placement 4 besar terbanyak selama BO3/BO5.
@@ -607,10 +607,8 @@ Jika terdapat dua atau lebih player dengan total poin yang sama pada batas kelol
 3. Peringkat tertinggi pada setiap match (banyaknya Juara 1 > Juara 2, dan seterusnya).
 4. Tie-Breaker Match (BO1): Jika masih sama persis, diadakan match penentu BO1 dengan commander bebas/andalan.
 5. Keputusan mutlak: Seluruh keputusan tie-breaker dan kelolosan ditetapkan oleh panitia berdasarkan data hasil pertandingan yang terdokumentasi.
-
 8. PAIRING BABAK BERIKUTNYA
 * 4 player terbaik dari tiap grup akan di-pairing secara silang (cross-group) ke babak berikutnya (contoh: Grup A & B ➔ Grup E & F) untuk menghindari pertemuan ulang antar player dari grup yang sama.
-
 9. ATURAN TAMBAHAN (DOs & DON'Ts)
 * DOs (Diperbolehkan):
    * Menggunakan emote dan sticker.
@@ -622,6 +620,15 @@ let customRules = JSON.parse(localStorage.getItem('yokke_custom_rules') || JSON.
   mlbb: DEFAULT_RULES_MLBB,
   mcgg: DEFAULT_RULES_MCGG
 }));
+
+// Migrasi cache lokal otomatis jika data peraturan belum memiliki 12 poin resmi
+if (!customRules.mlbb || !customRules.mlbb.includes('12.') || !customRules.mcgg || !customRules.mcgg.includes('PERATURAN RESMI')) {
+  customRules.mlbb = DEFAULT_RULES_MLBB;
+  customRules.mcgg = DEFAULT_RULES_MCGG;
+  try {
+    localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
+  } catch (e) {}
+}
 
 // Client-side image compressor: compresses smartphone photos using HTML5 Canvas (<= 1200px, quality 0.75)
 function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
@@ -1731,14 +1738,19 @@ function formatRuleLine(l) {
   const trimmed = raw.trim();
   if (!trimmed) return '';
 
-  if (trimmed.startsWith('PERATURAN RESMI') || trimmed.startsWith('KETENTUAN') || trimmed.startsWith('DO AND DON') || /^[0-9]+\.\s+[A-Z\s&()]+$/.test(trimmed)) {
-    return `<h4 style="color:var(--yokke-gold); margin:1.25rem 0 0.5rem; font-size:1.02rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.35rem;">${escapeHtml(trimmed)}</h4>`;
+  // Header Bab Utama (e.g. 📋 KETENTUAN PESERTA MLBB, 🏆 KETENTUAN PERTANDINGAN MLBB, ⚖️ DO AND DON'T, PERATURAN RESMI)
+  if (trimmed.includes('KETENTUAN') || trimmed.includes('DO AND DON') || trimmed.startsWith('PERATURAN RESMI') || /^[0-9]+\.\s+[A-Z\s&()]+$/.test(trimmed)) {
+    return `<h4 style="color:var(--yokke-gold); margin:1.35rem 0 0.6rem; font-size:1.05rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.4rem; display:flex; align-items:center; gap:0.4rem;">${escapeHtml(trimmed)}</h4>`;
   }
-  if (trimmed === 'Do:' || trimmed.startsWith('Do:') || trimmed.includes('DOs (Diperbolehkan)')) {
-    return `<h5 style="color:var(--yokke-green); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
+
+  // DO Section
+  if (trimmed.startsWith('DO') || trimmed.includes('Hal yang Wajib/Diperbolehkan') || trimmed.includes('DOs (Diperbolehkan)')) {
+    return `<h5 style="color:var(--yokke-green); margin:1rem 0 0.5rem; font-size:0.96rem; font-weight:bold;">${escapeHtml(trimmed)}</h5>`;
   }
-  if (trimmed === "Don't:" || trimmed.startsWith("Don't:") || trimmed.includes("DON'Ts (Dilarang)")) {
-    return `<h5 style="color:var(--yokke-red); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
+
+  // DON'T Section
+  if (trimmed.startsWith("DON'T") || trimmed.includes('Hal yang Dilarang') || trimmed.includes("DON'Ts (Dilarang)")) {
+    return `<h5 style="color:var(--yokke-red); margin:1rem 0 0.5rem; font-size:0.96rem; font-weight:bold;">${escapeHtml(trimmed)}</h5>`;
   }
 
   // Sub-bullet (dimulai dengan 3+ spasi atau tab dan karakter * / -)
@@ -1751,6 +1763,16 @@ function formatRuleLine(l) {
   if (/^[*-]\s+/.test(trimmed)) {
     const text = trimmed.replace(/^[*-]\s+/, '');
     return `<div style="margin-left: 1rem; margin-bottom: 0.4rem; line-height: 1.6; display: flex; gap: 0.5rem;"><span style="color: var(--yokke-cyan); font-weight: bold;">•</span><span>${escapeHtml(text)}</span></div>`;
+  }
+
+  // Baris berpoin (1., 2., 12., dsb)
+  if (/^[0-9]+\.\s+/.test(trimmed)) {
+    return `<p style="margin-bottom:0.5rem; line-height:1.65; font-weight:500;">${escapeHtml(trimmed)}</p>`;
+  }
+
+  // Baris lanjutan ber-indent (misal + 8 Pemain, Wajib memenuhi kuota)
+  if (trimmed.startsWith('+') || /^\s{2,}/.test(raw)) {
+    return `<p style="margin-left:1.5rem; margin-bottom:0.35rem; line-height:1.55; color:var(--text-muted); font-size:0.88rem;">${escapeHtml(trimmed)}</p>`;
   }
 
   return `<p style="margin-bottom:0.5rem; line-height:1.65;">${escapeHtml(trimmed)}</p>`;
