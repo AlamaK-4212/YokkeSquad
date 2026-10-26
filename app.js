@@ -500,7 +500,10 @@ let lastCommanderDrawMatch = 1;
 
 // URLs Dokumen Peraturan Resmi Google Docs YMC S4 2026
 const GOOGLE_DOCS_RULES_DOC_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0";
-const GOOGLE_DOCS_RULES_EXPORT_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt";
+const GOOGLE_DOCS_RULES_MCGG_DOC_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.ji56ljhdhzkr";
+const GOOGLE_DOCS_RULES_EXPORT_URL_MLBB = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt&tab=t.0";
+const GOOGLE_DOCS_RULES_EXPORT_URL_MCGG = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt&tab=t.ji56ljhdhzkr";
+const GOOGLE_DOCS_RULES_EXPORT_URL = GOOGLE_DOCS_RULES_EXPORT_URL_MLBB;
 
 // Default Rules Sesuai Dokumen Resmi Google Docs YMC S4 2026
 const DEFAULT_RULES_MLBB = `KETENTUAN PESERTA MLBB:
@@ -559,60 +562,61 @@ Don't:
 ⚠️ Dilarang melakukan sensor apapun pada screenshot hasil pertandingan.
 ⚠️ Apabila Team C vs Team D sebagai contoh baru Team C yang melakukan verifikasi di pukul 18.45 WIB dan Team D belum hadir di Discord, maka panitia akan menunggu Team D hingga pukul 19.00 WIB (19.00 WIB adalah batas terakhir untuk verifikasi match 1 dari BO3), jika Team D tidak muncul hingga waktu menunjukkan pukul 19.01 WIB maka Team D akan dianggap kalah (WO) di match 1. Team D akan ditunggu untuk verifikasi untuk match 2 hingga pukul 19.15 WIB (19.15 WIB adalah batas terakhir untuk verifikasi match 2 dari BO3). Jika Team D tidak muncul hingga waktu menunjukkan pukul 19.16 WIB maka Team D akan dianggap kalah (WO) di match 2.`;
 
-const DEFAULT_RULES_MCGG = `1. KETENTUAN UMUM & VERIFIKASI
-- Seluruh peserta wajib melakukan verifikasi identitas dengan memperlihatkan ID Card Yokke fisik kepada panitia sebelum pertandingan dimulai.
-- Peserta wajib hadir di lobby 10 menit sebelum jadwal pertandingan. Toleransi keterlambatan maksimal 10 menit (lewat dari itu dianggap gugur/peringkat 8 pada match tersebut).
-- Masalah teknis (koneksi internet, device, lag) merupakan tanggung jawab penuh masing-masing peserta.
+const DEFAULT_RULES_MCGG = `PERATURAN RESMI TURNAMEN MAGIC CHESS: GO GO (MCGG)
+1. KETENTUAN UMUM & VERIFIKASI
+* Verifikasi Identitas: Seluruh peserta wajib memperlihatkan ID Card Yokke fisik kepada panitia sebelum pertandingan dimulai.
+* Kehadiran: Peserta wajib hadir di lobby 10 menit sebelum jadwal pertandingan.
+   * Toleransi keterlambatan: Maksimal 10 menit. Lewat dari waktu tersebut, peserta dianggap gugur (menempati Peringkat 8 pada match tersebut).
+* Tanggung Jawab Teknis: Segala masalah teknis (koneksi internet, perangkat/device, lag) merupakan tanggung jawab penuh masing-masing peserta.
 
 2. FORMAT PERTANDINGAN & SISTEM GRUP
-- Sistem Grup: Terdiri dari 8 Player per grup.
-- Format Babak: Bermain dalam format BO3 / BO5 (sesuai tahap babak).
-- Kualifikasi: 4 Player dengan akumulasi poin tertinggi di akhir BO3/BO5 akan lolos ke babak berikutnya dan diadu dengan 4 player dari grup sebelahnya. 4 player sisanya dinyatakan gugur.
+* Sistem Grup: Terdiri dari 8 Player per grup.
+* Format Babak: Pertandingan menggunakan format BO3 atau BO5 (disesuaikan dengan tahap babak).
+* Sistem Kualifikasi: 4 Player dengan akumulasi poin tertinggi di akhir BO3/BO5 berhak lolos ke babak berikutnya dan diadu dengan 4 player dari grup sebelah. 4 player dengan poin terendah dinyatakan gugur.
 
 3. SISTEM PEROLEHAN POIN MATCH
-Dalam setiap match, perolehan poin ditentukan berdasarkan posisi akhir placement:
-- Juara 1 : +4 Poin
-- Juara 2 : +3 Poin
-- Juara 3 : +2 Poin
-- Juara 4 : +1 Poin
-- Peringkat 5 : -1 Poin
-- Peringkat 6 : -2 Poin
-- Peringkat 7 : -3 Poin
-- Peringkat 8 : -4 Poin
+Perolehan poin dalam setiap match ditentukan berdasarkan posisi akhir (placement):
+* Juara 1: +4 Poin
+* Juara 2: +3 Poin
+* Juara 3: +2 Poin
+* Juara 4: +1 Poin
+* Peringkat 5: -1 Poin
+* Peringkat 6: -2 Poin
+* Peringkat 7: -3 Poin
+* Peringkat 8: -4 Poin
 
-4. REGULASI COMMANDER (SKENARIO RESMI PANITIA)
-Sebelum pertandingan dimulai, panitia mengundi Commander menggunakan Mesin Undian resmi berdasarkan Master Data Sheet "MCGG Match Set Up":
-- MATCH 1 (Undian Pool 8 Hero Non-Meta):
-  Panitia mengundi 8 Commander dari seluruh daftar hero Non-Meta (Tier High, Mid, dan Normal). Ke-8 hero ini kemudian dipasangkan secara acak ke masing-masing pemain di lobi.
-- MATCH 2 (Random 8 Hero dari Seluruh Commander):
-  Pengundian acak 8 Commander dari SELURUH daftar Commander resmi (Tier Meta, High, Mid, Normal).
-- MATCH 3 (Draft Pick & Ban System In-Game):
-  Sistem Draft Pick diaktifkan di dalam game Magic Chess. Setiap lobby diberikan kesempatan melakukan sistem Banning Commander sebelum fase pemilihan. Bebas memilih hero yang tidak terkena BAN.
+4. REGULASI COMMANDER (SKENARIO PILIHAN PANITIA)
+Sebelum pertandingan dimulai, panitia menetapkan skenario Commander berdasarkan Master Data Sheet MCGG Match Set Up (Tier High & Mid):
+* Match 1 (Undian Pool Commander Tier High & Mid): Pengundian 8 Commander dari daftar resmi (Chou, Fanny, Kagura/Saki, Lukas, Vale, Alice/Mavis, Alucard/Harper, Angela, Dyrroth, Gusion/Gujun, Kalea/Dubi, Lancelot/Remy, Layla, Moskov, Nana, Valir). Setiap player mendapatkan 1 Commander dari hasil undian mesin sebelum match dimulai.
+* Match 2 (Random Pool Commander Tier High & Mid): Pengundian acak 8 Commander dari daftar Tier High & Mid untuk 8 player di dalam lobby.
+* Match 3 (Draft Pick & Ban System): Sistem Draft Pick diaktifkan di dalam game. Setiap lobby diberikan kesempatan melakukan sistem Banning Commander sebelum fase pemilihan.
 
 5. SANKSI PELANGGARAN COMMANDER & IN-GAME
-- Khusus pada Skenario 1 dan Skenario 2: Jika seorang player terbukti TIDAK menggunakan Commander hasil undian yang sudah ditentukan panitia, maka player tersebut akan dikenakan Sanksi Pengurangan 2 Poin (-2 Poin) pada match tersebut.
-- Dilarang melakukan Chat All / Voice All: Apabila terbukti melakukan Chat All / Voice All sebanyak 1 kali akan diberikan warning dari wasit. Jika melakukan kembali untuk kedua kalinya, player tersebut akan diberikan punishment -10 Poin untuk match tersebut.
+* Pelanggaran Commander (Khusus Skenario 1 & 2): Jika peserta terbukti tidak menggunakan Commander hasil undian yang ditentukan panitia, akan dikenakan sanksi pengurangan 2 poin (-2 Poin) pada match tersebut.
+* Chat All / Voice All:
+   * Peringatan pertama (1x): Teguran/Warning dari wasit.
+   * Peringatan kedua (2x): Punishment -10 Poin untuk match tersebut.
 
 6. PELAPORAN HASIL MATCH
-- Setiap akhir match, peringkat 4 besar wajib mendokumentasikan (Screenshot) hasil akhir placement dan mengirimkannya ke grup koordinasi panitia.
+* Pada setiap akhir match, peringkat 4 besar wajib mendokumentasikan hasil akhir (Screenshot placement) dan mengirimkannya ke grup koordinasi panitia.
 
 7. KETENTUAN TIE-BREAKER DAN PENENTUAN KELULUSAN
-Apabila terdapat dua atau lebih player dengan total poin yang sama pada batas kelolosan, penentuan peringkat dilakukan berdasarkan urutan kriteria:
+Jika terdapat dua atau lebih player dengan total poin yang sama pada batas kelolosan, penentuan peringkat dilakukan berdasarkan kriteria berikut (secara berurutan):
 1. Jumlah Placement 4 besar terbanyak selama BO3/BO5.
-2. Kepatuhan Commander: Jumlah poin yang didapat dengan mengikuti semua ketentuan commander memiliki hak lebih tinggi dalam peringkat.
-3. Peringkat tertinggi pada setiap match (banyaknya Juara 1 > Juara 2, dst).
-4. Tie-Breaker Match (BO1): Apabila masih sama persis, diadakan match penentu BO1 dengan commander bebas/andalan.
-5. Seluruh keputusan mengenai tie-breaker dan penentuan kelolosan ditetapkan oleh panitia berdasarkan data hasil pertandingan yang terdokumentasi.
+2. Kepatuhan Commander: Jumlah poin yang didapat dengan konsisten mengikuti ketentuan commander.
+3. Peringkat tertinggi pada setiap match (banyaknya Juara 1 > Juara 2, dan seterusnya).
+4. Tie-Breaker Match (BO1): Jika masih sama persis, diadakan match penentu BO1 dengan commander bebas/andalan.
+5. Keputusan mutlak: Seluruh keputusan tie-breaker dan kelolosan ditetapkan oleh panitia berdasarkan data hasil pertandingan yang terdokumentasi.
 
 8. PAIRING BABAK BERIKUTNYA
-- 4 player terbaik dari tiap grup di-pairing silang (cross-group) ke babak berikutnya (Grup A & B ➔ Grup E & F) untuk menghindari pertemuan ulang dari grup yang sama.
+* 4 player terbaik dari tiap grup akan di-pairing secara silang (cross-group) ke babak berikutnya (contoh: Grup A & B ➔ Grup E & F) untuk menghindari pertemuan ulang antar player dari grup yang sama.
 
-9. DO AND DON'T MCGG:
-DO:
-- Diperbolehkan menggunakan emote dan sticker.
-- Diperbolehkan menggunakan skin commander.
-DON'T:
-- Dilarang Chat All & Voice All in game (-10 poin jika melanggar).`;
+9. ATURAN TAMBAHAN (DOs & DON'Ts)
+* DOs (Diperbolehkan):
+   * Menggunakan emote dan sticker.
+   * Menggunakan skin commander.
+* DON'Ts (Dilarang):
+   * Melakukan Chat All & Voice All di dalam game (Sanksi: -10 Poin jika melanggar).`;
 
 let customRules = JSON.parse(localStorage.getItem('yokke_custom_rules') || JSON.stringify({
   mlbb: DEFAULT_RULES_MLBB,
@@ -1721,22 +1725,38 @@ function updateCounts() {
   if (elC) elC.innerText = mcggCount;
 }
 
-// Helper formatting baris peraturan agar rapi & terstruktur
+// Helper formatting baris peraturan agar rapi & terstruktur (MLBB & MCGG)
 function formatRuleLine(l) {
-  const trimmed = (l || '').trim();
-  if (trimmed.startsWith('KETENTUAN') || trimmed.startsWith('DO AND DON')) {
+  const raw = l || '';
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+
+  if (trimmed.startsWith('PERATURAN RESMI') || trimmed.startsWith('KETENTUAN') || trimmed.startsWith('DO AND DON') || /^[0-9]+\.\s+[A-Z\s&()]+$/.test(trimmed)) {
     return `<h4 style="color:var(--yokke-gold); margin:1.25rem 0 0.5rem; font-size:1.02rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.35rem;">${escapeHtml(trimmed)}</h4>`;
   }
-  if (trimmed === 'Do:' || trimmed.startsWith('Do:')) {
+  if (trimmed === 'Do:' || trimmed.startsWith('Do:') || trimmed.includes('DOs (Diperbolehkan)')) {
     return `<h5 style="color:var(--yokke-green); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
   }
-  if (trimmed === "Don't:" || trimmed.startsWith("Don't:")) {
+  if (trimmed === "Don't:" || trimmed.startsWith("Don't:") || trimmed.includes("DON'Ts (Dilarang)")) {
     return `<h5 style="color:var(--yokke-red); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
   }
+
+  // Sub-bullet (dimulai dengan 3+ spasi atau tab dan karakter * / -)
+  if (/^\s{3,}[*-]\s+/.test(raw) || /^\t+[*-]\s+/.test(raw)) {
+    const text = trimmed.replace(/^[*-]\s+/, '');
+    return `<div style="margin-left: 2rem; margin-bottom: 0.35rem; line-height: 1.55; display: flex; gap: 0.5rem;"><span style="color: var(--yokke-purple-text); font-weight: bold;">◦</span><span>${escapeHtml(text)}</span></div>`;
+  }
+
+  // Main bullet (dimulai dengan karakter * atau -)
+  if (/^[*-]\s+/.test(trimmed)) {
+    const text = trimmed.replace(/^[*-]\s+/, '');
+    return `<div style="margin-left: 1rem; margin-bottom: 0.4rem; line-height: 1.6; display: flex; gap: 0.5rem;"><span style="color: var(--yokke-cyan); font-weight: bold;">•</span><span>${escapeHtml(text)}</span></div>`;
+  }
+
   return `<p style="margin-bottom:0.5rem; line-height:1.65;">${escapeHtml(trimmed)}</p>`;
 }
 
-// Rules System: Mengambil dan Menampilkan Peraturan dari Google Docs
+// Rules System: Mengambil dan Menampilkan Peraturan dari Google Docs (MLBB: tab=t.0 & MCGG: tab=t.ji56ljhdhzkr)
 async function fetchRulesFromGoogleDoc(silent = false) {
   const syncBadge = document.getElementById('rulesSyncBadge');
   if (syncBadge && !silent) {
@@ -1744,22 +1764,44 @@ async function fetchRulesFromGoogleDoc(silent = false) {
   }
 
   try {
-    const nocacheUrl = GOOGLE_DOCS_RULES_EXPORT_URL + (GOOGLE_DOCS_RULES_EXPORT_URL.includes('?') ? '&' : '?') + '_nocache=' + Date.now();
-    const res = await fetch(nocacheUrl, { redirect: 'follow' });
-    if (res.ok) {
-      const text = await res.text();
+    const now = Date.now();
+    const nocacheMlbb = GOOGLE_DOCS_RULES_EXPORT_URL_MLBB + '&_nocache=' + now;
+    const nocacheMcgg = GOOGLE_DOCS_RULES_EXPORT_URL_MCGG + '&_nocache=' + now;
+
+    let updatedMlbb = false;
+    let updatedMcgg = false;
+
+    const [resMlbb, resMcgg] = await Promise.allSettled([
+      fetch(nocacheMlbb, { redirect: 'follow' }),
+      fetch(nocacheMcgg, { redirect: 'follow' })
+    ]);
+
+    if (resMlbb.status === 'fulfilled' && resMlbb.value && resMlbb.value.ok) {
+      const text = await resMlbb.value.text();
       if (text && text.trim().length > 100) {
         customRules.mlbb = text.trim();
-        localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
-        renderRules();
-        if (syncBadge) {
-          syncBadge.innerHTML = '🟢 Tersinkronisasi';
-        }
-        if (!silent && typeof showToast === 'function') {
-          showToast('✅ Peraturan berhasil diperbarui dari Google Docs!', 'success');
-        }
-        return true;
+        updatedMlbb = true;
       }
+    }
+
+    if (resMcgg.status === 'fulfilled' && resMcgg.value && resMcgg.value.ok) {
+      const text = await resMcgg.value.text();
+      if (text && text.trim().length > 100) {
+        customRules.mcgg = text.trim();
+        updatedMcgg = true;
+      }
+    }
+
+    if (updatedMlbb || updatedMcgg) {
+      localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
+      renderRules();
+      if (syncBadge) {
+        syncBadge.innerHTML = '🟢 Tersinkronisasi (MLBB & MCGG)';
+      }
+      if (!silent && typeof showToast === 'function') {
+        showToast('✅ Peraturan MLBB & MCGG berhasil diperbarui dari Google Docs!', 'success');
+      }
+      return true;
     }
   } catch (err) {
     console.warn('Gagal fetch rules dari Google Docs:', err);

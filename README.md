@@ -110,7 +110,7 @@ Aplikasi terhubung ke Google Sheets menggunakan Google Apps Script Webhook denga
 
 ## 🧪 Pengujian Fungsional (Automated Test Suite)
 
-Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **78 skenario fungsional + 23 skenario improvement (100% Lulus)**:
+Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **79 skenario fungsional + 23 skenario improvement (100% Lulus)**:
 
 ```powershell
 npm test

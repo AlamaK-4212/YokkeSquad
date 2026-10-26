@@ -1207,6 +1207,13 @@ async function runLiveIntegrationTests() {
     assert(appCode.includes('Fungsi edit di formulir pendaftaran dinonaktifkan'), 'app.js harus menampilkan peringatan fungsi edit dinonaktifkan');
   });
 
+  runTest('12.5 Konfigurasi Tab MCGG Google Docs (tab=t.ji56ljhdhzkr) & Regulasi Resmi MCGG', () => {
+    assert(appCode.includes('GOOGLE_DOCS_RULES_MCGG_DOC_URL'), 'app.js harus memiliki konstanta GOOGLE_DOCS_RULES_MCGG_DOC_URL');
+    assert(appCode.includes('tab=t.ji56ljhdhzkr'), 'app.js harus memuat id tab t.ji56ljhdhzkr untuk ekspor dokumen MCGG');
+    assert(appCode.includes('PERATURAN RESMI TURNAMEN MAGIC CHESS: GO GO (MCGG)'), 'DEFAULT_RULES_MCGG harus memuat judul dokumen resmi MCGG');
+    assert(appCode.includes('Undian Pool Commander Tier High & Mid'), 'DEFAULT_RULES_MCGG harus memuat regulasi resmi commander MCGG');
+  });
+
   console.log('\n====================================================');
   console.log(`📊 RINGKASAN HASIL PENGUJIAN: ${passedCount} LULUS, ${failedCount} GAGAL`);
   console.log('====================================================');

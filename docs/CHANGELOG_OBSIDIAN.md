@@ -24,7 +24,7 @@ related_files:
 > - **Versi**: `v1.2.0`
 > - **Tanggal**: `2026-10-26`
 > - **Tautan Google Docs Aturan**: [Buku Regulasi YMC S4 2026](https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0)
-> - **Status Pengujian**: `78/78 Functional (100%)` | `23/23 Improvement (100%)`
+> - **Status Pengujian**: `79/79 Functional (100%)` | `23/23 Improvement (100%)`
 
 ---
 
@@ -46,9 +46,11 @@ Pembaruan ini berfokus pada dua kebutuhan mendesak:
 > Dokumen ini memiliki header CORS terbuka (`access-control-allow-origin: *`), memungkinkan pembacaan langsung dari peramban web (*client-side fetch*).
 
 ```javascript
-// Konstanta URL Google Docs Resmi
+// Konstanta URL Google Docs Resmi (Multi-Tab: MLBB & MCGG)
 const GOOGLE_DOCS_RULES_DOC_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0";
-const GOOGLE_DOCS_RULES_EXPORT_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt";
+const GOOGLE_DOCS_RULES_MCGG_DOC_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.ji56ljhdhzkr";
+const GOOGLE_DOCS_RULES_EXPORT_URL_MLBB = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt&tab=t.0";
+const GOOGLE_DOCS_RULES_EXPORT_URL_MCGG = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt&tab=t.ji56ljhdhzkr";
 
 // Fungsi sinkronisasi otomatis dan manual
 async function fetchRulesFromGoogleDoc(silent = false) { ... }

@@ -23,10 +23,10 @@ tags:
 ## 🚀 Fitur Utama & Pembaruan
 
 ### 1. 📜 Integrasi Dinamis Dokumen Peraturan Resmi Google Docs
-- **Sumber Regulasi Terpusat**:
+- **Sumber Regulasi Terpusat (Multi-Tab Google Docs)**:
   - Google Docs ID: `1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds`
-  - URL Editor: [Google Docs Peraturan Turnamen YMC S4 2026](https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0)
-  - Endpoint Sinkronisasi: `https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt`
+  - **Tab MLBB**: [Dokumen MLBB (`tab=t.0`)](https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0) — Export: `/export?format=txt&tab=t.0`
+  - **Tab MCGG**: [Dokumen MCGG (`tab=t.ji56ljhdhzkr`)](https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.ji56ljhdhzkr) — Export: `/export?format=txt&tab=t.ji56ljhdhzkr`
 - **Fungsi Sinkronisasi (`fetchRulesFromGoogleDoc`)**:
   - Otomatis mengambil isi terbaru saat pengguna membuka tab **📜 Peraturan**.
   - Dilengkapi fitur *cache-busting* (`_nocache=${Date.now()}`) dan penguraian baris otomatis (judul bab, penomoran, Do and Don't).
@@ -65,7 +65,7 @@ tags:
   - `12.3`: Verifikasi penghapusan atribut list datalist dropdown pada `#teamName` dan `#mcgg_name` di `index.html`.
   - `12.4`: Verifikasi restriksi `ALLOW_PUBLIC_FORM_EDIT = false` dan pesan penolakan edit di `app.js`.
 - **Hasil Pengujian**:
-  - Functional Tests: **78 / 78 Lulus (100% PASS)**
+  - Functional Tests: **79 / 79 Lulus (100% PASS)**
   - Improvement Tests: **23 / 23 Lulus (100% PASS)**
   - Syntax Check & Parsing JS: **100% Valid (0 Error)**
   - Katalog Fungsi: **223 fungsi terindeks dengan 820 call sites** di `FUNCTION_INDEX.md`.
