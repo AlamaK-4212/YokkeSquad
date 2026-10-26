@@ -75,6 +75,10 @@ Elemen `<datalist id="yokkeDeptList">` terintegrasi pada form pendaftaran MLBB, 
 - **Aturan Non-Rangkap**: Official dilarang merangkap sebagai pemain di tim yang sama (dicek via NIP dan hash/file ID card).
 - **Anti-Duplikasi NIP**: Mencegah pendaftaran ganda NIP dalam satu tim maupun antar peserta.
 
+### 7. 📜 Integrasi Peraturan Google Docs & Proteksi Form Registrasi
+- **Single Source of Truth Google Docs**: Portal terhubung langsung ke Google Docs Regulasi Resmi YMC S4 2026 (`1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds`) dengan tombol pembaruan satu klik dan pembacaan otomatis.
+- **Penonaktifan Dropdown & Mode Edit Publik**: Dropdown list tim terdaftar dihilangkan dari input nama tim/peserta (`registeredTeamsDatalist` & `registeredMcggDatalist`), serta sistem menolak pengeditan data tim yang sudah terdaftar (`ALLOW_PUBLIC_FORM_EDIT = false`) guna menjamin integritas data kompetisi.
+
 ---
 
 ## 🗄️ Struktur Database Google Sheets & Google Apps Script
@@ -106,7 +110,7 @@ Aplikasi terhubung ke Google Sheets menggunakan Google Apps Script Webhook denga
 
 ## 🧪 Pengujian Fungsional (Automated Test Suite)
 
-Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **81 skenario fungsional (100% Lulus)**:
+Codebase dilengkapi dengan test suite otomatis berbasis Node.js yang memverifikasi **78 skenario fungsional + 23 skenario improvement (100% Lulus)**:
 
 ```powershell
 npm test
@@ -124,6 +128,7 @@ Cakupan pengujian meliputi:
 - **Suite 9**: Tutup/Buka Pendaftaran & Reset Poin/Undian MCGG (4 test case).
 - **Suite 10**: Format 8 Grup MLBB 5 Hari, Undian Match 2 MCGG, Hierarki Aturan Undian, Relaksasi Bertingkat & Strict Balance (14 test case).
 - **Suite 11**: Master-Detail Hub, Ground Truth Sinkronisasi GSheet, Fullscreen Loader & Jadwal 3 Minggu MLBB (9 test case).
+- **Suite 12**: Integrasi Peraturan Google Docs & Proteksi Form Registrasi (4 test case).
 
 ---
 
