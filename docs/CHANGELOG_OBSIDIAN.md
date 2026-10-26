@@ -100,3 +100,4 @@ async function fetchRulesFromGoogleDoc(silent = false) { ... }
 - Dokumen Rencana Perbaikan: [[docs/REVIEW_AND_IMPROVEMENT_PLAN.md]]
 - Dokumentasi Lengkap Proyek: [[README.md]]
 - Indeks Fungsi Otomatis: [[FUNCTION_INDEX.md]]
+
