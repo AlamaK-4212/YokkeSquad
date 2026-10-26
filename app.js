@@ -498,7 +498,11 @@ function renderCommanderCardVisualHtml(cmd) {
 let mcggDrawState = JSON.parse(localStorage.getItem('yokke_commander_draw') || '{}');
 let lastCommanderDrawMatch = 1;
 
-// Default Rules Sesuai Regulasi Resmi YMC S4 2026
+// URLs Dokumen Peraturan Resmi Google Docs YMC S4 2026
+const GOOGLE_DOCS_RULES_DOC_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/edit?hl=ID&tab=t.0";
+const GOOGLE_DOCS_RULES_EXPORT_URL = "https://docs.google.com/document/d/1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds/export?format=txt";
+
+// Default Rules Sesuai Dokumen Resmi Google Docs YMC S4 2026
 const DEFAULT_RULES_MLBB = `KETENTUAN PESERTA MLBB:
 1. Player wajib pegawai MTI (min. bekerja 6 bulan sebagai pegawai MTI).
 2. Menunjukkan ID Card Pegawai Yokke (bukti fisik), atau e-Money Pegawai Yokke, atau surat keterangan atasan jika ID Card hilang (Surat keterangan dari atasan jika yang bersangkutan benar merupakan pegawai aktif).
@@ -530,26 +534,30 @@ DO AND DON'T YMC S4 2026:
 Do:
 ✅ Peserta WAJIB on camera pada room Discord yang sudah ditentukan panitia saat pertandingan.
 ✅ Seluruh pemain WAJIB terlihat dan device handphone yang digunakan pada saat on camera dan saat pertandingan berlangsung.
-✅ Wajib menggunakan akun yang sudah didaftarkan pada saat registrasi.
-✅ Wajib menunjukkan ID card Yokke (fisik bukan foto) dan ID game pada saat verifikasi pemain sebelum bertanding. Jika ID card Yokke (fisik berwarna putih biru) hilang, diperbolehkan menggunakan e-Money Yokke bergambar pegawai (fisik).
+✅ Wajib menggunakan akun yang sudah didaftarkan pada saat registrasi (nickname, id game, server, dll).
+✅ Wajib menunjukkan ID card Yokke (fisik bukan foto) dan ID game pada saat verifikasi pemain sebelum bertanding. Jika ID card Yokke (fisik berwarna putih biru) hilang, diperbolehkan menggunakan e-Money Yokke bergambar pegawai (fisik). Hanya player yang sudah melaporkan id card fisik hilang atau belum terima sebelumnya yang di whitelist oleh panitia untuk bertanding tanpa id card fisik.
+✅ Wajib melakukan verifikasi id card fisik dan id game kepada panitia/wasit yang bertugas apabila adanya pergantian player.
 ✅ Tim yang sudah mendaftar wajib join Discord (untuk on cam pada saat tanding) dan grup WhatsApp (untuk informasi pertandingan).
 ✅ Diperbolehkan melakukan recall-recall/taunting/emote-emote pada saat bertanding.
 ✅ Diperbolehkan menggunakan skin apapun.
 ✅ Apabila melakukan selebrasi pada saat menang, harap melakukan selebrasi tanpa menggunakan gesture SARA.
 ✅ WAJIB unmute voice di Discord pada saat verifikasi player dan wajib mute Discord pada saat bertanding.
+✅ WAJIB bagi kedua team menunjukkan loading screen sebelum pertandingan dimulai.
+✅ WAJIB bagi kedua team menunjukkan screen hasil pertandingan (Victory/Defeat)).
 ✅ WAJIB melakukan screenshot hasil pertandingan bagi tim yang menang dengan ketentuan Hero harus terlihat, Item terlihat, ID player terlihat dan skor terlihat.
-✅ WAJIB melakukan verifikasi tim 10 menit sebelum jadwal pertandingan berlangsung.
+✅ WAJIB hadir di discord 30 menit (18.30 WIB)) sebelum jadwal pertandingan dimulai, berlaku juga untuk team yang akan tayang di live streaming youtube. Apabila team A vs Team B sebagai contoh sudah melakukan verifikasi pada discord di pukul 18.30 WIB, maka team A vs Team B sudah dapat segera melakukan pertandingan.
+✅ Team home yang membuat room custom dan WAJIB custom draft pick mythic. Untuk match kedua team away yang membuat room custom.
 
 Don't:
 ⚠️ Jika player mematikan camera pada saat bertanding, wasit/panitia berhak memberhentikan pertandingan dan memberikan peringatan untuk segera menghidupkan camera. Jika player mematikan camera kembali baik sengaja maupun tidak sengaja, tim tersebut akan dianggap kalah di match tersebut.
 ⚠️ Jika ada player dari suatu tim menggunakan akun yang tidak sesuai dengan akun yang didaftarkan pada saat registrasi, tim tersebut akan langsung didiskualifikasi.
 ⚠️ Apabila ada tim yang ketahuan menggunakan joki atau menggunakan cheat, tim tersebut akan langsung didiskualifikasi & blacklist.
 ⚠️ Apabila ID card Yokke (putih biru) dan e-Money Yokke bergambar pegawai hilang, harap membuat surat keterangan dari atasan player terkait yang menyatakan yang bersangkutan masih aktif sebagai pegawai Yokke (Nama lengkap, NIP, tanggal join MTI, asal Divisi/Unit dan status karyawan organik/insource/outsource). Dokumen dikirimkan ke grup WhatsApp agar bisa di-crosscheck oleh panitia.
-⚠️ Dilarang Chat All. Apabila ketahuan ada tim yang Chat All akan diberikan 1x peringatan oleh WASIT. Jika melakukannya kembali, maka tim tersebut akan dianggap kalah di match tersebut. Jika pada kesempatan match berikutnya masih melanggar, langsung dianggap kalah tanpa peringatan.
-⚠️ Jika terdapat tim yang melakukan selebrasi on cam dengan gesture SARA, kemenangan akan dicabut dan tim tersebut dianggap kalah di match tersebut.
+⚠️ Dilarang Chat All dan Notifikasi All. Apabila ketahuan ada tim yang Chat All dan Notifikasi All akan diberikan 1x peringatan oleh WASIT. Jika melakukannya kembali, maka tim tersebut akan dianggap kalah di match tersebut. Jika pada kesempatan match berikutnya masih melanggar, langsung dianggap kalah tanpa peringatan. Untuk Fase Grup tidak ada wasit yang join ke dalam in game sehingga pihak team yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOOT EVIDENCE.
+⚠️ Jika terdapat tim yang melakukan selebrasi on cam dengan gesture SARA, kemenangan akan dicabut dan tim tersebut dianggap kalah di match tersebut. Untuk Fase Grup tidak ada wasit yang join ke dalam in game sehingga pihak team yang merasa dirugikan harap melaporkan ke panitia SETELAH PERTANDINGAN BERAKHIR DALAM BENTUK SCREENSHOOT EVIDENCE.
 ⚠️ Tidak ada pengulangan draft pick apapun yang terjadi.
 ⚠️ Dilarang melakukan sensor apapun pada screenshot hasil pertandingan.
-⚠️ Apabila melakukan verifikasi lewat dari 10 menit sebelum pertandingan, tim yang telat akan dianggap kalah di match pertama.`;
+⚠️ Apabila Team C vs Team D sebagai contoh baru Team C yang melakukan verifikasi di pukul 18.45 WIB dan Team D belum hadir di Discord, maka panitia akan menunggu Team D hingga pukul 19.00 WIB (19.00 WIB adalah batas terakhir untuk verifikasi match 1 dari BO3), jika Team D tidak muncul hingga waktu menunjukkan pukul 19.01 WIB maka Team D akan dianggap kalah (WO) di match 1. Team D akan ditunggu untuk verifikasi untuk match 2 hingga pukul 19.15 WIB (19.15 WIB adalah batas terakhir untuk verifikasi match 2 dari BO3). Jika Team D tidak muncul hingga waktu menunjukkan pukul 19.16 WIB maka Team D akan dianggap kalah (WO) di match 2.`;
 
 const DEFAULT_RULES_MCGG = `1. KETENTUAN UMUM & VERIFIKASI
 - Seluruh peserta wajib melakukan verifikasi identitas dengan memperlihatkan ID Card Yokke fisik kepada panitia sebelum pertandingan dimulai.
@@ -1713,17 +1721,70 @@ function updateCounts() {
   if (elC) elC.innerText = mcggCount;
 }
 
-// Rules System
+// Helper formatting baris peraturan agar rapi & terstruktur
+function formatRuleLine(l) {
+  const trimmed = (l || '').trim();
+  if (trimmed.startsWith('KETENTUAN') || trimmed.startsWith('DO AND DON')) {
+    return `<h4 style="color:var(--yokke-gold); margin:1.25rem 0 0.5rem; font-size:1.02rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.35rem;">${escapeHtml(trimmed)}</h4>`;
+  }
+  if (trimmed === 'Do:' || trimmed.startsWith('Do:')) {
+    return `<h5 style="color:var(--yokke-green); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
+  }
+  if (trimmed === "Don't:" || trimmed.startsWith("Don't:")) {
+    return `<h5 style="color:var(--yokke-red); margin:0.85rem 0 0.4rem; font-size:0.95rem;">${escapeHtml(trimmed)}</h5>`;
+  }
+  return `<p style="margin-bottom:0.5rem; line-height:1.65;">${escapeHtml(trimmed)}</p>`;
+}
+
+// Rules System: Mengambil dan Menampilkan Peraturan dari Google Docs
+async function fetchRulesFromGoogleDoc(silent = false) {
+  const syncBadge = document.getElementById('rulesSyncBadge');
+  if (syncBadge && !silent) {
+    syncBadge.innerHTML = '⏳ Menyinkronkan...';
+  }
+
+  try {
+    const nocacheUrl = GOOGLE_DOCS_RULES_EXPORT_URL + (GOOGLE_DOCS_RULES_EXPORT_URL.includes('?') ? '&' : '?') + '_nocache=' + Date.now();
+    const res = await fetch(nocacheUrl, { redirect: 'follow' });
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.trim().length > 100) {
+        customRules.mlbb = text.trim();
+        localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
+        renderRules();
+        if (syncBadge) {
+          syncBadge.innerHTML = '🟢 Tersinkronisasi';
+        }
+        if (!silent && typeof showToast === 'function') {
+          showToast('✅ Peraturan berhasil diperbarui dari Google Docs!', 'success');
+        }
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn('Gagal fetch rules dari Google Docs:', err);
+    if (syncBadge) {
+      syncBadge.innerHTML = '⚡ Cache Dokumen';
+    }
+    if (!silent && typeof showToast === 'function') {
+      showToast('⚠️ Gagal terhubung ke Google Docs, menggunakan cache dokumen lokal.', 'warning');
+    }
+  }
+  return false;
+}
+
 function renderRules() {
   const mlbbBox = document.getElementById('displayMLBBRules');
   const mcggBox = document.getElementById('displayMCGGRules');
   if (!mlbbBox || !mcggBox) return;
 
-  mlbbBox.innerHTML = customRules.mlbb.split('\n').filter(l => l.trim()).map(l => `<p style="margin-bottom:0.6rem;">${l}</p>`).join('');
-  mcggBox.innerHTML = customRules.mcgg.split('\n').filter(l => l.trim()).map(l => `<p style="margin-bottom:0.6rem;">${l}</p>`).join('');
+  mlbbBox.innerHTML = customRules.mlbb.split('\n').filter(l => l.trim()).map(formatRuleLine).join('');
+  mcggBox.innerHTML = customRules.mcgg.split('\n').filter(l => l.trim()).map(formatRuleLine).join('');
 
-  document.getElementById('rulesMLBBInput').value = customRules.mlbb;
-  document.getElementById('rulesMCGGInput').value = customRules.mcgg;
+  const mlbbInput = document.getElementById('rulesMLBBInput');
+  const mcggInput = document.getElementById('rulesMCGGInput');
+  if (mlbbInput) mlbbInput.value = customRules.mlbb;
+  if (mcggInput) mcggInput.value = customRules.mcgg;
 }
 
 function toggleEditRules() {
@@ -2299,6 +2360,7 @@ function switchTab(tabId) {
     setMCGGViewMode('HUB');
   } else if (tabId === 'rules') {
     renderRules();
+    fetchRulesFromGoogleDoc(true);
   }
 }
 
@@ -2358,29 +2420,21 @@ function escapeHtml(str) {
   }[tag] || tag));
 }
 
-// Sinkronkan Datalist Nama Tim / Pemain untuk Fitur Update Cepat di Formulir Pendaftaran
+// Dropdown list tim & pemain pada form pendaftaran dinonaktifkan (fungsi edit form dimatikan)
 function updateRegistrationDatalists() {
   const mlbbDatalist = document.getElementById('registeredTeamsDatalist');
   const mcggDatalist = document.getElementById('registeredMcggDatalist');
 
+  // Matikan dropdown list tim & pemain di formulir pendaftaran
   if (mlbbDatalist) {
-    const mlbbTeams = participants
-      .filter(p => p.category === 'MLBB' && p.name && p.name.trim() !== '')
-      .map(p => p.name.trim());
-    const uniqueTeams = [...new Set(mlbbTeams)];
-    mlbbDatalist.innerHTML = uniqueTeams.map(name => `<option value="${escapeHtml(name)}">`).join('');
+    mlbbDatalist.innerHTML = '';
   }
-
   if (mcggDatalist) {
-    const mcggPlayers = participants
-      .filter(p => p.category === 'MCGG' && p.name && p.name.trim() !== '')
-      .map(p => p.name.trim());
-    const uniquePlayers = [...new Set(mcggPlayers)];
-    mcggDatalist.innerHTML = uniquePlayers.map(name => `<option value="${escapeHtml(name)}">`).join('');
+    mcggDatalist.innerHTML = '';
   }
 }
 
-// Handler saat Peserta Mengetik / Memilih Nama Tim MLBB di Form Pendaftaran
+// Handler saat Peserta Mengetik Nama Tim MLBB di Form Pendaftaran (Fungsi Edit Dimatikan)
 function handleTeamNameInput(val) {
   const noticeEl = document.getElementById('teamNameUpdateNotice');
   const cleanVal = (val || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -2400,124 +2454,11 @@ function handleTeamNameInput(val) {
   if (existing) {
     if (noticeEl) {
       noticeEl.style.display = 'block';
-      noticeEl.innerHTML = `🔄 <strong>Mode Pembaruan Data:</strong> Tim "<strong>${escapeHtml(existing.name)}</strong>" sudah terdaftar. Form terisi otomatis dan klik <em>"Kirim Pendaftaran"</em> akan memperbarui data tim ini (1 Tim = 1 Record).`;
+      noticeEl.style.color = '#fca5a5';
+      noticeEl.style.borderLeftColor = 'var(--yokke-red)';
+      noticeEl.style.background = 'rgba(239, 68, 68, 0.12)';
+      noticeEl.innerHTML = `⚠️ <strong>Nama Tim Sudah Terdaftar:</strong> Tim "<strong>${escapeHtml(existing.name)}</strong>" sudah terdaftar. Fungsi edit di formulir pendaftaran dinonaktifkan. Silakan gunakan nama tim baru.`;
     }
-
-    // Pre-fill form fields
-    const deptInput = document.getElementById('teamDept');
-    if (deptInput) deptInput.value = existing.dept || '';
-
-    const waInput = document.getElementById('contactWa');
-    if (waInput) waInput.value = existing.wa || '';
-
-    // Logo preview
-    const teamLogo = existing.logo || findLogoByTeamName(existing.name);
-    if (teamLogo) {
-      uploadedLogoBase64 = teamLogo;
-      const logoBox = document.getElementById('logoPreviewBox');
-      if (logoBox) {
-        logoBox.innerHTML = `<img src="${formatDriveImageUrl(teamLogo)}" alt="Logo ${escapeHtml(existing.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
-      }
-    }
-
-    // Roster pre-fill
-    const roster = existing.roster || [];
-    const off1 = roster.find(m => (m.role || '').indexOf('Official 1') !== -1) ||
-                 roster.find(m => (m.role || '').indexOf('Official') !== -1) ||
-                 existing.official;
-    if (off1) {
-      const off1Name = document.getElementById('off1_name');
-      const off1Emp = document.getElementById('off1_empid');
-      const off1Nick = document.getElementById('off1_nickname');
-      const off1Game = document.getElementById('off1_gameid');
-      const off1Org = document.getElementById('off1_organik');
-
-      if (off1Name) off1Name.value = off1.name || '';
-      if (off1Emp) off1Emp.value = off1.empId || '';
-      if (off1Nick) off1Nick.value = (off1.nickname && off1.nickname !== '-') ? off1.nickname : '';
-      if (off1Game) off1Game.value = (off1.gameId && off1.gameId !== '-') ? off1.gameId : '';
-      if (off1Org && off1.isOrganik !== undefined) off1Org.checked = off1.isOrganik;
-
-      const off1Card = off1.idCard || findIdCardByEmpIdOrName(off1.empId, off1.name);
-      if (off1Card) {
-        regOfficialIdCards.off1 = off1Card;
-        const off1Prev = document.getElementById('off1_idcard_preview');
-        if (off1Prev) {
-          off1Prev.innerHTML = `<img src="${formatDriveImageUrl(off1Card)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;
-        }
-      }
-    }
-
-    const off2 = roster.find(m => (m.role || '').indexOf('Official 2') !== -1) || existing.official2;
-    const hasOff2Cb = document.getElementById('has_official_2');
-    if (off2 && off2.name) {
-      if (hasOff2Cb) {
-        hasOff2Cb.checked = true;
-        toggleOfficial2Form();
-      }
-      const off2Name = document.getElementById('off2_name');
-      const off2Emp = document.getElementById('off2_empid');
-      const off2Nick = document.getElementById('off2_nickname');
-      const off2Game = document.getElementById('off2_gameid');
-      const off2Org = document.getElementById('off2_organik');
-
-      if (off2Name) off2Name.value = off2.name || '';
-      if (off2Emp) off2Emp.value = off2.empId || '';
-      if (off2Nick) off2Nick.value = (off2.nickname && off2.nickname !== '-') ? off2.nickname : '';
-      if (off2Game) off2Game.value = (off2.gameId && off2.gameId !== '-') ? off2.gameId : '';
-      if (off2Org && off2.isOrganik !== undefined) off2Org.checked = off2.isOrganik;
-
-      const off2Card = off2.idCard || findIdCardByEmpIdOrName(off2.empId, off2.name);
-      if (off2Card) {
-        regOfficialIdCards.off2 = off2Card;
-        const off2Prev = document.getElementById('off2_idcard_preview');
-        if (off2Prev) {
-          off2Prev.innerHTML = `<img src="${formatDriveImageUrl(off2Card)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;
-        }
-      }
-    } else if (hasOff2Cb) {
-      hasOff2Cb.checked = false;
-      toggleOfficial2Form();
-    }
-
-    // Players 1 to 8
-    const players = roster.filter(m => (m.role || '').indexOf('Official') === -1);
-    for (let i = 1; i <= 8; i++) {
-      const p = players[i - 1];
-      const pName = document.getElementById(`p${i}_name`);
-      const pEmp = document.getElementById(`p${i}_empid`);
-      const pNick = document.getElementById(`p${i}_nickname`);
-      const pGame = document.getElementById(`p${i}_gameid`);
-      const pOrg = document.getElementById(`p${i}_organik`);
-      const pPrev = document.getElementById(`p${i}_idcard_preview`);
-
-      if (p) {
-        if (pName) pName.value = p.name || '';
-        if (pEmp) pEmp.value = p.empId || '';
-        if (pNick) pNick.value = (p.nickname && p.nickname !== '-') ? p.nickname : '';
-        if (pGame) pGame.value = (p.gameId && p.gameId !== '-') ? p.gameId : '';
-        if (pOrg && p.isOrganik !== undefined) pOrg.checked = p.isOrganik;
-
-        if (p.isCaptain || (existing.captainName && p.name && existing.captainName.toLowerCase() === p.name.toLowerCase())) {
-          const rad = document.querySelector(`input[name="captain_select"][value="${i}"]`);
-          if (rad) rad.checked = true;
-        }
-
-        const pCard = p.idCard || findIdCardByEmpIdOrName(p.empId, p.name);
-        if (pCard) {
-          regPlayersIdCards[i] = pCard;
-          if (pPrev) pPrev.innerHTML = `<img src="${formatDriveImageUrl(pCard)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;
-        }
-      } else if (i > 5) {
-        if (pName) pName.value = '';
-        if (pEmp) pEmp.value = '';
-        if (pNick) pNick.value = '';
-        if (pGame) pGame.value = '';
-        if (pPrev) pPrev.innerHTML = `<span class="logo-preview-placeholder">ID Card</span>`;
-        regPlayersIdCards[i] = '';
-      }
-    }
-
   } else {
     if (noticeEl) {
       noticeEl.style.display = 'none';
@@ -2526,7 +2467,7 @@ function handleTeamNameInput(val) {
   }
 }
 
-// Handler saat Peserta Mengetik / Memilih Nama Pemain Solo MCGG di Form Pendaftaran
+// Handler saat Peserta Mengetik Nama Pemain Solo MCGG di Form Pendaftaran (Fungsi Edit Dimatikan)
 function handleMcggNameInput(val) {
   const noticeEl = document.getElementById('mcggNameUpdateNotice');
   const cleanVal = (val || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -2546,35 +2487,10 @@ function handleMcggNameInput(val) {
   if (existing) {
     if (noticeEl) {
       noticeEl.style.display = 'block';
-      noticeEl.innerHTML = `🔄 <strong>Mode Pembaruan Data:</strong> Pemain "<strong>${escapeHtml(existing.name)}</strong>" sudah terdaftar. Form terisi otomatis dan klik <em>"Kirim Pendaftaran"</em> akan memperbarui data Anda (1 Pemain = 1 Record).`;
-    }
-
-    const firstRoster = (existing.roster && existing.roster[0]) || {};
-    const nickInput = document.getElementById('mcgg_nickname');
-    if (nickInput) nickInput.value = (existing.nickname && existing.nickname !== '-') ? existing.nickname : (firstRoster.nickname || '');
-
-    const deptInput = document.getElementById('mcgg_dept');
-    if (deptInput) deptInput.value = existing.dept || '';
-
-    const waInput = document.getElementById('mcgg_wa');
-    if (waInput) waInput.value = existing.wa || '';
-
-    const empInput = document.getElementById('mcgg_empid');
-    if (empInput) empInput.value = existing.empId || firstRoster.empId || '';
-
-    const gameInput = document.getElementById('mcgg_gameid');
-    if (gameInput) gameInput.value = existing.gameId || firstRoster.gameId || '';
-
-    const orgInput = document.getElementById('mcgg_organik');
-    if (orgInput && existing.isOrganik !== undefined) orgInput.checked = existing.isOrganik;
-
-    const idCard = existing.idCard || firstRoster.idCard || findIdCardByEmpIdOrName(existing.empId, existing.name);
-    if (idCard) {
-      regMcggIdCard = idCard;
-      const prevBox = document.getElementById('mcgg_idcard_preview');
-      if (prevBox) {
-        prevBox.innerHTML = `<img src="${formatDriveImageUrl(idCard)}" alt="ID Card" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;
-      }
+      noticeEl.style.color = '#fca5a5';
+      noticeEl.style.borderLeftColor = 'var(--yokke-red)';
+      noticeEl.style.background = 'rgba(239, 68, 68, 0.12)';
+      noticeEl.innerHTML = `⚠️ <strong>Peserta Sudah Terdaftar:</strong> Pemain "<strong>${escapeHtml(existing.name)}</strong>" sudah terdaftar. Fungsi edit di formulir pendaftaran dinonaktifkan.`;
     }
   } else {
     if (noticeEl) {
@@ -2967,13 +2883,20 @@ async function handleRegister(e) {
   }
 
   // 2. POP-UP / MODAL KONFIRMASI JIKA SUDAH ADA
+  // FUNGSI EDIT DI FORM PENDAFTARAN DINONAKTIFKAN OLEH PANITIA (HANYA UNTUK REGISTRASI BARU)
+  const ALLOW_PUBLIC_FORM_EDIT = false;
+
   if (targetExisting) {
-    const confirmUpdate = confirm(`Data dengan [${identifierLabel}] ini sudah terdaftar di sistem. Apakah Anda ingin mengupdate data tersebut?`);
-    if (!confirmUpdate) {
-      // User pilih "Batal": Hentikan proses submit, jangan kirim request ke server
+    if (ALLOW_PUBLIC_FORM_EDIT) {
+      const confirmUpdate = confirm(`Data dengan [${identifierLabel}] ini sudah terdaftar di sistem. Apakah Anda ingin mengupdate data tersebut?`);
+      if (!confirmUpdate) {
+        return;
+      }
+      isUpdate = true;
+    } else {
+      alert(`❌ PENDAFTARAN DITOLAK:\n${identifierLabel} sudah terdaftar di sistem!\n\nFungsi edit di formulir pendaftaran telah dinonaktifkan oleh panitia. Silakan gunakan nama tim baru atau hubungi panitia turnamen.`);
       return;
     }
-    isUpdate = true;
   } else {
     isUpdate = false;
   }

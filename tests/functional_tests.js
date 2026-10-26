@@ -1177,6 +1177,36 @@ async function runLiveIntegrationTests() {
     assert(!appCode.includes("'>⭐ Invite</span>'"), 'Badge ⭐ Invite tidak boleh tampil di tabel klasemen grup');
   });
 
+  // ----------------------------------------------------
+  // SUITE 12: INTEGRASI PERATURAN GOOGLE DOCS & FORM REGISTRASI
+  // ----------------------------------------------------
+  console.log('\n📜 SUITE 12: Integrasi Peraturan Google Docs & Form Registrasi');
+
+  runTest('12.1 Konfigurasi URL Google Docs dan fungsi sinkronisasi peraturan di app.js', () => {
+    assert(appCode.includes('GOOGLE_DOCS_RULES_DOC_URL'), 'app.js harus memiliki konstanta GOOGLE_DOCS_RULES_DOC_URL');
+    assert(appCode.includes('1bnYv1aPVa1uCji9hJI-PumFIwaaovvdEPm-aasqLIds'), 'app.js harus mengarah ke document ID Google Docs resmi');
+    assert(appCode.includes('fetchRulesFromGoogleDoc'), 'app.js harus memiliki fungsi fetchRulesFromGoogleDoc');
+  });
+
+  runTest('12.2 Peraturan Standar MLBB memuat regulasi resmi dari Google Docs', () => {
+    assert(appCode.includes('KETENTUAN PESERTA MLBB:'), 'Peraturan MLBB harus memuat ketentuan peserta');
+    assert(appCode.includes('KETENTUAN PERTANDINGAN MLBB:'), 'Peraturan MLBB harus memuat ketentuan pertandingan');
+    assert(appCode.includes("DO AND DON'T YMC S4 2026:"), 'Peraturan MLBB harus memuat DO and DONT');
+    assert(appCode.includes('Hanya player yang sudah melaporkan id card fisik hilang'), 'Peraturan MLBB harus memuat ketentuan id card fisik hilang');
+  });
+
+  runTest('12.3 Penonaktifan dropdown list tim/peserta pada form pendaftaran di index.html', () => {
+    const htmlCode = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    assert(!htmlCode.includes('id="teamName" list="registeredTeamsDatalist"'), 'Input teamName tidak boleh memiliki atribut list datalist dropdown');
+    assert(!htmlCode.includes('id="mcgg_name" list="registeredMcggDatalist"'), 'Input mcgg_name tidak boleh memiliki atribut list datalist dropdown');
+    assert(htmlCode.includes('fetchRulesFromGoogleDoc'), 'index.html harus memuat tombol sinkronisasi Google Docs');
+  });
+
+  runTest('12.4 Penonaktifan fungsi edit registrasi publik di app.js', () => {
+    assert(appCode.includes('ALLOW_PUBLIC_FORM_EDIT = false'), 'app.js harus menetapkan ALLOW_PUBLIC_FORM_EDIT = false');
+    assert(appCode.includes('Fungsi edit di formulir pendaftaran dinonaktifkan'), 'app.js harus menampilkan peringatan fungsi edit dinonaktifkan');
+  });
+
   console.log('\n====================================================');
   console.log(`📊 RINGKASAN HASIL PENGUJIAN: ${passedCount} LULUS, ${failedCount} GAGAL`);
   console.log('====================================================');
