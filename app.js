@@ -1325,6 +1325,8 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
         }
         if (data.config.groupMatchResults !== undefined && data.config.groupMatchResults !== null && typeof data.config.groupMatchResults === 'object') {
           groupMatchResults = data.config.groupMatchResults;
+          if (typeof deduplicateGroupMatchResults === 'function') deduplicateGroupMatchResults();
+          if (typeof recalculateGroupStandingsFromFixtures === 'function') recalculateGroupStandingsFromFixtures();
           localStorage.setItem('yokke_group_match_results', JSON.stringify(groupMatchResults));
         }
         if (data.config.groupPlayoffMatches !== undefined && Array.isArray(data.config.groupPlayoffMatches)) {
@@ -4962,17 +4964,146 @@ function renderGroupStageUI() {
 }
 
 // --- ALUR JADWAL RESMI TURNAMEN YOKKE SQUAD MLBB (3 MINGGU) ---
+const MLBB_SCHEDULE_DATES = {
+  1: 'Senin, 26 Okt 2026',
+  2: 'Selasa, 27 Okt 2026',
+  3: 'Rabu, 28 Okt 2026',
+  4: 'Kamis, 29 Okt 2026',
+  5: 'Jumat, 30 Okt 2026'
+};
+
+// Jadwal Resmi Pertandingan Fase Grup MLBB Sesuai Poster Publikasi Resmi Panitia
+const MLBB_OFFICIAL_GROUP_SCHEDULE = {
+  'Grup A': [
+    { day: 1, matchOrder: 1, teamA: 'Native', teamB: 'BOTI (Bekerja Optimal, Tumbuh Istimewa)', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'Yokke Cikarang', teamB: 'My Palembang', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'IOS', teamB: 'My Palembang', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'Native', teamB: 'Yokke Cikarang', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'BOTI (Bekerja Optimal, Tumbuh Istimewa)', teamB: 'Yokke Cikarang', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'IOS', teamB: 'Native', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'My Palembang', teamB: 'Native', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'BOTI (Bekerja Optimal, Tumbuh Istimewa)', teamB: 'IOS', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'Yokke Cikarang', teamB: 'IOS', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'My Palembang', teamB: 'BOTI (Bekerja Optimal, Tumbuh Istimewa)', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup B': [
+    { day: 1, matchOrder: 1, teamA: 'Anti Climax', teamB: '7 SINS', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'Yokke Batam Squad (YBS)', teamB: 'DEWA (Dark Elite Warriors Asli Medan)', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'SGMO', teamB: 'DEWA (Dark Elite Warriors Asli Medan)', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'Anti Climax', teamB: 'Yokke Batam Squad (YBS)', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: '7 SINS', teamB: 'Yokke Batam Squad (YBS)', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'SGMO', teamB: 'Anti Climax', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'DEWA (Dark Elite Warriors Asli Medan)', teamB: 'Anti Climax', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: '7 SINS', teamB: 'SGMO', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'Yokke Batam Squad (YBS)', teamB: 'SGMO', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'DEWA (Dark Elite Warriors Asli Medan)', teamB: '7 SINS', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup C': [
+    { day: 1, matchOrder: 1, teamA: 'AANG ALPHA', teamB: 'REKAN OM', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'Red Razor', teamB: 'TY BEKASI', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'BIKINI BOTTOM', teamB: 'TY BEKASI', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'AANG ALPHA', teamB: 'Red Razor', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'REKAN OM', teamB: 'Red Razor', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'BIKINI BOTTOM', teamB: 'AANG ALPHA', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'TY BEKASI', teamB: 'AANG ALPHA', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'REKAN OM', teamB: 'BIKINI BOTTOM', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'Red Razor', teamB: 'BIKINI BOTTOM', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'TY BEKASI', teamB: 'REKAN OM', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup D': [
+    { day: 1, matchOrder: 1, teamA: 'ATMO', teamB: 'DEADLINE SLAYER', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: '666', teamB: 'AVATAR BORNEO', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'DARFAT LIVIN FOOD', teamB: 'AVATAR BORNEO', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'ATMO', teamB: '666', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'DEADLINE SLAYER', teamB: '666', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'DARFAT LIVIN FOOD', teamB: 'ATMO', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'AVATAR BORNEO', teamB: 'ATMO', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'DEADLINE SLAYER', teamB: 'DARFAT LIVIN FOOD', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: '666', teamB: 'DARFAT LIVIN FOOD', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'AVATAR BORNEO', teamB: 'DEADLINE SLAYER', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup E': [
+    { day: 1, matchOrder: 1, teamA: 'APPA LINUX', teamB: 'DEPOK MAUNG', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'Tugu Muda', teamB: 'MiracleXStars', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'Miskin Mekanik', teamB: 'MiracleXStars', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'APPA LINUX', teamB: 'Tugu Muda', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'DEPOK MAUNG', teamB: 'Tugu Muda', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'Miskin Mekanik', teamB: 'APPA LINUX', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'MiracleXStars', teamB: 'APPA LINUX', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'DEPOK MAUNG', teamB: 'Miskin Mekanik', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'Tugu Muda', teamB: 'Miskin Mekanik', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'MiracleXStars', teamB: 'DEPOK MAUNG', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup F': [
+    { day: 1, matchOrder: 1, teamA: 'YOKKE LAMPUNG', teamB: 'VALKYRIE', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'WINGSKANAN ESPORT 2', teamB: 'NAMJUG', room: 'Stream 2 (Room B)' },
+    { day: 1, matchOrder: 3, teamA: 'Colorbook', teamB: 'Xorps E- Sport', room: 'Stream 3 (Room C)' },
+    { day: 2, matchOrder: 1, teamA: 'YOKKE LAMPUNG', teamB: 'NAMJUG', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'VALKYRIE', teamB: 'Xorps E- Sport', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 3, teamA: 'WINGSKANAN ESPORT 2', teamB: 'Colorbook', room: 'Stream 3 (Room C)' },
+    { day: 3, matchOrder: 1, teamA: 'YOKKE LAMPUNG', teamB: 'Xorps E- Sport', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'NAMJUG', teamB: 'Colorbook', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 3, teamA: 'VALKYRIE', teamB: 'WINGSKANAN ESPORT 2', room: 'Stream 3 (Room C)' },
+    { day: 4, matchOrder: 1, teamA: 'YOKKE LAMPUNG', teamB: 'Colorbook', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'Xorps E- Sport', teamB: 'WINGSKANAN ESPORT 2', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 3, teamA: 'NAMJUG', teamB: 'VALKYRIE', room: 'Stream 3 (Room C)' },
+    { day: 5, matchOrder: 1, teamA: 'YOKKE LAMPUNG', teamB: 'WINGSKANAN ESPORT 2', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'Colorbook', teamB: 'VALKYRIE', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 3, teamA: 'Xorps E- Sport', teamB: 'NAMJUG', room: 'Stream 3 (Room C)' }
+  ],
+  'Grup G': [
+    { day: 1, matchOrder: 1, teamA: 'Gado Gado Esports', teamB: 'Yokke.Syindicate', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'LOLO', teamB: 'AANG Beta', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'TABRAK AJALAH', teamB: 'AANG Beta', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'Gado Gado Esports', teamB: 'LOLO', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'Yokke.Syindicate', teamB: 'LOLO', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'TABRAK AJALAH', teamB: 'Gado Gado Esports', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'AANG Beta', teamB: 'Gado Gado Esports', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'Yokke.Syindicate', teamB: 'TABRAK AJALAH', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'LOLO', teamB: 'TABRAK AJALAH', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'AANG Beta', teamB: 'Yokke.Syindicate', room: 'Stream 2 (Room B)' }
+  ],
+  'Grup H': [
+    { day: 1, matchOrder: 1, teamA: 'WINGSKANAN ESPORT 1', teamB: 'MBG ( Mas Bahlil Guanteng )', room: 'Stream 1 (Room A)' },
+    { day: 1, matchOrder: 2, teamA: 'Yokke Batam', teamB: 'MTI BANJARMASIN', room: 'Stream 2 (Room B)' },
+    { day: 2, matchOrder: 1, teamA: 'BOLO CLUB', teamB: 'MTI BANJARMASIN', room: 'Stream 1 (Room A)' },
+    { day: 2, matchOrder: 2, teamA: 'WINGSKANAN ESPORT 1', teamB: 'Yokke Batam', room: 'Stream 2 (Room B)' },
+    { day: 3, matchOrder: 1, teamA: 'MBG ( Mas Bahlil Guanteng )', teamB: 'Yokke Batam', room: 'Stream 1 (Room A)' },
+    { day: 3, matchOrder: 2, teamA: 'BOLO CLUB', teamB: 'WINGSKANAN ESPORT 1', room: 'Stream 2 (Room B)' },
+    { day: 4, matchOrder: 1, teamA: 'MTI BANJARMASIN', teamB: 'WINGSKANAN ESPORT 1', room: 'Stream 1 (Room A)' },
+    { day: 4, matchOrder: 2, teamA: 'MBG ( Mas Bahlil Guanteng )', teamB: 'BOLO CLUB', room: 'Stream 2 (Room B)' },
+    { day: 5, matchOrder: 1, teamA: 'Yokke Batam', teamB: 'BOLO CLUB', room: 'Stream 1 (Room A)' },
+    { day: 5, matchOrder: 2, teamA: 'MTI BANJARMASIN', teamB: 'MBG ( Mas Bahlil Guanteng )', room: 'Stream 2 (Room B)' }
+  ]
+};
+
+// Helper pencocokan nama tim di dalam grup (toleran terhadap variasi penulisan alias/tanda kurung di poster)
+function resolveTeamNameInGroup(rawName, groupTeams) {
+  if (!rawName || !groupTeams || groupTeams.length === 0) return rawName;
+  if (groupTeams.includes(rawName)) return rawName;
+  const lower = rawName.trim().toLowerCase();
+  const ci = groupTeams.find(t => t.toLowerCase() === lower);
+  if (ci) return ci;
+  const norm = lower.replace(/[^a-z0-9]/g, '');
+  const partial = groupTeams.find(t => {
+    const tNorm = t.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return tNorm === norm || tNorm.startsWith(norm) || norm.startsWith(tNorm);
+  });
+  if (partial) return partial;
+  return rawName;
+}
+
 const MLBB_TOURNAMENT_WEEKS = {
   WEEK_1: {
     title: 'Week 1: Fase Grup 8 Grup (5 Hari)',
     badge: 'Fase Grup • 5 Hari',
     subtitle: 'Babak Penyisihan 41 Tim • Tanpa Tim Bermain 2x Sehari (Maks 1 match/tim per hari) • 16 Upper & 8 Lower',
     days: [
-      { day: 1, label: 'Hari 1 (Matchday 1)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
-      { day: 2, label: 'Hari 2 (Matchday 2)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
-      { day: 3, label: 'Hari 3 (Matchday 3)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
-      { day: 4, label: 'Hari 4 (Matchday 4)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Hingga 2 Match Simultan per Sesi (Stream 1 & 2) • Tiap tim main maks 1x' },
-      { day: 5, label: 'Hari 5 (Matchday 5)', desc: 'Maks. 2 Sesi (19:00 & 20:30 WIB) • Penentuan Klasemen Akhir Juara 1, 2, 3 Grup • Tiap tim main maks 1x' }
+      { day: 1, label: 'Hari 1 (Senin, 26 Okt 2026)', desc: '19:00 WIB / 20:00 WITA • Stream Simultan • Tiap tim main maks 1x' },
+      { day: 2, label: 'Hari 2 (Selasa, 27 Okt 2026)', desc: '19:00 WIB / 20:00 WITA • Stream Simultan • Tiap tim main maks 1x' },
+      { day: 3, label: 'Hari 3 (Rabu, 28 Okt 2026)', desc: '19:00 WIB / 20:00 WITA • Stream Simultan • Tiap tim main maks 1x' },
+      { day: 4, label: 'Hari 4 (Kamis, 29 Okt 2026)', desc: '19:00 WIB / 20:00 WITA • Stream Simultan • Tiap tim main maks 1x' },
+      { day: 5, label: 'Hari 5 (Jumat, 30 Okt 2026)', desc: '19:00 WIB / 20:00 WITA • Penentuan Klasemen Akhir Juara 1, 2, 3 Grup' }
     ]
   },
   WEEK_2: {
@@ -5027,93 +5158,92 @@ function getGroupFixtures(gName, dayFilter = null) {
   const n = teams.length;
   if (n < 2) return [];
 
-  // Pola distribusi jadwal 4 Hari (Week 1)
-  // Menjamin di Hari 1 dan 2 seluruh tim bertanding MAKSIMAL 1x per hari.
-  // Di Hari 3 dan 4, jeda antar sesi diberikan jika ada tim yang memainkan match kedua.
-  // Pola distribusi jadwal 5 Hari (Week 1): Maksimal 2 Sesi per Hari (Sesi 1: 19:00 WIB, Sesi 2: 20:30 WIB)
-  // Mendukung hingga 2 pertandingan paralel (simultan) di sesi yang sama dalam grup yang sama (Stream 1 & Stream 2).
-  // Menjamin 100% TIDAK ADA TIM YANG BERMAIN 2 KALI DALAM SATU HARI (Maksimal 1 match per tim per hari).
-  const pattern5 = [
-    // Hari 1: 2 match simultan di Sesi 1 (T4 istirahat / BYE) -> Total 1 sesi
-    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 3 },
-    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 1, b: 2 },
-
-    // Hari 2: 2 match simultan di Sesi 1 (T3 istirahat / BYE) -> Total 1 sesi
-    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 4, b: 2 },
-    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 0, b: 1 },
-
-    // Hari 3: 2 match simultan di Sesi 1 (T2 istirahat / BYE) -> Total 1 sesi
-    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 3, b: 1 },
-    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 4, b: 0 },
-
-    // Hari 4: 2 match simultan di Sesi 1 (T1 istirahat / BYE) -> Total 1 sesi
-    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 2, b: 0 },
-    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 3, b: 4 },
-
-    // Hari 5: 2 match simultan di Sesi 1 (T0 istirahat / BYE) -> Total 1 sesi
-    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 1, b: 4 },
-    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 2, b: 3 }
-  ];
-
-  const pattern6 = [
-    // Hari 1: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
-    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 5 },
-    { day: 1, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 1, b: 4 },
-    { day: 1, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 2, b: 3 },
-
-    // Hari 2: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
-    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 4 },
-    { day: 2, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 5, b: 3 },
-    { day: 2, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 1, b: 2 },
-
-    // Hari 3: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
-    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 3 },
-    { day: 3, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 4, b: 2 },
-    { day: 3, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 5, b: 1 },
-
-    // Hari 4: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
-    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 2 },
-    { day: 4, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 3, b: 1 },
-    { day: 4, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 4, b: 5 },
-
-    // Hari 5: 2 match simultan di Sesi 1 + 1 match di Sesi 2 -> Seluruh 6 tim main 1x
-    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 1 (Room A)', a: 0, b: 1 },
-    { day: 5, session: 1, time: '19:00 WIB', room: 'Stream 2 (Room B)', a: 2, b: 5 },
-    { day: 5, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 3, b: 4 }
-  ];
-
-  const pattern = (n === 6) ? pattern6 : (n === 5 ? pattern5 : null);
   const rawPairs = [];
+  const official = MLBB_OFFICIAL_GROUP_SCHEDULE[gName];
 
-  if (pattern) {
-    pattern.forEach((item, idx) => {
-      if (item.a < n && item.b < n) {
-        rawPairs.push({
-          matchOrder: idx + 1,
-          teamA: teams[item.a],
-          teamB: teams[item.b],
-          day: item.day,
-          session: item.session,
-          time: item.time,
-          room: item.room || 'Stream 1'
-        });
-      }
+  // Cek apakah jadwal resmi panitia tersedia dan cocok dengan tim di grup
+  if (official && official.length > 0) {
+    official.forEach((item, idx) => {
+      const realTeamA = resolveTeamNameInGroup(item.teamA, teams);
+      const realTeamB = resolveTeamNameInGroup(item.teamB, teams);
+      rawPairs.push({
+        matchOrder: item.matchOrder || (idx + 1),
+        teamA: realTeamA,
+        teamB: realTeamB,
+        day: item.day,
+        session: item.matchOrder || 1,
+        time: '19:00 WIB / 20:00 WITA',
+        room: item.room || `Stream ${item.matchOrder || 1}`,
+        dateLabel: MLBB_SCHEDULE_DATES[item.day] || `Hari ${item.day}`
+      });
     });
   } else {
-    let count = 0;
-    for (let i = 0; i < n; i++) {
-      for (let j = i + 1; j < n; j++) {
-        count++;
-        const d = ((count - 1) % 4) + 1;
-        const s = Math.floor((count - 1) / 4) + 1;
-        rawPairs.push({
-          matchOrder: count,
-          teamA: teams[i],
-          teamB: teams[j],
-          day: d,
-          session: s,
-          time: `${18 + s}:00 WIB`
-        });
+    // Pola cadangan round-robin jika grup diundi ulang dengan struktur kustom
+    const pattern5 = [
+      { day: 1, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 3 },
+      { day: 1, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 1, b: 2 },
+      { day: 2, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 4, b: 2 },
+      { day: 2, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 0, b: 1 },
+      { day: 3, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 3, b: 1 },
+      { day: 3, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 4, b: 0 },
+      { day: 4, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 2, b: 0 },
+      { day: 4, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 3, b: 4 },
+      { day: 5, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 1, b: 4 },
+      { day: 5, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 2, b: 3 }
+    ];
+
+    const pattern6 = [
+      { day: 1, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 5 },
+      { day: 1, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 1, b: 4 },
+      { day: 1, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 2, b: 3 },
+      { day: 2, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 4 },
+      { day: 2, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 5, b: 3 },
+      { day: 2, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 1, b: 2 },
+      { day: 3, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 3 },
+      { day: 3, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 4, b: 2 },
+      { day: 3, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 5, b: 1 },
+      { day: 4, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 2 },
+      { day: 4, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 3, b: 1 },
+      { day: 4, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 4, b: 5 },
+      { day: 5, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 1 (Room A)', a: 0, b: 1 },
+      { day: 5, session: 1, time: '19:00 WIB / 20:00 WITA', room: 'Stream 2 (Room B)', a: 2, b: 5 },
+      { day: 5, session: 2, time: '20:30 WIB', room: 'Stream 1 (Room A)', a: 3, b: 4 }
+    ];
+
+    const pattern = (n === 6) ? pattern6 : (n === 5 ? pattern5 : null);
+
+    if (pattern) {
+      pattern.forEach((item, idx) => {
+        if (item.a < n && item.b < n) {
+          rawPairs.push({
+            matchOrder: idx + 1,
+            teamA: teams[item.a],
+            teamB: teams[item.b],
+            day: item.day,
+            session: item.session,
+            time: item.time,
+            room: item.room || 'Stream 1',
+            dateLabel: MLBB_SCHEDULE_DATES[item.day] || `Hari ${item.day}`
+          });
+        }
+      });
+    } else {
+      let count = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          count++;
+          const d = ((count - 1) % 5) + 1;
+          rawPairs.push({
+            matchOrder: count,
+            teamA: teams[i],
+            teamB: teams[j],
+            day: d,
+            session: 1,
+            time: '19:00 WIB / 20:00 WITA',
+            room: 'Stream 1',
+            dateLabel: MLBB_SCHEDULE_DATES[d] || `Hari ${d}`
+          });
+        }
       }
     }
   }
@@ -5122,13 +5252,30 @@ function getGroupFixtures(gName, dayFilter = null) {
   rawPairs.forEach(p => {
     if (dayFilter && dayFilter !== 'ALL' && parseInt(dayFilter, 10) !== p.day) return;
 
-    // Cari hasil yang sudah tersimpan dengan matchId normal atau terbalik
+    // Cari hasil yang sudah tersimpan dengan canonical matchId, normal atau terbalik
+    const canonId = getCanonicalGroupMatchId(gName, p.teamA, p.teamB);
     const matchId = `${gName}_${p.teamA}_vs_${p.teamB}`.replace(/\s+/g, '_');
     const matchIdRev = `${gName}_${p.teamB}_vs_${p.teamA}`.replace(/\s+/g, '_');
-    const saved = groupMatchResults[matchId] || groupMatchResults[matchIdRev] || {};
+    const saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[matchIdRev] || {};
+
+    // Peta skor orientasi Home vs Away agar skor selalu sesuai dengan nama tim yang bersangkutan
+    let scoreA = null;
+    let scoreB = null;
+    if (saved.scoreA !== undefined && saved.scoreA !== null && saved.scoreB !== undefined && saved.scoreB !== null) {
+      if (saved.teamA === p.teamA) {
+        scoreA = saved.scoreA;
+        scoreB = saved.scoreB;
+      } else if (saved.teamA === p.teamB) {
+        scoreA = saved.scoreB;
+        scoreB = saved.scoreA;
+      } else {
+        scoreA = saved.scoreA;
+        scoreB = saved.scoreB;
+      }
+    }
 
     fixtures.push({
-      matchId: matchId,
+      matchId: canonId, // Gunakan canonical ID agar input ulang selalu menimpa match yang sama
       gName: gName,
       teamA: p.teamA,
       teamB: p.teamB,
@@ -5138,8 +5285,9 @@ function getGroupFixtures(gName, dayFilter = null) {
       sessionTime: p.time,
       streamRoom: p.room || 'Stream 1',
       matchOrder: p.matchOrder,
-      scoreA: saved.scoreA !== undefined ? saved.scoreA : null,
-      scoreB: saved.scoreB !== undefined ? saved.scoreB : null,
+      dateLabel: p.dateLabel || (MLBB_SCHEDULE_DATES[p.day] || `Hari ${p.day}`),
+      scoreA: scoreA,
+      scoreB: scoreB,
       winner: saved.winner || null,
       mvpPlayer: saved.mvpPlayer || null,
       mvpHero: saved.mvpHero || null,
@@ -5148,6 +5296,48 @@ function getGroupFixtures(gName, dayFilter = null) {
   });
 
   return fixtures;
+}
+
+// Helper untuk mendapatkan Canonical Match ID yang unik per pasangan tim (tidak terpengaruh urutan teamA vs teamB)
+function getCanonicalGroupMatchId(gName, teamA, teamB) {
+  const cleanG = (gName || '').trim();
+  const cleanA = (teamA || '').trim();
+  const cleanB = (teamB || '').trim();
+  const sorted = [cleanA, cleanB].sort((a, b) => a.localeCompare(b));
+  return `${cleanG}_${sorted[0]}_vs_${sorted[1]}`.replace(/\s+/g, '_');
+}
+
+// Pembersihan & Deduplikasi Otomatis groupMatchResults agar tidak ada entri terbalik / ganda
+function deduplicateGroupMatchResults() {
+  if (!groupMatchResults || typeof groupMatchResults !== 'object') return;
+  const cleanMr = {};
+  for (const mId in groupMatchResults) {
+    const m = groupMatchResults[mId];
+    if (!m || !m.teamA || !m.teamB || !m.gName) {
+      cleanMr[mId] = m;
+      continue;
+    }
+    const canonId = getCanonicalGroupMatchId(m.gName, m.teamA, m.teamB);
+    const existing = cleanMr[canonId];
+    if (!existing) {
+      cleanMr[canonId] = { ...m, matchId: canonId };
+    } else {
+      // Prioritaskan entri yang memiliki skor dan pemenang valid
+      const preferNew = (m.winner && !existing.winner) || (m.scoreA !== null && existing.scoreA === null);
+      cleanMr[canonId] = {
+        ...existing,
+        teamA: existing.teamA || m.teamA,
+        teamB: existing.teamB || m.teamB,
+        scoreA: preferNew ? m.scoreA : (existing.scoreA !== null ? existing.scoreA : m.scoreA),
+        scoreB: preferNew ? m.scoreB : (existing.scoreB !== null ? existing.scoreB : m.scoreB),
+        winner: m.winner || existing.winner,
+        mvpPlayer: m.mvpPlayer || existing.mvpPlayer,
+        mvpHero: m.mvpHero || existing.mvpHero,
+        mvpTeam: m.mvpTeam || existing.mvpTeam
+      };
+    }
+  }
+  groupMatchResults = cleanMr;
 }
 
 // Mendapatkan daftar tim yang istirahat (tidak bermain) pada hari tertentu di grup tertentu
@@ -5164,15 +5354,28 @@ function getGroupRestingTeams(gName, day) {
 
 function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
   if (!isAdmin) return;
-  scoreA = parseInt(scoreA);
-  scoreB = parseInt(scoreB);
+  scoreA = (scoreA !== '' && scoreA !== null && !isNaN(parseInt(scoreA, 10))) ? parseInt(scoreA, 10) : null;
+  scoreB = (scoreB !== '' && scoreB !== null && !isNaN(parseInt(scoreB, 10))) ? parseInt(scoreB, 10) : null;
   let winner = null;
-  if (scoreA > scoreB) winner = teamA;
-  else if (scoreB > scoreA) winner = teamB;
+  if (scoreA !== null && scoreB !== null) {
+    if (scoreA > scoreB) winner = teamA;
+    else if (scoreB > scoreA) winner = teamB;
+  }
 
-  const prev = groupMatchResults[matchId] || {};
-  groupMatchResults[matchId] = {
-    matchId,
+  // Canonicalize Match ID agar tidak ada duplikasi antara A_vs_B dan B_vs_A
+  const canonId = getCanonicalGroupMatchId(gName, teamA, teamB);
+  const rawId1 = `${gName}_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
+  const rawId2 = `${gName}_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
+
+  const prev = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2] || {};
+
+  // Hapus seluruh key varian / terbalik lama agar match count tidak bertambah ganda saat salah input
+  if (matchId && matchId !== canonId) delete groupMatchResults[matchId];
+  if (rawId1 !== canonId) delete groupMatchResults[rawId1];
+  if (rawId2 !== canonId) delete groupMatchResults[rawId2];
+
+  groupMatchResults[canonId] = {
+    matchId: canonId,
     gName,
     teamA,
     teamB,
@@ -5190,15 +5393,26 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
   renderGroupStageUI();
 }
 
+function saveGroupFixtureScore(matchId, gName, teamA, teamB) {
+  if (!isAdmin) return;
+  const scAEl = document.getElementById('scA_' + matchId) || document.getElementById('scoreA_' + matchId);
+  const scBEl = document.getElementById('scB_' + matchId) || document.getElementById('scoreB_' + matchId);
+  if (!scAEl || !scBEl) return;
+  const scoreA = scAEl.value;
+  const scoreB = scBEl.value;
+  setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB);
+}
+
 function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
   if (!isAdmin) return;
-  if (!groupMatchResults[matchId]) return;
-  groupMatchResults[matchId].mvpPlayer = mvpPlayer ? mvpPlayer.trim() : null;
-  groupMatchResults[matchId].mvpHero = mvpHero ? mvpHero.trim() : null;
+  const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
+  if (!groupMatchResults[canonId]) return;
+  groupMatchResults[canonId].mvpPlayer = mvpPlayer ? mvpPlayer.trim() : null;
+  groupMatchResults[canonId].mvpHero = mvpHero ? mvpHero.trim() : null;
   if (mvpTeam) {
-    groupMatchResults[matchId].mvpTeam = mvpTeam;
-  } else if (groupMatchResults[matchId].winner) {
-    groupMatchResults[matchId].mvpTeam = groupMatchResults[matchId].winner;
+    groupMatchResults[canonId].mvpTeam = mvpTeam;
+  } else if (groupMatchResults[canonId].winner) {
+    groupMatchResults[canonId].mvpTeam = groupMatchResults[canonId].winner;
   }
   saveState();
   renderGroupStageUI();
@@ -5206,7 +5420,8 @@ function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
 
 function promptGroupMatchMVP(matchId, teamA, teamB) {
   if (!isAdmin) return;
-  const current = groupMatchResults[matchId] || {};
+  const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
+  const current = groupMatchResults[canonId] || {};
   const currentMvp = current.mvpPlayer || '';
   const currentHero = current.mvpHero || '';
 
@@ -5233,11 +5448,15 @@ function promptGroupMatchMVP(matchId, teamA, teamB) {
     mvpTeam = teamB;
   }
 
-  setGroupMatchMVP(matchId, newMvp, newHero, mvpTeam);
+  setGroupMatchMVP(canonId, newMvp, newHero, mvpTeam);
 }
 
 function resetGroupMatchScore(matchId) {
   if (!isAdmin) return;
+  const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
+  if (groupMatchResults[canonId]) {
+    delete groupMatchResults[canonId];
+  }
   if (groupMatchResults[matchId]) {
     delete groupMatchResults[matchId];
   }
@@ -5248,24 +5467,38 @@ function resetGroupMatchScore(matchId) {
 }
 
 function recalculateGroupStandingsFromFixtures() {
+  deduplicateGroupMatchResults();
+
   for (const gName in groupStageData) {
     const teams = groupStageData[gName];
-    const hasAnyFixture = Object.values(groupMatchResults).some(m => m.gName === gName && m.winner);
-    if (!hasAnyFixture) continue;
+    if (!Array.isArray(teams)) continue;
+
+    // Kumpulkan match unik untuk grup ini agar setiap pertandingan antar 2 tim hanya dihitung 1x
+    const uniqueGroupMatches = [];
+    const seenPairs = new Set();
+
+    for (const mId in groupMatchResults) {
+      const m = groupMatchResults[mId];
+      if (!m || m.gName !== gName || !m.winner || !m.teamA || !m.teamB) continue;
+      const pairKey = getCanonicalGroupMatchId(gName, m.teamA, m.teamB);
+      if (!seenPairs.has(pairKey)) {
+        seenPairs.add(pairKey);
+        uniqueGroupMatches.push(m);
+      }
+    }
+
+    if (uniqueGroupMatches.length === 0) continue;
 
     teams.forEach(t => {
       let winCount = 0;
       let loseCount = 0;
-      for (const mId in groupMatchResults) {
-        const m = groupMatchResults[mId];
-        if (m.gName === gName && m.winner) {
-          if (m.winner === t.name) {
-            winCount++;
-          } else if (m.teamA === t.name || m.teamB === t.name) {
-            loseCount++;
-          }
+      uniqueGroupMatches.forEach(m => {
+        if (m.winner === t.name) {
+          winCount++;
+        } else if (m.teamA === t.name || m.teamB === t.name) {
+          loseCount++;
         }
-      }
+      });
       t.win = winCount;
       t.lose = loseCount;
       t.pts = winCount * 2;
@@ -5396,7 +5629,7 @@ function renderGroupFixturesUI() {
         </span>
       </div>
       <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0 0 0.6rem; line-height: 1.5;">
-        Week 1 Fase Grup berlangsung selama <strong>5 hari</strong> (Hari 1–5) dengan maksimal <strong>2 sesi per hari</strong> (Sesi 1: 19:00 WIB & Sesi 2: 20:30 WIB). Dalam grup yang sama, <strong>dapat berlangsung 2 pertandingan secara simultan/paralel</strong> (Stream 1 & Stream 2). <strong>Nol tim bertanding 2 kali dalam satu hari</strong> (tiap tim bertanding maksimal 1x per hari di seluruh matchday).
+        Week 1 Fase Grup berlangsung selama <strong>5 hari</strong> (26–30 Oktober 2026) mulai pukul <strong>19:00 WIB / 20:00 WITA</strong> secara simultan/paralel (Stream 1 & Stream 2). <strong>Nol tim bertanding 2 kali dalam satu hari</strong> (tiap tim bertanding maksimal 1x per hari di seluruh matchday).
       </p>
 
       <!-- FILTER HARI (DAY PILLS) -->
@@ -5406,19 +5639,19 @@ function renderGroupFixturesUI() {
           Semua Hari (1–5)
         </button>
         <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 1 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(1)">
-          Hari 1
+          Hari 1 (26 Okt)
         </button>
         <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 2 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(2)">
-          Hari 2
+          Hari 2 (27 Okt)
         </button>
         <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 3 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(3)">
-          Hari 3
+          Hari 3 (28 Okt)
         </button>
         <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 4 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(4)">
-          Hari 4
+          Hari 4 (29 Okt)
         </button>
         <button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 5 ? 'active' : ''}" onclick="setMLBBActiveDayFilter(5)">
-          Hari 5
+          Hari 5 (30 Okt)
         </button>
 
         <!-- FILTER GRUP -->
@@ -5439,7 +5672,7 @@ function renderGroupFixturesUI() {
     const fixtures = getGroupFixtures(gName, mlbbActiveDayFilter);
     const dayLabel = mlbbActiveDayFilter === 'ALL' 
       ? 'Seluruh Hari (Hari 1–5)'
-      : `Hari ${mlbbActiveDayFilter}`;
+      : `Hari ${mlbbActiveDayFilter} (${MLBB_SCHEDULE_DATES[mlbbActiveDayFilter] || ''})`;
 
     html += `
       <div style="background: #090e1c; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
@@ -5459,7 +5692,7 @@ function renderGroupFixturesUI() {
       if (resting.length > 0) {
         html += `
           <div class="resting-team-banner">
-            <span>☕</span> <span><strong>Tim Istirahat Hari ${mlbbActiveDayFilter}:</strong> ${resting.map(t => escapeHtml(t)).join(', ')}</span>
+            <span>☕</span> <span><strong>Tim Istirahat Hari ${mlbbActiveDayFilter} (${MLBB_SCHEDULE_DATES[mlbbActiveDayFilter] || ''}):</strong> ${resting.map(t => escapeHtml(t)).join(', ')}</span>
           </div>
         `;
       }
@@ -5481,7 +5714,7 @@ function renderGroupFixturesUI() {
           <div class="group-match-card">
             <div class="match-card-header">
               <span style="font-weight:700; color:var(--yokke-gold); font-size:0.75rem;">
-                HARI ${f.day} • SESI ${f.session} (${f.sessionTime}) • ${f.streamRoom || 'Stream 1'}
+                HARI ${f.day} (${f.dateLabel || ''}) • MATCH ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}
               </span>
               <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'}">
                 ${isDone ? 'SELESAI' : 'BO3'}
@@ -7556,6 +7789,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     regFormEl.addEventListener('change', handleFormDraftChange);
   }
 
+  // Bersihkan duplikasi match hasil input ulang dan rekalkulasi klasemen grup
+  if (typeof deduplicateGroupMatchResults === 'function') deduplicateGroupMatchResults();
+  if (typeof recalculateGroupStandingsFromFixtures === 'function') recalculateGroupStandingsFromFixtures();
+
   // Strategi Stale-While-Revalidate: Jika data cache lokal sudah ada, buka UI seketika (<100ms)
   // dan jalankan sinkronisasi Google Sheets di latar belakang tanpa memblokir layar pengguna.
   if (participants && participants.length > 0) {
@@ -7992,7 +8229,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
         content += `
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
-              <span style="font-size:0.75rem;font-weight:700;color:var(--yokke-gold);">Hari ${f.day} • Sesi ${f.session} (${f.sessionTime}) • ${f.streamRoom || 'Stream 1'}</span>
+              <span style="font-size:0.75rem;font-weight:700;color:var(--yokke-gold);">Hari ${f.day} (${f.dateLabel || ''}) • Match ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}</span>
               <span style="font-size:0.75rem;color:${hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'};">${hasScore ? '✅ Selesai' : '⏳ BO3'}</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">

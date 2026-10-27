@@ -1812,9 +1812,33 @@ function syncDedicatedTournamentSheets(ss, payload) {
   ];
   const mlbbBaganRows = [mlbbBaganHeaders];
 
-  // A. Masukkan Jadwal & Hasil Fase Grup
-  Object.keys(matchResults).forEach((mId, i) => {
-    const m = matchResults[mId];
+  // A. Masukkan Jadwal & Hasil Fase Grup (Deduplikasi canonical agar tidak dobel baris)
+  var seenPairs = {};
+  var cleanMatchList = [];
+  Object.keys(matchResults).forEach(function(mId) {
+    var m = matchResults[mId];
+    if (!m || !m.teamA || !m.teamB) return;
+    var tA = (m.teamA || "").trim();
+    var tB = (m.teamB || "").trim();
+    var pairKey = (m.gName || "") + "__" + [tA, tB].sort().join("__");
+    if (!seenPairs[pairKey]) {
+      seenPairs[pairKey] = true;
+      cleanMatchList.push(m);
+    } else {
+      for (var k = 0; k < cleanMatchList.length; k++) {
+        var prevM = cleanMatchList[k];
+        var prevPair = (prevM.gName || "") + "__" + [(prevM.teamA || "").trim(), (prevM.teamB || "").trim()].sort().join("__");
+        if (prevPair === pairKey) {
+          if (m.winner && !prevM.winner) {
+            cleanMatchList[k] = m;
+          }
+          break;
+        }
+      }
+    }
+  });
+
+  cleanMatchList.forEach(function(m, i) {
     mlbbBaganRows.push([
       m.matchId || `GRP_${i + 1}`,
       `Fase Grup - ${m.gName || ''}`,
