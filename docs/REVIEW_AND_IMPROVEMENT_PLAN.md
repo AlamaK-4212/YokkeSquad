@@ -108,4 +108,14 @@ tags:
   - Otomatisasi fungsi `deduplicateGroupMatchResults()` yang menghapus varian kunci lama/terbalik saat skor disimpan kembali (`setGroupMatchScore`).
   - Rekalkulasi klasemen (`recalculateGroupStandingsFromFixtures`) menyaring `uniqueGroupMatches` via `Set` pasangan kanonikal, sehingga 1 pasangan tim dijamin hanya dihitung tepat 1 kali.
 
+### 3. Modal Pemilih MVP Cepat (1-Click Roster & Meta Hero Selector)
+- **Pain Point**: Nama pemain/IGN yang rumit dan panjang (misal: `ᕙ⁠(Zikw¤¤⁠i30)⁠ᕗ.`, `4her,annn.`) sangat sulit dan rawan salah ketik bila harus dimasukkan lewat dialog prompt browser teks biasa.
+- **Solusi UX/UI**:
+  - Menyediakan modal interaktif `mlbbMvpPickerModal` dengan tab tim (Tim A vs Tim B) yang secara otomatis menyeleksi tim pemenang.
+  - Seluruh anggota roster pemain ditampilkan sebagai kartu/chip yang dapat **diklik 1 kali** untuk memilih pemain MVP (menampilkan IGN, nama asli, dan role).
+  - Filter pencarian instan nama/IGN untuk tim dengan banyak anggota.
+  - Autocomplete datalist 126 Hero MLBB resmi serta chip cepat (1-tap pill) untuk 17 hero meta turnamen terpopuler (*Ling, Fanny, Hayabusa, Nolan, Suyou, Beatrix, Claude, Harith, Chou, Fredrinn, Valentina, Novaria, Tigreal, Arlott, Roger, Cici, Zhuxin*).
+  - Berlaku serentak untuk Fase Grup maupun Playoff Bracket.
+
+
 
