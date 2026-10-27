@@ -647,6 +647,55 @@ tr:hover {
   overflow-y: auto;
 }
 
+/* MVP Picker Roster & Hero Cards */
+.mvp-roster-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 64px;
+}
+.mvp-roster-chip:hover {
+  background: rgba(255, 183, 3, 0.1);
+  border-color: rgba(255, 183, 3, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.mvp-roster-chip.selected {
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.22), rgba(255, 183, 3, 0.08));
+  border-color: var(--yokke-gold);
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.35);
+}
+.mvp-hero-pill {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  color: var(--yokke-cyan);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.mvp-hero-pill:hover {
+  background: rgba(0, 210, 255, 0.2);
+  border-color: var(--yokke-cyan);
+  transform: translateY(-1px);
+}
+.mvp-hero-pill.active {
+  background: var(--yokke-cyan);
+  border-color: var(--yokke-cyan);
+  color: #0b1120;
+  font-weight: 800;
+}
+
 /* Commander Lottery & Selectors */
 .commander-lottery-panel {
   background: linear-gradient(135deg, rgba(114, 9, 183, 0.12), rgba(0, 180, 216, 0.08));

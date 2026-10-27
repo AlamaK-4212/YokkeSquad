@@ -4707,39 +4707,7 @@ function promptPlayoffMVP(rIdx, mIdx) {
   if (!isAdmin) return;
   const m = groupPlayoffMatches[rIdx]?.[mIdx];
   if (!m) return;
-
-  const currentMvp = m.mvpPlayer || '';
-  const currentHero = m.mvpHero || '';
-
-  const teamAPart = (participants || []).find(p => p.name === m.teamA);
-  const teamBPart = (participants || []).find(p => p.name === m.teamB);
-  const rosterA = (teamAPart?.roster || []).map(r => r.nickname || r.name).filter(Boolean);
-  const rosterB = (teamBPart?.roster || []).map(r => r.nickname || r.name).filter(Boolean);
-
-  let hint = '';
-  if (rosterA.length || rosterB.length) {
-    hint = `Roster ${m.teamA}: ${rosterA.join(', ')}\nRoster ${m.teamB}: ${rosterB.join(', ')}\n\n`;
-  }
-
-  const newMvp = prompt(`${hint}Masukkan IGN / Nama Pemain peraih MVP match Playoff ini:`, currentMvp);
-  if (newMvp === null) return;
-
-  const newHero = prompt("Masukkan Nama Hero MLBB yang digunakan MVP (opsional, contoh: Ling, Beatrix, Fredrinn):", currentHero);
-  if (newHero === null) return;
-
-  m.mvpPlayer = newMvp ? newMvp.trim() : null;
-  m.mvpHero = newHero ? newHero.trim() : null;
-
-  if (teamAPart && rosterA.some(n => n.toLowerCase() === newMvp.trim().toLowerCase())) {
-    m.mvpTeam = m.teamA;
-  } else if (teamBPart && rosterB.some(n => n.toLowerCase() === newMvp.trim().toLowerCase())) {
-    m.mvpTeam = m.teamB;
-  } else if (m.winner) {
-    m.mvpTeam = m.winner;
-  }
-
-  saveState();
-  renderGroupPlayoffTree();
+  openMLBBPlayoffMvpModal(rIdx, mIdx);
 }
 
 function renderGroupStageUI() {
@@ -5403,10 +5371,378 @@ function saveGroupFixtureScore(matchId, gName, teamA, teamB) {
   setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB);
 }
 
+// --- MODAL PEMILIH MVP INTERAKTIF (ONE-CLICK ROSTER & META HERO SELECTOR) ---
+const MLBB_POPULAR_MVP_HEROES = [
+  "Ling", "Fanny", "Hayabusa", "Nolan", "Suyou", "Beatrix", "Claude", "Harith", 
+  "Chou", "Fredrinn", "Valentina", "Novaria", "Tigreal", "Arlott", "Roger", "Cici", "Zhuxin"
+];
+
+let currentMvpModalContext = {
+  matchId: null,
+  canonId: null,
+  gName: null,
+  teamA: null,
+  teamB: null,
+  winner: null,
+  scoreA: null,
+  scoreB: null,
+  activeTeam: 'teamA',
+  selectedPlayer: null,
+  selectedHero: null,
+  selectedTeam: null,
+  isPlayoff: false,
+  playoffRIdx: null,
+  playoffMIdx: null
+};
+
+// Helper mencari data peserta tim dengan normalisasi nama
+function findTeamParticipant(teamName) {
+  if (!teamName || !participants || participants.length === 0) return null;
+  const exact = participants.find(p => p.name === teamName);
+  if (exact) return exact;
+  const lower = teamName.trim().toLowerCase();
+  const ci = participants.find(p => (p.name || '').trim().toLowerCase() === lower);
+  if (ci) return ci;
+  const norm = lower.replace(/[^a-z0-9]/g, '');
+  return participants.find(p => {
+    const pNorm = (p.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return pNorm === norm || pNorm.startsWith(norm) || norm.startsWith(pNorm);
+  }) || null;
+}
+
+function openMLBBGroupMvpModal(matchId, gName, teamA, teamB, scoreA, scoreB) {
+  if (!isAdmin) return;
+  const canonId = getCanonicalGroupMatchId(gName, teamA, teamB);
+  const rawId1 = `${gName}_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
+  const rawId2 = `${gName}_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
+  const saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2] || {};
+
+  let winner = saved.winner || null;
+  if (!winner && scoreA !== null && scoreB !== null && scoreA !== undefined && scoreB !== undefined) {
+    if (parseInt(scoreA, 10) > parseInt(scoreB, 10)) winner = teamA;
+    else if (parseInt(scoreB, 10) > parseInt(scoreA, 10)) winner = teamB;
+  }
+
+  // Pilih tim pemenang secara default jika ada, agar admin langsung melihat pemain tim pemenang
+  const defaultTab = (winner === teamB) ? 'teamB' : 'teamA';
+
+  currentMvpModalContext = {
+    matchId: canonId,
+    canonId: canonId,
+    gName: gName,
+    teamA: teamA,
+    teamB: teamB,
+    winner: winner,
+    scoreA: scoreA !== undefined ? scoreA : saved.scoreA,
+    scoreB: scoreB !== undefined ? scoreB : saved.scoreB,
+    activeTeam: defaultTab,
+    selectedPlayer: saved.mvpPlayer || null,
+    selectedHero: saved.mvpHero || null,
+    selectedTeam: saved.mvpTeam || winner || teamA,
+    isPlayoff: false,
+    playoffRIdx: null,
+    playoffMIdx: null
+  };
+
+  initAndShowMvpModal();
+}
+
+function openMLBBPlayoffMvpModal(rIdx, mIdx) {
+  if (!isAdmin) return;
+  const m = groupPlayoffMatches[rIdx]?.[mIdx];
+  if (!m) return;
+
+  const defaultTab = (m.winner === m.teamB) ? 'teamB' : 'teamA';
+
+  currentMvpModalContext = {
+    matchId: `PLAYOFF_R${rIdx}_M${mIdx}`,
+    canonId: `PLAYOFF_R${rIdx}_M${mIdx}`,
+    gName: 'Playoff',
+    teamA: m.teamA,
+    teamB: m.teamB,
+    winner: m.winner || null,
+    scoreA: m.scoreA,
+    scoreB: m.scoreB,
+    activeTeam: defaultTab,
+    selectedPlayer: m.mvpPlayer || null,
+    selectedHero: m.mvpHero || null,
+    selectedTeam: m.mvpTeam || m.winner || m.teamA,
+    isPlayoff: true,
+    playoffRIdx: rIdx,
+    playoffMIdx: mIdx
+  };
+
+  initAndShowMvpModal();
+}
+
+function initAndShowMvpModal() {
+  const modal = document.getElementById('mlbbMvpPickerModal');
+  if (!modal) return;
+
+  const ctx = currentMvpModalContext;
+
+  // Subtitle info match
+  const subEl = document.getElementById('mvpModalMatchSubtitle');
+  if (subEl) {
+    const scoreStr = (ctx.scoreA !== null && ctx.scoreA !== undefined && ctx.scoreB !== null && ctx.scoreB !== undefined)
+      ? ` (Skor: ${ctx.scoreA} - ${ctx.scoreB})`
+      : '';
+    subEl.innerText = `${ctx.gName ? `${ctx.gName} • ` : ''}${ctx.teamA} vs ${ctx.teamB}${scoreStr}`;
+  }
+
+  // Update Tab Buttons Text
+  const tabA = document.getElementById('mvpTabTeamA');
+  const tabB = document.getElementById('mvpTabTeamB');
+  if (tabA && tabB) {
+    const isWinA = ctx.winner === ctx.teamA;
+    const isWinB = ctx.winner === ctx.teamB;
+    tabA.innerHTML = `${escapeHtml(ctx.teamA)} ${isWinA ? '🏆' : ''}`;
+    tabB.innerHTML = `${escapeHtml(ctx.teamB)} ${isWinB ? '🏆' : ''}`;
+  }
+
+  // Pre-fill inputs
+  const pInput = document.getElementById('mvpSelectedPlayerInput');
+  const hInput = document.getElementById('mvpSelectedHeroInput');
+  if (pInput) pInput.value = ctx.selectedPlayer || '';
+  if (hInput) hInput.value = ctx.selectedHero || '';
+
+  // Clear search filter
+  const sInput = document.getElementById('mvpPlayerSearchInput');
+  if (sInput) sInput.value = '';
+
+  // Render quick hero pills
+  renderMvpQuickHeroChips(ctx.selectedHero);
+
+  // Render Roster
+  switchMvpTeamTab(ctx.activeTeam);
+
+  modal.classList.add('active');
+}
+
+function closeMLBBGroupMvpModal() {
+  const modal = document.getElementById('mlbbMvpPickerModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function switchMvpTeamTab(teamKey) {
+  currentMvpModalContext.activeTeam = teamKey;
+  const tabA = document.getElementById('mvpTabTeamA');
+  const tabB = document.getElementById('mvpTabTeamB');
+
+  if (tabA && tabB) {
+    if (teamKey === 'teamA') {
+      tabA.classList.remove('btn-outline');
+      tabA.classList.add('btn-primary');
+      tabA.style.background = 'var(--yokke-cyan)';
+      tabA.style.color = '#0b1120';
+      tabB.classList.remove('btn-primary');
+      tabB.classList.add('btn-outline');
+      tabB.style.background = 'transparent';
+      tabB.style.color = '#fff';
+    } else {
+      tabB.classList.remove('btn-outline');
+      tabB.classList.add('btn-primary');
+      tabB.style.background = 'var(--yokke-cyan)';
+      tabB.style.color = '#0b1120';
+      tabA.classList.remove('btn-primary');
+      tabA.classList.add('btn-outline');
+      tabA.style.background = 'transparent';
+      tabA.style.color = '#fff';
+    }
+  }
+
+  const targetTeam = teamKey === 'teamA' ? currentMvpModalContext.teamA : currentMvpModalContext.teamB;
+  renderMvpRosterList(targetTeam);
+}
+
+function renderMvpRosterList(teamName) {
+  const container = document.getElementById('mvpRosterContainer');
+  const countInfo = document.getElementById('mvpRosterCountInfo');
+  if (!container) return;
+
+  const teamPart = findTeamParticipant(teamName);
+  const roster = (teamPart && Array.isArray(teamPart.roster)) ? teamPart.roster : [];
+
+  if (countInfo) {
+    countInfo.innerText = `${roster.length} pemain terdaftar`;
+  }
+
+  if (roster.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 6px;">
+        Tidak ada data roster terdaftar untuk tim ${escapeHtml(teamName)}. Anda dapat mengetik manual nama pemain di bawah.
+      </div>
+    `;
+    return;
+  }
+
+  const searchVal = (document.getElementById('mvpPlayerSearchInput')?.value || '').toLowerCase().trim();
+  const selectedPlayer = document.getElementById('mvpSelectedPlayerInput')?.value || currentMvpModalContext.selectedPlayer || '';
+
+  let html = '';
+  let visibleCount = 0;
+
+  roster.forEach(r => {
+    const ign = (r.nickname || r.name || '').trim();
+    const realName = (r.name || '').trim();
+    const role = (r.role || 'Pemain').trim();
+
+    if (searchVal) {
+      const matchIgn = ign.toLowerCase().includes(searchVal);
+      const matchReal = realName.toLowerCase().includes(searchVal);
+      if (!matchIgn && !matchReal) return;
+    }
+
+    visibleCount++;
+    const isSelected = selectedPlayer && (selectedPlayer.toLowerCase() === ign.toLowerCase() || selectedPlayer.toLowerCase() === realName.toLowerCase());
+
+    const safeIgn = ign.replace(/'/g, "\\'");
+    const safeReal = realName.replace(/'/g, "\\'");
+    const safeTeam = teamName.replace(/'/g, "\\'");
+
+    html += `
+      <div class="mvp-roster-chip ${isSelected ? 'selected' : ''}" onclick="selectMvpPlayer('${safeIgn}', '${safeReal}', '${safeTeam}')">
+        <div style="font-weight: 800; font-size: 0.92rem; color: var(--yokke-gold); word-break: break-word;">
+          ${escapeHtml(ign || realName)}
+        </div>
+        <div style="font-size: 0.72rem; color: #cbd5e1; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          ${escapeHtml(realName)}
+        </div>
+        <span class="badge" style="font-size: 0.65rem; padding: 1px 6px; margin-top: 4px; align-self: flex-start; background: rgba(0,210,255,0.1); color: var(--yokke-cyan); border: 1px solid rgba(0,210,255,0.25);">
+          ${escapeHtml(role)}
+        </span>
+      </div>
+    `;
+  });
+
+  if (visibleCount === 0 && searchVal) {
+    html = `<div style="grid-column:1/-1; padding:0.75rem; text-align:center; color:var(--text-muted); font-size:0.78rem;">Tidak ditemukan pemain yang cocok dengan "${escapeHtml(searchVal)}".</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function filterMvpRosterList() {
+  const teamKey = currentMvpModalContext.activeTeam;
+  const targetTeam = teamKey === 'teamA' ? currentMvpModalContext.teamA : currentMvpModalContext.teamB;
+  renderMvpRosterList(targetTeam);
+}
+
+function selectMvpPlayer(nickname, realName, teamName) {
+  const chosen = nickname || realName;
+  const pInput = document.getElementById('mvpSelectedPlayerInput');
+  if (pInput) pInput.value = chosen;
+  currentMvpModalContext.selectedPlayer = chosen;
+  currentMvpModalContext.selectedTeam = teamName;
+
+  // Refresh tampilan highlight chip
+  const teamKey = currentMvpModalContext.activeTeam;
+  const targetTeam = teamKey === 'teamA' ? currentMvpModalContext.teamA : currentMvpModalContext.teamB;
+  renderMvpRosterList(targetTeam);
+}
+
+function renderMvpQuickHeroChips(activeHero) {
+  const container = document.getElementById('mvpQuickHeroChips');
+  if (!container) return;
+
+  const currentHero = (activeHero || '').toLowerCase().trim();
+  let html = '';
+
+  MLBB_POPULAR_MVP_HEROES.forEach(hero => {
+    const isActive = currentHero === hero.toLowerCase();
+    const safeHero = hero.replace(/'/g, "\\'");
+    html += `
+      <span class="mvp-hero-pill ${isActive ? 'active' : ''}" onclick="selectMvpQuickHero('${safeHero}')">
+        ${hero}
+      </span>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function selectMvpQuickHero(heroName) {
+  const hInput = document.getElementById('mvpSelectedHeroInput');
+  if (hInput) hInput.value = heroName;
+  currentMvpModalContext.selectedHero = heroName;
+  renderMvpQuickHeroChips(heroName);
+}
+
+function saveSelectedMvp() {
+  if (!isAdmin) return;
+  const pInput = document.getElementById('mvpSelectedPlayerInput');
+  const hInput = document.getElementById('mvpSelectedHeroInput');
+
+  const newMvp = pInput ? pInput.value.trim() : '';
+  const newHero = hInput ? hInput.value.trim() : '';
+
+  if (!newMvp) {
+    alert('Silakan klik salah satu kartu pemain di atas atau ketik nama/IGN pemain MVP.');
+    return;
+  }
+
+  const ctx = currentMvpModalContext;
+  const mvpTeam = ctx.selectedTeam || ctx.winner || ctx.teamA;
+
+  if (ctx.isPlayoff) {
+    const m = groupPlayoffMatches[ctx.playoffRIdx]?.[ctx.playoffMIdx];
+    if (m) {
+      m.mvpPlayer = newMvp;
+      m.mvpHero = newHero || null;
+      m.mvpTeam = mvpTeam;
+      saveState();
+      renderGroupPlayoffTree();
+      saveTournamentStateOnly(true);
+      showToast(`⭐ MVP Playoff berhasil disimpan: ${newMvp} (${newHero || '-'})`, 'success');
+    }
+  } else {
+    setGroupMatchMVP(ctx.canonId, newMvp, newHero, mvpTeam);
+    saveTournamentStateOnly(true);
+    showToast(`⭐ MVP Match berhasil disimpan: ${newMvp} (${newHero || '-'})`, 'success');
+  }
+
+  closeMLBBGroupMvpModal();
+}
+
+function deleteCurrentMvp() {
+  if (!isAdmin) return;
+  if (!confirm('Apakah Anda yakin ingin menghapus data MVP untuk pertandingan ini?')) return;
+
+  const ctx = currentMvpModalContext;
+  if (ctx.isPlayoff) {
+    const m = groupPlayoffMatches[ctx.playoffRIdx]?.[ctx.playoffMIdx];
+    if (m) {
+      m.mvpPlayer = null;
+      m.mvpHero = null;
+      m.mvpTeam = null;
+      saveState();
+      renderGroupPlayoffTree();
+      saveTournamentStateOnly(true);
+      showToast('Data MVP Playoff telah dihapus.', 'info');
+    }
+  } else {
+    setGroupMatchMVP(ctx.canonId, null, null, null);
+    saveTournamentStateOnly(true);
+    showToast('Data MVP match telah dihapus.', 'info');
+  }
+
+  closeMLBBGroupMvpModal();
+}
+
 function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
   if (!isAdmin) return;
   const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
-  if (!groupMatchResults[canonId]) return;
+  if (!groupMatchResults[canonId]) {
+    groupMatchResults[canonId] = {
+      matchId: canonId,
+      gName: currentMvpModalContext.gName || '',
+      teamA: currentMvpModalContext.teamA || '',
+      teamB: currentMvpModalContext.teamB || '',
+      scoreA: currentMvpModalContext.scoreA !== undefined ? currentMvpModalContext.scoreA : null,
+      scoreB: currentMvpModalContext.scoreB !== undefined ? currentMvpModalContext.scoreB : null,
+      winner: currentMvpModalContext.winner || null
+    };
+  }
   groupMatchResults[canonId].mvpPlayer = mvpPlayer ? mvpPlayer.trim() : null;
   groupMatchResults[canonId].mvpHero = mvpHero ? mvpHero.trim() : null;
   if (mvpTeam) {
@@ -5416,39 +5752,14 @@ function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
   }
   saveState();
   renderGroupStageUI();
+  if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
 }
 
+// Delegasi fungsi promptGroupMatchMVP ke modal interaktif
 function promptGroupMatchMVP(matchId, teamA, teamB) {
   if (!isAdmin) return;
-  const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
-  const current = groupMatchResults[canonId] || {};
-  const currentMvp = current.mvpPlayer || '';
-  const currentHero = current.mvpHero || '';
-
-  const teamAPart = (participants || []).find(p => p.name === teamA);
-  const teamBPart = (participants || []).find(p => p.name === teamB);
-  const rosterA = (teamAPart?.roster || []).map(r => r.nickname || r.name).filter(Boolean);
-  const rosterB = (teamBPart?.roster || []).map(r => r.nickname || r.name).filter(Boolean);
-
-  let hint = '';
-  if (rosterA.length || rosterB.length) {
-    hint = `Roster ${teamA}: ${rosterA.join(', ')}\nRoster ${teamB}: ${rosterB.join(', ')}\n\n`;
-  }
-
-  const newMvp = prompt(`${hint}Masukkan IGN / Nama Pemain peraih MVP match ini:`, currentMvp);
-  if (newMvp === null) return;
-
-  const newHero = prompt("Masukkan Nama Hero MLBB yang digunakan MVP (opsional, contoh: Ling, Beatrix, Fredrinn):", currentHero);
-  if (newHero === null) return;
-
-  let mvpTeam = current.winner || null;
-  if (teamAPart && rosterA.some(n => n.toLowerCase() === newMvp.trim().toLowerCase())) {
-    mvpTeam = teamA;
-  } else if (teamBPart && rosterB.some(n => n.toLowerCase() === newMvp.trim().toLowerCase())) {
-    mvpTeam = teamB;
-  }
-
-  setGroupMatchMVP(canonId, newMvp, newHero, mvpTeam);
+  openMLBBGroupMvpModal(matchId, '', teamA, teamB, null, null);
 }
 
 function resetGroupMatchScore(matchId) {
