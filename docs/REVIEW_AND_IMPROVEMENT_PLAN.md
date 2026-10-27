@@ -117,5 +117,15 @@ tags:
   - Autocomplete datalist 126 Hero MLBB resmi serta chip cepat (1-tap pill) untuk 17 hero meta turnamen terpopuler (*Ling, Fanny, Hayabusa, Nolan, Suyou, Beatrix, Claude, Harith, Chou, Fredrinn, Valentina, Novaria, Tigreal, Arlott, Roger, Cici, Zhuxin*).
   - Berlaku serentak untuk Fase Grup maupun Playoff Bracket.
 
+### 4. Dukungan Multi-Game MVP untuk Seri Pertandingan (BO3 & BO5: 1 MVP Tiap Game)
+- **Konteks Esports**: Pada format Best of 3 (BO3) dan Best of 5 (BO5), setiap satu seri pertandingan terdiri dari 2 hingga 5 game terpisah. Setiap game yang selesai melahirkan 1 MVP individual (Pemain + Hero + Tim Pemenang Game tersebut).
+- **Implementasi**:
+  - **Selector Game Interaktif**: Menambahkan bilah tab game (`[ 🎮 Game 1 ]`, `[ 🎮 Game 2 ]`, `[ 🎮 Game 3 ]` untuk BO3, hingga Game 5 untuk Grand Final BO5) dengan indikator bintang `⭐` pada game yang telah terisi MVP.
+  - **Penyimpanan Detail & Terstruktur**: Data disimpan dalam array `gameMvps: [{ game: 1, player, hero, team }, ...]` pada hasil pertandingan.
+  - **Kompatibilitas Penuh Google Sheets**: Untuk integrasi spreadsheet yang memiliki 1 kolom teks MVP Match & Hero MVP, data otomatis diringkas menjadi `G1: Nick (Hero) | G2: Nick (Hero)` tanpa mengubah struktur kolom Google Sheets.
+  - **Kalkulasi Akumulasi MVP Klasemen**: Klasemen grup secara otomatis menghitung setiap MVP game yang diraih tim (`t.mvpCount`), sehingga jika dalam match BO3 tim A menang 2-1 (2 MVP untuk tim A, 1 MVP untuk tim B), total MVP kedua tim terakumulasi secara adil dan presisi.
+  - **Tampilan Kartu Pertandingan Game-by-Game**: Menggunakan formatter `formatMatchMvpDisplayHtml()` yang menampilkan badge MVP per-game yang rapi dan elegan pada kartu jadwal fase grup, interactive hub, dan playoff tree.
+
+
 
 
