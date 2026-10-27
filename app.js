@@ -273,7 +273,75 @@ function hideGlobalLoader() {
 
 let isRegistrationClosed = localStorage.getItem('yokke_reg_closed') === 'true';
 
-let groupStageData = JSON.parse(localStorage.getItem('yokke_group_data') || '{}');
+// 8 Grup Resmi Kualifikasi MLBB Turnamen Yokke Squad 2026 Sesuai Poster Publikasi Resmi Panitia
+const DEFAULT_MLBB_GROUPS = {
+  'Grup A': [
+    { name: 'Native', win: 0, lose: 0, pts: 0 },
+    { name: 'BOTI (Bekerja Optimal, Tumbuh Istimewa)', win: 0, lose: 0, pts: 0 },
+    { name: 'Yokke Cikarang', win: 0, lose: 0, pts: 0 },
+    { name: 'My Palembang', win: 0, lose: 0, pts: 0 },
+    { name: 'IOS', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup B': [
+    { name: 'Anti Climax', win: 0, lose: 0, pts: 0 },
+    { name: '7 SINS', win: 0, lose: 0, pts: 0 },
+    { name: 'Yokke Batam Squad (YBS)', win: 0, lose: 0, pts: 0 },
+    { name: 'DEWA (Dark Elite Warriors Asli Medan)', win: 0, lose: 0, pts: 0 },
+    { name: 'SGMO', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup C': [
+    { name: 'AANG ALPHA', win: 0, lose: 0, pts: 0 },
+    { name: 'REKAN OM', win: 0, lose: 0, pts: 0 },
+    { name: 'Red Razor', win: 0, lose: 0, pts: 0 },
+    { name: 'TY BEKASI', win: 0, lose: 0, pts: 0 },
+    { name: 'BIKINI BOTTOM', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup D': [
+    { name: 'ATMO', win: 0, lose: 0, pts: 0 },
+    { name: 'DEADLINE SLAYER', win: 0, lose: 0, pts: 0 },
+    { name: '666', win: 0, lose: 0, pts: 0 },
+    { name: 'AVATAR BORNEO', win: 0, lose: 0, pts: 0 },
+    { name: 'DARFAT LIVIN FOOD', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup E': [
+    { name: 'APPA LINUX', win: 0, lose: 0, pts: 0 },
+    { name: 'DEPOK MAUNG', win: 0, lose: 0, pts: 0 },
+    { name: 'Tugu Muda', win: 0, lose: 0, pts: 0 },
+    { name: 'MiracleXStars', win: 0, lose: 0, pts: 0 },
+    { name: 'Miskin Mekanik', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup F': [
+    { name: 'YOKKE LAMPUNG', win: 0, lose: 0, pts: 0 },
+    { name: 'VALKYRIE', win: 0, lose: 0, pts: 0 },
+    { name: 'WINGSKANAN ESPORT 2', win: 0, lose: 0, pts: 0 },
+    { name: 'NAMJUG', win: 0, lose: 0, pts: 0 },
+    { name: 'Colorbook', win: 0, lose: 0, pts: 0 },
+    { name: 'Xorps E- Sport', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup G': [
+    { name: 'Gado Gado Esports', win: 0, lose: 0, pts: 0 },
+    { name: 'Yokke.Syindicate', win: 0, lose: 0, pts: 0 },
+    { name: 'LOLO', win: 0, lose: 0, pts: 0 },
+    { name: 'AANG Beta', win: 0, lose: 0, pts: 0 },
+    { name: 'TABRAK AJALAH', win: 0, lose: 0, pts: 0 }
+  ],
+  'Grup H': [
+    { name: 'WINGSKANAN ESPORT 1', win: 0, lose: 0, pts: 0 },
+    { name: 'MBG ( Mas Bahlil Guanteng )', win: 0, lose: 0, pts: 0 },
+    { name: 'Yokke Batam', win: 0, lose: 0, pts: 0 },
+    { name: 'MTI BANJARMASIN', win: 0, lose: 0, pts: 0 },
+    { name: 'BOLO CLUB', win: 0, lose: 0, pts: 0 }
+  ]
+};
+
+let savedGroupData = null;
+try {
+  savedGroupData = JSON.parse(localStorage.getItem('yokke_group_data'));
+} catch (e) {}
+
+let groupStageData = (savedGroupData && Object.keys(savedGroupData).length >= 8)
+  ? savedGroupData
+  : JSON.parse(JSON.stringify(DEFAULT_MLBB_GROUPS));
 let groupMatchResults = JSON.parse(localStorage.getItem('yokke_group_match_results') || '{}');
 let groupPlayoffMatches = [];
 
@@ -4812,13 +4880,19 @@ function renderGroupStageUI() {
   activeGKeys.forEach(gName => {
     const teams = groupStageData[gName] || [];
     
-    // Hitung akumulasi MVP per tim di grup ini
+    // Hitung akumulasi MVP per tim di grup ini (Mendukung Multi-MVP BO3 per Game)
     teams.forEach(t => {
       let mvpCount = 0;
       for (const mId in groupMatchResults) {
         const m = groupMatchResults[mId];
-        if (m.gName === gName && m.mvpPlayer) {
-          if (m.mvpTeam === t.name || (m.winner === t.name && !m.mvpTeam)) {
+        if (m.gName === gName) {
+          if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+            m.gameMvps.forEach(gm => {
+              if (gm && gm.player && (gm.team === t.name || (!gm.team && (m.mvpTeam === t.name || m.winner === t.name)))) {
+                mvpCount++;
+              }
+            });
+          } else if (m.mvpPlayer && (m.mvpTeam === t.name || (m.winner === t.name && !m.mvpTeam))) {
             mvpCount++;
           }
         }
@@ -5259,7 +5333,8 @@ function getGroupFixtures(gName, dayFilter = null) {
       winner: saved.winner || null,
       mvpPlayer: saved.mvpPlayer || null,
       mvpHero: saved.mvpHero || null,
-      mvpTeam: saved.mvpTeam || null
+      mvpTeam: saved.mvpTeam || null,
+      gameMvps: saved.gameMvps || null
     });
   });
 
@@ -5301,7 +5376,8 @@ function deduplicateGroupMatchResults() {
         winner: m.winner || existing.winner,
         mvpPlayer: m.mvpPlayer || existing.mvpPlayer,
         mvpHero: m.mvpHero || existing.mvpHero,
-        mvpTeam: m.mvpTeam || existing.mvpTeam
+        mvpTeam: m.mvpTeam || existing.mvpTeam,
+        gameMvps: preferNew ? (m.gameMvps || existing.gameMvps) : (existing.gameMvps || m.gameMvps)
       };
     }
   }
@@ -5352,7 +5428,8 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
     winner,
     mvpPlayer: prev.mvpPlayer || null,
     mvpHero: prev.mvpHero || null,
-    mvpTeam: prev.mvpTeam || (winner || null)
+    mvpTeam: prev.mvpTeam || (winner || null),
+    gameMvps: prev.gameMvps || null
   };
 
   recalculateGroupStandingsFromFixtures();
@@ -5387,6 +5464,10 @@ let currentMvpModalContext = {
   scoreA: null,
   scoreB: null,
   activeTeam: 'teamA',
+  currentGame: 1,
+  maxGames: 3,
+  format: 'BO3',
+  gameMvps: [], // [{ game: 1, player, hero, team }, ...]
   selectedPlayer: null,
   selectedHero: null,
   selectedTeam: null,
@@ -5426,6 +5507,21 @@ function openMLBBGroupMvpModal(matchId, gName, teamA, teamB, scoreA, scoreB) {
   // Pilih tim pemenang secara default jika ada, agar admin langsung melihat pemain tim pemenang
   const defaultTab = (winner === teamB) ? 'teamB' : 'teamA';
 
+  // Inisialisasi gameMvps dari cache tersimpan atau konversi dari single legacy
+  let initialGameMvps = [];
+  if (Array.isArray(saved.gameMvps) && saved.gameMvps.length > 0) {
+    initialGameMvps = JSON.parse(JSON.stringify(saved.gameMvps));
+  } else if (saved.mvpPlayer) {
+    initialGameMvps = [{
+      game: 1,
+      player: saved.mvpPlayer,
+      hero: saved.mvpHero || null,
+      team: saved.mvpTeam || winner || teamA
+    }];
+  }
+
+  const firstMvp = initialGameMvps.find(x => x && x.game === 1) || initialGameMvps[0] || null;
+
   currentMvpModalContext = {
     matchId: canonId,
     canonId: canonId,
@@ -5435,10 +5531,14 @@ function openMLBBGroupMvpModal(matchId, gName, teamA, teamB, scoreA, scoreB) {
     winner: winner,
     scoreA: scoreA !== undefined ? scoreA : saved.scoreA,
     scoreB: scoreB !== undefined ? scoreB : saved.scoreB,
-    activeTeam: defaultTab,
-    selectedPlayer: saved.mvpPlayer || null,
-    selectedHero: saved.mvpHero || null,
-    selectedTeam: saved.mvpTeam || winner || teamA,
+    activeTeam: firstMvp ? (firstMvp.team === teamB ? 'teamB' : 'teamA') : defaultTab,
+    currentGame: 1,
+    maxGames: 3,
+    format: 'BO3',
+    gameMvps: initialGameMvps,
+    selectedPlayer: firstMvp ? firstMvp.player : null,
+    selectedHero: firstMvp ? firstMvp.hero : null,
+    selectedTeam: firstMvp ? firstMvp.team : (winner || teamA),
     isPlayoff: false,
     playoffRIdx: null,
     playoffMIdx: null
@@ -5453,6 +5553,23 @@ function openMLBBPlayoffMvpModal(rIdx, mIdx) {
   if (!m) return;
 
   const defaultTab = (m.winner === m.teamB) ? 'teamB' : 'teamA';
+  const isGrandFinal = (rIdx === groupPlayoffMatches.length - 1);
+  const maxGames = isGrandFinal ? 5 : 3;
+  const format = isGrandFinal ? 'BO5' : 'BO3';
+
+  let initialGameMvps = [];
+  if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+    initialGameMvps = JSON.parse(JSON.stringify(m.gameMvps));
+  } else if (m.mvpPlayer) {
+    initialGameMvps = [{
+      game: 1,
+      player: m.mvpPlayer,
+      hero: m.mvpHero || null,
+      team: m.mvpTeam || m.winner || m.teamA
+    }];
+  }
+
+  const firstMvp = initialGameMvps.find(x => x && x.game === 1) || initialGameMvps[0] || null;
 
   currentMvpModalContext = {
     matchId: `PLAYOFF_R${rIdx}_M${mIdx}`,
@@ -5463,10 +5580,14 @@ function openMLBBPlayoffMvpModal(rIdx, mIdx) {
     winner: m.winner || null,
     scoreA: m.scoreA,
     scoreB: m.scoreB,
-    activeTeam: defaultTab,
-    selectedPlayer: m.mvpPlayer || null,
-    selectedHero: m.mvpHero || null,
-    selectedTeam: m.mvpTeam || m.winner || m.teamA,
+    activeTeam: firstMvp ? (firstMvp.team === m.teamB ? 'teamB' : 'teamA') : defaultTab,
+    currentGame: 1,
+    maxGames: maxGames,
+    format: format,
+    gameMvps: initialGameMvps,
+    selectedPlayer: firstMvp ? firstMvp.player : null,
+    selectedHero: firstMvp ? firstMvp.hero : null,
+    selectedTeam: firstMvp ? firstMvp.team : (m.winner || m.teamA),
     isPlayoff: true,
     playoffRIdx: rIdx,
     playoffMIdx: mIdx
@@ -5500,7 +5621,10 @@ function initAndShowMvpModal() {
     tabB.innerHTML = `${escapeHtml(ctx.teamB)} ${isWinB ? '🏆' : ''}`;
   }
 
-  // Pre-fill inputs
+  // Render Tabs Seri Game BO3 / BO5
+  renderMvpGameTabs();
+
+  // Pre-fill inputs untuk game yang aktif
   const pInput = document.getElementById('mvpSelectedPlayerInput');
   const hInput = document.getElementById('mvpSelectedHeroInput');
   if (pInput) pInput.value = ctx.selectedPlayer || '';
@@ -5517,6 +5641,96 @@ function initAndShowMvpModal() {
   switchMvpTeamTab(ctx.activeTeam);
 
   modal.classList.add('active');
+}
+
+function renderMvpGameTabs() {
+  const container = document.getElementById('mvpGameTabsContainer');
+  const progressText = document.getElementById('mvpGameProgressText');
+  if (!container) return;
+
+  const ctx = currentMvpModalContext;
+  const maxGames = ctx.maxGames || 3;
+  const filledCount = (ctx.gameMvps || []).filter(g => g && g.player).length;
+
+  if (progressText) {
+    progressText.innerText = `Format ${ctx.format || 'BO3'} • ${filledCount}/${maxGames} MVP Terisi`;
+  }
+
+  let html = '';
+  for (let g = 1; g <= maxGames; g++) {
+    const existing = (ctx.gameMvps || []).find(x => x && x.game === g && x.player);
+    const hasMvp = !!existing;
+    const isActive = ctx.currentGame === g;
+    const pillClass = `mvp-game-pill ${isActive ? 'active' : ''} ${hasMvp ? 'has-mvp' : ''}`.trim();
+    const star = hasMvp ? '⭐' : '';
+    const label = `🎮 Game ${g} ${star}`.trim();
+
+    html += `
+      <button type="button" class="${pillClass}" onclick="switchMvpGameTab(${g})">
+        ${label}
+      </button>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function switchMvpGameTab(targetGame) {
+  const ctx = currentMvpModalContext;
+  if (ctx.currentGame === targetGame) return;
+
+  // 1. Sinkronkan input saat ini ke gameMvps untuk currentGame aktif sebelum beralih
+  const pInput = document.getElementById('mvpSelectedPlayerInput');
+  const hInput = document.getElementById('mvpSelectedHeroInput');
+  const currentP = pInput ? pInput.value.trim() : '';
+  const currentH = hInput ? hInput.value.trim() : '';
+
+  if (!Array.isArray(ctx.gameMvps)) {
+    ctx.gameMvps = [];
+  }
+
+  const existingIdx = ctx.gameMvps.findIndex(x => x && x.game === ctx.currentGame);
+  if (currentP) {
+    const item = {
+      game: ctx.currentGame,
+      player: currentP,
+      hero: currentH || null,
+      team: ctx.selectedTeam || ctx.winner || ctx.teamA
+    };
+    if (existingIdx >= 0) {
+      ctx.gameMvps[existingIdx] = item;
+    } else {
+      ctx.gameMvps.push(item);
+    }
+  } else if (existingIdx >= 0) {
+    ctx.gameMvps.splice(existingIdx, 1);
+  }
+
+  // 2. Berpindah ke targetGame
+  ctx.currentGame = targetGame;
+
+  // 3. Muat data targetGame jika sudah ada
+  const targetData = ctx.gameMvps.find(x => x && x.game === targetGame);
+  if (targetData) {
+    ctx.selectedPlayer = targetData.player;
+    ctx.selectedHero = targetData.hero;
+    ctx.selectedTeam = targetData.team;
+    if (pInput) pInput.value = targetData.player;
+    if (hInput) hInput.value = targetData.hero || '';
+    ctx.activeTeam = (targetData.team === ctx.teamB) ? 'teamB' : 'teamA';
+  } else {
+    ctx.selectedPlayer = null;
+    ctx.selectedHero = null;
+    ctx.selectedTeam = ctx.winner || ctx.teamA;
+    if (pInput) pInput.value = '';
+    if (hInput) hInput.value = '';
+    ctx.activeTeam = (ctx.winner === ctx.teamB) ? 'teamB' : 'teamA';
+  }
+
+  // 4. Update UI Tab Game, Hero Pills, dan Roster
+  renderMvpGameTabs();
+  renderMvpQuickHeroChips(ctx.selectedHero);
+  switchMvpTeamTab(ctx.activeTeam);
 }
 
 function closeMLBBGroupMvpModal() {
@@ -5635,9 +5849,28 @@ function selectMvpPlayer(nickname, realName, teamName) {
   currentMvpModalContext.selectedPlayer = chosen;
   currentMvpModalContext.selectedTeam = teamName;
 
-  // Refresh tampilan highlight chip
-  const teamKey = currentMvpModalContext.activeTeam;
-  const targetTeam = teamKey === 'teamA' ? currentMvpModalContext.teamA : currentMvpModalContext.teamB;
+  // Langsung rekam ke gameMvps untuk game aktif saat ini
+  const ctx = currentMvpModalContext;
+  if (!Array.isArray(ctx.gameMvps)) ctx.gameMvps = [];
+  const existingIdx = ctx.gameMvps.findIndex(x => x && x.game === ctx.currentGame);
+  const hInput = document.getElementById('mvpSelectedHeroInput');
+  const curHero = hInput ? hInput.value.trim() : (ctx.selectedHero || '');
+  const item = {
+    game: ctx.currentGame,
+    player: chosen,
+    hero: curHero || null,
+    team: teamName
+  };
+  if (existingIdx >= 0) {
+    ctx.gameMvps[existingIdx] = item;
+  } else {
+    ctx.gameMvps.push(item);
+  }
+
+  // Update tab game indikator bintang & roster highlight
+  renderMvpGameTabs();
+  const teamKey = ctx.activeTeam;
+  const targetTeam = teamKey === 'teamA' ? ctx.teamA : ctx.teamB;
   renderMvpRosterList(targetTeam);
 }
 
@@ -5665,40 +5898,86 @@ function selectMvpQuickHero(heroName) {
   const hInput = document.getElementById('mvpSelectedHeroInput');
   if (hInput) hInput.value = heroName;
   currentMvpModalContext.selectedHero = heroName;
+
+  // Perbarui hero di gameMvps jika entry game sudah ada
+  const ctx = currentMvpModalContext;
+  if (Array.isArray(ctx.gameMvps)) {
+    const existing = ctx.gameMvps.find(x => x && x.game === ctx.currentGame);
+    if (existing) {
+      existing.hero = heroName;
+    }
+  }
+
   renderMvpQuickHeroChips(heroName);
 }
 
 function saveSelectedMvp() {
   if (!isAdmin) return;
+  const ctx = currentMvpModalContext;
   const pInput = document.getElementById('mvpSelectedPlayerInput');
   const hInput = document.getElementById('mvpSelectedHeroInput');
 
-  const newMvp = pInput ? pInput.value.trim() : '';
-  const newHero = hInput ? hInput.value.trim() : '';
+  const curP = pInput ? pInput.value.trim() : '';
+  const curH = hInput ? hInput.value.trim() : '';
 
-  if (!newMvp) {
-    alert('Silakan klik salah satu kartu pemain di atas atau ketik nama/IGN pemain MVP.');
+  if (!Array.isArray(ctx.gameMvps)) ctx.gameMvps = [];
+
+  // Sinkronkan input game yang sedang terbuka
+  const existingIdx = ctx.gameMvps.findIndex(x => x && x.game === ctx.currentGame);
+  if (curP) {
+    const item = {
+      game: ctx.currentGame,
+      player: curP,
+      hero: curH || null,
+      team: ctx.selectedTeam || ctx.winner || ctx.teamA
+    };
+    if (existingIdx >= 0) {
+      ctx.gameMvps[existingIdx] = item;
+    } else {
+      ctx.gameMvps.push(item);
+    }
+  } else if (existingIdx >= 0) {
+    ctx.gameMvps.splice(existingIdx, 1);
+  }
+
+  // Filter gameMvps yang valid dan urutkan berdasarkan nomor game
+  const validGames = ctx.gameMvps
+    .filter(g => g && g.player && g.player.trim())
+    .sort((a, b) => a.game - b.game);
+
+  if (validGames.length === 0) {
+    alert('Silakan pilih minimal 1 pemain MVP untuk game yang dimainkan sebelum menyimpan.');
     return;
   }
 
-  const ctx = currentMvpModalContext;
-  const mvpTeam = ctx.selectedTeam || ctx.winner || ctx.teamA;
+  // Format ringkasan teks untuk Google Sheets & backward compatibility
+  let summaryPlayer = '';
+  let summaryHero = '';
+  if (validGames.length === 1 && validGames[0].game === 1) {
+    summaryPlayer = validGames[0].player;
+    summaryHero = validGames[0].hero || '';
+  } else {
+    summaryPlayer = validGames.map(g => `G${g.game}: ${g.player}`).join(' | ');
+    summaryHero = validGames.map(g => `G${g.game}: ${g.hero || '-'}`).join(' | ');
+  }
+  const summaryTeam = validGames[0].team || ctx.winner || ctx.teamA;
 
   if (ctx.isPlayoff) {
     const m = groupPlayoffMatches[ctx.playoffRIdx]?.[ctx.playoffMIdx];
     if (m) {
-      m.mvpPlayer = newMvp;
-      m.mvpHero = newHero || null;
-      m.mvpTeam = mvpTeam;
+      m.gameMvps = validGames;
+      m.mvpPlayer = summaryPlayer;
+      m.mvpHero = summaryHero || null;
+      m.mvpTeam = summaryTeam;
       saveState();
       renderGroupPlayoffTree();
       saveTournamentStateOnly(true);
-      showToast(`⭐ MVP Playoff berhasil disimpan: ${newMvp} (${newHero || '-'})`, 'success');
+      showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Playoff (${ctx.format || 'BO3'})`, 'success');
     }
   } else {
-    setGroupMatchMVP(ctx.canonId, newMvp, newHero, mvpTeam);
+    setGroupMatchMVP(ctx.canonId, summaryPlayer, summaryHero, summaryTeam, validGames);
     saveTournamentStateOnly(true);
-    showToast(`⭐ MVP Match berhasil disimpan: ${newMvp} (${newHero || '-'})`, 'success');
+    showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Match (${ctx.format || 'BO3'})`, 'success');
   }
 
   closeMLBBGroupMvpModal();
@@ -5706,12 +5985,39 @@ function saveSelectedMvp() {
 
 function deleteCurrentMvp() {
   if (!isAdmin) return;
-  if (!confirm('Apakah Anda yakin ingin menghapus data MVP untuk pertandingan ini?')) return;
-
   const ctx = currentMvpModalContext;
+  if (!Array.isArray(ctx.gameMvps)) ctx.gameMvps = [];
+
+  const validGames = ctx.gameMvps.filter(g => g && g.player);
+  if (validGames.length === 0 && !ctx.selectedPlayer) {
+    closeMLBBGroupMvpModal();
+    return;
+  }
+
+  if (validGames.length > 1) {
+    const delCurrent = confirm(`Hapus MVP Game ${ctx.currentGame} saja?\n\n• OK = Hapus MVP Game ${ctx.currentGame}\n• Batal = Lanjut untuk opsi hapus SEMUA MVP pertandingan ini`);
+    if (delCurrent) {
+      const idx = ctx.gameMvps.findIndex(x => x && x.game === ctx.currentGame);
+      if (idx >= 0) ctx.gameMvps.splice(idx, 1);
+
+      const pInput = document.getElementById('mvpSelectedPlayerInput');
+      const hInput = document.getElementById('mvpSelectedHeroInput');
+      if (pInput) pInput.value = '';
+      if (hInput) hInput.value = '';
+      ctx.selectedPlayer = null;
+      ctx.selectedHero = null;
+
+      saveSelectedMvp();
+      return;
+    }
+  }
+
+  if (!confirm('Apakah Anda yakin ingin menghapus seluruh data MVP untuk pertandingan ini?')) return;
+
   if (ctx.isPlayoff) {
     const m = groupPlayoffMatches[ctx.playoffRIdx]?.[ctx.playoffMIdx];
     if (m) {
+      m.gameMvps = [];
       m.mvpPlayer = null;
       m.mvpHero = null;
       m.mvpTeam = null;
@@ -5721,7 +6027,7 @@ function deleteCurrentMvp() {
       showToast('Data MVP Playoff telah dihapus.', 'info');
     }
   } else {
-    setGroupMatchMVP(ctx.canonId, null, null, null);
+    setGroupMatchMVP(ctx.canonId, null, null, null, []);
     saveTournamentStateOnly(true);
     showToast('Data MVP match telah dihapus.', 'info');
   }
@@ -5729,7 +6035,7 @@ function deleteCurrentMvp() {
   closeMLBBGroupMvpModal();
 }
 
-function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
+function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam, gameMvps = null) {
   if (!isAdmin) return;
   const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
   if (!groupMatchResults[canonId]) {
@@ -5750,10 +6056,51 @@ function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam) {
   } else if (groupMatchResults[canonId].winner) {
     groupMatchResults[canonId].mvpTeam = groupMatchResults[canonId].winner;
   }
+
+  if (gameMvps !== null) {
+    groupMatchResults[canonId].gameMvps = gameMvps;
+  } else if (mvpPlayer && !groupMatchResults[canonId].gameMvps) {
+    groupMatchResults[canonId].gameMvps = [{
+      game: 1,
+      player: mvpPlayer,
+      hero: mvpHero || null,
+      team: groupMatchResults[canonId].mvpTeam || null
+    }];
+  } else if (!mvpPlayer) {
+    groupMatchResults[canonId].gameMvps = [];
+  }
+
   saveState();
   renderGroupStageUI();
   if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();
   if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+}
+
+// Format render display HTML untuk MVP match (Mendukung Multi-Game BO3 / BO5)
+function formatMatchMvpDisplayHtml(m) {
+  if (!m) return '';
+  if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+    const validGames = m.gameMvps.filter(g => g && g.player);
+    if (validGames.length > 0) {
+      const badges = validGames.map(g => {
+        const heroTag = g.hero ? ` <span style="color:#cbd5e1;font-weight:400;">(${escapeHtml(g.hero)})</span>` : '';
+        const teamTag = g.team ? ` <span style="color:var(--yokke-cyan);font-size:0.65rem;font-weight:600;">[${escapeHtml(g.team)}]</span>` : '';
+        return `<span class="badge" style="background:rgba(255,183,3,0.12);color:var(--yokke-gold);border:1px solid rgba(255,183,3,0.3);font-size:0.7rem;padding:2px 7px;display:inline-flex;align-items:center;gap:3px;margin:2px 3px 2px 0;">⭐ <strong>G${g.game}:</strong> ${escapeHtml(g.player)}${heroTag}${teamTag}</span>`;
+      }).join('');
+      return `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:0.4rem;padding-top:0.35rem;border-top:1px dashed rgba(255,255,255,0.08);">${badges}</div>`;
+    }
+  }
+  if (m.mvpPlayer) {
+    const heroTag = m.mvpHero ? ` <span style="color:#cbd5e1;font-weight:400;">(${escapeHtml(m.mvpHero)})</span>` : '';
+    const teamTag = m.mvpTeam ? `<span style="font-size:0.68rem;color:var(--yokke-cyan);margin-left:auto;">${escapeHtml(m.mvpTeam)}</span>` : '';
+    return `
+      <div style="font-size:0.75rem;color:var(--yokke-gold);font-weight:700;margin-top:0.4rem;padding-top:0.35rem;border-top:1px dashed rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;">
+        <span>⭐ MVP: <strong style="color:#fff;">${escapeHtml(m.mvpPlayer)}</strong>${heroTag}</span>
+        ${teamTag}
+      </div>
+    `;
+  }
+  return '';
 }
 
 // Delegasi fungsi promptGroupMatchMVP ke modal interaktif
@@ -6039,12 +6386,7 @@ function renderGroupFixturesUI() {
               <span style="font-weight:600;">${escapeHtml(f.teamB)} ${f.winner === f.teamB ? '🏆' : ''}</span>
               <span style="font-weight:800; font-size:1rem; color:${f.scoreB !== null ? 'var(--yokke-gold)' : 'var(--text-muted)'};">${f.scoreB !== null ? f.scoreB : '-'}</span>
             </div>
-            ${f.mvpPlayer ? `
-              <div style="font-size:0.75rem; color:var(--yokke-gold); font-weight:700; margin-top:0.4rem; padding-top:0.35rem; border-top:1px dashed rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between;">
-                <span>⭐ MVP: <strong style="color:#fff;">${escapeHtml(f.mvpPlayer)}</strong> ${f.mvpHero ? `<span style="color:var(--text-muted); font-weight:400;">(${escapeHtml(f.mvpHero)})</span>` : ''}</span>
-                ${f.mvpTeam ? `<span style="font-size:0.68rem; color:var(--yokke-cyan);">${escapeHtml(f.mvpTeam)}</span>` : ''}
-              </div>
-            ` : ''}
+            ${formatMatchMvpDisplayHtml(f)}
             ${isAdmin ? `
               <div class="match-admin-scores" style="margin-top:0.4rem;">
                 <span style="font-size:0.7rem; color:var(--text-muted);">Skor BO3:</span>
@@ -6168,11 +6510,7 @@ function renderGroupPlayoffTree() {
           <span style="font-size: 0.88rem;">${m.teamB}</span>
           <span style="font-size: 0.8rem; font-weight: 700;">${m.winner === m.teamB ? 'WIN 🏆' : '-'}</span>
         </div>
-        ${m.mvpPlayer ? `
-          <div style="font-size:0.75rem; color:var(--yokke-gold); font-weight:700; margin-top:0.35rem; text-align:center;">
-            ⭐ MVP: ${escapeHtml(m.mvpPlayer)}${m.mvpHero ? ` (${escapeHtml(m.mvpHero)})` : ''}
-          </div>
-        ` : ''}
+        ${formatMatchMvpDisplayHtml(m)}
         ${isAdmin && m.winner ? `
           <div style="text-align:center; margin-top:0.35rem;">
             <button class="btn btn-outline" style="font-size:0.68rem; padding:0.15rem 0.5rem;" onclick="promptPlayoffMVP(${rIdx}, ${mIdx})">
@@ -8446,13 +8784,21 @@ function renderMLBBDetailPanelContent(nodeKey) {
     const gName = `Grup ${letter}`;
     const teams = groupStageData[gName] || [];
 
-    // Hitung MVP & Sort Klasemen
+    // Hitung MVP & Sort Klasemen (Mendukung Multi-MVP BO3)
     teams.forEach(t => {
       let mvpCount = 0;
       for (const mId in groupMatchResults || {}) {
         const m = groupMatchResults[mId];
-        if (m.gName === gName && m.mvpPlayer && (m.mvpTeam === t.name || (!m.mvpTeam && m.winner === t.name))) {
-          mvpCount++;
+        if (m.gName === gName) {
+          if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+            m.gameMvps.forEach(gm => {
+              if (gm && gm.player && (gm.team === t.name || (!gm.team && (m.mvpTeam === t.name || m.winner === t.name)))) {
+                mvpCount++;
+              }
+            });
+          } else if (m.mvpPlayer && (m.mvpTeam === t.name || (!m.mvpTeam && m.winner === t.name))) {
+            mvpCount++;
+          }
         }
       }
       t.mvpCount = mvpCount;
@@ -8567,11 +8913,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
                 ${winner === f.teamB ? '🏆 ' : ''}${escapeHtml(f.teamB)}
               </div>
             </div>
-            ${f.mvpPlayer ? `
-              <div style="margin-top:0.4rem;font-size:0.75rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.35rem;border-top:1px dashed rgba(255,255,255,0.06);padding-top:0.35rem;">
-                <span>⭐ <strong>MVP Match:</strong> ${escapeHtml(f.mvpPlayer)} ${f.mvpHero ? `(${escapeHtml(f.mvpHero)})` : ''} • Tim: ${escapeHtml(f.mvpTeam || winner || '-')}</span>
-              </div>
-            ` : ''}
+            ${formatMatchMvpDisplayHtml(f)}
           </div>
         `;
       });

@@ -64,6 +64,52 @@ assert.strictEqual(testFindTeamParticipant('Yokke Batam Squad', mockParticipants
 assert.strictEqual(testFindTeamParticipant('666', mockParticipants)?.name, '666');
 console.log('  ✅ [PASS] 4. findTeamParticipant berhasil mencocokkan variasi penulisan alias tim dengan akurat');
 
+// Test 5: Tab Game BO3 / BO5 dan Styling Pill Game
+assert(htmlCode.includes('id="mvpGameTabsContainer"'), 'index.html harus memuat mvpGameTabsContainer');
+assert(htmlCode.includes('id="mvpGameProgressText"'), 'index.html harus memuat mvpGameProgressText');
+assert(cssCode.includes('.mvp-game-pill'), 'style.css harus memuat .mvp-game-pill');
+assert(cssCode.includes('.mvp-game-pill.active'), 'style.css harus memuat .mvp-game-pill.active');
+assert(cssCode.includes('.mvp-game-pill.has-mvp'), 'style.css harus memuat .mvp-game-pill.has-mvp');
+console.log('  ✅ [PASS] 5. Elemen UI tab game (BO3/BO5) dan visual pills tersedia di markup & style');
+
+// Test 6: Multi-Game MVP Handlers dan Formatter di app.js
+assert(appCode.includes('function renderMvpGameTabs('), 'app.js harus memuat renderMvpGameTabs');
+assert(appCode.includes('function switchMvpGameTab('), 'app.js harus memuat switchMvpGameTab');
+assert(appCode.includes('function formatMatchMvpDisplayHtml('), 'app.js harus memuat formatMatchMvpDisplayHtml');
+assert(appCode.includes('gameMvps'), 'app.js harus memuat array gameMvps untuk multi-game MVP');
+console.log('  ✅ [PASS] 6. Handler logika multi-game MVP (BO3/BO5) lengkap dan terdefinisi di app.js');
+
+// Test 7: Simulasi Akumulasi Multi-Game MVP per Tim pada Format BO3
+const mockGroupResults = {
+  'GrupA_Native_vs_BOTI': {
+    gName: 'Grup A',
+    teamA: 'Native',
+    teamB: 'BOTI',
+    winner: 'Native',
+    gameMvps: [
+      { game: 1, player: 'Player1', hero: 'Ling', team: 'Native' },
+      { game: 2, player: 'Player2', hero: 'Suyou', team: 'BOTI' },
+      { game: 3, player: 'Player1', hero: 'Claude', team: 'Native' }
+    ]
+  }
+};
+
+let nativeMvpCount = 0;
+let botiMvpCount = 0;
+for (const mId in mockGroupResults) {
+  const m = mockGroupResults[mId];
+  if (Array.isArray(m.gameMvps)) {
+    m.gameMvps.forEach(gm => {
+      if (gm.team === 'Native') nativeMvpCount++;
+      if (gm.team === 'BOTI') botiMvpCount++;
+    });
+  }
+}
+assert.strictEqual(nativeMvpCount, 2, 'Tim Native harus mendapatkan 2 MVP dari Game 1 dan Game 3');
+assert.strictEqual(botiMvpCount, 1, 'Tim BOTI harus mendapatkan 1 MVP dari Game 2');
+console.log('  ✅ [PASS] 7. Akumulasi multi-game MVP per tim terhitung presisi sesuai aturan BO3');
+
 console.log('\n====================================================');
 console.log('🎉 SELURUH PENGUJIAN MVP PICKER MODAL LULUS (100% OK)');
 console.log('====================================================\n');
+

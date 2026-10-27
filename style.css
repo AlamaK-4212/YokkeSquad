@@ -696,6 +696,39 @@ tr:hover {
   font-weight: 800;
 }
 
+/* MVP Game Pills (BO3 / BO5) */
+.mvp-game-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.mvp-game-pill:hover {
+  background: rgba(255, 183, 3, 0.12);
+  border-color: rgba(255, 183, 3, 0.4);
+  color: #fff;
+}
+.mvp-game-pill.active {
+  background: var(--yokke-gold);
+  border-color: var(--yokke-gold);
+  color: #0b1120;
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
+}
+.mvp-game-pill.has-mvp:not(.active) {
+  border-color: rgba(6, 214, 160, 0.4);
+  color: var(--yokke-green);
+  background: rgba(6, 214, 160, 0.08);
+}
+
 /* Commander Lottery & Selectors */
 .commander-lottery-panel {
   background: linear-gradient(135deg, rgba(114, 9, 183, 0.12), rgba(0, 180, 216, 0.08));
