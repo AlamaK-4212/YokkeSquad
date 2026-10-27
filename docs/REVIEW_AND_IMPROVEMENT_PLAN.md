@@ -82,3 +82,30 @@ tags:
   - Sinkronisasi live Google Sheets dijalankan di latar belakang (*background sync*).
   - Timeout fetch disesuaikan dengan batas aman 8–25 detik.
 
+---
+
+## 🏆 Pembaruan Jadwal Resmi (Poster Match Schedule) & Perbaikan Perhitungan Match
+
+### 1. Sinkronisasi Penuh Jadwal Fase Grup dengan Poster Resmi (Grup A – H)
+- **Kondisi Sebelumnya**: Generator jadwal internal menggunakan pola indeks array dinamis (`pattern5` / `pattern6`) yang tidak cocok dengan urutan pertandingan pada poster rilis resmi panitia turnamen.
+- **Implementasi**:
+  - Menetapkan konstanta `MLBB_OFFICIAL_GROUP_SCHEDULE` untuk 8 grup (Grup A – H) yang mencerminkan 100% isi poster resmi (Day 1 s/d Day 5, Match 1, Match 2, dan Match 3 pada Grup F).
+  - Waktu tanding resmi diintegrasikan: **19:00 WIB / 20:00 WITA** secara simultan (Stream 1, Stream 2, Stream 3).
+  - Label tanggal akurat:
+    - **Hari 1**: Senin, 26 Okt 2026
+    - **Hari 2**: Selasa, 27 Okt 2026
+    - **Hari 3**: Rabu, 28 Okt 2026
+    - **Hari 4**: Kamis, 29 Okt 2026
+    - **Hari 5**: Jumat, 30 Okt 2026
+  - Menyediakan filter pil hari interaktif yang dilengkapi tanggal: `Semua Hari (1–5)`, `Hari 1 (26 Okt)`, `Hari 2 (27 Okt)`, `Hari 3 (28 Okt)`, `Hari 4 (29 Okt)`, `Hari 5 (30 Okt)`.
+  - Tampilan tim istirahat (Rest Rule / BYE) otomatis diperbarui sesuai jadwal poster tiap harinya.
+  - Penyelarasan orientasi skor Home vs Away (`saved.teamA === p.teamA ? saved.scoreA : saved.scoreB`) menjamin skor selalu tersemat pada tim yang tepat meskipun urutan input berbeda.
+
+### 2. Pencegahan Penggandaan Match (Inflation / Ballooning) Saat Koreksi Input
+- **Penyebab**: Match ID yang disimpan sebelumnya bersifat non-kanonikal (`A_vs_B` vs `B_vs_A`). Ketika admin mengoreksi skor dengan urutan terbalik, tercipta dua entri independen yang keduanya dihitung pada rekalkulasi klasemen.
+- **Solusi**:
+  - Mengimplementasikan `getCanonicalGroupMatchId(gName, teamA, teamB)` yang mengurutkan nama tim secara alfabetis (`sort()`), menghasilkan satu ID kanonikal tunggal yang stabil.
+  - Otomatisasi fungsi `deduplicateGroupMatchResults()` yang menghapus varian kunci lama/terbalik saat skor disimpan kembali (`setGroupMatchScore`).
+  - Rekalkulasi klasemen (`recalculateGroupStandingsFromFixtures`) menyaring `uniqueGroupMatches` via `Set` pasangan kanonikal, sehingga 1 pasangan tim dijamin hanya dihitung tepat 1 kali.
+
+
