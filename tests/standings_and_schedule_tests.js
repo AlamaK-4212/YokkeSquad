@@ -90,6 +90,92 @@ assert(appCode.includes("'Grup G': ["), 'Jadwal Grup G harus ada');
 assert(appCode.includes("'Grup H': ["), 'Jadwal Grup H harus ada');
 console.log('  ✅ [PASS] Seluruh struktur jadwal 8 Grup (A s/d H) lengkap dan valid.');
 
+// 6. Uji Aturan WO: Tim yang WO (baik kedua tim maupun hanya 1 tim) dianggap kalah
+console.log('\n🚫 6. Menguji Regulasi WO: Tim yang WO (baik kedua tim maupun 1 tim) Dianggap Kalah...');
+assert(appCode.includes('function promptGroupMatchWO('), 'promptGroupMatchWO harus terdefinisi di app.js');
+assert(appCode.includes('Kalah WO'), 'Opsi Kalah WO harus tersedia');
+assert(appCode.includes('Menang WO'), 'Status Menang WO harus tersedia');
+
+// Simulasikan kalkulasi rekalkulasi klasemen dari fixture
+const recalcSnippetMatch = appCode.match(/function recalculateGroupStandingsFromFixtures\(\)\s*\{([\s\S]*?)\n\}/);
+assert(recalcSnippetMatch, 'recalculateGroupStandingsFromFixtures harus ada');
+
+// Uji rekalkulasi dengan mock data:
+// Kasus 1: Tim A WO melawan Tim B (Hanya 1 tim WO)
+// Tim A harus dianggap KALAH (win=0, lose=1, pts=0, match=1)
+// Tim B menang WO (win=1, lose=0, pts=2, match=1)
+const mockGroups = {
+  'Grup Test': [
+    { name: 'Team A', win: 0, lose: 0, pts: 0, matchCount: 0 },
+    { name: 'Team B', win: 0, lose: 0, pts: 0, matchCount: 0 }
+  ]
+};
+const mockMatchSingleWO = {
+  m1: {
+    gName: 'Grup Test',
+    teamA: 'Team A',
+    teamB: 'Team B',
+    scoreA: 0,
+    scoreB: 2,
+    winner: 'Team B (Menang WO)'
+  }
+};
+
+// Ekstrak logika penghitungan
+const testFn = new Function('groupStageData', 'groupMatchResults', 'isSameTeamName', 'getCanonicalGroupMatchId', 'deduplicateGroupMatchResults', recalcSnippetMatch[1]);
+const isSameTeamName = (a, b) => (a || '').toLowerCase().trim() === (b || '').toLowerCase().trim();
+const getCanonicalGroupMatchId = (g, a, b) => `${g}_${[a, b].sort().join('_vs_')}`;
+const noop = () => {};
+
+testFn(mockGroups, mockMatchSingleWO, isSameTeamName, getCanonicalGroupMatchId, noop);
+
+const resTeamA = mockGroups['Grup Test'].find(t => t.name === 'Team A');
+const resTeamB = mockGroups['Grup Test'].find(t => t.name === 'Team B');
+
+assert.strictEqual(resTeamA.lose, 1, 'Tim A yang WO harus dianggap KALAH (lose=1)');
+assert.strictEqual(resTeamA.win, 0, 'Tim A yang WO tidak boleh dapat win (win=0)');
+assert.strictEqual(resTeamA.pts, 0, 'Tim A yang WO harus dapat 0 poin (pts=0)');
+assert.strictEqual(resTeamA.matchCount, 1, 'Tim A yang WO match dimainkannya terhitung 1');
+
+assert.strictEqual(resTeamB.win, 1, 'Tim B (lawan tim WO) harus menang (win=1)');
+assert.strictEqual(resTeamB.lose, 0, 'Tim B tidak kalah (lose=0)');
+assert.strictEqual(resTeamB.pts, 2, 'Tim B dapat 2 poin');
+assert.strictEqual(resTeamB.matchCount, 1, 'Tim B match dimainkannya terhitung 1');
+
+// Kasus 2: Keduanya WO (Kedua tim WO)
+// Keduanya harus dianggap KALAH (win=0, lose=1, pts=0, match=1)
+const mockGroupsDouble = {
+  'Grup Test': [
+    { name: 'Team X', win: 0, lose: 0, pts: 0, matchCount: 0 },
+    { name: 'Team Y', win: 0, lose: 0, pts: 0, matchCount: 0 }
+  ]
+};
+const mockMatchDoubleWO = {
+  m2: {
+    gName: 'Grup Test',
+    teamA: 'Team X',
+    teamB: 'Team Y',
+    scoreA: 0,
+    scoreB: 0,
+    winner: 'Keduanya WO (0-0)'
+  }
+};
+
+testFn(mockGroupsDouble, mockMatchDoubleWO, isSameTeamName, getCanonicalGroupMatchId, noop);
+const resTeamX = mockGroupsDouble['Grup Test'].find(t => t.name === 'Team X');
+const resTeamY = mockGroupsDouble['Grup Test'].find(t => t.name === 'Team Y');
+
+assert.strictEqual(resTeamX.lose, 1, 'Team X pada Double WO harus dianggap KALAH (lose=1)');
+assert.strictEqual(resTeamX.pts, 0, 'Team X pada Double WO dapat 0 poin');
+assert.strictEqual(resTeamX.matchCount, 1, 'Team X matchCount terhitung 1');
+
+assert.strictEqual(resTeamY.lose, 1, 'Team Y pada Double WO harus dianggap KALAH (lose=1)');
+assert.strictEqual(resTeamY.pts, 0, 'Team Y pada Double WO dapat 0 poin');
+assert.strictEqual(resTeamY.matchCount, 1, 'Team Y matchCount terhitung 1');
+
+console.log('  ✅ [PASS] Aturan WO terverifikasi: Tim yang WO (baik 1 tim maupun keduanya) pasti dianggap KALAH.');
+
 console.log('\n====================================================');
 console.log('🎉 SEMUA PENGUJIAN URUTAN KLASEMEN, OPSI 0-0 & JADWAL LULUS!');
 console.log('====================================================');
+

@@ -5505,9 +5505,31 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB, explic
       winner = teamB;
     } else if (scoreA === 0 && scoreB === 0) {
       if (!explicitWinner) {
-        // Tanyakan pilihan jika skor 0 - 0: Apakah WO Ganda atau Imbang/Seri?
-        const isWO = confirm(`Pertandingan ${teamA} vs ${teamB} memiliki skor 0 - 0.\n\nApakah hasil ini KEDUANYA WO (Walkover)?\n• Klik OK = Keduanya WO (Kedua tim kalah WO, 0 Poin)\n• Klik Batal = Imbang / Seri (0-0)`);
-        winner = isWO ? 'Keduanya WO (0-0)' : 'Imbang (0-0)';
+        // Tanyakan pilihan jika skor 0 - 0: Apakah WO Ganda, Tim Tertentu Kalah WO, atau Imbang/Seri?
+        const choice = prompt(
+          `Pertandingan ${teamA} vs ${teamB} memiliki skor 0 - 0.\n\n` +
+          `Pilih status hasil pertandingan ini:\n` +
+          `1 = Keduanya Kalah WO (0-0, Kedua Tim Kalah 1x, 0 Poin)\n` +
+          `2 = Imbang / Seri (0-0, Kedua Tim 0 Poin)\n` +
+          `3 = ${teamA} Kalah WO (${teamB} Menang 2-0)\n` +
+          `4 = ${teamB} Kalah WO (${teamA} Menang 2-0)\n\n` +
+          `Masukkan angka 1, 2, 3, atau 4:`
+        );
+        if (!choice) return;
+        const opt = choice.trim();
+        if (opt === '1') {
+          winner = 'Keduanya WO (0-0)';
+        } else if (opt === '2') {
+          winner = 'Imbang (0-0)';
+        } else if (opt === '3') {
+          scoreA = 0; scoreB = 2;
+          winner = `${teamB} (Menang WO)`;
+        } else if (opt === '4') {
+          scoreA = 2; scoreB = 0;
+          winner = `${teamA} (Menang WO)`;
+        } else {
+          winner = 'Keduanya WO (0-0)';
+        }
       } else {
         winner = explicitWinner;
       }
@@ -5568,11 +5590,39 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB, explic
   renderGroupStageUI();
 }
 
-// Helper aksi instan wasit untuk hasil khusus (Keduanya WO atau Imbang)
+// Dialog wasit untuk menetapkan tim yang Kalah WO (Walkover) baik 1 tim maupun kedua tim
+function promptGroupMatchWO(matchId, gName, teamA, teamB) {
+  if (!isAdmin) return;
+  const choice = prompt(
+    `⚡ PENGATURAN STATUS WALKOVER (WO)\n` +
+    `Pertandingan: ${teamA} vs ${teamB}\n\n` +
+    `Pilih tim yang Walkover (WO):\n` +
+    `1 = ${teamA} Kalah WO ➔ (${teamB} Menang 2-0)\n` +
+    `2 = ${teamB} Kalah WO ➔ (${teamA} Menang 2-0)\n` +
+    `3 = Keduanya Kalah WO ➔ (Skor 0-0, Kedua Tim Kalah 1x, 0 Poin)\n\n` +
+    `Masukkan angka 1, 2, atau 3:`
+  );
+  if (!choice) return;
+  const opt = choice.trim();
+  if (opt === '1') {
+    setGroupMatchScore(matchId, gName, teamA, teamB, 0, 2, `${teamB} (Menang WO)`);
+  } else if (opt === '2') {
+    setGroupMatchScore(matchId, gName, teamA, teamB, 2, 0, `${teamA} (Menang WO)`);
+  } else if (opt === '3') {
+    setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, 'Keduanya WO (0-0)');
+  } else {
+    alert('⚠️ Pilihan tidak valid. Harap masukkan angka 1, 2, atau 3.');
+  }
+}
+
+// Helper aksi instan wasit untuk hasil khusus (Keduanya WO, Tim WO, atau Imbang)
 function setGroupMatchSpecialResult(matchId, gName, teamA, teamB, resultType) {
   if (!isAdmin) return;
-  const winner = (resultType === 'WO') ? 'Keduanya WO (0-0)' : 'Imbang (0-0)';
-  setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, winner);
+  if (resultType === 'WO') {
+    promptGroupMatchWO(matchId, gName, teamA, teamB);
+  } else if (resultType === 'DRAW') {
+    setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, 'Imbang (0-0)');
+  }
 }
 
 function saveGroupFixtureScore(matchId, gName, teamA, teamB) {
@@ -6366,18 +6416,44 @@ function recalculateGroupStandingsFromFixtures() {
         if (!isTeamA && !isTeamB) return;
 
         matchCount++;
-        const isDoubleWO = (m.winner === 'Keduanya WO (0-0)' || m.winner === 'Keduanya WO' || (m.winner && m.winner.toLowerCase().includes('wo')));
-        const isDraw = (m.winner === 'Imbang (0-0)' || m.winner === 'Imbang' || m.winner === 'Seri' || (m.winner && (m.winner.toLowerCase().includes('imbang') || m.winner.toLowerCase().includes('seri'))));
+        const winnerLower = (m.winner || '').toLowerCase().trim();
+        const isDoubleWO = (
+          winnerLower === 'keduanya wo (0-0)' ||
+          winnerLower === 'keduanya wo' ||
+          winnerLower === 'double wo' ||
+          winnerLower === 'double walkover' ||
+          (winnerLower.includes('keduanya') && winnerLower.includes('wo'))
+        );
+        const isDraw = !isDoubleWO && (
+          winnerLower === 'imbang (0-0)' ||
+          winnerLower === 'imbang' ||
+          winnerLower === 'seri' ||
+          winnerLower.startsWith('imbang') ||
+          winnerLower.startsWith('seri')
+        );
+
+        const cleanWinner = (m.winner || '')
+          .replace(/\(menang\s*wo\)/i, '')
+          .replace(/\(wo\)/i, '')
+          .replace(/menang\s*wo\s*:\s*/i, '')
+          .trim();
+
+        const isWinnerThisTeam = !isDoubleWO && !isDraw && (
+          isSameTeamName(m.winner, t.name) ||
+          isSameTeamName(cleanWinner, t.name)
+        );
 
         if (isDoubleWO) {
-          // Keduanya WO: Kedua tim dihitung kalah WO 1x, 0 Poin
+          // Keduanya WO: KEDUA TIM DIANGGAP KALAH (1x Kalah, 0 Poin, +1 Match)
           loseCount++;
         } else if (isDraw) {
           // Skor imbang / seri
           drawCount++;
-        } else if (m.winner && isSameTeamName(m.winner, t.name)) {
+        } else if (isWinnerThisTeam) {
+          // Tim pemenang (termasuk menang WO karena lawan WO)
           winCount++;
         } else if (m.winner) {
+          // Tim lawan (atau tim yang WO sendiri): DIANGGAP KALAH (1x Kalah, 0 Poin, +1 Match)
           loseCount++;
         } else {
           // Fallback kalkulasi skor langsung jika ada
@@ -6597,12 +6673,27 @@ function renderGroupFixturesUI() {
 
       fixtures.forEach((f, idx) => {
         const isDone = f.winner !== null;
-        const isDoubleWO = f.winner && (f.winner.includes('WO') || f.winner === 'Keduanya WO (0-0)');
-        const isDraw = f.winner && (f.winner.includes('Imbang') || f.winner.includes('Seri'));
+        const winnerLower = (f.winner || '').toLowerCase().trim();
+        const isDoubleWO = (
+          winnerLower === 'keduanya wo (0-0)' ||
+          winnerLower === 'keduanya wo' ||
+          (winnerLower.includes('keduanya') && winnerLower.includes('wo'))
+        );
+        const isSingleWO = !isDoubleWO && winnerLower.includes('wo');
+        const isDraw = !isDoubleWO && (winnerLower.includes('imbang') || winnerLower.includes('seri'));
         const safeMatchId = f.matchId.replace(/'/g, "\\'");
         const safeGName = f.gName.replace(/'/g, "\\'");
         const safeTeamA = f.teamA.replace(/'/g, "\\'");
         const safeTeamB = f.teamB.replace(/'/g, "\\'");
+
+        const cleanWinner = (f.winner || '')
+          .replace(/\(menang\s*wo\)/i, '')
+          .replace(/\(wo\)/i, '')
+          .replace(/menang\s*wo\s*:\s*/i, '')
+          .trim();
+
+        const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cleanWinner, f.teamA));
+        const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cleanWinner, f.teamB));
 
         html += `
           <div class="group-match-card">
@@ -6610,16 +6701,22 @@ function renderGroupFixturesUI() {
               <span style="font-weight:700; color:var(--yokke-gold); font-size:0.75rem;">
                 HARI ${f.day} (${f.dateLabel || ''}) • MATCH ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}
               </span>
-              <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDoubleWO ? 'background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35);' : (isDraw ? 'background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.35);' : (isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'))}">
-                ${isDoubleWO ? '⚡ KEDUANYA WO (0-0)' : (isDraw ? '⚖️ IMBANG (0-0)' : (isDone ? 'SELESAI' : 'BO3'))}
+              <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDoubleWO ? 'background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35);' : (isSingleWO ? 'background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3);' : (isDraw ? 'background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.35);' : (isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);')))}">
+                ${isDoubleWO ? '⚡ KEDUANYA WO (0-0)' : (isSingleWO ? '⚡ SELESAI (WO)' : (isDraw ? '⚖️ IMBANG (0-0)' : (isDone ? 'SELESAI' : 'BO3')))}
               </span>
             </div>
-            <div class="match-team-row ${f.winner === f.teamA ? 'winner' : ''}">
-              <span style="font-weight:600;">${escapeHtml(f.teamA)} ${f.winner === f.teamA ? '🏆' : ''}</span>
+            <div class="match-team-row ${isWinnerA ? 'winner' : ''}">
+              <span style="font-weight:600;">
+                ${escapeHtml(f.teamA)} 
+                ${isWinnerA ? '🏆' + (isSingleWO ? ' <span style="font-size:0.7rem;color:var(--yokke-green);font-weight:700;">(Menang WO)</span>' : '') : (isSingleWO && isWinnerB ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : (isDoubleWO ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : ''))}
+              </span>
               <span style="font-weight:800; font-size:1rem; color:${f.scoreA !== null ? 'var(--yokke-gold)' : 'var(--text-muted)'};">${f.scoreA !== null ? f.scoreA : '-'}</span>
             </div>
-            <div class="match-team-row ${f.winner === f.teamB ? 'winner' : ''}">
-              <span style="font-weight:600;">${escapeHtml(f.teamB)} ${f.winner === f.teamB ? '🏆' : ''}</span>
+            <div class="match-team-row ${isWinnerB ? 'winner' : ''}">
+              <span style="font-weight:600;">
+                ${escapeHtml(f.teamB)} 
+                ${isWinnerB ? '🏆' + (isSingleWO ? ' <span style="font-size:0.7rem;color:var(--yokke-green);font-weight:700;">(Menang WO)</span>' : '') : (isSingleWO && isWinnerA ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : (isDoubleWO ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : ''))}
+              </span>
               <span style="font-weight:800; font-size:1rem; color:${f.scoreB !== null ? 'var(--yokke-gold)' : 'var(--text-muted)'};">${f.scoreB !== null ? f.scoreB : '-'}</span>
             </div>
             ${formatMatchMvpDisplayHtml(f)}
@@ -9107,20 +9204,36 @@ function renderMLBBDetailPanelContent(nodeKey) {
       fixtures.forEach((f, fIdx) => {
         const hasScore = f.scoreA !== null && f.scoreB !== null;
         const winner = f.winner;
-        const isDoubleWO = f.winner && (f.winner.includes('WO') || f.winner === 'Keduanya WO (0-0)');
-        const isDraw = f.winner && (f.winner.includes('Imbang') || f.winner.includes('Seri'));
+        const winnerLower = (f.winner || '').toLowerCase().trim();
+        const isDoubleWO = (
+          winnerLower === 'keduanya wo (0-0)' ||
+          winnerLower === 'keduanya wo' ||
+          (winnerLower.includes('keduanya') && winnerLower.includes('wo'))
+        );
+        const isSingleWO = !isDoubleWO && winnerLower.includes('wo');
+        const isDraw = !isDoubleWO && (winnerLower.includes('imbang') || winnerLower.includes('seri'));
+
+        const cleanWinner = (f.winner || '')
+          .replace(/\(menang\s*wo\)/i, '')
+          .replace(/\(wo\)/i, '')
+          .replace(/menang\s*wo\s*:\s*/i, '')
+          .trim();
+
+        const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cleanWinner, f.teamA));
+        const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cleanWinner, f.teamB));
 
         content += `
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
               <span style="font-size:0.75rem;font-weight:700;color:var(--yokke-gold);">Hari ${f.day} (${f.dateLabel || ''}) • Match ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}</span>
-              <span style="font-size:0.75rem;font-weight:700;color:${isDoubleWO ? '#f87171' : (isDraw ? '#fbbf24' : (hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'))};">
-                ${isDoubleWO ? '⚡ Keduanya WO (0-0)' : (isDraw ? '⚖️ Imbang (0-0)' : (hasScore ? '✅ Selesai' : '⏳ BO3'))}
+              <span style="font-size:0.75rem;font-weight:700;color:${isDoubleWO ? '#f87171' : (isSingleWO ? '#f87171' : (isDraw ? '#fbbf24' : (hasScore ? 'var(--yokke-green)' : 'var(--text-muted)')))};">
+                ${isDoubleWO ? '⚡ Keduanya WO (0-0)' : (isSingleWO ? '⚡ Selesai (WO)' : (isDraw ? '⚖️ Imbang (0-0)' : (hasScore ? '✅ Selesai' : '⏳ BO3')))}
               </span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-              <div style="flex:1;min-width:140px;font-weight:700;color:${winner === f.teamA ? 'var(--yokke-gold)' : '#fff'};">
-                ${escapeHtml(f.teamA)} ${winner === f.teamA ? '🏆' : ''}
+              <div style="flex:1;min-width:140px;font-weight:700;color:${isWinnerA ? 'var(--yokke-gold)' : '#fff'};">
+                ${escapeHtml(f.teamA)} 
+                ${isWinnerA ? '🏆' + (isSingleWO ? ' <span style="font-size:0.7rem;color:var(--yokke-green);font-weight:700;">(Menang WO)</span>' : '') : (isSingleWO && isWinnerB ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : (isDoubleWO ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : ''))}
               </div>
               <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;">
                 ${isAdmin ? `
@@ -9133,15 +9246,16 @@ function renderMLBBDetailPanelContent(nodeKey) {
                     setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', sA, sB);
                     renderMLBBInteractiveHubUI();
                   ">Simpan</button>
-                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;border-color:rgba(239,68,68,0.4);" onclick="setGroupMatchSpecialResult('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', 'WO'); renderMLBBInteractiveHubUI();" title="Set Keduanya Kalah Walkover (0-0)">⚡ WO</button>
+                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;border-color:rgba(239,68,68,0.4);" onclick="setGroupMatchSpecialResult('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', 'WO'); renderMLBBInteractiveHubUI();" title="Set Status Walkover (WO)">⚡ WO</button>
                   <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#fbbf24;border-color:rgba(245,158,11,0.4);" onclick="setGroupMatchSpecialResult('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', 'DRAW'); renderMLBBInteractiveHubUI();" title="Set Imbang / Seri (0-0)">⚖️ Seri</button>
                   <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="openMLBBGroupMvpModal('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', ${f.scoreA !== null ? f.scoreA : 0}, ${f.scoreB !== null ? f.scoreB : 0})" title="Input MVP">⭐ MVP</button>
                 ` : `
                   <span style="font-size:1.1rem;font-weight:800;color:var(--yokke-gold);">${f.scoreA !== null ? f.scoreA : '-'} : ${f.scoreB !== null ? f.scoreB : '-'}</span>
                 `}
               </div>
-              <div style="flex:1;min-width:140px;text-align:right;font-weight:700;color:${winner === f.teamB ? 'var(--yokke-gold)' : '#fff'};">
-                ${winner === f.teamB ? '🏆 ' : ''}${escapeHtml(f.teamB)}
+              <div style="flex:1;min-width:140px;text-align:right;font-weight:700;color:${isWinnerB ? 'var(--yokke-gold)' : '#fff'};">
+                ${isWinnerB ? '🏆 ' : ''}${escapeHtml(f.teamB)}
+                ${isWinnerB && isSingleWO ? ' <span style="font-size:0.7rem;color:var(--yokke-green);font-weight:700;">(Menang WO)</span>' : (!isWinnerB && isSingleWO ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : (isDoubleWO ? ' <span style="font-size:0.7rem;color:#f87171;font-weight:700;">(Kalah WO)</span>' : ''))}
               </div>
             </div>
             ${formatMatchMvpDisplayHtml(f)}
