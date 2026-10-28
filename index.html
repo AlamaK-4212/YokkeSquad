@@ -762,7 +762,7 @@
   </div>
 
   <!-- Modal Lightbox Penampil ID Card Ukuran Penuh -->
-  <div id="idCardLightboxModal" class="modal-overlay">
+  <div id="idCardLightboxModal" class="modal-overlay" style="z-index: 2500;" onclick="if(event.target === this) closeIdCardLightbox()">
     <div class="modal-box" style="max-width: 600px; padding: 1.5rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h3 id="lightboxTitle" style="color:var(--yokke-cyan); font-size:1.1rem; margin:0;">🪪 Foto ID Card Pegawai Yokke</h3>

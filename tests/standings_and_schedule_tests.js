@@ -248,6 +248,14 @@ assert(appCode.includes('function toggleMatchPlayerVerify('), 'toggleMatchPlayer
 assert(appCode.includes('function verifyAllMatchPlayers('), 'verifyAllMatchPlayers harus terdefinisi di app.js');
 console.log('  ✅ [PASS] Modal & seluruh fungsi verifikasi pemain pertandingan terverifikasi.');
 
+// 11. Uji Penempatan Z-Index Lightbox ID Card (Selalu di atas modal verifikasi pemain)
+console.log('\n🪪 11. Menguji Stacking Z-Index Lightbox ID Card...');
+const styleCssCode = fs.readFileSync(path.join(__dirname, '../style.css'), 'utf8');
+assert(styleCssCode.includes('#idCardLightboxModal') && styleCssCode.includes('z-index: 2500'), 'style.css harus mendefinisikan z-index tinggi untuk #idCardLightboxModal');
+assert(indexHtmlCode.includes('id="idCardLightboxModal"') && indexHtmlCode.includes('z-index: 2500'), 'index.html harus menyertakan z-index 2500 untuk idCardLightboxModal');
+assert(appCode.includes("modal.style.zIndex = '2500'"), 'openIdCardLightbox di app.js harus memastikan modal.style.zIndex = 2500');
+console.log('  ✅ [PASS] Lightbox ID Card dijamin tampil di depan popup verifikasi pemain (z-index: 2500).');
+
 console.log('\n====================================================');
 console.log('🎉 SEMUA PENGUJIAN URUTAN KLASEMEN, OPSI 0-0 & JADWAL LULUS!');
 console.log('====================================================');

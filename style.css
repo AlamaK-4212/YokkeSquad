@@ -631,6 +631,9 @@ tr:hover {
 .modal-overlay.active {
   display: flex;
 }
+#idCardLightboxModal {
+  z-index: 2500 !important;
+}
 .modal-box {
   background: var(--bg-card);
   border: 1px solid var(--border-color);

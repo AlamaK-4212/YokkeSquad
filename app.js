@@ -2504,6 +2504,8 @@ function openIdCardLightbox(imgSrc, title, driveUrl = '') {
   const container = document.getElementById('lightboxImageContainer');
   const titleEl = document.getElementById('lightboxTitle');
 
+  if (modal) modal.style.zIndex = '2500';
+
   if (titleEl) titleEl.innerText = title || '🪪 Foto ID Card Pegawai Yokke';
   if (container) {
     const formattedSrc = formatDriveImageUrl(imgSrc);
