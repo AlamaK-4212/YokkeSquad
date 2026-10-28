@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwoThOWtWRE0EfH_BmxbjIHlJTL-fT8hHfXTUZO5upHNQmUIldBIMKNHbjowqPnnsIAXg/exec';
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz5Dddzffy2tBmn1fhKKBmK5AfwdMvP0wSb7aMtAq3Gl2D53hDYAFpkkiNced-OvfEeug/exec';
 
 async function main() {
   const res = await fetch(WEBHOOK_URL);
