@@ -1754,7 +1754,7 @@ function syncDedicatedTournamentSheets(ss, payload) {
 
   const mlbbPointHeaders = [
     'Grup', 'Peringkat', 'Nama Tim', 'Match Dimainkan', 
-    'Menang (W)', 'Kalah (L)', 'Total Poin', 'Status Kelolosan', 'Total MVP Tim'
+    'Menang (W)', 'Kalah (L)', 'Agregat Skor (Diff)', 'Total Poin', 'Status Kelolosan', 'Total MVP Tim'
   ];
   const mlbbPointRows = [mlbbPointHeaders];
 
@@ -1777,6 +1777,24 @@ function syncDedicatedTournamentSheets(ss, payload) {
       const ptsA = parseInt(a.pts, 10) || 0;
       const ptsB = parseInt(b.pts, 10) || 0;
       if (ptsB !== ptsA) return ptsB - ptsA;
+
+      const diffA = (a.diff !== undefined) ? parseInt(a.diff, 10) : ((parseInt(a.gameWon, 10) || 0) - (parseInt(a.gameLost, 10) || 0));
+      const diffB = (b.diff !== undefined) ? parseInt(b.diff, 10) : ((parseInt(b.gameWon, 10) || 0) - (parseInt(b.gameLost, 10) || 0));
+      if (diffB !== diffA) return diffB - diffA;
+
+      // Head-to-Head (H2H) direct match
+      let h2h = 0;
+      for (var k in matchResults) {
+        var m = matchResults[k];
+        if (!m || !m.teamA || !m.teamB) continue;
+        if ((m.teamA === a.name && m.teamB === b.name) || (m.teamA === b.name && m.teamB === a.name)) {
+          var w = m.winner || '';
+          if (w.indexOf(a.name) !== -1) h2h = -1;
+          else if (w.indexOf(b.name) !== -1) h2h = 1;
+          break;
+        }
+      }
+      if (h2h !== 0) return h2h;
 
       const winA = parseInt(a.win, 10) || 0;
       const winB = parseInt(b.win, 10) || 0;
@@ -1803,6 +1821,8 @@ function syncDedicatedTournamentSheets(ss, payload) {
           status = (idx < 2) ? 'Lolos Playoff' : 'Gugur';
         }
       }
+      const diffVal = (t.diff !== undefined) ? parseInt(t.diff, 10) : ((parseInt(t.gameWon, 10) || 0) - (parseInt(t.gameLost, 10) || 0));
+      const diffStr = (diffVal > 0 ? '+' : '') + diffVal;
       mlbbPointRows.push([
         gName,
         `#${idx + 1}`,
@@ -1810,6 +1830,7 @@ function syncDedicatedTournamentSheets(ss, payload) {
         mp,
         t.win || 0,
         t.lose || 0,
+        diffStr,
         t.pts || 0,
         status,
         teamMvpCount[t.name] || t.mvpCount || 0

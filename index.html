@@ -938,6 +938,39 @@
     </div>
   </div>
 
+  <!-- Modal Verifikasi Pemain Pertandingan (Match Roster Verification) -->
+  <div id="matchPlayerVerifyModal" class="modal-overlay">
+    <div class="modal-box modal-box-large" style="max-width: 920px; max-height: 92vh; display: flex; flex-direction: column; padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem;">
+        <div>
+          <h3 style="color: var(--yokke-cyan); margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🛡️</span> <span>Verifikasi Roster Pemain Sebelum Match</span>
+          </h3>
+          <div id="matchVerifySubtitle" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;"></div>
+        </div>
+        <button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" onclick="closeMatchPlayerVerifyModal()">✕</button>
+      </div>
+
+      <!-- Quick Summary Status Bar -->
+      <div id="matchVerifySummaryBar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: rgba(0, 0, 0, 0.35); padding: 0.5rem 0.85rem; border-radius: 6px; border: 1px solid rgba(0, 210, 255, 0.2); margin-bottom: 0.85rem;">
+      </div>
+
+      <!-- Dua Kolom Tim A dan Tim B -->
+      <div id="matchVerifyRosterContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; overflow-y: auto; max-height: 65vh; padding-right: 0.25rem;">
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.65rem; flex-wrap: wrap; gap: 0.5rem;">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          💡 Centang / klik tombol status pemain untuk menandai pemain yang sudah diverifikasi identitasnya.
+        </span>
+        <button type="button" class="btn btn-primary" onclick="closeMatchPlayerVerifyModal()">
+          Selesai & Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Datalist Autocomplete Seluruh Hero Mobile Legends -->
   <datalist id="mlbbHeroesDataList">
     <option value="Aamon"></option>
@@ -997,6 +1030,7 @@
     <option value="Hayabusa"></option>
     <option value="Helcurt"></option>
     <option value="Hilda"></option>
+    <option value="Hirara"></option>
     <option value="Hylos"></option>
     <option value="Irithel"></option>
     <option value="Ixia"></option>
@@ -1021,6 +1055,7 @@
     <option value="Lolita"></option>
     <option value="Lunox"></option>
     <option value="Luo Yi"></option>
+    <option value="Lukas"></option>
     <option value="Lylia"></option>
     <option value="Martis"></option>
     <option value="Masha"></option>

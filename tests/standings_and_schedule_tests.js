@@ -175,6 +175,79 @@ assert.strictEqual(resTeamY.matchCount, 1, 'Team Y matchCount terhitung 1');
 
 console.log('  ✅ [PASS] Aturan WO terverifikasi: Tim yang WO (baik 1 tim maupun keduanya) pasti dianggap KALAH.');
 
+// 7. Uji Agregat Skor Game & Head-to-Head (H2H) Tiebreaker
+console.log('\n⚔️ 7. Menguji Agregat Skor Game & Head-to-Head (H2H) Tiebreaker...');
+// Kasus 7A: Poin sama, Agregat beda (diff lebih besar di atas)
+const teamDiffHigh = { name: 'Alpha', pts: 4, diff: 3, win: 2, lose: 0, mvpCount: 0 };
+const teamDiffLow = { name: 'Beta', pts: 4, diff: 1, win: 2, lose: 0, mvpCount: 0 };
+assert(compareMLBBTeams(teamDiffHigh, teamDiffLow) < 0, 'Tim dengan Agregat Game lebih besar (+3 vs +1) harus di atas');
+
+// Kasus 7B: Poin sama, Agregat sama, H2H aktif (Tim A mengalahkan Tim B di pertemuan grup)
+const getH2HMatch = appCode.match(/function getMLBBHeadToHeadWinner\(teamA,\s*teamB,\s*gName\)\s*\{([\s\S]*?)\n\}/);
+assert(getH2HMatch, 'getMLBBHeadToHeadWinner harus terdefinisi di app.js');
+
+const mockH2HResults = {
+  'Grup_C_ALPHA_vs_BETA': {
+    gName: 'Grup C',
+    teamA: 'ALPHA',
+    teamB: 'BETA',
+    scoreA: 2,
+    scoreB: 1,
+    winner: 'ALPHA'
+  }
+};
+const getH2HFn = new Function('teamA', 'teamB', 'gName', 'groupMatchResults', 'isSameTeamName', 'getCanonicalGroupMatchId', getH2HMatch[1]);
+const h2hRes = getH2HFn('ALPHA', 'BETA', 'Grup C', mockH2HResults, isSameTeamName, getCanonicalGroupMatchId);
+assert.strictEqual(h2hRes, -1, 'ALPHA yang menang lawan BETA harus menghasilkan return -1 (ALPHA peringkat lebih tinggi)');
+
+const h2hResRev = getH2HFn('BETA', 'ALPHA', 'Grup C', mockH2HResults, isSameTeamName, getCanonicalGroupMatchId);
+assert.strictEqual(h2hResRev, 1, 'BETA yang kalah lawan ALPHA harus menghasilkan return 1 (BETA peringkat lebih rendah)');
+console.log('  ✅ [PASS] Agregat Skor Game & Head-to-Head (H2H) tiebreaker bekerja presisi.');
+
+// 8. Uji Pencegahan Pertandingan Belum Main (0-0 tanpa pemenang seperti TY BEKASI vs REKAN OM) Terflag Selesai
+console.log('\n🛡️ 8. Menguji Filter Match Belum Main (0-0 tanpa winner tidak dihitung & tidak selesai)...');
+const mockGroupsUnplayed = {
+  'Grup C': [
+    { name: 'REKAN OM', win: 0, lose: 0, pts: 0, matchCount: 0 },
+    { name: 'TY BEKASI', win: 0, lose: 0, pts: 0, matchCount: 0 }
+  ]
+};
+const mockMatchUnplayed = {
+  mUnplayed: {
+    gName: 'Grup C',
+    teamA: 'REKAN OM',
+    teamB: 'TY BEKASI',
+    scoreA: 0,
+    scoreB: 0,
+    winner: null // Belum main
+  }
+};
+testFn(mockGroupsUnplayed, mockMatchUnplayed, isSameTeamName, getCanonicalGroupMatchId, noop);
+const rekanOmRes = mockGroupsUnplayed['Grup C'].find(t => t.name === 'REKAN OM');
+const tyBekasiRes = mockGroupsUnplayed['Grup C'].find(t => t.name === 'TY BEKASI');
+assert.strictEqual(rekanOmRes.matchCount, 0, 'Match 0-0 tanpa pemenang tidak boleh menambah matchCount REKAN OM');
+assert.strictEqual(tyBekasiRes.matchCount, 0, 'Match 0-0 tanpa pemenang tidak boleh menambah matchCount TY BEKASI');
+console.log('  ✅ [PASS] Pertandingan belum main (0-0 tanpa winner) aman dan tidak terflag selesai.');
+
+// 9. Uji Penambahan Hero Patch Terkini (Hirara & Lukas)
+console.log('\n👑 9. Menguji Ketersediaan Hero MLBB Patch Terkini (Hirara & Lukas)...');
+const indexHtmlCode = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+assert(indexHtmlCode.includes('<option value="Hirara"></option>'), 'Hero Hirara harus ada di datalist index.html');
+assert(indexHtmlCode.includes('<option value="Lukas"></option>'), 'Hero Lukas harus ada di datalist index.html');
+assert(appCode.includes('"Hirara"'), 'Hero Hirara harus ada di MLBB_POPULAR_MVP_HEROES app.js');
+assert(appCode.includes('"Lukas"'), 'Hero Lukas harus ada di MLBB_POPULAR_MVP_HEROES app.js');
+console.log('  ✅ [PASS] Hero Hirara dan Lukas terintegrasi di datalist dan quick selection MVP.');
+
+// 10. Uji Fitur Verifikasi Roster Pemain Sebelum Pertandingan
+console.log('\n🛡️ 10. Menguji Modal & Logika Verifikasi Pemain Pertandingan (Match Roster Verification)...');
+assert(indexHtmlCode.includes('id="matchPlayerVerifyModal"'), 'Modal matchPlayerVerifyModal harus ada di index.html');
+assert(indexHtmlCode.includes('id="matchVerifyRosterContainer"'), 'Container roster verifikasi harus ada di index.html');
+assert(appCode.includes('function openMatchPlayerVerifyModal('), 'openMatchPlayerVerifyModal harus terdefinisi di app.js');
+assert(appCode.includes('function closeMatchPlayerVerifyModal('), 'closeMatchPlayerVerifyModal harus terdefinisi di app.js');
+assert(appCode.includes('function toggleMatchPlayerVerify('), 'toggleMatchPlayerVerify harus terdefinisi di app.js');
+assert(appCode.includes('function verifyAllMatchPlayers('), 'verifyAllMatchPlayers harus terdefinisi di app.js');
+console.log('  ✅ [PASS] Modal & seluruh fungsi verifikasi pemain pertandingan terverifikasi.');
+
 console.log('\n====================================================');
 console.log('🎉 SEMUA PENGUJIAN URUTAN KLASEMEN, OPSI 0-0 & JADWAL LULUS!');
 console.log('====================================================');

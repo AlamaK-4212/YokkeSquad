@@ -4438,16 +4438,91 @@ function updateGroupRecord(gName, idx, field, val) {
   renderGroupStageUI();
 }
 
-// Komparator resmi urutan klasemen MLBB sesuai regulasi:
+// Helper mencari pemenang head-to-head (pertemuan langsung) antar 2 tim di fase grup MLBB
+function getMLBBHeadToHeadWinner(teamA, teamB, gName) {
+  if (!teamA || !teamB || typeof groupMatchResults === 'undefined' || !groupMatchResults) return 0;
+  let match = null;
+  if (typeof getCanonicalGroupMatchId === 'function') {
+    const canonId = getCanonicalGroupMatchId(gName || '', teamA, teamB);
+    match = groupMatchResults[canonId];
+  }
+  if (!match) {
+    for (const id in groupMatchResults) {
+      const m = groupMatchResults[id];
+      if (!m || !m.teamA || !m.teamB) continue;
+      if (gName && m.gName && m.gName !== gName) continue;
+      if ((isSameTeamName(m.teamA, teamA) && isSameTeamName(m.teamB, teamB)) ||
+          (isSameTeamName(m.teamA, teamB) && isSameTeamName(m.teamB, teamA))) {
+        match = m;
+        break;
+      }
+    }
+  }
+  if (!match) return 0;
+
+  const winner = match.winner || '';
+  const winnerLower = winner.toLowerCase().trim();
+  const isDoubleWO = (
+    winnerLower === 'keduanya wo (0-0)' ||
+    winnerLower === 'keduanya wo' ||
+    winnerLower === 'double wo' ||
+    (winnerLower.includes('keduanya') && winnerLower.includes('wo'))
+  );
+  const isDraw = !isDoubleWO && (
+    winnerLower === 'imbang (0-0)' ||
+    winnerLower === 'imbang' ||
+    winnerLower === 'seri' ||
+    winnerLower.startsWith('imbang') ||
+    winnerLower.startsWith('seri')
+  );
+  if (isDoubleWO || isDraw) return 0;
+
+  const cleanWinner = winner.replace(/\(menang\s*wo\)/i, '').replace(/\(wo\)/i, '').replace(/menang\s*wo\s*:\s*/i, '').trim();
+  if (isSameTeamName(winner, teamA) || isSameTeamName(cleanWinner, teamA)) {
+    return -1; // teamA menang H2H -> peringkat lebih atas
+  }
+  if (isSameTeamName(winner, teamB) || isSameTeamName(cleanWinner, teamB)) {
+    return 1; // teamB menang H2H -> peringkat lebih atas
+  }
+
+  // Jika tanpa string winner, cek skor langsung (kecuali match 0-0 yang belum dimainkan)
+  if (match.scoreA !== null && match.scoreA !== undefined && match.scoreB !== null && match.scoreB !== undefined) {
+    if (Number(match.scoreA) === 0 && Number(match.scoreB) === 0 && !match.winner) return 0;
+    const isAFirst = isSameTeamName(match.teamA, teamA);
+    const scA = isAFirst ? Number(match.scoreA) : Number(match.scoreB);
+    const scB = isAFirst ? Number(match.scoreB) : Number(match.scoreA);
+    if (scA > scB) return -1;
+    if (scB > scA) return 1;
+  }
+
+  return 0;
+}
+
+// Komparator resmi urutan klasemen MLBB sesuai regulasi resmi Turnamen Yokke Squad:
 // 1. Point (Total Poin, besar ke kecil)
-// 2. Menang (Match Won / W, besar ke kecil)
-// 3. Kalah (Match Lost / L, kecil ke besar: makin sedikit kalah makin di atas)
-// 4. Total MVP Tim (besar ke kecil)
-// 5. Nama Tim (A-Z)
+// 2. Agregat Skor Game / Game Difference (Diff = Game Menang - Game Kalah, besar ke kecil)
+// 3. Head-to-Head / H2H (Jika Poin & Agregat sama, pemenang pertemuan langsung di grup lebih atas)
+// 4. Menang (Match Won / W, besar ke kecil)
+// 5. Kalah (Match Lost / L, kecil ke besar: makin sedikit kalah makin di atas)
+// 6. Total MVP Tim (besar ke kecil)
+// 7. Nama Tim (A-Z)
 function compareMLBBTeams(a, b) {
+  const gName = arguments[2] || a.gName || b.gName;
+
   const ptsA = parseInt(a.pts, 10) || 0;
   const ptsB = parseInt(b.pts, 10) || 0;
   if (ptsB !== ptsA) return ptsB - ptsA;
+
+  // 2. Agregat Skor Game (Selisih Game Won - Game Lost)
+  const diffA = (a.diff !== undefined) ? parseInt(a.diff, 10) : ((parseInt(a.gameWon, 10) || 0) - (parseInt(a.gameLost, 10) || 0));
+  const diffB = (b.diff !== undefined) ? parseInt(b.diff, 10) : ((parseInt(b.gameWon, 10) || 0) - (parseInt(b.gameLost, 10) || 0));
+  if (diffB !== diffA) return diffB - diffA;
+
+  // 3. Head-to-Head (H2H direct match antar kedua tim dalam grup)
+  if (typeof getMLBBHeadToHeadWinner === 'function') {
+    const h2h = getMLBBHeadToHeadWinner(a.name, b.name, gName);
+    if (h2h !== 0) return h2h;
+  }
 
   const winA = parseInt(a.win, 10) || 0;
   const winB = parseInt(b.win, 10) || 0;
@@ -4468,6 +4543,10 @@ function compareMLBBTeams(a, b) {
 function getSortedGroupTeams(gName) {
   const teams = groupStageData[gName] || [];
   teams.forEach(t => {
+    t.gName = gName;
+    if (t.diff === undefined) {
+      t.diff = (parseInt(t.gameWon, 10) || 0) - (parseInt(t.gameLost, 10) || 0);
+    }
     let mvpCount = 0;
     for (const mId in groupMatchResults || {}) {
       const m = groupMatchResults[mId];
@@ -4486,7 +4565,7 @@ function getSortedGroupTeams(gName) {
     t.mvpCount = mvpCount;
   });
 
-  return [...teams].sort(compareMLBBTeams);
+  return [...teams].sort((a, b) => compareMLBBTeams(a, b, gName));
 }
 
 function initGroupPlayoff() {
@@ -4967,6 +5046,7 @@ function renderGroupStageUI() {
                 <th style="text-align:center;width:45px;" title="Pertandingan Dimainkan">Match</th>
                 <th style="text-align:center;">M</th>
                 <th style="text-align:center;">K</th>
+                <th style="text-align:center;width:60px;" title="Agregat Game (Game Menang - Game Kalah)">Agregat</th>
                 <th style="text-align:center;">Poin</th>
                 <th style="text-align:center;">⭐ MVP</th>
                 <th>Status</th>
@@ -4985,6 +5065,11 @@ function renderGroupStageUI() {
                   <input type="number" min="0" value="${t.lose}" style="width:45px;padding:0.2rem;text-align:center;" onchange="updateGroupRecord('${gName}', ${origIdx}, 'lose', this.value)">
                 ` : t.lose;
 
+                const diffVal = (t.diff !== undefined) ? t.diff : ((t.gameWon || 0) - (t.gameLost || 0));
+                const diffSign = diffVal > 0 ? `+${diffVal}` : `${diffVal}`;
+                const diffColor = diffVal > 0 ? 'var(--yokke-green)' : (diffVal < 0 ? '#f87171' : 'var(--text-muted)');
+                const gameDetail = `${t.gameWon || 0}-${t.gameLost || 0}`;
+
                 return `
                   <tr style="${isQ ? 'background:rgba(6,214,160,0.1);font-weight:bold;' : ''}">
                     <td>
@@ -4996,6 +5081,10 @@ function renderGroupStageUI() {
                     <td style="text-align:center;font-weight:700;color:#cbd5e1;">${t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0))}</td>
                     <td style="text-align:center;">${winCtrl}</td>
                     <td style="text-align:center;">${loseCtrl}</td>
+                    <td style="text-align:center;" title="Game: ${t.gameWon || 0}M - ${t.gameLost || 0}K (Selisih Game: ${diffSign})">
+                      <span style="font-weight:800; color:${diffColor};">${diffSign}</span>
+                      <div style="font-size:0.68rem; color:var(--text-muted);">${gameDetail}</div>
+                    </td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:700;">${t.mvpCount || 0}</td>
                     <td>${
@@ -5401,7 +5490,11 @@ function getGroupFixtures(gName, dayFilter = null) {
     let scoreA = null;
     let scoreB = null;
     if (saved.scoreA !== undefined && saved.scoreA !== null && saved.scoreB !== undefined && saved.scoreB !== null) {
-      if (saved.teamA === p.teamA) {
+      if (Number(saved.scoreA) === 0 && Number(saved.scoreB) === 0 && !saved.winner) {
+        // Pertandingan belum dimainkan (bukan hasil WO ganda / draw resmi)
+        scoreA = null;
+        scoreB = null;
+      } else if (saved.teamA === p.teamA) {
         scoreA = saved.scoreA;
         scoreB = saved.scoreB;
       } else if (saved.teamA === p.teamB) {
@@ -5431,7 +5524,8 @@ function getGroupFixtures(gName, dayFilter = null) {
       mvpPlayer: saved.mvpPlayer || null,
       mvpHero: saved.mvpHero || null,
       mvpTeam: saved.mvpTeam || null,
-      gameMvps: saved.gameMvps || null
+      gameMvps: saved.gameMvps || null,
+      verifiedPlayers: saved.verifiedPlayers || {}
     });
   });
 
@@ -5638,7 +5732,7 @@ function saveGroupFixtureScore(matchId, gName, teamA, teamB) {
 // --- MODAL PEMILIH MVP INTERAKTIF (ONE-CLICK ROSTER & META HERO SELECTOR) ---
 const MLBB_POPULAR_MVP_HEROES = [
   "Ling", "Fanny", "Hayabusa", "Nolan", "Suyou", "Beatrix", "Claude", "Harith", 
-  "Chou", "Fredrinn", "Valentina", "Novaria", "Tigreal", "Arlott", "Roger", "Cici", "Zhuxin"
+  "Chou", "Fredrinn", "Valentina", "Novaria", "Tigreal", "Arlott", "Roger", "Cici", "Zhuxin", "Hirara", "Lukas"
 ];
 
 let currentMvpModalContext = {
@@ -6363,6 +6457,262 @@ function promptGroupMatchMVP(matchId, teamA, teamB, gName = '') {
   openMLBBGroupMvpModal(matchId, gName, teamA, teamB, null, null);
 }
 
+// --- MODAL VERIFIKASI PEMAIN PERTANDINGAN (MATCH ROSTER VERIFICATION) ---
+let currentMatchVerifyContext = {
+  matchId: null,
+  canonId: null,
+  gName: null,
+  teamA: null,
+  teamB: null
+};
+
+function openMatchPlayerVerifyModal(matchId, gName, teamA, teamB) {
+  if (!gName || typeof gName !== 'string' || gName.trim() === '') {
+    gName = (typeof findGroupNameForTeam === 'function' && (findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB))) || '';
+  }
+  const canonId = typeof getCanonicalGroupMatchId === 'function' ? getCanonicalGroupMatchId(gName, teamA, teamB) : matchId;
+
+  if (typeof groupMatchResults === 'undefined' || !groupMatchResults) {
+    groupMatchResults = {};
+  }
+  if (!groupMatchResults[canonId]) {
+    groupMatchResults[canonId] = {
+      matchId: canonId,
+      gName: gName,
+      teamA: teamA,
+      teamB: teamB,
+      scoreA: null,
+      scoreB: null,
+      winner: null,
+      verifiedPlayers: {}
+    };
+  }
+  if (!groupMatchResults[canonId].verifiedPlayers || typeof groupMatchResults[canonId].verifiedPlayers !== 'object') {
+    groupMatchResults[canonId].verifiedPlayers = {};
+  }
+
+  currentMatchVerifyContext = {
+    matchId: canonId,
+    canonId: canonId,
+    gName: gName,
+    teamA: teamA,
+    teamB: teamB
+  };
+
+  renderMatchPlayerVerifyModalContent();
+  const modal = document.getElementById('matchPlayerVerifyModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeMatchPlayerVerifyModal() {
+  const modal = document.getElementById('matchPlayerVerifyModal');
+  if (modal) modal.classList.remove('active');
+  saveState();
+  if (typeof renderGroupStageUI === 'function') renderGroupStageUI();
+  if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+}
+
+function toggleMatchPlayerVerify(playerKey) {
+  if (!isAdmin) {
+    alert('Hanya panitia / admin yang berwenang mengubah status verifikasi pemain.');
+    return;
+  }
+  const canonId = currentMatchVerifyContext.canonId;
+  if (!canonId || !groupMatchResults[canonId]) return;
+  if (!groupMatchResults[canonId].verifiedPlayers) groupMatchResults[canonId].verifiedPlayers = {};
+
+  const cur = !!groupMatchResults[canonId].verifiedPlayers[playerKey];
+  groupMatchResults[canonId].verifiedPlayers[playerKey] = !cur;
+  saveState();
+  renderMatchPlayerVerifyModalContent();
+  if (typeof renderGroupStageUI === 'function') renderGroupStageUI();
+  if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+}
+
+function verifyAllMatchPlayers(teamName, shouldVerify = true) {
+  if (!isAdmin) {
+    alert('Hanya panitia / admin yang berwenang mengubah status verifikasi pemain.');
+    return;
+  }
+  const canonId = currentMatchVerifyContext.canonId;
+  if (!canonId || !groupMatchResults[canonId]) return;
+  if (!groupMatchResults[canonId].verifiedPlayers) groupMatchResults[canonId].verifiedPlayers = {};
+
+  const teamPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(teamName) : null;
+  const roster = (teamPart && Array.isArray(teamPart.roster)) ? teamPart.roster : [];
+  roster.forEach(m => {
+    const rawKey = `${teamName}_${m.empId || m.name || m.nickname}`;
+    const pKey = rawKey.replace(/[\s\(\)\[\]]+/g, '_');
+    groupMatchResults[canonId].verifiedPlayers[pKey] = shouldVerify;
+  });
+  saveState();
+  renderMatchPlayerVerifyModalContent();
+  if (typeof renderGroupStageUI === 'function') renderGroupStageUI();
+  if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+}
+
+function renderMatchPlayerVerifyModalContent() {
+  const ctx = currentMatchVerifyContext;
+  if (!ctx || !ctx.canonId) return;
+
+  const subtitleEl = document.getElementById('matchVerifySubtitle');
+  if (subtitleEl) {
+    subtitleEl.innerText = `${ctx.gName ? `${ctx.gName} • ` : ''}${ctx.teamA} vs ${ctx.teamB}`;
+  }
+
+  const teamAPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(ctx.teamA) : null;
+  const teamBPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(ctx.teamB) : null;
+
+  const rosterA = (teamAPart && Array.isArray(teamAPart.roster)) ? teamAPart.roster : [];
+  const rosterB = (teamBPart && Array.isArray(teamBPart.roster)) ? teamBPart.roster : [];
+
+  const verifiedMap = groupMatchResults[ctx.canonId]?.verifiedPlayers || {};
+
+  let countA = 0;
+  rosterA.forEach(m => {
+    const pKey = `${ctx.teamA}_${m.empId || m.name || m.nickname}`.replace(/[\s\(\)\[\]]+/g, '_');
+    if (verifiedMap[pKey]) countA++;
+  });
+
+  let countB = 0;
+  rosterB.forEach(m => {
+    const pKey = `${ctx.teamB}_${m.empId || m.name || m.nickname}`.replace(/[\s\(\)\[\]]+/g, '_');
+    if (verifiedMap[pKey]) countB++;
+  });
+
+  // Summary Bar
+  const summaryEl = document.getElementById('matchVerifySummaryBar');
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <span style="font-size:0.82rem; font-weight:700; color:var(--yokke-cyan);">🛡️ Status Verifikasi Roster:</span>
+        <span class="badge" style="background:${countA >= 5 ? 'rgba(6,214,160,0.18)' : 'rgba(255,183,3,0.15)'}; color:${countA >= 5 ? 'var(--yokke-green)' : 'var(--yokke-gold)'}; border:1px solid rgba(255,255,255,0.15); font-size:0.75rem; padding:3px 8px;">
+          ${escapeHtml(ctx.teamA)}: <strong>${countA}/${rosterA.length}</strong> Terverifikasi ${countA >= 5 ? '✅' : ''}
+        </span>
+        <span class="badge" style="background:${countB >= 5 ? 'rgba(6,214,160,0.18)' : 'rgba(255,183,3,0.15)'}; color:${countB >= 5 ? 'var(--yokke-green)' : 'var(--yokke-gold)'}; border:1px solid rgba(255,255,255,0.15); font-size:0.75rem; padding:3px 8px;">
+          ${escapeHtml(ctx.teamB)}: <strong>${countB}/${rosterB.length}</strong> Terverifikasi ${countB >= 5 ? '✅' : ''}
+        </span>
+      </div>
+      ${isAdmin ? `
+        <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan);" onclick="verifyAllMatchPlayers('${escapeHtml(ctx.teamA).replace(/'/g, "\\'")}', true)">
+            ✅ Verifikasi Semua ${escapeHtml(ctx.teamA)}
+          </button>
+          <button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; border-color:var(--yokke-gold); color:var(--yokke-gold);" onclick="verifyAllMatchPlayers('${escapeHtml(ctx.teamB).replace(/'/g, "\\'")}', true)">
+            ✅ Verifikasi Semua ${escapeHtml(ctx.teamB)}
+          </button>
+        </div>
+      ` : ''}
+    `;
+  }
+
+  // Helper untuk merender kolom roster tiap tim
+  function renderTeamRosterColumn(teamName, roster, count) {
+    let html = `
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.85rem; display:flex; flex-direction:column; gap:0.6rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.5rem; margin-bottom:0.25rem;">
+          <div>
+            <h4 style="margin:0; font-size:0.95rem; color:var(--yokke-gold); display:flex; align-items:center; gap:0.35rem;">
+              <span>⚔️</span> <span>${escapeHtml(teamName)}</span>
+            </h4>
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
+              ${roster.length} pemain terdaftar • ${count} siap bertanding
+            </div>
+          </div>
+          <span class="badge" style="font-size:0.7rem; background:${count >= 5 ? 'rgba(6,214,160,0.15)' : 'rgba(255,255,255,0.05)'}; color:${count >= 5 ? 'var(--yokke-green)' : 'var(--text-muted)'};">
+            ${count >= 5 ? '✅ Lineup Lengkap' : `${count}/5 Siap`}
+          </span>
+        </div>
+    `;
+
+    if (roster.length === 0) {
+      html += `
+        <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.8rem; background:rgba(0,0,0,0.2); border-radius:6px;">
+          Belum ada data roster pemain untuk tim ini.
+        </div>
+      </div>
+      `;
+      return html;
+    }
+
+    roster.forEach(m => {
+      const pKey = `${teamName}_${m.empId || m.name || m.nickname}`.replace(/[\s\(\)\[\]]+/g, '_');
+      const safePKey = pKey.replace(/'/g, "\\'");
+      const isVerified = !!verifiedMap[pKey];
+
+      const cardSrc = m.idCard || (typeof findIdCardByEmpIdOrName === 'function' ? findIdCardByEmpIdOrName(m.empId, m.name) : '');
+      const formattedCard = cardSrc ? (typeof formatDriveImageUrl === 'function' ? formatDriveImageUrl(cardSrc) : cardSrc) : '';
+
+      const nipLabel = (m.empId && m.empId !== '-') ? m.empId : '-';
+      const safeReal = (m.name || '').replace(/'/g, "\\'");
+      const safeCard = (cardSrc || '').replace(/'/g, "\\'");
+
+      html += `
+        <div style="background: ${isVerified ? 'rgba(6,214,160,0.06)' : 'rgba(0,0,0,0.25)'}; border: 1px solid ${isVerified ? 'rgba(6,214,160,0.3)' : 'rgba(255,255,255,0.06)'}; border-radius: 6px; padding: 0.6rem 0.75rem; display:flex; align-items:center; justify-content:space-between; gap:0.6rem;">
+          <div style="display:flex; align-items:center; gap:0.65rem; min-width:0; flex:1;">
+            ${cardSrc ? `
+              <div style="width:48px; height:48px; flex-shrink:0; cursor:pointer; border-radius:6px; overflow:hidden; border:1px solid rgba(0,210,255,0.3); background:#0f172a; position:relative;" onclick="openIdCardLightbox('${safeCard}', '🪪 ID Card: ${safeReal} (NIP: ${nipLabel})')" title="Klik untuk memperbesar ID Card">
+                <img src="${formattedCard}" alt="ID Card" style="width:100%; height:100%; object-fit:cover;">
+                <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); font-size:0.55rem; text-align:center; color:var(--yokke-cyan); line-height:1.2;">Lihat</span>
+              </div>
+            ` : `
+              <div style="width:48px; height:48px; flex-shrink:0; border-radius:6px; border:1px dashed rgba(255,255,255,0.15); background:rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.58rem; text-align:center; padding:2px;">
+                No ID Card
+              </div>
+            `}
+            <div style="min-width:0; flex:1;">
+              <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
+                <span style="font-weight:800; font-size:0.88rem; color:var(--yokke-gold); word-break:break-word;">
+                  ${escapeHtml(m.nickname || m.name || '-')}
+                </span>
+                <span class="badge" style="font-size:0.62rem; padding:1px 5px; background:rgba(0,210,255,0.1); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.25);">
+                  ${m.isCaptain ? '👑 Kapten' : (m.role || 'Pemain')}
+                </span>
+                ${m.isOrganik !== undefined ? `
+                  <span style="font-size:0.62rem; color:${m.isOrganik ? 'var(--yokke-green)' : 'var(--text-muted)'};">
+                    ${m.isOrganik ? '🏢 Organik' : '👤 Non-Organik'}
+                  </span>
+                ` : ''}
+              </div>
+              <div style="font-size:0.74rem; color:#cbd5e1; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                ${escapeHtml(m.name || '-')} • <code style="font-size:0.7rem;">NIP: ${escapeHtml(nipLabel)}</code>
+              </div>
+              <div style="font-size:0.72rem; color:var(--text-muted); margin-top:1px;">
+                ID Game: <strong style="color:#fff;">${escapeHtml(m.gameId || '-')}</strong>
+              </div>
+            </div>
+          </div>
+          <div>
+            ${isAdmin ? `
+              <button type="button" class="btn ${isVerified ? 'btn-primary' : 'btn-outline'}" style="font-size:0.72rem; padding:0.3rem 0.6rem; ${isVerified ? 'background:var(--yokke-green); border-color:var(--yokke-green); color:#000; font-weight:700;' : 'color:var(--text-muted);'}" onclick="toggleMatchPlayerVerify('${safePKey}')">
+                ${isVerified ? '✅ Siap Main' : '⬜ Belum Cek'}
+              </button>
+            ` : `
+              <span class="badge" style="font-size:0.7rem; background:${isVerified ? 'rgba(6,214,160,0.15)' : 'rgba(255,255,255,0.05)'}; color:${isVerified ? 'var(--yokke-green)' : 'var(--text-muted)'}; border:1px solid ${isVerified ? 'rgba(6,214,160,0.3)' : 'rgba(255,255,255,0.1)'};">
+                ${isVerified ? '✅ Siap Main' : '⏳ Belum'}
+              </span>
+            `}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  const container = document.getElementById('matchVerifyRosterContainer');
+  if (container) {
+    container.innerHTML = `
+      ${renderTeamRosterColumn(ctx.teamA, rosterA, countA)}
+      ${renderTeamRosterColumn(ctx.teamB, rosterB, countB)}
+    `;
+  }
+}
+
 function resetGroupMatchScore(matchId) {
   if (!isAdmin) return;
   const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
@@ -6392,10 +6742,10 @@ function recalculateGroupStandingsFromFixtures() {
     for (const mId in groupMatchResults) {
       const m = groupMatchResults[mId];
       if (!m || m.gName !== gName || !m.teamA || !m.teamB) continue;
-      // Pertandingan dihitung jika memiliki pemenang resmi ATAU skor valid terisi
+      // Pertandingan dihitung jika memiliki pemenang resmi ATAU skor valid terisi (kecuali 0-0 tanpa pemenang / belum main)
       const hasWinner = !!m.winner;
       const hasScore = (m.scoreA !== null && m.scoreA !== undefined && m.scoreB !== null && m.scoreB !== undefined);
-      if (!hasWinner && !hasScore) continue;
+      if (!hasWinner && (!hasScore || (Number(m.scoreA) === 0 && Number(m.scoreB) === 0))) continue;
 
       const pairKey = getCanonicalGroupMatchId(gName, m.teamA, m.teamB);
       if (!seenPairs.has(pairKey)) {
@@ -6409,6 +6759,8 @@ function recalculateGroupStandingsFromFixtures() {
       let loseCount = 0;
       let drawCount = 0;
       let matchCount = 0;
+      let gameWonCount = 0;
+      let gameLostCount = 0;
 
       uniqueGroupMatches.forEach(m => {
         const isTeamA = isSameTeamName(m.teamA, t.name);
@@ -6443,25 +6795,51 @@ function recalculateGroupStandingsFromFixtures() {
           isSameTeamName(cleanWinner, t.name)
         );
 
+        const scThis = isTeamA ? m.scoreA : m.scoreB;
+        const scOpp = isTeamA ? m.scoreB : m.scoreA;
+        const hasValidGameScores = (scThis !== null && scThis !== undefined && scOpp !== null && scOpp !== undefined);
+
         if (isDoubleWO) {
-          // Keduanya WO: KEDUA TIM DIANGGAP KALAH (1x Kalah, 0 Poin, +1 Match)
+          // Keduanya WO: KEDUA TIM DIANGGAP KALAH (1x Kalah, 0 Poin, +1 Match, Game 0-0)
           loseCount++;
+          gameWonCount += 0;
+          gameLostCount += 0;
         } else if (isDraw) {
           // Skor imbang / seri
           drawCount++;
+          if (hasValidGameScores) {
+            gameWonCount += Number(scThis) || 0;
+            gameLostCount += Number(scOpp) || 0;
+          }
         } else if (isWinnerThisTeam) {
           // Tim pemenang (termasuk menang WO karena lawan WO)
           winCount++;
+          if (hasValidGameScores && (Number(scThis) > 0 || Number(scOpp) > 0)) {
+            gameWonCount += Number(scThis) || 0;
+            gameLostCount += Number(scOpp) || 0;
+          } else {
+            // Default kemenangan BO3
+            gameWonCount += 2;
+            gameLostCount += 0;
+          }
         } else if (m.winner) {
-          // Tim lawan (atau tim yang WO sendiri): DIANGGAP KALAH (1x Kalah, 0 Poin, +1 Match)
+          // Tim lawan (atau tim yang WO sendiri): DIANGGAP KALAH
           loseCount++;
+          if (hasValidGameScores && (Number(scThis) > 0 || Number(scOpp) > 0)) {
+            gameWonCount += Number(scThis) || 0;
+            gameLostCount += Number(scOpp) || 0;
+          } else {
+            // Default kekalahan BO3
+            gameWonCount += 0;
+            gameLostCount += 2;
+          }
         } else {
           // Fallback kalkulasi skor langsung jika ada
-          const scThis = isTeamA ? m.scoreA : m.scoreB;
-          const scOpp = isTeamA ? m.scoreB : m.scoreA;
-          if (scThis > scOpp) winCount++;
-          else if (scOpp > scThis) loseCount++;
+          if (Number(scThis) > Number(scOpp)) winCount++;
+          else if (Number(scOpp) > Number(scThis)) loseCount++;
           else drawCount++;
+          gameWonCount += Number(scThis) || 0;
+          gameLostCount += Number(scOpp) || 0;
         }
       });
 
@@ -6469,7 +6847,11 @@ function recalculateGroupStandingsFromFixtures() {
       t.lose = loseCount;
       t.draw = drawCount;
       t.matchCount = matchCount;
+      t.gameWon = gameWonCount;
+      t.gameLost = gameLostCount;
+      t.diff = gameWonCount - gameLostCount;
       t.pts = winCount * 2;
+      t.gName = gName;
     });
   }
 }
@@ -6694,6 +7076,8 @@ function renderGroupFixturesUI() {
 
         const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cleanWinner, f.teamA));
         const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cleanWinner, f.teamB));
+        const vMap = (f.verifiedPlayers && typeof f.verifiedPlayers === 'object') ? f.verifiedPlayers : {};
+        const verifiedCount = Object.values(vMap).filter(Boolean).length;
 
         html += `
           <div class="group-match-card">
@@ -6720,6 +7104,14 @@ function renderGroupFixturesUI() {
               <span style="font-weight:800; font-size:1rem; color:${f.scoreB !== null ? 'var(--yokke-gold)' : 'var(--text-muted)'};">${f.scoreB !== null ? f.scoreB : '-'}</span>
             </div>
             ${formatMatchMvpDisplayHtml(f)}
+            <div style="margin-top:0.45rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.35rem;">
+              <span style="font-size:0.7rem; color:${verifiedCount > 0 ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:700;">
+                ${verifiedCount > 0 ? `🛡️ ${verifiedCount} Terverifikasi` : '🛡️ Roster Belum Dicek'}
+              </span>
+              <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 7px; color:var(--yokke-cyan); border-color:rgba(0,210,255,0.4); display:inline-flex; align-items:center; gap:0.25rem;" onclick="openMatchPlayerVerifyModal('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}')">
+                <span>🛡️</span> <span>Verifikasi Pemain</span>
+              </button>
+            </div>
             ${isAdmin ? `
               <div class="match-admin-scores" style="margin-top:0.4rem; display:flex; align-items:center; gap:0.25rem; flex-wrap:wrap;">
                 <span style="font-size:0.7rem; color:var(--text-muted);">Skor:</span>
@@ -9150,13 +9542,14 @@ function renderMLBBDetailPanelContent(nodeKey) {
           <table>
             <thead>
               <tr>
-                <th style="width:40px;">#</th>
+                <th style="width:35px;">#</th>
                 <th>Nama Tim</th>
                 <th style="text-align:center;width:45px;" title="Pertandingan Dimainkan">Match</th>
-                <th style="text-align:center;width:45px;">M</th>
-                <th style="text-align:center;width:45px;">K</th>
-                <th style="text-align:center;width:55px;">Poin</th>
-                <th style="text-align:center;width:60px;">⭐ MVP</th>
+                <th style="text-align:center;width:40px;">M</th>
+                <th style="text-align:center;width:40px;">K</th>
+                <th style="text-align:center;width:60px;" title="Agregat Game (Game Menang - Game Kalah)">Agregat</th>
+                <th style="text-align:center;width:50px;">Poin</th>
+                <th style="text-align:center;width:55px;">⭐ MVP</th>
                 <th>Kelolosan</th>
               </tr>
             </thead>
@@ -9170,6 +9563,11 @@ function renderMLBBDetailPanelContent(nodeKey) {
                   <input type="number" min="0" value="${t.lose}" style="width:42px;padding:0.2rem;text-align:center;" onchange="updateGroupRecord('${gName}', ${origIdx}, 'lose', this.value); renderMLBBInteractiveHubUI();">
                 ` : t.lose;
 
+                const diffVal = (t.diff !== undefined) ? t.diff : ((t.gameWon || 0) - (t.gameLost || 0));
+                const diffSign = diffVal > 0 ? `+${diffVal}` : `${diffVal}`;
+                const diffColor = diffVal > 0 ? 'var(--yokke-green)' : (diffVal < 0 ? '#f87171' : 'var(--text-muted)');
+                const gameDetail = `${t.gameWon || 0}-${t.gameLost || 0}`;
+
                 return `
                   <tr style="${idx < 2 ? 'background:rgba(0,210,255,0.08);' : (idx === 2 ? 'background:rgba(255,183,3,0.06);' : '')}">
                     <td style="font-weight:700;color:var(--text-muted);">${idx + 1}</td>
@@ -9177,6 +9575,10 @@ function renderMLBBDetailPanelContent(nodeKey) {
                     <td style="text-align:center;font-weight:700;color:#cbd5e1;">${t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0))}</td>
                     <td style="text-align:center;">${winCtrl}</td>
                     <td style="text-align:center;">${loseCtrl}</td>
+                    <td style="text-align:center;" title="Game: ${t.gameWon || 0}M - ${t.gameLost || 0}K (Selisih Game: ${diffSign})">
+                      <span style="font-weight:800; color:${diffColor};">${diffSign}</span>
+                      <div style="font-size:0.68rem; color:var(--text-muted);">${gameDetail}</div>
+                    </td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:700;">${t.mvpCount || 0}</td>
                     <td>${
@@ -9202,7 +9604,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
     } else {
       content += '<div style="display:flex;flex-direction:column;gap:0.75rem;">';
       fixtures.forEach((f, fIdx) => {
-        const hasScore = f.scoreA !== null && f.scoreB !== null;
+        const hasScore = f.winner !== null || (f.scoreA !== null && f.scoreB !== null && (Number(f.scoreA) > 0 || Number(f.scoreB) > 0));
         const winner = f.winner;
         const winnerLower = (f.winner || '').toLowerCase().trim();
         const isDoubleWO = (
@@ -9221,6 +9623,8 @@ function renderMLBBDetailPanelContent(nodeKey) {
 
         const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cleanWinner, f.teamA));
         const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cleanWinner, f.teamB));
+        const vMap = (f.verifiedPlayers && typeof f.verifiedPlayers === 'object') ? f.verifiedPlayers : {};
+        const verifiedCount = Object.values(vMap).filter(Boolean).length;
 
         content += `
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
@@ -9259,6 +9663,14 @@ function renderMLBBDetailPanelContent(nodeKey) {
               </div>
             </div>
             ${formatMatchMvpDisplayHtml(f)}
+            <div style="margin-top:0.45rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.35rem;">
+              <span style="font-size:0.7rem; color:${verifiedCount > 0 ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:700;">
+                ${verifiedCount > 0 ? `🛡️ ${verifiedCount} Pemain Terverifikasi` : '🛡️ Belum Diverifikasi'}
+              </span>
+              <button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; color:var(--yokke-cyan); border-color:rgba(0,210,255,0.4); display:inline-flex; align-items:center; gap:0.3rem;" onclick="openMatchPlayerVerifyModal('${f.matchId}', '${escapeHtml(gName).replace(/'/g, "\\'")}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}')">
+                <span>🛡️</span> <span>Verifikasi Pemain</span>
+              </button>
+            </div>
           </div>
         `;
       });
