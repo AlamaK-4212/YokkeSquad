@@ -1773,9 +1773,27 @@ function syncDedicatedTournamentSheets(ss, payload) {
   });
 
   Object.keys(groupData).forEach(gName => {
-    const sorted = (groupData[gName] || []).slice().sort((a, b) => (b.pts || 0) - (a.pts || 0));
+    const sorted = (groupData[gName] || []).slice().sort((a, b) => {
+      const ptsA = parseInt(a.pts, 10) || 0;
+      const ptsB = parseInt(b.pts, 10) || 0;
+      if (ptsB !== ptsA) return ptsB - ptsA;
+
+      const winA = parseInt(a.win, 10) || 0;
+      const winB = parseInt(b.win, 10) || 0;
+      if (winB !== winA) return winB - winA;
+
+      const loseA = parseInt(a.lose, 10) || 0;
+      const loseB = parseInt(b.lose, 10) || 0;
+      if (loseA !== loseB) return loseA - loseB;
+
+      const mvpA = parseInt(teamMvpCount[a.name] || a.mvpCount, 10) || 0;
+      const mvpB = parseInt(teamMvpCount[b.name] || b.mvpCount, 10) || 0;
+      if (mvpB !== mvpA) return mvpB - mvpA;
+
+      return (a.name || '').localeCompare(b.name || '');
+    });
     sorted.forEach((t, idx) => {
-      const mp = (parseInt(t.win) || 0) + (parseInt(t.lose) || 0);
+      const mp = t.matchCount !== undefined ? t.matchCount : ((parseInt(t.win) || 0) + (parseInt(t.lose) || 0) + (parseInt(t.draw) || 0));
       const is8Group = Object.keys(groupData).length === 8;
       let status = 'Menunggu Match';
       if (t.pts > 0) {
@@ -1936,16 +1954,32 @@ function syncDedicatedTournamentSheets(ss, payload) {
     const list = (lobbies[lobbyKey] || []).slice();
     if (list.length === 0) return;
 
-    // Sort sesuai aturan Tie-Breaker resmi
+    // Sort sesuai aturan Tie-Breaker resmi MCGG:
+    // Total Poin (desc) -> Juara 1 / MVP Ronde (desc) -> Top 4 (desc) -> Pengurangan Poin / Penalti (makin sedikit kena pengurangan di atas: deductA - deductB) -> Breakdown Posisi Finish 1-8 -> Nama (A-Z)
     list.sort((a, b) => {
-      if ((b.total || 0) !== (a.total || 0)) return (b.total || 0) - (a.total || 0);
-      const aTop4 = [a.r1, a.r2, a.r3].filter(r => r >= 1 && r <= 4).length;
-      const bTop4 = [b.r1, b.r2, b.r3].filter(r => r >= 1 && r <= 4).length;
+      const totA = Number(a.total) || 0;
+      const totB = Number(b.total) || 0;
+      if (totB !== totA) return totB - totA;
+
+      const aRank1 = [a.r1, a.r2, a.r3].filter(r => parseInt(r, 10) === 1).length;
+      const bRank1 = [b.r1, b.r2, b.r3].filter(r => parseInt(r, 10) === 1).length;
+      if (bRank1 !== aRank1) return bRank1 - aRank1;
+
+      const aTop4 = [a.r1, a.r2, a.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
+      const bTop4 = [b.r1, b.r2, b.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
       if (bTop4 !== aTop4) return bTop4 - aTop4;
-      if ((b.penalty || 0) !== (a.penalty || 0)) return (b.penalty || 0) - (a.penalty || 0);
-      const aWin = [a.r1, a.r2, a.r3].filter(r => r === 1).length;
-      const bWin = [b.r1, b.r2, b.r3].filter(r => r === 1).length;
-      return bWin - aWin;
+
+      const deductA = Math.abs(Number(a.penalty) || 0);
+      const deductB = Math.abs(Number(b.penalty) || 0);
+      if (deductA !== deductB) return deductA - deductB;
+
+      for (let r = 1; r <= 8; r++) {
+        const aRCount = [a.r1, a.r2, a.r3].filter(rank => parseInt(rank, 10) === r).length;
+        const bRCount = [b.r1, b.r2, b.r3].filter(rank => parseInt(rank, 10) === r).length;
+        if (bRCount !== aRCount) return bRCount - aRCount;
+      }
+
+      return (a.name || '').localeCompare(b.name || '');
     });
 
     list.forEach((p, idx) => {

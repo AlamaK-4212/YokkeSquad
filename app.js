@@ -3853,9 +3853,9 @@ function isAllMLBBGroupMatchesFinished() {
 
 function evaluateMLBBTieBreaker() {
   for (const gName in groupStageData) {
-    const sorted = [...groupStageData[gName]].sort((a, b) => b.pts - a.pts);
-    // Cek apakah peringkat 2 dan 3 memiliki poin yang sama (di batas kelolosan Top 2)
-    if (sorted.length >= 3 && sorted[1].pts === sorted[2].pts && sorted[1].pts > 0) {
+    const sorted = getSortedGroupTeams(gName);
+    // Cek apakah peringkat 2 dan 3 memiliki seluruh kriteria poin, menang, kalah, dan MVP yang persis sama (di batas kelolosan Top 2)
+    if (sorted.length >= 3 && sorted[1].pts === sorted[2].pts && sorted[1].win === sorted[2].win && sorted[1].lose === sorted[2].lose && (sorted[1].mvpCount || 0) === (sorted[2].mvpCount || 0) && sorted[1].pts > 0) {
       const prevTB = tournamentStageState.mlbb.tieBreaker;
       if (prevTB && prevTB.group === gName && prevTB.winner) {
         return false; // Tie-breaker sudah diselesaikan
@@ -4438,6 +4438,57 @@ function updateGroupRecord(gName, idx, field, val) {
   renderGroupStageUI();
 }
 
+// Komparator resmi urutan klasemen MLBB sesuai regulasi:
+// 1. Point (Total Poin, besar ke kecil)
+// 2. Menang (Match Won / W, besar ke kecil)
+// 3. Kalah (Match Lost / L, kecil ke besar: makin sedikit kalah makin di atas)
+// 4. Total MVP Tim (besar ke kecil)
+// 5. Nama Tim (A-Z)
+function compareMLBBTeams(a, b) {
+  const ptsA = parseInt(a.pts, 10) || 0;
+  const ptsB = parseInt(b.pts, 10) || 0;
+  if (ptsB !== ptsA) return ptsB - ptsA;
+
+  const winA = parseInt(a.win, 10) || 0;
+  const winB = parseInt(b.win, 10) || 0;
+  if (winB !== winA) return winB - winA;
+
+  const loseA = parseInt(a.lose, 10) || 0;
+  const loseB = parseInt(b.lose, 10) || 0;
+  if (loseA !== loseB) return loseA - loseB;
+
+  const mvpA = parseInt(a.mvpCount, 10) || 0;
+  const mvpB = parseInt(b.mvpCount, 10) || 0;
+  if (mvpB !== mvpA) return mvpB - mvpA;
+
+  return (a.name || '').localeCompare(b.name || '');
+}
+
+// Helper untuk mengambil daftar tim terurut di suatu grup MLBB dengan kalkulasi MVP terkini
+function getSortedGroupTeams(gName) {
+  const teams = groupStageData[gName] || [];
+  teams.forEach(t => {
+    let mvpCount = 0;
+    for (const mId in groupMatchResults || {}) {
+      const m = groupMatchResults[mId];
+      if (m && m.gName === gName) {
+        if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+          m.gameMvps.forEach(gm => {
+            if (gm && gm.player && (gm.team === t.name || (!gm.team && (m.mvpTeam === t.name || m.winner === t.name)))) {
+              mvpCount++;
+            }
+          });
+        } else if (m.mvpPlayer && (m.mvpTeam === t.name || (!m.mvpTeam && m.winner === t.name))) {
+          mvpCount++;
+        }
+      }
+    }
+    t.mvpCount = mvpCount;
+  });
+
+  return [...teams].sort(compareMLBBTeams);
+}
+
 function initGroupPlayoff() {
   const gKeys = Object.keys(groupStageData);
   const numGroups = gKeys.length;
@@ -4446,14 +4497,14 @@ function initGroupPlayoff() {
     // 8 GRUP -> 16 BESAR DOUBLE ELIMINATION (5 HARI TURNAMEN)
     // Juara 1 masuk Upper Bracket (8 Tim)
     // Juara 2 masuk Lower Bracket (8 Tim)
-    const gA = [...(groupStageData['Grup A'] || [])].sort((a,b) => b.pts - a.pts);
-    const gB = [...(groupStageData['Grup B'] || [])].sort((a,b) => b.pts - a.pts);
-    const gC = [...(groupStageData['Grup C'] || [])].sort((a,b) => b.pts - a.pts);
-    const gD = [...(groupStageData['Grup D'] || [])].sort((a,b) => b.pts - a.pts);
-    const gE = [...(groupStageData['Grup E'] || [])].sort((a,b) => b.pts - a.pts);
-    const gF = [...(groupStageData['Grup F'] || [])].sort((a,b) => b.pts - a.pts);
-    const gG = [...(groupStageData['Grup G'] || [])].sort((a,b) => b.pts - a.pts);
-    const gH = [...(groupStageData['Grup H'] || [])].sort((a,b) => b.pts - a.pts);
+    const gA = getSortedGroupTeams('Grup A');
+    const gB = getSortedGroupTeams('Grup B');
+    const gC = getSortedGroupTeams('Grup C');
+    const gD = getSortedGroupTeams('Grup D');
+    const gE = getSortedGroupTeams('Grup E');
+    const gF = getSortedGroupTeams('Grup F');
+    const gG = getSortedGroupTeams('Grup G');
+    const gH = getSortedGroupTeams('Grup H');
 
     // Sesuai aturan baru: Juara 1 & 2 masuk UPPER BRACKET (16 Tim). Juara 3 masuk LOWER BRACKET (8 Tim).
     const a1 = gA[0]?.pts > 0 ? gA[0].name : (gA[0]?.name || 'Juara 1 Grup A');
@@ -4548,10 +4599,10 @@ function initGroupPlayoff() {
     ];
   } else if (numGroups === 4) {
     // 4 GRUP -> 8 BESAR (PEREMPAT FINAL -> SEMIFINAL -> GRAND FINAL)
-    const grpA = [...(groupStageData['Grup A'] || [])].sort((a,b) => b.pts - a.pts);
-    const grpB = [...(groupStageData['Grup B'] || [])].sort((a,b) => b.pts - a.pts);
-    const grpC = [...(groupStageData['Grup C'] || [])].sort((a,b) => b.pts - a.pts);
-    const grpD = [...(groupStageData['Grup D'] || [])].sort((a,b) => b.pts - a.pts);
+    const grpA = getSortedGroupTeams('Grup A');
+    const grpB = getSortedGroupTeams('Grup B');
+    const grpC = getSortedGroupTeams('Grup C');
+    const grpD = getSortedGroupTeams('Grup D');
 
     const a1 = grpA[0]?.pts > 0 ? grpA[0].name : (grpA[0]?.name || 'Juara Grup A');
     const a2 = grpA[1]?.pts > 0 ? grpA[1].name : (grpA[1]?.name || 'Runner-up Grup A');
@@ -4582,8 +4633,8 @@ function initGroupPlayoff() {
     ];
   } else {
     // 2 GRUP -> 4 BESAR (SEMIFINAL -> GRAND FINAL)
-    const grpA = [...(groupStageData['Grup A'] || [])].sort((a,b) => b.pts - a.pts);
-    const grpB = [...(groupStageData['Grup B'] || [])].sort((a,b) => b.pts - a.pts);
+    const grpA = getSortedGroupTeams('Grup A');
+    const grpB = getSortedGroupTeams('Grup B');
 
     const a1 = grpA[0]?.pts > 0 ? grpA[0].name : (grpA[0]?.name || 'Juara Grup A');
     const a2 = grpA[1]?.pts > 0 ? grpA[1].name : (grpA[1]?.name || 'Runner-up Grup A');
@@ -4900,7 +4951,7 @@ function renderGroupStageUI() {
       t.mvpCount = mvpCount;
     });
 
-    const sorted = [...teams].sort((a,b) => b.pts - a.pts);
+    const sorted = getSortedGroupTeams(gName);
 
     html += `
       <div class="group-box">
@@ -4913,6 +4964,7 @@ function renderGroupStageUI() {
             <thead>
               <tr>
                 <th>Tim</th>
+                <th style="text-align:center;width:45px;" title="Pertandingan Dimainkan">Match</th>
                 <th style="text-align:center;">M</th>
                 <th style="text-align:center;">K</th>
                 <th style="text-align:center;">Poin</th>
@@ -4941,6 +4993,7 @@ function renderGroupStageUI() {
                         <!-- Invited team badge hidden per privacy rule -->
                       </div>
                     </td>
+                    <td style="text-align:center;font-weight:700;color:#cbd5e1;">${t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0))}</td>
                     <td style="text-align:center;">${winCtrl}</td>
                     <td style="text-align:center;">${loseCtrl}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
@@ -5440,14 +5493,31 @@ function getGroupRestingTeams(gName, day) {
   return teams.filter(t => !playingTeams.has(t));
 }
 
-function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
+function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB, explicitWinner = null) {
   if (!isAdmin) return;
   scoreA = (scoreA !== '' && scoreA !== null && !isNaN(parseInt(scoreA, 10))) ? parseInt(scoreA, 10) : null;
   scoreB = (scoreB !== '' && scoreB !== null && !isNaN(parseInt(scoreB, 10))) ? parseInt(scoreB, 10) : null;
-  let winner = null;
+  let winner = explicitWinner;
   if (scoreA !== null && scoreB !== null) {
-    if (scoreA > scoreB) winner = teamA;
-    else if (scoreB > scoreA) winner = teamB;
+    if (scoreA > scoreB) {
+      winner = teamA;
+    } else if (scoreB > scoreA) {
+      winner = teamB;
+    } else if (scoreA === 0 && scoreB === 0) {
+      if (!explicitWinner) {
+        // Tanyakan pilihan jika skor 0 - 0: Apakah WO Ganda atau Imbang/Seri?
+        const isWO = confirm(`Pertandingan ${teamA} vs ${teamB} memiliki skor 0 - 0.\n\nApakah hasil ini KEDUANYA WO (Walkover)?\n• Klik OK = Keduanya WO (Kedua tim kalah WO, 0 Poin)\n• Klik Batal = Imbang / Seri (0-0)`);
+        winner = isWO ? 'Keduanya WO (0-0)' : 'Imbang (0-0)';
+      } else {
+        winner = explicitWinner;
+      }
+    } else {
+      if (!explicitWinner) {
+        winner = `Imbang (${scoreA}-${scoreB})`;
+      } else {
+        winner = explicitWinner;
+      }
+    }
   }
 
   // Canonicalize Match ID agar tidak ada duplikasi antara A_vs_B dan B_vs_A
@@ -5496,6 +5566,13 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
   saveState();
   initGroupPlayoff();
   renderGroupStageUI();
+}
+
+// Helper aksi instan wasit untuk hasil khusus (Keduanya WO atau Imbang)
+function setGroupMatchSpecialResult(matchId, gName, teamA, teamB, resultType) {
+  if (!isAdmin) return;
+  const winner = (resultType === 'WO') ? 'Keduanya WO (0-0)' : 'Imbang (0-0)';
+  setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, winner);
 }
 
 function saveGroupFixtureScore(matchId, gName, teamA, teamB) {
@@ -6264,7 +6341,12 @@ function recalculateGroupStandingsFromFixtures() {
 
     for (const mId in groupMatchResults) {
       const m = groupMatchResults[mId];
-      if (!m || m.gName !== gName || !m.winner || !m.teamA || !m.teamB) continue;
+      if (!m || m.gName !== gName || !m.teamA || !m.teamB) continue;
+      // Pertandingan dihitung jika memiliki pemenang resmi ATAU skor valid terisi
+      const hasWinner = !!m.winner;
+      const hasScore = (m.scoreA !== null && m.scoreA !== undefined && m.scoreB !== null && m.scoreB !== undefined);
+      if (!hasWinner && !hasScore) continue;
+
       const pairKey = getCanonicalGroupMatchId(gName, m.teamA, m.teamB);
       if (!seenPairs.has(pairKey)) {
         seenPairs.add(pairKey);
@@ -6272,20 +6354,45 @@ function recalculateGroupStandingsFromFixtures() {
       }
     }
 
-    if (uniqueGroupMatches.length === 0) continue;
-
     teams.forEach(t => {
       let winCount = 0;
       let loseCount = 0;
+      let drawCount = 0;
+      let matchCount = 0;
+
       uniqueGroupMatches.forEach(m => {
-        if (m.winner === t.name) {
-          winCount++;
-        } else if (m.teamA === t.name || m.teamB === t.name) {
+        const isTeamA = isSameTeamName(m.teamA, t.name);
+        const isTeamB = isSameTeamName(m.teamB, t.name);
+        if (!isTeamA && !isTeamB) return;
+
+        matchCount++;
+        const isDoubleWO = (m.winner === 'Keduanya WO (0-0)' || m.winner === 'Keduanya WO' || (m.winner && m.winner.toLowerCase().includes('wo')));
+        const isDraw = (m.winner === 'Imbang (0-0)' || m.winner === 'Imbang' || m.winner === 'Seri' || (m.winner && (m.winner.toLowerCase().includes('imbang') || m.winner.toLowerCase().includes('seri'))));
+
+        if (isDoubleWO) {
+          // Keduanya WO: Kedua tim dihitung kalah WO 1x, 0 Poin
           loseCount++;
+        } else if (isDraw) {
+          // Skor imbang / seri
+          drawCount++;
+        } else if (m.winner && isSameTeamName(m.winner, t.name)) {
+          winCount++;
+        } else if (m.winner) {
+          loseCount++;
+        } else {
+          // Fallback kalkulasi skor langsung jika ada
+          const scThis = isTeamA ? m.scoreA : m.scoreB;
+          const scOpp = isTeamA ? m.scoreB : m.scoreA;
+          if (scThis > scOpp) winCount++;
+          else if (scOpp > scThis) loseCount++;
+          else drawCount++;
         }
       });
+
       t.win = winCount;
       t.lose = loseCount;
+      t.draw = drawCount;
+      t.matchCount = matchCount;
       t.pts = winCount * 2;
     });
   }
@@ -6490,6 +6597,8 @@ function renderGroupFixturesUI() {
 
       fixtures.forEach((f, idx) => {
         const isDone = f.winner !== null;
+        const isDoubleWO = f.winner && (f.winner.includes('WO') || f.winner === 'Keduanya WO (0-0)');
+        const isDraw = f.winner && (f.winner.includes('Imbang') || f.winner.includes('Seri'));
         const safeMatchId = f.matchId.replace(/'/g, "\\'");
         const safeGName = f.gName.replace(/'/g, "\\'");
         const safeTeamA = f.teamA.replace(/'/g, "\\'");
@@ -6501,8 +6610,8 @@ function renderGroupFixturesUI() {
               <span style="font-weight:700; color:var(--yokke-gold); font-size:0.75rem;">
                 HARI ${f.day} (${f.dateLabel || ''}) • MATCH ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}
               </span>
-              <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'}">
-                ${isDone ? 'SELESAI' : 'BO3'}
+              <span class="match-status-badge ${isDone ? 'finished' : 'upcoming'}" style="font-size:0.7rem; padding:0.15rem 0.45rem; border-radius:4px; font-weight:700; ${isDoubleWO ? 'background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35);' : (isDraw ? 'background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.35);' : (isDone ? 'background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'))}">
+                ${isDoubleWO ? '⚡ KEDUANYA WO (0-0)' : (isDraw ? '⚖️ IMBANG (0-0)' : (isDone ? 'SELESAI' : 'BO3'))}
               </span>
             </div>
             <div class="match-team-row ${f.winner === f.teamA ? 'winner' : ''}">
@@ -6515,12 +6624,14 @@ function renderGroupFixturesUI() {
             </div>
             ${formatMatchMvpDisplayHtml(f)}
             ${isAdmin ? `
-              <div class="match-admin-scores" style="margin-top:0.4rem;">
-                <span style="font-size:0.7rem; color:var(--text-muted);">Skor BO3:</span>
+              <div class="match-admin-scores" style="margin-top:0.4rem; display:flex; align-items:center; gap:0.25rem; flex-wrap:wrap;">
+                <span style="font-size:0.7rem; color:var(--text-muted);">Skor:</span>
                 <input type="number" min="0" max="2" value="${f.scoreA !== null ? f.scoreA : ''}" id="scA_${safeMatchId}" style="width:38px; text-align:center; padding:2px; font-size:0.75rem;" placeholder="0">
                 <span style="font-size:0.75rem; color:var(--text-muted);">-</span>
                 <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : ''}" id="scB_${safeMatchId}" style="width:38px; text-align:center; padding:2px; font-size:0.75rem;" placeholder="0">
                 <button type="button" class="btn btn-primary" style="font-size:0.68rem; padding:2px 8px;" onclick="saveGroupFixtureScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}')">Simpan</button>
+                <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 6px; color:#f87171; border-color:rgba(239,68,68,0.4);" onclick="setGroupMatchSpecialResult('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 'WO')" title="Keduanya Kalah WO (0-0)">⚡ WO</button>
+                <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 6px; color:#fbbf24; border-color:rgba(245,158,11,0.4);" onclick="setGroupMatchSpecialResult('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', 'DRAW')" title="Skor Imbang / Seri (0-0)">⚖️ Seri</button>
                 ${isDone ? `
                   <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 8px; color:var(--yokke-gold); border-color:rgba(255,183,3,0.4);" onclick="openMLBBGroupMvpModal('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', ${f.scoreA !== null ? f.scoreA : 0}, ${f.scoreB !== null ? f.scoreB : 0})">⭐ MVP</button>
                 ` : ''}
@@ -6993,18 +7104,50 @@ function isMCGGSemiFinalFull() {
   return isMCGGLobbyPointsFull('SEMI_A') && isMCGGLobbyPointsFull('SEMI_B');
 }
 
+// Komparator resmi urutan klasemen MCGG sesuai regulasi:
+// 1. Total Poin Akhir (besar ke kecil)
+// 2. Juara 1 / MVP Ronde (banyaknya finish posisi 1, besar ke kecil)
+// 3. Top 4 Finish (banyaknya finish posisi 1-4, besar ke kecil)
+// 4. Pengurangan Poin / Penalti (makin sering kena pengurangan makin bawah jika poin dkk sama: deductA - deductB)
+// 5. Breakdown Posisi Finish Ronde 1 s/d 8
+// 6. Nama Pemain (A-Z)
+function compareMCGGPlayers(a, b) {
+  const totA = Number(a.total) || 0;
+  const totB = Number(b.total) || 0;
+  if (totB !== totA) return totB - totA;
+
+  // 1. Juara 1 / MVP Ronde (Rank 1 count, descending)
+  const aRank1 = [a.r1, a.r2, a.r3].filter(r => parseInt(r, 10) === 1).length;
+  const bRank1 = [b.r1, b.r2, b.r3].filter(r => parseInt(r, 10) === 1).length;
+  if (bRank1 !== aRank1) return bRank1 - aRank1;
+
+  // 2. Top 4 Finish (Rank 1-4 count, descending)
+  const aTop4 = [a.r1, a.r2, a.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
+  const bTop4 = [b.r1, b.r2, b.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
+  if (bTop4 !== aTop4) return bTop4 - aTop4;
+
+  // 3. Pengurangan Poin / Penalti (makin sering kena pengurangan point makin bawah jika poin dkk sama)
+  const deductA = Math.abs(Number(a.penalty) || 0);
+  const deductB = Math.abs(Number(b.penalty) || 0);
+  if (deductA !== deductB) return deductA - deductB;
+
+  // 4. Detail Posisi Finish 1 sampai 8
+  for (let r = 1; r <= 8; r++) {
+    const aRCount = [a.r1, a.r2, a.r3].filter(rank => parseInt(rank, 10) === r).length;
+    const bRCount = [b.r1, b.r2, b.r3].filter(rank => parseInt(rank, 10) === r).length;
+    if (bRCount !== aRCount) return bRCount - aRCount;
+  }
+
+  // 5. Nama Pemain (A-Z)
+  return (a.name || '').localeCompare(b.name || '');
+}
+
 function syncMCGGSemiFinal() {
   const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
   if (qualKeys.length <= 2) return; // Jika 2 lobi langsung ke Grand Final
 
   const isQualDone = isMCGGQualificationFull();
-  const sortFn = (a, b) => {
-    if ((b.total || 0) !== (a.total || 0)) return (b.total || 0) - (a.total || 0);
-    const aTop4 = [a.r1, a.r2, a.r3].filter(r => r >= 1 && r <= 4).length;
-    const bTop4 = [b.r1, b.r2, b.r3].filter(r => r >= 1 && r <= 4).length;
-    if (bTop4 !== aTop4) return bTop4 - aTop4;
-    return (b.penalty || 0) - (a.penalty || 0);
-  };
+  const sortFn = compareMCGGPlayers;
 
   if (!isQualDone) {
     // Belum selesai: Set 8 slot TBD untuk Semifinal A dan Semifinal B
@@ -7067,21 +7210,7 @@ function syncMCGGSemiFinal() {
 }
 
 function syncMCGGGrandFinal() {
-  const sortFn = (a, b) => {
-    if (b.total !== a.total) return b.total - a.total;
-    const aTop4 = [a.r1, a.r2, a.r3].filter(r => r >= 1 && r <= 4).length;
-    const bTop4 = [b.r1, b.r2, b.r3].filter(r => r >= 1 && r <= 4).length;
-    if (bTop4 !== aTop4) return bTop4 - aTop4;
-    const aPen = a.penalty || 0;
-    const bPen = b.penalty || 0;
-    if (bPen !== aPen) return bPen - aPen;
-    for (let r = 1; r <= 8; r++) {
-      const aRCount = [a.r1, a.r2, a.r3].filter(rank => rank === r).length;
-      const bRCount = [b.r1, b.r2, b.r3].filter(rank => rank === r).length;
-      if (bRCount !== aRCount) return bRCount - aRCount;
-    }
-    return 0;
-  };
+  const sortFn = compareMCGGPlayers;
 
   const hasSemis = !!mcggLobbies.SEMI_A && mcggLobbies.SEMI_A.length > 0;
   mcggLobbies.LOBBY_LOWER = [];
@@ -8134,21 +8263,7 @@ function renderLobbyRowsHtml(list, lobbyKey, isSingleLobby) {
     return tbdRows;
   }
 
-  const sorted = [...list].sort((a, b) => {
-    if (b.total !== a.total) return b.total - a.total;
-    const aTop4 = [a.r1, a.r2, a.r3].filter(r => r >= 1 && r <= 4).length;
-    const bTop4 = [b.r1, b.r2, b.r3].filter(r => r >= 1 && r <= 4).length;
-    if (bTop4 !== aTop4) return bTop4 - aTop4;
-    const aPen = a.penalty || 0;
-    const bPen = b.penalty || 0;
-    if (bPen !== aPen) return bPen - aPen;
-    for (let r = 1; r <= 8; r++) {
-      const aRCount = [a.r1, a.r2, a.r3].filter(rank => rank === r).length;
-      const bRCount = [b.r1, b.r2, b.r3].filter(rank => rank === r).length;
-      if (bRCount !== aRCount) return bRCount - aRCount;
-    }
-    return 0;
-  });
+  const sorted = [...list].sort(compareMCGGPlayers);
 
   return sorted.map((p, idx) => {
     const hasPlayed = p.r1 > 0 || p.r2 > 0 || p.r3 > 0;
@@ -8911,26 +9026,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
     const gName = `Grup ${letter}`;
     const teams = groupStageData[gName] || [];
 
-    // Hitung MVP & Sort Klasemen (Mendukung Multi-MVP BO3)
-    teams.forEach(t => {
-      let mvpCount = 0;
-      for (const mId in groupMatchResults || {}) {
-        const m = groupMatchResults[mId];
-        if (m.gName === gName) {
-          if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
-            m.gameMvps.forEach(gm => {
-              if (gm && gm.player && (gm.team === t.name || (!gm.team && (m.mvpTeam === t.name || m.winner === t.name)))) {
-                mvpCount++;
-              }
-            });
-          } else if (m.mvpPlayer && (m.mvpTeam === t.name || (!m.mvpTeam && m.winner === t.name))) {
-            mvpCount++;
-          }
-        }
-      }
-      t.mvpCount = mvpCount;
-    });
-    const sorted = [...teams].sort((a, b) => b.pts - a.pts);
+    const sorted = getSortedGroupTeams(gName);
 
     content += `
       <div class="detail-panel-header">
@@ -8959,6 +9055,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
               <tr>
                 <th style="width:40px;">#</th>
                 <th>Nama Tim</th>
+                <th style="text-align:center;width:45px;" title="Pertandingan Dimainkan">Match</th>
                 <th style="text-align:center;width:45px;">M</th>
                 <th style="text-align:center;width:45px;">K</th>
                 <th style="text-align:center;width:55px;">Poin</th>
@@ -8980,6 +9077,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
                   <tr style="${idx < 2 ? 'background:rgba(0,210,255,0.08);' : (idx === 2 ? 'background:rgba(255,183,3,0.06);' : '')}">
                     <td style="font-weight:700;color:var(--text-muted);">${idx + 1}</td>
                     <td style="font-weight:700;color:#fff;">${escapeHtml(t.name)}</td>
+                    <td style="text-align:center;font-weight:700;color:#cbd5e1;">${t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0))}</td>
                     <td style="text-align:center;">${winCtrl}</td>
                     <td style="text-align:center;">${loseCtrl}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
@@ -9009,28 +9107,34 @@ function renderMLBBDetailPanelContent(nodeKey) {
       fixtures.forEach((f, fIdx) => {
         const hasScore = f.scoreA !== null && f.scoreB !== null;
         const winner = f.winner;
+        const isDoubleWO = f.winner && (f.winner.includes('WO') || f.winner === 'Keduanya WO (0-0)');
+        const isDraw = f.winner && (f.winner.includes('Imbang') || f.winner.includes('Seri'));
 
         content += `
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.75rem 1rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
               <span style="font-size:0.75rem;font-weight:700;color:var(--yokke-gold);">Hari ${f.day} (${f.dateLabel || ''}) • Match ${f.matchOrder || f.session} • ${f.sessionTime} • ${f.streamRoom || 'Stream 1'}</span>
-              <span style="font-size:0.75rem;color:${hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'};">${hasScore ? '✅ Selesai' : '⏳ BO3'}</span>
+              <span style="font-size:0.75rem;font-weight:700;color:${isDoubleWO ? '#f87171' : (isDraw ? '#fbbf24' : (hasScore ? 'var(--yokke-green)' : 'var(--text-muted)'))};">
+                ${isDoubleWO ? '⚡ Keduanya WO (0-0)' : (isDraw ? '⚖️ Imbang (0-0)' : (hasScore ? '✅ Selesai' : '⏳ BO3'))}
+              </span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
               <div style="flex:1;min-width:140px;font-weight:700;color:${winner === f.teamA ? 'var(--yokke-gold)' : '#fff'};">
                 ${escapeHtml(f.teamA)} ${winner === f.teamA ? '🏆' : ''}
               </div>
-              <div style="display:flex;align-items:center;gap:0.4rem;">
+              <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;">
                 ${isAdmin ? `
-                  <input type="number" min="0" max="2" value="${f.scoreA !== null ? f.scoreA : 0}" style="width:40px;text-align:center;padding:0.25rem;" id="scoreA_${f.matchId}">
+                  <input type="number" min="0" max="2" value="${f.scoreA !== null ? f.scoreA : 0}" style="width:38px;text-align:center;padding:0.25rem;" id="scoreA_${f.matchId}">
                   <span style="font-weight:700;color:var(--text-muted);">-</span>
-                  <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : 0}" style="width:40px;text-align:center;padding:0.25rem;" id="scoreB_${f.matchId}">
+                  <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : 0}" style="width:38px;text-align:center;padding:0.25rem;" id="scoreB_${f.matchId}">
                   <button class="btn btn-primary" style="padding:0.25rem 0.55rem;font-size:0.75rem;" onclick="
                     const sA = document.getElementById('scoreA_${f.matchId}').value;
                     const sB = document.getElementById('scoreB_${f.matchId}').value;
                     setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', sA, sB);
                     renderMLBBInteractiveHubUI();
                   ">Simpan</button>
+                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;border-color:rgba(239,68,68,0.4);" onclick="setGroupMatchSpecialResult('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', 'WO'); renderMLBBInteractiveHubUI();" title="Set Keduanya Kalah Walkover (0-0)">⚡ WO</button>
+                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#fbbf24;border-color:rgba(245,158,11,0.4);" onclick="setGroupMatchSpecialResult('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', 'DRAW'); renderMLBBInteractiveHubUI();" title="Set Imbang / Seri (0-0)">⚖️ Seri</button>
                   <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="openMLBBGroupMvpModal('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', ${f.scoreA !== null ? f.scoreA : 0}, ${f.scoreB !== null ? f.scoreB : 0})" title="Input MVP">⭐ MVP</button>
                 ` : `
                   <span style="font-size:1.1rem;font-weight:800;color:var(--yokke-gold);">${f.scoreA !== null ? f.scoreA : '-'} : ${f.scoreB !== null ? f.scoreB : '-'}</span>
