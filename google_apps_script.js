@@ -996,9 +996,10 @@ function doGet(e) {
         var mvpPlayer = (bRow[8] && bRow[8] !== "-") ? bRow[8].toString().trim() : "";
         var mvpHero = (bRow[9] && bRow[9] !== "-") ? bRow[9].toString().trim() : "";
 
-        sheetMatchResults[mId] = {
+        var gNameParsed = phase.replace("Fase Grup - ", "").trim();
+        var matchObj = {
           matchId: mId,
-          gName: phase.replace("Fase Grup - ", "").trim(),
+          gName: gNameParsed,
           teamA: teamA,
           teamB: teamB,
           scoreA: sA,
@@ -1007,6 +1008,15 @@ function doGet(e) {
           mvpPlayer: mvpPlayer,
           mvpHero: mvpHero
         };
+
+        sheetMatchResults[mId] = matchObj;
+
+        // Simpan juga dengan canonical key agar sinkron sempurna dengan getCanonicalGroupMatchId di app.js
+        if (gNameParsed) {
+          var sortedTeams = [teamA.trim(), teamB.trim()].sort();
+          var canonKey = (gNameParsed + "_" + sortedTeams[0] + "_vs_" + sortedTeams[1]).replace(/\s+/g, "_");
+          sheetMatchResults[canonKey] = matchObj;
+        }
       }
       if (Object.keys(sheetMatchResults).length > 0) {
         appConfig.groupMatchResults = sheetMatchResults;
@@ -1839,9 +1849,15 @@ function syncDedicatedTournamentSheets(ss, payload) {
   });
 
   cleanMatchList.forEach(function(m, i) {
+    var g = (m.gName || '').trim();
+    var sorted = [(m.teamA || '').trim(), (m.teamB || '').trim()].sort();
+    var canonId = (g && sorted[0] && sorted[1]) 
+      ? (g + '_' + sorted[0] + '_vs_' + sorted[1]).replace(/\s+/g, '_')
+      : (m.matchId || `GRP_${i + 1}`);
+
     mlbbBaganRows.push([
-      m.matchId || `GRP_${i + 1}`,
-      `Fase Grup - ${m.gName || ''}`,
+      canonId,
+      `Fase Grup - ${g}`,
       'BO3',
       m.teamA || '-',
       m.scoreA !== null && m.scoreA !== undefined ? m.scoreA : '-',

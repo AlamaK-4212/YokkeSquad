@@ -5135,6 +5135,34 @@ function resolveTeamNameInGroup(rawName, groupTeams) {
   return rawName;
 }
 
+// Helper pencocokan nama tim yang toleran terhadap format huruf besar/kecil, spasi, tanda kurung, dan alias
+function isSameTeamName(name1, name2) {
+  if (!name1 || !name2) return false;
+  if (name1 === name2) return true;
+  const n1 = name1.toLowerCase().trim();
+  const n2 = name2.toLowerCase().trim();
+  if (n1 === n2) return true;
+  const c1 = n1.replace(/[^a-z0-9]/g, '');
+  const c2 = n2.replace(/[^a-z0-9]/g, '');
+  if (c1 === c2 && c1.length > 0) return true;
+  if (c1.length >= 3 && c2.length >= 3) {
+    if (c1.startsWith(c2) || c2.startsWith(c1)) return true;
+  }
+  return false;
+}
+
+// Helper untuk mendeteksi nama grup berdasarkan nama tim di groupStageData
+function findGroupNameForTeam(teamName) {
+  if (!teamName) return '';
+  const gsd = (typeof groupStageData === 'object' && groupStageData) ? groupStageData : DEFAULT_MLBB_GROUPS;
+  for (const g in gsd) {
+    if (Array.isArray(gsd[g]) && gsd[g].some(t => isSameTeamName(t.name, teamName))) {
+      return g;
+    }
+  }
+  return '';
+}
+
 const MLBB_TOURNAMENT_WEEKS = {
   WEEK_1: {
     title: 'Week 1: Fase Grup 8 Grup (5 Hari)',
@@ -5298,7 +5326,23 @@ function getGroupFixtures(gName, dayFilter = null) {
     const canonId = getCanonicalGroupMatchId(gName, p.teamA, p.teamB);
     const matchId = `${gName}_${p.teamA}_vs_${p.teamB}`.replace(/\s+/g, '_');
     const matchIdRev = `${gName}_${p.teamB}_vs_${p.teamA}`.replace(/\s+/g, '_');
-    const saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[matchIdRev] || {};
+    let saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[matchIdRev];
+
+    // Fallback: cari match di groupMatchResults berdasarkan kecocokan kedua tim (terlepas dari variasi key seperti GRP_1 atau tanpa nama grup)
+    if (!saved) {
+      for (const k in groupMatchResults) {
+        const item = groupMatchResults[k];
+        if (!item || !item.teamA || !item.teamB) continue;
+        if ((isSameTeamName(item.teamA, p.teamA) && isSameTeamName(item.teamB, p.teamB)) ||
+            (isSameTeamName(item.teamA, p.teamB) && isSameTeamName(item.teamB, p.teamA))) {
+          saved = item;
+          // Auto-migrate ke canonical ID agar akses instan dan konsisten
+          groupMatchResults[canonId] = item;
+          break;
+        }
+      }
+    }
+    if (!saved) saved = {};
 
     // Peta skor orientasi Home vs Away agar skor selalu sesuai dengan nama tim yang bersangkutan
     let scoreA = null;
@@ -5411,12 +5455,28 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB) {
   const rawId1 = `${gName}_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
   const rawId2 = `${gName}_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
 
-  const prev = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2] || {};
+  let prev = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2];
+  if (!prev) {
+    for (const k in groupMatchResults) {
+      const item = groupMatchResults[k];
+      if (!item || !item.teamA || !item.teamB) continue;
+      if ((isSameTeamName(item.teamA, teamA) && isSameTeamName(item.teamB, teamB)) ||
+          (isSameTeamName(item.teamA, teamB) && isSameTeamName(item.teamB, teamA))) {
+        prev = item;
+        break;
+      }
+    }
+  }
+  if (!prev) prev = {};
 
   // Hapus seluruh key varian / terbalik lama agar match count tidak bertambah ganda saat salah input
   if (matchId && matchId !== canonId) delete groupMatchResults[matchId];
   if (rawId1 !== canonId) delete groupMatchResults[rawId1];
   if (rawId2 !== canonId) delete groupMatchResults[rawId2];
+  const malformedKey = `_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
+  if (groupMatchResults[malformedKey]) delete groupMatchResults[malformedKey];
+  const malformedKeyRev = `_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
+  if (groupMatchResults[malformedKeyRev]) delete groupMatchResults[malformedKeyRev];
 
   groupMatchResults[canonId] = {
     matchId: canonId,
@@ -5493,10 +5553,28 @@ function findTeamParticipant(teamName) {
 
 function openMLBBGroupMvpModal(matchId, gName, teamA, teamB, scoreA, scoreB) {
   if (!isAdmin) return;
+  // Pastikan gName terisi (auto-detect berdasarkan tim jika kosong)
+  if (!gName || typeof gName !== 'string' || gName.trim() === '') {
+    gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';
+  }
   const canonId = getCanonicalGroupMatchId(gName, teamA, teamB);
   const rawId1 = `${gName}_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
   const rawId2 = `${gName}_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
-  const saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2] || {};
+  let saved = groupMatchResults[canonId] || groupMatchResults[matchId] || groupMatchResults[rawId1] || groupMatchResults[rawId2];
+
+  // Fallback pencocokan riwayat jika ID disimpan dengan format lain
+  if (!saved) {
+    for (const k in groupMatchResults) {
+      const item = groupMatchResults[k];
+      if (!item || !item.teamA || !item.teamB) continue;
+      if ((isSameTeamName(item.teamA, teamA) && isSameTeamName(item.teamB, teamB)) ||
+          (isSameTeamName(item.teamA, teamB) && isSameTeamName(item.teamB, teamA))) {
+        saved = item;
+        break;
+      }
+    }
+  }
+  if (!saved) saved = {};
 
   let winner = saved.winner || null;
   if (!winner && scoreA !== null && scoreB !== null && scoreA !== undefined && scoreB !== undefined) {
@@ -6037,37 +6115,83 @@ function deleteCurrentMvp() {
 
 function setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam, gameMvps = null) {
   if (!isAdmin) return;
-  const canonId = (groupMatchResults[matchId]) ? matchId : (Object.keys(groupMatchResults).find(k => k === matchId || groupMatchResults[k].matchId === matchId) || matchId);
+  const ctx = currentMvpModalContext || {};
+  let gName = ctx.gName || '';
+  let teamA = ctx.teamA || '';
+  let teamB = ctx.teamB || '';
+
+  // 1. Cari apakah ada data match eksisting
+  let existing = groupMatchResults[matchId];
+  if (!existing) {
+    for (const k in groupMatchResults) {
+      if (groupMatchResults[k] && groupMatchResults[k].matchId === matchId) {
+        existing = groupMatchResults[k];
+        break;
+      }
+    }
+  }
+
+  if (existing) {
+    if (!gName) gName = existing.gName || '';
+    if (!teamA) teamA = existing.teamA || '';
+    if (!teamB) teamB = existing.teamB || '';
+  }
+
+  if (!gName && (teamA || teamB)) {
+    gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';
+  }
+
+  const canonId = (teamA && teamB) ? getCanonicalGroupMatchId(gName, teamA, teamB) : matchId;
+
   if (!groupMatchResults[canonId]) {
-    groupMatchResults[canonId] = {
+    groupMatchResults[canonId] = existing || {
       matchId: canonId,
-      gName: currentMvpModalContext.gName || '',
-      teamA: currentMvpModalContext.teamA || '',
-      teamB: currentMvpModalContext.teamB || '',
-      scoreA: currentMvpModalContext.scoreA !== undefined ? currentMvpModalContext.scoreA : null,
-      scoreB: currentMvpModalContext.scoreB !== undefined ? currentMvpModalContext.scoreB : null,
-      winner: currentMvpModalContext.winner || null
+      gName: gName,
+      teamA: teamA,
+      teamB: teamB,
+      scoreA: ctx.scoreA !== undefined ? ctx.scoreA : null,
+      scoreB: ctx.scoreB !== undefined ? ctx.scoreB : null,
+      winner: ctx.winner || null
     };
   }
-  groupMatchResults[canonId].mvpPlayer = mvpPlayer ? mvpPlayer.trim() : null;
-  groupMatchResults[canonId].mvpHero = mvpHero ? mvpHero.trim() : null;
+
+  const target = groupMatchResults[canonId];
+  target.matchId = canonId;
+  target.gName = gName || target.gName || '';
+  target.teamA = teamA || target.teamA || '';
+  target.teamB = teamB || target.teamB || '';
+  target.mvpPlayer = mvpPlayer ? mvpPlayer.trim() : null;
+  target.mvpHero = mvpHero ? mvpHero.trim() : null;
   if (mvpTeam) {
-    groupMatchResults[canonId].mvpTeam = mvpTeam;
-  } else if (groupMatchResults[canonId].winner) {
-    groupMatchResults[canonId].mvpTeam = groupMatchResults[canonId].winner;
+    target.mvpTeam = mvpTeam;
+  } else if (target.winner) {
+    target.mvpTeam = target.winner;
   }
 
   if (gameMvps !== null) {
-    groupMatchResults[canonId].gameMvps = gameMvps;
-  } else if (mvpPlayer && !groupMatchResults[canonId].gameMvps) {
-    groupMatchResults[canonId].gameMvps = [{
+    target.gameMvps = gameMvps;
+  } else if (mvpPlayer && !target.gameMvps) {
+    target.gameMvps = [{
       game: 1,
       player: mvpPlayer,
       hero: mvpHero || null,
-      team: groupMatchResults[canonId].mvpTeam || null
+      team: target.mvpTeam || null
     }];
   } else if (!mvpPlayer) {
-    groupMatchResults[canonId].gameMvps = [];
+    target.gameMvps = [];
+  }
+
+  // Bersihkan key lama non-canonical jika ada
+  if (matchId && matchId !== canonId && groupMatchResults[matchId]) {
+    delete groupMatchResults[matchId];
+  }
+  const malformedKey = `_${teamA}_vs_${teamB}`.replace(/\s+/g, '_');
+  if (groupMatchResults[malformedKey]) {
+    delete groupMatchResults[malformedKey];
+  }
+  const malformedKeyRev = `_${teamB}_vs_${teamA}`.replace(/\s+/g, '_');
+  if (groupMatchResults[malformedKeyRev]) {
+    delete groupMatchResults[malformedKeyRev];
   }
 
   saveState();
@@ -6104,9 +6228,12 @@ function formatMatchMvpDisplayHtml(m) {
 }
 
 // Delegasi fungsi promptGroupMatchMVP ke modal interaktif
-function promptGroupMatchMVP(matchId, teamA, teamB) {
+function promptGroupMatchMVP(matchId, teamA, teamB, gName = '') {
   if (!isAdmin) return;
-  openMLBBGroupMvpModal(matchId, '', teamA, teamB, null, null);
+  if (!gName) {
+    gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';
+  }
+  openMLBBGroupMvpModal(matchId, gName, teamA, teamB, null, null);
 }
 
 function resetGroupMatchScore(matchId) {
@@ -6395,7 +6522,7 @@ function renderGroupFixturesUI() {
                 <input type="number" min="0" max="2" value="${f.scoreB !== null ? f.scoreB : ''}" id="scB_${safeMatchId}" style="width:38px; text-align:center; padding:2px; font-size:0.75rem;" placeholder="0">
                 <button type="button" class="btn btn-primary" style="font-size:0.68rem; padding:2px 8px;" onclick="saveGroupFixtureScore('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}')">Simpan</button>
                 ${isDone ? `
-                  <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 8px; color:var(--yokke-gold); border-color:rgba(255,183,3,0.4);" onclick="openMLBBGroupMvpModal('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', ${f.scoreA}, ${f.scoreB}, '${safeMatchId}')">⭐ MVP</button>
+                  <button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 8px; color:var(--yokke-gold); border-color:rgba(255,183,3,0.4);" onclick="openMLBBGroupMvpModal('${safeMatchId}', '${safeGName}', '${safeTeamA}', '${safeTeamB}', ${f.scoreA !== null ? f.scoreA : 0}, ${f.scoreB !== null ? f.scoreB : 0})">⭐ MVP</button>
                 ` : ''}
               </div>
             ` : ''}
@@ -8904,7 +9031,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
                     setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', sA, sB);
                     renderMLBBInteractiveHubUI();
                   ">Simpan</button>
-                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="promptGroupMatchMVP('${f.matchId}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}')" title="Input MVP">⭐ MVP</button>
+                  <button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="openMLBBGroupMvpModal('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${escapeHtml(f.teamB).replace(/'/g, "\\'")}', ${f.scoreA !== null ? f.scoreA : 0}, ${f.scoreB !== null ? f.scoreB : 0})" title="Input MVP">⭐ MVP</button>
                 ` : `
                   <span style="font-size:1.1rem;font-weight:800;color:var(--yokke-gold);">${f.scoreA !== null ? f.scoreA : '-'} : ${f.scoreB !== null ? f.scoreB : '-'}</span>
                 `}

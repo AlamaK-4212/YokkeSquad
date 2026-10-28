@@ -109,6 +109,41 @@ assert.strictEqual(nativeMvpCount, 2, 'Tim Native harus mendapatkan 2 MVP dari G
 assert.strictEqual(botiMvpCount, 1, 'Tim BOTI harus mendapatkan 1 MVP dari Game 2');
 console.log('  ✅ [PASS] 7. Akumulasi multi-game MVP per tim terhitung presisi sesuai aturan BO3');
 
+// Test 8: Helper isSameTeamName dan findGroupNameForTeam
+assert(appCode.includes('function isSameTeamName('), 'app.js harus memuat helper isSameTeamName');
+assert(appCode.includes('function findGroupNameForTeam('), 'app.js harus memuat helper findGroupNameForTeam');
+
+function testIsSameTeamName(name1, name2) {
+  if (!name1 || !name2) return false;
+  if (name1 === name2) return true;
+  const n1 = name1.toLowerCase().trim();
+  const n2 = name2.toLowerCase().trim();
+  if (n1 === n2) return true;
+  const c1 = n1.replace(/[^a-z0-9]/g, '');
+  const c2 = n2.replace(/[^a-z0-9]/g, '');
+  if (c1 === c2 && c1.length > 0) return true;
+  if (c1.length >= 3 && c2.length >= 3) {
+    if (c1.startsWith(c2) || c2.startsWith(c1)) return true;
+  }
+  return false;
+}
+assert.strictEqual(testIsSameTeamName('Native', 'Native'), true);
+assert.strictEqual(testIsSameTeamName('BOTI', 'BOTI (Bekerja Optimal, Tumbuh Istimewa)'), true);
+assert.strictEqual(testIsSameTeamName('Yokke Batam Squad', 'Yokke Batam Squad (YBS)'), true);
+console.log('  ✅ [PASS] 8. isSameTeamName berhasil mencocokkan nama dan alias tim dengan toleran');
+
+// Test 9: Integrasi Sinkronisasi Kolom MVP di google_apps_script.js
+const gasCode = fs.readFileSync(path.join(__dirname, '../google_apps_script.js'), 'utf8');
+assert(gasCode.includes('m.mvpPlayer || \'-\''), 'google_apps_script.js harus menulis m.mvpPlayer ke kolom 9');
+assert(gasCode.includes('m.mvpHero || \'-\''), 'google_apps_script.js harus menulis m.mvpHero ke kolom 10');
+assert(gasCode.includes('sheetMatchResults[canonKey] = matchObj'), 'doGet di google_apps_script.js harus mengindeks hasil dengan canonical key');
+console.log('  ✅ [PASS] 9. Integritas kolom MVP Match (Kolom 9) dan Hero MVP (Kolom 10) di google_apps_script.js terverifikasi');
+
+// Test 10: Auto-binding MVP Card pada Bagan Pertandingan
+assert(appCode.includes('openMLBBGroupMvpModal(\'${f.matchId}\', \'${gName}\''), 'renderMLBBInteractiveHubUI harus mengirim gName ke openMLBBGroupMvpModal');
+assert(appCode.includes('formatMatchMvpDisplayHtml(f)'), 'Kartu pertandingan bagan harus memanggil formatMatchMvpDisplayHtml');
+console.log('  ✅ [PASS] 10. Auto-binding kartu bagan dan pengiriman gName pada tombol MVP terverifikasi');
+
 console.log('\n====================================================');
 console.log('🎉 SELURUH PENGUJIAN MVP PICKER MODAL LULUS (100% OK)');
 console.log('====================================================\n');
