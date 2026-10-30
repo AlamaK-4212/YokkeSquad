@@ -2,7 +2,7 @@
  * Skrip Verifikasi Integritas & Sinkronisasi Live Data Google Sheets ke UI
  */
 const WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbw5IPK87J_3FHhtQVv47y6Mt9Y_g4N7KgorapoOYLeJTMhw04lH1deWEX2KsiAtJT8PjQ/exec";
+  "https://script.google.com/macros/s/AKfycbziPAn-PMX_WPYMxqRFkavjDXlKujATzhVgO0_ONxanLk1Ye5xWnn9geM1wQH6_TvLwlA/exec";
 
 async function run() {
   console.log("🔄 Mengambil data live dari Google Apps Script...");
