@@ -79,6 +79,30 @@ let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
 const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw5IPK87J_3FHhtQVv47y6Mt9Y_g4N7KgorapoOYLeJTMhw04lH1deWEX2KsiAtJT8PjQ/exec";
 
+/**
+ * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
+ * - Menggunakan Content-Type text/plain;charset=utf-8 (mencegah CORS preflight OPTIONS yang tidak didukung GAS).
+ * - Mengaktifkan mode: 'cors' dan redirect: 'follow' untuk menangani 302 redirect ke script.googleusercontent.com secara andal.
+ * - Dilengkapi AbortController timeout agar antarmuka tidak hang saat koneksi lambat.
+ */
+async function postToGoogleAppsScript(payload, timeoutMs = 25000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'cors',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: typeof payload === 'string' ? payload : JSON.stringify(payload),
+      signal: controller.signal
+    });
+    return res;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
 // Data State
@@ -1632,16 +1656,12 @@ async function saveAllChangesToGoogleSheet() {
 
     if (saveBtn) saveBtn.innerText = 'Sinkronisasi Batch... ⏳';
 
-    const batchRes = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'BATCH_UPDATE_PARTICIPANTS',
-        adminPin: currentAdminPin,
-        adminPassword: currentAdminPin,
-        participants: batchUpdates
-      })
-    });
+    const batchRes = await postToGoogleAppsScript({
+      action: 'BATCH_UPDATE_PARTICIPANTS',
+      adminPin: currentAdminPin,
+      adminPassword: currentAdminPin,
+      participants: batchUpdates
+    }, 30000);
     const batchJson = await batchRes.json();
     if (batchJson && (batchJson.status === 'success' || batchJson.success === true)) {
       syncSuccess = true;
@@ -1675,29 +1695,25 @@ async function saveAllChangesToGoogleSheet() {
           ? (p.empId || (p.roster && p.roster[0] ? p.roster[0].empId : ''))
           : '';
 
-        return fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'UPDATE',
-            isUpdate: true,
-            category: p.category,
-            rowIndex: p.rowIndex || undefined,
-            id: p.id,
-            teamName: p.name,
-            name: p.name,
-            dept: p.dept,
-            wa: p.wa,
-            empId: activeEmpId,
-            gameId: activeGameId,
-            nickname: activeNickname,
-            status: p.status,
-            notes: p.notes,
-            logo: p.logo || '',
-            idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
-            roster: p.roster || []
-          })
-        }).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
+        return postToGoogleAppsScript({
+          action: 'UPDATE',
+          isUpdate: true,
+          category: p.category,
+          rowIndex: p.rowIndex || undefined,
+          id: p.id,
+          teamName: p.name,
+          name: p.name,
+          dept: p.dept,
+          wa: p.wa,
+          empId: activeEmpId,
+          gameId: activeGameId,
+          nickname: activeNickname,
+          status: p.status,
+          notes: p.notes,
+          logo: p.logo || '',
+          idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+          roster: p.roster || []
+        }, 20000).catch(err => console.warn(`Gagal sync ${p.name}:`, err));
       }));
 
       // Jeda 250ms untuk menghindari rate limit Google Apps Script
@@ -1708,25 +1724,21 @@ async function saveAllChangesToGoogleSheet() {
   // 3. SIMPAN KONFIGURASI TURNAMEN & REKAP SKOR
   try {
     if (saveBtn) saveBtn.innerText = 'Menyimpan Pengaturan... ⏳';
-    await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'SAVE_CONFIG',
-        adminPin: currentAdminPin,
-        adminPassword: currentAdminPin,
-        customRules: customRules,
-        tournamentFormat: tournamentFormat,
-        groupStageData: groupStageData,
-        groupMatchResults: groupMatchResults,
-        groupPlayoffMatches: groupPlayoffMatches,
-        invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
-        mcggLobbies: mcggLobbies,
-        mcggDrawState: mcggDrawState,
-        tournamentStageState: tournamentStageState,
-        isRegistrationClosed: isRegistrationClosed
-      })
-    }).catch(err => console.warn('Gagal sync config ke Google Sheets:', err));
+    await postToGoogleAppsScript({
+      action: 'SAVE_CONFIG',
+      adminPin: currentAdminPin,
+      adminPassword: currentAdminPin,
+      customRules: customRules,
+      tournamentFormat: tournamentFormat,
+      groupStageData: groupStageData,
+      groupMatchResults: groupMatchResults,
+      groupPlayoffMatches: groupPlayoffMatches,
+      invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
+      mcggLobbies: mcggLobbies,
+      mcggDrawState: mcggDrawState,
+      tournamentStageState: tournamentStageState,
+      isRegistrationClosed: isRegistrationClosed
+    }, 25000).catch(err => console.warn('Gagal sync config ke Google Sheets:', err));
 
     showToast('✅ Seluruh perubahan data peserta, status, bagan, dan klasemen turnamen berhasil disimpan ke Google Sheets!', 'success', 5000);
   } catch (err) {
@@ -1753,18 +1765,14 @@ async function syncTournamentSheetsToGSheet() {
   }
 
   try {
-    const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'CREATE_TOURNAMENT_SHEETS',
-        groupStageData: groupStageData,
-        mcggLobbies: mcggLobbies,
-        customRules: customRules,
-        tournamentFormat: tournamentFormat,
-        adminPassword: currentAdminPin
-      })
-    });
+    const res = await postToGoogleAppsScript({
+      action: 'CREATE_TOURNAMENT_SHEETS',
+      groupStageData: groupStageData,
+      mcggLobbies: mcggLobbies,
+      customRules: customRules,
+      tournamentFormat: tournamentFormat,
+      adminPassword: currentAdminPin
+    }, 30000);
     const result = await res.json();
     if (result && result.status === 'success') {
       alert('✅ ' + (result.message || '3 Sheet Baru (List Bagan, List Point, List Point & Commander MCGG) berhasil dibuat dan diperbarui di Google Sheets!'));
@@ -1946,14 +1954,11 @@ function saveCustomRules() {
 
   // Kirim update peraturan ke Google Sheets
   try {
-    fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'SAVE_CONFIG',
-        customRules: customRules
-      })
-    }).catch(e => console.warn('Gagal sync peraturan ke Sheets:', e));
+    postToGoogleAppsScript({
+      action: 'SAVE_CONFIG',
+      adminPin: currentAdminPin,
+      customRules: customRules
+    }, 15000).catch(e => console.warn('Gagal sync peraturan ke Sheets:', e));
   } catch(e) {}
 
   alert('✅ Peraturan berhasil diperbarui dan disimpan ke Google Sheets!');
@@ -3075,11 +3080,7 @@ async function handleRegister(e) {
   };
 
   try {
-    let res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
+    let res = await postToGoogleAppsScript(payload, 45000);
     let result = await res.json();
 
     // 3. HANDLE CONFLICT / DUPLICATE DARI BACKEND
@@ -3090,11 +3091,7 @@ async function handleRegister(e) {
         payload.isUpdate = true;
         isUpdate = true;
         submitBtn.innerText = "Memperbarui data... ⏳";
-        res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
+        res = await postToGoogleAppsScript(payload, 45000);
         result = await res.json();
       } else {
         submitBtn.disabled = false;
@@ -3203,30 +3200,26 @@ function setParticipantStatus(id, newStatus) {
 
     // Kirim pembaruan status ke Google Sheets secara background
     try {
-      fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'UPDATE',
-          isUpdate: true,
-          category: p.category,
-          rowIndex: p.rowIndex || undefined,
-          id: p.id,
-          teamName: p.name,
-          name: p.name,
-          dept: p.dept,
-          wa: p.wa,
-          empId: (p.roster && p.roster[0] ? p.roster[0].empId : p.empId) || '-',
-          gameId: (p.roster && p.roster[0] ? p.roster[0].gameId : p.gameId) || '-',
-          nickname: (p.roster && p.roster[0] ? p.roster[0].nickname : p.nickname) || '-',
-          isOrganik: p.category === 'MCGG' ? (p.roster && p.roster[0] ? p.roster[0].isOrganik : p.isOrganik) : undefined,
-          status: newStatus,
-          notes: p.notes,
-          logo: p.logo || '',
-          idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
-          roster: p.roster || []
-        })
-      }).catch(err => console.warn('Gagal sync status ke Google Sheets:', err));
+      postToGoogleAppsScript({
+        action: 'UPDATE',
+        isUpdate: true,
+        category: p.category,
+        rowIndex: p.rowIndex || undefined,
+        id: p.id,
+        teamName: p.name,
+        name: p.name,
+        dept: p.dept,
+        wa: p.wa,
+        empId: (p.roster && p.roster[0] ? p.roster[0].empId : p.empId) || '-',
+        gameId: (p.roster && p.roster[0] ? p.roster[0].gameId : p.gameId) || '-',
+        nickname: (p.roster && p.roster[0] ? p.roster[0].nickname : p.nickname) || '-',
+        isOrganik: p.category === 'MCGG' ? (p.roster && p.roster[0] ? p.roster[0].isOrganik : p.isOrganik) : undefined,
+        status: newStatus,
+        notes: p.notes,
+        logo: p.logo || '',
+        idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+        roster: p.roster || []
+      }, 20000).catch(err => console.warn('Gagal sync status ke Google Sheets:', err));
     } catch(e) {}
   }
 }
@@ -3260,18 +3253,14 @@ async function deleteParticipant(id) {
 
     // 3. Kirim permintaan DELETE ke Google Apps Script dengan rowIndex spesifik
     try {
-      fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'DELETE',
-          category: p.category,
-          rowIndex: p.rowIndex || undefined,
-          id: p.id,
-          name: p.name,
-          teamName: p.name
-        })
-      }).catch(err => console.warn('Gagal sinkronisasi DELETE ke Sheets:', err));
+      postToGoogleAppsScript({
+        action: 'DELETE',
+        category: p.category,
+        rowIndex: p.rowIndex || undefined,
+        id: p.id,
+        name: p.name,
+        teamName: p.name
+      }, 20000).catch(err => console.warn('Gagal sinkronisasi DELETE ke Sheets:', err));
     } catch (e) {}
 
     alert(`🗑️ Data "${targetName}" berhasil dihapus.`);
@@ -3497,30 +3486,26 @@ async function saveParticipantEdit() {
     : '';
 
   try {
-    const response = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'UPDATE',
-        isUpdate: true,
-        category: p.category,
-        rowIndex: p.rowIndex || undefined,
-        id: p.id,
-        teamName: p.name,
-        name: p.name,
-        dept: p.dept,
-        wa: p.wa,
-        empId: activeEmpId,
-        gameId: activeGameId,
-        nickname: activeNickname,
-        isOrganik: p.category === 'MCGG' ? (p.roster && p.roster[0] ? p.roster[0].isOrganik : p.isOrganik) : undefined,
-        status: p.status,
-        notes: p.notes,
-        logo: p.logo || '',
-        idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
-        roster: p.roster || []
-      })
-    });
+    const response = await postToGoogleAppsScript({
+      action: 'UPDATE',
+      isUpdate: true,
+      category: p.category,
+      rowIndex: p.rowIndex || undefined,
+      id: p.id,
+      teamName: p.name,
+      name: p.name,
+      dept: p.dept,
+      wa: p.wa,
+      empId: activeEmpId,
+      gameId: activeGameId,
+      nickname: activeNickname,
+      isOrganik: p.category === 'MCGG' ? (p.roster && p.roster[0] ? p.roster[0].isOrganik : p.isOrganik) : undefined,
+      status: p.status,
+      notes: p.notes,
+      logo: p.logo || '',
+      idCard: p.idCard || (p.roster && p.roster[0] ? p.roster[0].idCard : ''),
+      roster: p.roster || []
+    }, 30000);
     const result = await response.json();
     if (result && result.status === 'success') {
       alert('✅ Perubahan data dan Nickname berhasil disimpan ke Google Sheets!');
@@ -4400,15 +4385,51 @@ function validateMCGGDuplicateCommander(lobbyKey, playerIdx) {
 }
 
 // ========================================================
-// 4. SIMPAN CEPAT KHUSUS STATE BAGAN & POIN (1 REQUEST RINGAN)
+// 4. SIMPAN CEPAT KHUSUS STATE BAGAN & POIN (DENGAN DEBOUNCE & ANTRIAN PINTAR)
 // ========================================================
+let _saveTournamentStateTimeout = null;
+let _isSavingTournamentStateRunning = false;
+let _hasPendingTournamentStateSave = false;
+
 async function saveTournamentStateOnly(isSilent = false) {
   if (window._isSimulatingPlayoff) {
     console.log('Simulasi aktif: skip saveTournamentStateOnly ke GSheet');
     return;
   }
+
+  // 1. Amankan data lokal detik itu juga tanpa jeda (Ground Truth lokal aman)
   saveState();
   saveStageStateLocal();
+
+  // 2. Jika panggilan otomatis / latar belakang (isSilent = true, e.g. input skor/MVP beruntun),
+  //    gunakan debounce 2500ms agar request tidak menumpuk atau membentur script lock di GSheet
+  if (isSilent) {
+    if (_saveTournamentStateTimeout) {
+      clearTimeout(_saveTournamentStateTimeout);
+    }
+    _saveTournamentStateTimeout = setTimeout(() => {
+      _saveTournamentStateTimeout = null;
+      _executeSaveTournamentState(true);
+    }, 2500);
+    return;
+  }
+
+  // 3. Jika user menekan tombol manual (isSilent = false), batalkan debounce dan kirim langsung
+  if (_saveTournamentStateTimeout) {
+    clearTimeout(_saveTournamentStateTimeout);
+    _saveTournamentStateTimeout = null;
+  }
+  return await _executeSaveTournamentState(false);
+}
+
+async function _executeSaveTournamentState(isSilent = false) {
+  if (_isSavingTournamentStateRunning) {
+    _hasPendingTournamentStateSave = true;
+    console.log('Antrean simpan state aktif: request sedang berjalan, akan disinkronkan setelahnya.');
+    return;
+  }
+
+  _isSavingTournamentStateRunning = true;
 
   const btnMLBB = document.getElementById('btnSaveBracketGSheet');
   const btnMCGG = document.getElementById('btnSaveMCGGPointsGSheet');
@@ -4421,23 +4442,21 @@ async function saveTournamentStateOnly(isSilent = false) {
   }
 
   try {
-    const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'SAVE_CONFIG',
-        adminPin: currentAdminPin, // Validasi keamanan di sisi server
-        tournamentFormat: tournamentFormat,
-        groupStageData: groupStageData,
-        groupMatchResults: groupMatchResults,
-        groupPlayoffMatches: groupPlayoffMatches,
-        invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
-        mcggLobbies: mcggLobbies,
-        mcggDrawState: mcggDrawState,
-        tournamentStageState: tournamentStageState,
-        isRegistrationClosed: isRegistrationClosed
-      })
-    });
+    const payload = {
+      action: 'SAVE_CONFIG',
+      adminPin: currentAdminPin,
+      tournamentFormat: tournamentFormat,
+      groupStageData: groupStageData,
+      groupMatchResults: groupMatchResults,
+      groupPlayoffMatches: groupPlayoffMatches,
+      invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
+      mcggLobbies: mcggLobbies,
+      mcggDrawState: mcggDrawState,
+      tournamentStageState: tournamentStageState,
+      isRegistrationClosed: isRegistrationClosed
+    };
+
+    const res = await postToGoogleAppsScript(payload, 25000);
     const result = await res.json();
     if (!isSilent) {
       if (result && result.status === 'success') {
@@ -4447,12 +4466,21 @@ async function saveTournamentStateOnly(isSilent = false) {
       }
     }
   } catch (err) {
-    console.warn('Gagal simpan state cepat:', err);
-    if (!isSilent) alert('⚠️ Tersimpan di lokal, gagal terhubung ke Google Sheets.');
+    console.warn('Sinkronisasi state ke Google Sheets tertunda/gagal:', err);
+    if (!isSilent) {
+      alert('⚠️ Data berhasil tersimpan di browser Anda (Lokal).\n\nSinkronisasi ke Google Sheets mengalami batas waktu jaringan (Timeout/CORS). Data pertandingan tetap aman di perangkat Anda.');
+    }
   } finally {
+    _isSavingTournamentStateRunning = false;
     if (!isSilent) {
       if (btnMLBB) { btnMLBB.disabled = false; btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }
       if (btnMCGG) { btnMCGG.disabled = false; btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }
+    }
+
+    // Jika selama proses simpan ada perubahan baru yang masuk ke antrean, kirimkan pembaruan terakhir
+    if (_hasPendingTournamentStateSave) {
+      _hasPendingTournamentStateSave = false;
+      setTimeout(() => _executeSaveTournamentState(true), 1000);
     }
   }
 }
