@@ -3994,6 +3994,9 @@ function testMLBBPlayoffWithCurrentStandings() {
     return;
   }
 
+  // Buka popup windows / modal jika belum terbuka
+  openTestDrawModal();
+
   // 1. Eksekusi pengundian playoff berdasarkan posisi klasemen terkini
   window._isSimulatingPlayoff = true;
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
@@ -4132,9 +4135,12 @@ function testMLBBPlayoffWithCurrentStandings() {
             Posisi Klasemen Sementara Saat Ini • Anti-Bentrok Silang Grup Diterapkan
           </div>
         </div>
-        <div style="display:flex; gap:0.4rem;">
+        <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
           <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="testMLBBPlayoffWithCurrentStandings()">
             🔄 Acak Ulang Lagi
+          </button>
+          <button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.65rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan); font-weight:700;" onclick="openTestDrawInNewWindow()" title="Buka hasil di pop-up window browser baru">
+            🪟 Pop-up Window
           </button>
           <button class="btn btn-primary" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="closeTestDrawModal(); const el = document.getElementById('groupPlayoffTitle') || document.getElementById('groupPlayoffTree'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});">
             👀 Buka Bagan di Layar Utama
@@ -4175,15 +4181,74 @@ function openTestDrawModal() {
   }
   const modal = document.getElementById('testDrawModal');
   if (modal) {
+    modal.classList.add('active');
     modal.style.display = 'flex';
-    const area = document.getElementById('testDrawResultArea');
-    if (area) area.style.display = 'none';
   }
 }
 
 function closeTestDrawModal() {
   const modal = document.getElementById('testDrawModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+  }
+}
+
+function openTestDrawInNewWindow() {
+  const area = document.getElementById('testDrawResultArea');
+  if (!area || !area.innerHTML || area.style.display === 'none') {
+    showToast('⚠️ Silakan jalankan simulasi undian terlebih dahulu.', 'warning');
+    return;
+  }
+  const popup = window.open('', 'YokkeDrawPopup', 'width=1050,height=820,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes');
+  if (!popup) {
+    alert('Pop-up browser terblokir. Harap izinkan pop-up di browser Anda.');
+    return;
+  }
+  popup.document.write(`
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8">
+      <title>Hasil Simulasi Undian - Turnamen Yokke Squad 2026</title>
+      <link rel="stylesheet" href="style.css">
+      <style>
+        body {
+          background: #090e1c;
+          color: #f8fafc;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          padding: 1.5rem;
+          margin: 0;
+        }
+        .window-wrap {
+          max-width: 1000px;
+          margin: 0 auto;
+        }
+        .window-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0.75rem;
+          margin-bottom: 1rem;
+          border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="window-wrap">
+        <div class="window-header">
+          <div>
+            <h2 style="color: #00d2ff; margin: 0; font-size: 1.25rem;">🎮 Turnamen Yokke Squad 2026 — Jendela Simulasi Undian</h2>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">Pratinjau resmi hasil undian bagan turnamen (Jendela Pop-up Terpisah)</div>
+          </div>
+          <button onclick="window.print()" style="background: #00d2ff; color: #0b1120; border: none; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer;">🖨️ Cetak / PDF</button>
+        </div>
+        ${area.innerHTML}
+      </div>
+    </body>
+    </html>
+  `);
+  popup.document.close();
 }
 
 function testMLBBGroupAllocationDraw() {
@@ -4203,13 +4268,18 @@ function testMLBBGroupAllocationDraw() {
   area.style.display = 'block';
 
   let html = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
       <h4 style="margin:0; font-size:0.95rem; color:var(--yokke-cyan); display:flex; align-items:center; gap:0.4rem;">
         <span>🎲</span> <span>Hasil Simulasi Pembagian 8 Grup (${verifiedTeams.length} Tim)</span>
       </h4>
-      <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.6rem; font-weight:700;" onclick="testMLBBGroupAllocationDraw()">
-        🔄 Acak Ulang Lagi
-      </button>
+      <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+        <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.6rem; font-weight:700;" onclick="testMLBBGroupAllocationDraw()">
+          🔄 Acak Ulang Lagi
+        </button>
+        <button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.6rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan); font-weight:700;" onclick="openTestDrawInNewWindow()" title="Buka hasil di pop-up window browser baru">
+          🪟 Pop-up Window
+        </button>
+      </div>
     </div>
     <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
       ✅ Algoritma memisahkan tim dengan divisi/kantor yang sama & nama tim satelit (e.g. Aang Alpha vs Aang Beta).
