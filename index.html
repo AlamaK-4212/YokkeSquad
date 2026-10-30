@@ -485,6 +485,7 @@
             <button id="btnProceedMLBBStage2" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;" onclick="proceedToMLBBStage2()">🏆 Lanjut ke Playoff</button>
             <button id="btnResetMLBBStage1" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0.85rem; display: none;" onclick="resetMLBBToStage1()">↩️ Reset ke Tahap 1</button>
             <button id="btnShuffleMLBBPlayoff" class="btn btn-gold" style="font-size: 0.85rem; padding: 0.5rem 0.85rem; display: none;" onclick="shuffleMLBBPlayoffBracket()">🎲 Undi Bagan Playoff</button>
+            <button id="btnTestPlayoffStandings" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0.85rem; border-color: var(--yokke-cyan); color: var(--yokke-cyan); display: none;" onclick="openTestDrawModal()" title="Pusat simulasi & uji coba undian turnamen MLBB (Pembagian Grup & Bagan Playoff)">🧪 Uji Undian Bagan</button>
             <button id="btnResetTotalMLBBGroup" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0.85rem; border-color: var(--yokke-red); color: #f87171;" onclick="resetTotalMLBBGroupAndBracket()">🗑️ Reset Pembagian Grup & Bagan</button>
             <button id="btnSaveBracketGSheet" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 0.85rem; background: linear-gradient(135deg, #06d6a0, #0077b6);" onclick="saveTournamentStateOnly(false)">💾 Simpan Bagan ke GSheet</button>
           </div>
@@ -969,6 +970,64 @@
           Selesai & Simpan
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Pusat Uji Coba Undian Turnamen MLBB (Simulasi Tanpa Simpan GSheet) -->
+  <div id="testDrawModal" class="modal-overlay" onclick="if(event.target === this) closeTestDrawModal()">
+    <div class="modal-box modal-box-large" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column; padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.65rem; margin-bottom: 0.85rem;">
+        <div>
+          <h3 style="color: var(--yokke-cyan); margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🧪</span> <span>Pusat Uji Coba Undian Bagan Turnamen MLBB</span>
+          </h3>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Simulasi lokal pengundian Fase Grup & Babak Playoff tanpa mempengaruhi data di Google Sheets.
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" onclick="closeTestDrawModal()">✕</button>
+      </div>
+
+      <div style="background: rgba(0, 210, 255, 0.08); border: 1px solid rgba(0, 210, 255, 0.25); border-radius: 6px; padding: 0.65rem 0.85rem; margin-bottom: 1rem; font-size: 0.82rem; color: var(--text-color);">
+        ℹ️ <strong>Mode Pengujian Aman:</strong> Seluruh pengundian di menu ini hanya disimulasikan di layar untuk evaluasi panitia. <strong>Skor asli & data di Google Sheets TIDAK akan tersentuh atau ditimpa</strong>.
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.85rem; margin-bottom: 1rem;">
+        <!-- KARTU 1: UJI UNDIAN PEMBAGIAN TIM KE 8 GRUP -->
+        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem 1rem; background: rgba(0,0,0,0.25); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.92rem; font-weight: 700; color: var(--yokke-cyan);">⚔️ 1. Uji Pembagian 8 Grup (Fase 1)</span>
+              <span style="font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; background: rgba(0,210,255,0.15); color: var(--yokke-cyan); border: 1px solid rgba(0,210,255,0.3);">Fase Grup</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 0.75rem 0; line-height: 1.4;">
+              Uji pengacakan 41 tim ke Grup A s/d H dengan pemisahan divisi kantor yang sama, tim satelit (e.g. Aang Alpha vs Beta), dan tim invite.
+            </p>
+          </div>
+          <button class="btn btn-outline" style="width: 100%; font-size: 0.82rem; padding: 0.45rem 0.75rem; border-color: var(--yokke-cyan); color: var(--yokke-cyan); font-weight: 700;" onclick="testMLBBGroupAllocationDraw()">
+            🎲 Jalankan Uji Pembagian Grup
+          </button>
+        </div>
+
+        <!-- KARTU 2: UJI UNDIAN BAGAN PLAYOFF -->
+        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem 1rem; background: rgba(0,0,0,0.25); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.92rem; font-weight: 700; color: var(--yokke-gold);">🏆 2. Uji Bagan Playoff (Tahap 2)</span>
+              <span style="font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; background: rgba(255,183,3,0.15); color: var(--yokke-gold); border: 1px solid rgba(255,183,3,0.3);">Playoff Double Elim</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 0.75rem 0; line-height: 1.4;">
+              Uji penempatan Juara 1 (Home UB), Juara 2 (Away UB), dan Juara 3 (Away LB vs Kalah Upper) menggunakan <strong>klasemen saat ini</strong> bebas bentrok grup.
+            </p>
+          </div>
+          <button class="btn btn-gold" style="width: 100%; font-size: 0.82rem; padding: 0.45rem 0.75rem; font-weight: 700;" onclick="testMLBBPlayoffWithCurrentStandings()">
+            🏆 Jalankan Uji Bagan Playoff
+          </button>
+        </div>
+      </div>
+
+      <!-- Area Tampilan Hasil Uji Pembagian Grup -->
+      <div id="testDrawResultArea" style="display: none; border-top: 1px solid var(--border-color); padding-top: 0.85rem; overflow-y: auto; max-height: 52vh;"></div>
     </div>
   </div>
 

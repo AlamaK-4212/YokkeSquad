@@ -259,9 +259,15 @@ console.log('  ✅ [PASS] Lightbox ID Card dijamin tampil di depan popup verifik
 // 12. Uji Pengundian Bagan Playoff MLBB (Home J1, Away J2, Away J3 vs Kalah Upper, Anti-Same Group Constraint)
 console.log('\n🎲 12. Menguji Pengundian Bagan Playoff MLBB & Anti-Same Group Constraint...');
 assert(appCode.includes('function shuffleMLBBPlayoffBracket('), 'shuffleMLBBPlayoffBracket harus ada di app.js');
+assert(appCode.includes('function testMLBBPlayoffWithCurrentStandings('), 'testMLBBPlayoffWithCurrentStandings harus ada di app.js');
+assert(appCode.includes('function openTestDrawModal('), 'openTestDrawModal harus ada di app.js');
+assert(appCode.includes('function testMLBBGroupAllocationDraw('), 'testMLBBGroupAllocationDraw harus ada di app.js');
 assert(appCode.includes('function findValidBracketPermutation('), 'findValidBracketPermutation harus ada di app.js');
 assert(indexHtmlCode.includes('id="btnShuffleMLBBPlayoff"'), 'Tombol btnShuffleMLBBPlayoff harus ada di index.html');
+assert(indexHtmlCode.includes('id="btnTestPlayoffStandings"'), 'Tombol btnTestPlayoffStandings harus ada di index.html');
+assert(indexHtmlCode.includes('id="testDrawModal"'), 'Modal testDrawModal harus ada di index.html');
 assert(appCode.includes('btnShuffleMLBBPlayoff'), 'app.js harus mengontrol tampilan btnShuffleMLBBPlayoff');
+assert(appCode.includes('btnTestPlayoffStandings'), 'app.js harus mengontrol tampilan btnTestPlayoffStandings');
 
 // Ekstrak fungsi & uji algoritma pengundian
 const testDrawEnv = new Function(`

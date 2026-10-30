@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxda-0c7q_mejoft1ahDgRjpLIDw6MZQtypWVfgg6MicTZvvOApijmCZGW_kCPO7Y1bXQ/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw5IPK87J_3FHhtQVv47y6Mt9Y_g4N7KgorapoOYLeJTMhw04lH1deWEX2KsiAtJT8PjQ/exec";
 
 let isAdmin = sessionStorage.getItem('yokke_is_admin') === 'true';
 
@@ -343,7 +343,7 @@ let groupStageData = (savedGroupData && Object.keys(savedGroupData).length >= 8)
   ? savedGroupData
   : JSON.parse(JSON.stringify(DEFAULT_MLBB_GROUPS));
 let groupMatchResults = JSON.parse(localStorage.getItem('yokke_group_match_results') || '{}');
-let groupPlayoffMatches = [];
+let groupPlayoffMatches = JSON.parse(localStorage.getItem('yokke_group_playoff_matches') || '[]');
 
 // MCGG Multi-Lobby State
 let currentMCGGLobby = 'LOBBY_A';
@@ -1788,6 +1788,7 @@ function saveState() {
   localStorage.setItem('yokke_group_match_results', JSON.stringify(groupMatchResults));
   localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
   localStorage.setItem('yokke_mlbb_format', tournamentFormat);
+  localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
   renderParticipants();
   updateAuthUI();
   updateCounts();
@@ -2341,6 +2342,7 @@ function updateAuthUI() {
   const btnProceedMLBB = document.getElementById('btnProceedMLBBStage2');
   const btnResetMLBB = document.getElementById('btnResetMLBBStage1');
   const btnShuffleMLBBPlayoff = document.getElementById('btnShuffleMLBBPlayoff');
+  const btnTestPlayoffStandings = document.getElementById('btnTestPlayoffStandings');
   const btnSaveMLBB = document.getElementById('btnSaveBracketGSheet');
 
   if (isAdmin) {
@@ -2422,6 +2424,10 @@ function updateAuthUI() {
       btnShuffleMLBBPlayoff.style.display = isStage2 ? 'inline-flex' : 'none';
     }
 
+    if (btnTestPlayoffStandings) {
+      btnTestPlayoffStandings.style.display = 'inline-flex';
+    }
+
     if (btnSaveMLBB) {
       btnSaveMLBB.style.display = 'inline-flex';
     }
@@ -2475,6 +2481,7 @@ function updateAuthUI() {
     if (btnLockMCGG) btnLockMCGG.style.display = 'none';
     if (btnSaveMCGG) btnSaveMCGG.style.display = 'none';
     if (btnShuffleMLBBPlayoff) btnShuffleMLBBPlayoff.style.display = 'none';
+    if (btnTestPlayoffStandings) btnTestPlayoffStandings.style.display = 'none';
 
     // Tampilkan notifikasi jika belum ada undian untuk match saat ini
     const hasDraw = lastCommanderDrawMatch && mcggDrawState[currentMCGGLobby]?.[`match${lastCommanderDrawMatch}`];
@@ -3963,6 +3970,292 @@ function shuffleMLBBPlayoffBracket() {
   showToast('🎲 Undian bagan playoff berhasil diacak dan disimpan!', 'success');
 }
 
+function findTeamGroupAndRank(teamName) {
+  if (!teamName) return { group: '-', rank: '-' };
+  for (const gName in groupStageData) {
+    const sorted = getSortedGroupTeams(gName);
+    const idx = sorted.findIndex(t => isSameTeamName(t.name, teamName));
+    if (idx !== -1) {
+      return { group: gName, rank: idx + 1 };
+    }
+  }
+  return { group: '-', rank: '-' };
+}
+
+function testMLBBPlayoffWithCurrentStandings() {
+  if (!isAdmin) {
+    showToast('Akses ditolak: Hanya panitia yang dapat melakukan simulasi pengundian playoff.', 'error');
+    return;
+  }
+
+  const gKeys = Object.keys(groupStageData);
+  if (gKeys.length === 0) {
+    showToast('⚠️ Belum ada data grup MLBB. Pastikan pembagian grup sudah dibuat.', 'warning');
+    return;
+  }
+
+  // 1. Eksekusi pengundian playoff berdasarkan posisi klasemen terkini
+  window._isSimulatingPlayoff = true;
+  tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
+  initGroupPlayoff(true);
+  saveStageStateLocal();
+  saveState();
+  
+  // Pastikan tampilan diarahkan ke GROUPS (Bagan Playoff) agar bagan pasti terlihat di layar utama
+  if (typeof setMLBBViewMode === 'function') {
+    setMLBBViewMode('GROUPS');
+  }
+  updateAuthUI();
+  renderCurrentMLBBFormat();
+  renderGroupPlayoffTree();
+  window._isSimulatingPlayoff = false;
+
+  // 2. Tampilkan hasil undian langsung di dalam modal pengujian dengan gaya visual seperti test undian grup
+  const area = document.getElementById('testDrawResultArea');
+  if (area) {
+    area.style.display = 'block';
+
+    const ubRound = groupPlayoffMatches[0] || [];
+    const lbRound = (groupPlayoffMatches[1] || []).slice(4, 12);
+    const is8Group = gKeys.length === 8 && ubRound.length === 8;
+
+    let branchCardsHtml = '';
+
+    if (is8Group) {
+      for (let i = 0; i < 8; i++) {
+        const mUB = ubRound[i] || { teamA: '-', teamB: '-' };
+        const mLB = lbRound[i] || { teamA: `Gugur UB R1 ${i + 1}`, teamB: '-' };
+
+        const infoA = findTeamGroupAndRank(mUB.teamA);
+        const infoB = findTeamGroupAndRank(mUB.teamB);
+        const infoC = findTeamGroupAndRank(mLB.teamB);
+
+        const isSameGroupUB = infoA.group !== '-' && infoA.group === infoB.group;
+        const isSameGroupLB = infoC.group !== '-' && (infoC.group === infoA.group || infoC.group === infoB.group);
+
+        branchCardsHtml += `
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.6rem 0.75rem; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-weight:700; color:var(--yokke-gold); font-size:0.85rem; margin-bottom:0.45rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:0.3rem;">
+                <span>⚔️ Cabang Playoff ${i + 1}</span>
+                <span style="font-size:0.7rem; color:var(--yokke-cyan); font-weight:600;">Hari 3 • UB M${i + 1} & LB M${i + 1}</span>
+              </div>
+
+              <!-- UPPER BRACKET MATCH -->
+              <div style="background:rgba(0,210,255,0.05); border:1px solid rgba(0,210,255,0.2); border-radius:5px; padding:0.4rem 0.55rem; margin-bottom:0.45rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:var(--yokke-cyan); font-weight:700; margin-bottom:0.25rem;">
+                  <span>UPPER BRACKET R1 (BO3)</span>
+                  <span style="font-size:0.65rem; padding:0.05rem 0.3rem; border-radius:3px; background:${isSameGroupUB ? 'rgba(239,68,68,0.2)' : 'rgba(6,214,160,0.15)'}; color:${isSameGroupUB ? '#f87171' : 'var(--yokke-green)'};">
+                    ${isSameGroupUB ? '⚠️ Bentrok' : '✓ Bebas Bentrok'}
+                  </span>
+                </div>
+                <div style="font-size:0.8rem; line-height:1.45;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; color:#fff;">🏠 ${escapeHtml(mUB.teamA)}</span>
+                    <span style="font-size:0.7rem; color:var(--yokke-gold);">${escapeHtml(infoA.group || '')} (Juara 1)</span>
+                  </div>
+                  <div style="text-align:center; font-size:0.68rem; color:var(--text-muted); margin:0.1rem 0;">— VS —</div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; color:#cbd5e1;">⚔️ ${escapeHtml(mUB.teamB)}</span>
+                    <span style="font-size:0.7rem; color:var(--yokke-cyan);">${escapeHtml(infoB.group || '')} (Juara 2)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LOWER BRACKET MATCH -->
+              <div style="background:rgba(255,183,3,0.05); border:1px solid rgba(255,183,3,0.2); border-radius:5px; padding:0.4rem 0.55rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:var(--yokke-gold); font-weight:700; margin-bottom:0.25rem;">
+                  <span>LOWER BRACKET R1 (BO3)</span>
+                  <span style="font-size:0.65rem; padding:0.05rem 0.3rem; border-radius:3px; background:${isSameGroupLB ? 'rgba(239,68,68,0.2)' : 'rgba(6,214,160,0.15)'}; color:${isSameGroupLB ? '#f87171' : 'var(--yokke-green)'};">
+                    ${isSameGroupLB ? '⚠️ Bentrok' : '✓ Anti-Rematch'}
+                  </span>
+                </div>
+                <div style="font-size:0.8rem; line-height:1.45;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--text-muted);">🛡️ Gugur UB M${i + 1}</span>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Home Lower</span>
+                  </div>
+                  <div style="text-align:center; font-size:0.68rem; color:var(--text-muted); margin:0.1rem 0;">— VS —</div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; color:#fff;">🎯 ${escapeHtml(mLB.teamB)}</span>
+                    <span style="font-size:0.7rem; color:var(--yokke-gold);">${escapeHtml(infoC.group || '')} (Juara 3)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:0.45rem; font-size:0.68rem; color:var(--text-muted); text-align:right;">
+              Pemenang Upper ➔ UB QF | Gugur ➔ LB R1 vs ${escapeHtml(mLB.teamB)}
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      // 4 Grup atau 2 Grup
+      ubRound.forEach((m, idx) => {
+        const infoA = findTeamGroupAndRank(m.teamA);
+        const infoB = findTeamGroupAndRank(m.teamB);
+        branchCardsHtml += `
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.6rem 0.75rem;">
+            <div style="font-weight:700; color:var(--yokke-gold); font-size:0.85rem; margin-bottom:0.35rem;">
+              Match ${idx + 1}
+            </div>
+            <div style="font-size:0.82rem;">
+              <strong>${escapeHtml(m.teamA)}</strong> (${infoA.group}) vs <strong>${escapeHtml(m.teamB)}</strong> (${infoB.group})
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Ringkasan perwakilan klasemen grup
+    let standingsPillsHtml = '';
+    gKeys.forEach(gName => {
+      const sorted = getSortedGroupTeams(gName);
+      const j1 = sorted[0]?.name || '-';
+      const j2 = sorted[1]?.name || '-';
+      const j3 = sorted[2]?.name || '-';
+      standingsPillsHtml += `
+        <span style="padding:0.2rem 0.45rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:4px; font-size:0.72rem; white-space:nowrap;">
+          <strong style="color:var(--yokke-cyan);">${gName}:</strong> [1] ${escapeHtml(j1)} | [2] ${escapeHtml(j2)} | [3] ${escapeHtml(j3)}
+        </span>
+      `;
+    });
+
+    area.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <h4 style="margin:0; font-size:0.95rem; color:var(--yokke-gold); display:flex; align-items:center; gap:0.4rem;">
+            <span>🏆</span> <span>Hasil Simulasi Undian Bagan Playoff (Double Elimination)</span>
+          </h4>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.15rem;">
+            Posisi Klasemen Sementara Saat Ini • Anti-Bentrok Silang Grup Diterapkan
+          </div>
+        </div>
+        <div style="display:flex; gap:0.4rem;">
+          <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="testMLBBPlayoffWithCurrentStandings()">
+            🔄 Acak Ulang Lagi
+          </button>
+          <button class="btn btn-primary" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="closeTestDrawModal(); const el = document.getElementById('groupPlayoffTitle') || document.getElementById('groupPlayoffTree'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});">
+            👀 Buka Bagan di Layar Utama
+          </button>
+        </div>
+      </div>
+
+      <!-- RINGKASAN POSISI KLASEMEN SAAT INI -->
+      <div style="margin-bottom:0.75rem; padding:0.5rem 0.65rem; background:rgba(0,0,0,0.25); border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); margin-bottom:0.35rem;">
+          📋 POOL PESERTA PLAYOFF DARI KLASEMEN SAAT INI (TOP 3 PER GRUP):
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+          ${standingsPillsHtml}
+        </div>
+      </div>
+
+      <!-- GRID 8 CABANG PLAYOFF (PERSIS GAYA TEST UNDIAN GRUP) -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:0.65rem; max-height:440px; overflow-y:auto; padding-right:0.25rem;">
+        ${branchCardsHtml}
+      </div>
+
+      <div style="margin-top:0.85rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; font-size:0.75rem; color:var(--text-muted);">
+        <span>✅ Aturan Terverifikasi: Juara 1 (Home UB) vs Juara 2 (Away UB beda grup) & Tim Gugur UB vs Juara 3 (Away LB anti-rematch).</span>
+        <span style="color:var(--yokke-green); font-weight:600;">🔒 Simulasi lokal murni (TIDAK disimpan ke Google Sheets).</span>
+      </div>
+    `;
+    area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  showToast('🏆 Bagan Playoff berhasil diundi dan ditampilkan!', 'success');
+}
+
+function openTestDrawModal() {
+  if (!isAdmin) {
+    showToast('Akses ditolak: Hanya panitia yang dapat membuka pusat uji coba undian.', 'error');
+    return;
+  }
+  const modal = document.getElementById('testDrawModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    const area = document.getElementById('testDrawResultArea');
+    if (area) area.style.display = 'none';
+  }
+}
+
+function closeTestDrawModal() {
+  const modal = document.getElementById('testDrawModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function testMLBBGroupAllocationDraw() {
+  if (!isAdmin) return;
+  const verifiedTeams = getVerifiedMLBBTeams();
+  if (verifiedTeams.length === 0) {
+    showToast('⚠️ Belum ada tim MLBB yang terverifikasi.', 'warning');
+    return;
+  }
+
+  const groupNames = ['Grup A', 'Grup B', 'Grup C', 'Grup D', 'Grup E', 'Grup F', 'Grup G', 'Grup H'];
+  const allocated = allocateMLBBGroups(verifiedTeams, groupNames, true);
+
+  const area = document.getElementById('testDrawResultArea');
+  if (!area) return;
+
+  area.style.display = 'block';
+
+  let html = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+      <h4 style="margin:0; font-size:0.95rem; color:var(--yokke-cyan); display:flex; align-items:center; gap:0.4rem;">
+        <span>🎲</span> <span>Hasil Simulasi Pembagian 8 Grup (${verifiedTeams.length} Tim)</span>
+      </h4>
+      <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.6rem; font-weight:700;" onclick="testMLBBGroupAllocationDraw()">
+        🔄 Acak Ulang Lagi
+      </button>
+    </div>
+    <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
+      ✅ Algoritma memisahkan tim dengan divisi/kantor yang sama & nama tim satelit (e.g. Aang Alpha vs Aang Beta).
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:0.6rem; max-height:420px; overflow-y:auto;">
+  `;
+
+  groupNames.forEach((gName) => {
+    const teams = allocated[gName] || [];
+    html += `
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.5rem 0.65rem;">
+        <div style="font-weight:700; color:var(--yokke-gold); font-size:0.82rem; margin-bottom:0.35rem; display:flex; justify-content:space-between;">
+          <span>${gName}</span>
+          <span style="font-size:0.72rem; color:var(--text-muted);">${teams.length} Tim</span>
+        </div>
+        <ol style="margin:0; padding-left:1.15rem; font-size:0.78rem; line-height:1.45;">
+    `;
+    teams.forEach(tName => {
+      const dept = typeof getTeamDept === 'function' ? getTeamDept(tName) : '';
+      const isInv = typeof isTeamInvited === 'function' && isTeamInvited(tName);
+      html += `
+        <li style="margin-bottom:0.15rem;">
+          <span style="font-weight:600;">${escapeHtml(tName)}</span>
+          ${isInv ? '<span style="font-size:0.65rem; background:rgba(255,183,3,0.15); color:var(--yokke-gold); padding:0.05rem 0.25rem; border-radius:3px; margin-left:0.25rem;">⭐ Invite</span>' : ''}
+          ${dept ? `<span style="font-size:0.68rem; color:var(--text-muted); display:block;">🏢 ${escapeHtml(dept)}</span>` : ''}
+        </li>
+      `;
+    });
+    html += `
+        </ol>
+      </div>
+    `;
+  });
+
+  html += `
+    </div>
+    <div style="margin-top:0.85rem; text-align:right;">
+      <span style="font-size:0.75rem; color:var(--text-muted); margin-right:0.5rem;">Simulasi lokal murni, tidak mengubah skor grup aktif & tidak disimpan ke Google Sheets.</span>
+    </div>
+  `;
+
+  area.innerHTML = html;
+  area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  showToast('🎲 Simulasi pembagian 8 grup berhasil diacak!', 'info');
+}
+
 function resetMLBBToStage1() {
   if (!isAdmin) return;
   if (!confirm("↩️ Kembalikan ke Tahap 1 (Fase Grup)?\nStatus kemajuan di Bagan Playoff akan direset agar Anda dapat mengedit ulang skor grup.")) return;
@@ -4040,6 +4333,10 @@ function validateMCGGDuplicateCommander(lobbyKey, playerIdx) {
 // 4. SIMPAN CEPAT KHUSUS STATE BAGAN & POIN (1 REQUEST RINGAN)
 // ========================================================
 async function saveTournamentStateOnly(isSilent = false) {
+  if (window._isSimulatingPlayoff) {
+    console.log('Simulasi aktif: skip saveTournamentStateOnly ke GSheet');
+    return;
+  }
   saveState();
   saveStageStateLocal();
 
@@ -7271,9 +7568,12 @@ function renderGroupPlayoffTree() {
           Fase Grup saat ini sedang berlangsung. Selesaikan seluruh pertandingan grup dan selesaikan Tie-Breaker (jika ada) untuk membuka bagan Playoff.
         </div>
         ${isAdmin ? `
-          <div style="margin-top: 1rem;">
+          <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
             <button class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem; background: var(--yokke-green); color: #0f172a; font-weight: 700; ${!isRegistrationClosed ? 'opacity: 0.5; cursor: not-allowed;' : ''}" onclick="${!isRegistrationClosed ? "alert('⚠️ Pendaftaran turnamen masih dibuka. Harap tutup pendaftaran terlebih dahulu sebelum lanjut ke babak playoff.')" : 'proceedToMLBBStage2()'}" ${!isRegistrationClosed ? 'disabled title="Pendaftaran turnamen masih dibuka. Harap tutup pendaftaran terlebih dahulu."' : ''}>
               🏆 Buka & Lanjut ke Babak Playoff
+            </button>
+            <button class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-color: var(--yokke-cyan); color: var(--yokke-cyan); font-weight: 700;" onclick="testMLBBPlayoffWithCurrentStandings()" title="Simulasi undi bagan playoff menggunakan posisi klasemen sementara saat ini">
+              🧪 Uji Undian (Klasemen Saat Ini)
             </button>
           </div>
         ` : ''}
@@ -7314,9 +7614,14 @@ function renderGroupPlayoffTree() {
       <div style="font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
         <span>📅 Hari 3: UB 16 Besar & LB R1 | Hari 4: UB QF/SF & LB R2/R3/QF | Hari 5: UB Final, LB Final & Grand Final BO5</span>
         ${isAdmin ? `
-          <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper)">
-            🎲 Undi / Acak Bagan Playoff
-          </button>
+          <div style="display:flex; gap:0.4rem; align-items:center;">
+            <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper)">
+              🎲 Undi / Acak Bagan Playoff
+            </button>
+            <button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.65rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan); font-weight:700;" onclick="testMLBBPlayoffWithCurrentStandings()" title="Undi ulang bagan playoff langsung dari posisi klasemen terkini">
+              🧪 Uji Ulang (Klasemen Saat Ini)
+            </button>
+          </div>
         ` : ''}
       </div>
     `;
@@ -9817,6 +10122,20 @@ function renderMLBBDetailPanelContent(nodeKey) {
     };
     const info = ubMatchesDesc[matchNum] || { pair: 'Match 16 Besar', qf: 'Upper QF', lower: 'Lower R1' };
 
+    const mIdx = parseInt(matchNum, 10) - 1;
+    const actualMatch = (Array.isArray(groupPlayoffMatches) && groupPlayoffMatches[0]) ? groupPlayoffMatches[0][mIdx] : null;
+    const livePairHtml = (actualMatch && actualMatch.teamA && actualMatch.teamB && !actualMatch.teamA.includes('Juara 1 Grup')) ? `
+      <div style="background:rgba(0,210,255,0.08); border:1px solid rgba(0,210,255,0.3); border-radius:6px; padding:0.6rem 0.8rem; margin:0.6rem 0;">
+        <div style="font-size:0.75rem; color:var(--yokke-cyan); font-weight:700; margin-bottom:0.25rem;">🎮 TIM HASIL UNDIAN PLAYOFF:</div>
+        <div style="font-size:0.95rem; font-weight:800; color:#fff;">
+          ${escapeHtml(actualMatch.teamA)} <span style="color:var(--yokke-gold); font-size:0.78rem;">(Home)</span> 
+          <span style="color:var(--yokke-cyan); margin:0 0.25rem;">vs</span> 
+          ${escapeHtml(actualMatch.teamB)} <span style="color:var(--text-muted); font-size:0.78rem;">(Away)</span>
+        </div>
+        ${actualMatch.winner ? `<div style="font-size:0.8rem; color:var(--yokke-green); font-weight:700; margin-top:0.25rem;">🏆 Pemenang: ${escapeHtml(actualMatch.winner)}</div>` : ''}
+      </div>
+    ` : '';
+
     content += `
       <div class="detail-panel-header">
         <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
@@ -9830,6 +10149,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
 
       <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,210,255,0.2);border-radius:8px;padding:1rem;margin-bottom:1rem;">
         <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Skema Pairing Pertandingan</h4>
+        ${livePairHtml}
         <p style="font-size:0.85rem;color:#fff;margin:0 0 0.5rem;font-weight:700;">${info.pair}</p>
         <ul style="font-size:0.8rem;color:var(--text-muted);margin:0;padding-left:1.2rem;line-height:1.6;">
           <li><strong>Pemenang:</strong> Melaju ke babak <strong>${info.qf} (Day 3)</strong>.</li>
