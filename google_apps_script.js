@@ -1911,11 +1911,13 @@ function syncDedicatedTournamentSheets(ss, payload) {
 
   // B. Masukkan Bagan Playoff (Semifinal & Grand Final)
   const playoffRounds = payload.groupPlayoffMatches || [];
-  const roundNames = playoffRounds.length === 5
+  const roundNames = playoffRounds.length === 6
+    ? ['Upper 16 Besar (Hari 3)', 'Upper QF & Lower R1 (Hari 3-4)', 'Upper SF & Lower R2/R3 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower SF/Final (Hari 5)', 'Grand Final (Hari 5)']
+    : (playoffRounds.length === 5
     ? ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower SF/Final (Hari 5)', 'Grand Final (Hari 5)']
     : (playoffRounds.length === 3 
         ? ['Perempat Final (8 Besar)', 'Semifinal (4 Besar)', 'Grand Final'] 
-        : ['Semifinal (4 Besar)', 'Grand Final']);
+        : ['Semifinal (4 Besar)', 'Grand Final']));
 
   playoffRounds.forEach((round, rIdx) => {
     const defaultPhase = roundNames[rIdx] || `Playoff Ronde ${rIdx + 1}`;

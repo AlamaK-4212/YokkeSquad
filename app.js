@@ -2340,6 +2340,7 @@ function updateAuthUI() {
   const btnLockMLBB = document.getElementById('btnLockMLBBGroup');
   const btnProceedMLBB = document.getElementById('btnProceedMLBBStage2');
   const btnResetMLBB = document.getElementById('btnResetMLBBStage1');
+  const btnShuffleMLBBPlayoff = document.getElementById('btnShuffleMLBBPlayoff');
   const btnSaveMLBB = document.getElementById('btnSaveBracketGSheet');
 
   if (isAdmin) {
@@ -2417,6 +2418,10 @@ function updateAuthUI() {
       btnResetMLBB.style.display = isStage2 ? 'inline-flex' : 'none';
     }
 
+    if (btnShuffleMLBBPlayoff) {
+      btnShuffleMLBBPlayoff.style.display = isStage2 ? 'inline-flex' : 'none';
+    }
+
     if (btnSaveMLBB) {
       btnSaveMLBB.style.display = 'inline-flex';
     }
@@ -2469,6 +2474,7 @@ function updateAuthUI() {
     if (adminDrawControls) adminDrawControls.style.display = 'none';
     if (btnLockMCGG) btnLockMCGG.style.display = 'none';
     if (btnSaveMCGG) btnSaveMCGG.style.display = 'none';
+    if (btnShuffleMLBBPlayoff) btnShuffleMLBBPlayoff.style.display = 'none';
 
     // Tampilkan notifikasi jika belum ada undian untuk match saat ini
     const hasDraw = lastCommanderDrawMatch && mcggDrawState[currentMCGGLobby]?.[`match${lastCommanderDrawMatch}`];
@@ -3915,13 +3921,46 @@ function proceedToMLBBStage2() {
   }
 
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
-  initGroupPlayoff();
+  initGroupPlayoff(true);
   saveStageStateLocal();
   saveState();
   updateAuthUI();
   renderCurrentMLBBFormat();
   saveTournamentStateOnly(true);
-  alert("🏆 Tahap 2 (Bagan Playoff) berhasil dibuka! Nama tim otomatis masuk ke bagan pertandingan.");
+  alert("🏆 Tahap 2 (Bagan Playoff) berhasil dibuka! Bagan pertandingan otomatis diundi (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper).");
+}
+
+function shuffleMLBBPlayoffBracket() {
+  if (!isAdmin) {
+    showToast('Akses ditolak: Hanya panitia yang dapat melakukan undian bagan playoff.', 'error');
+    return;
+  }
+  if (tournamentStageState.mlbb.stage !== 'STAGE_2_PLAYOFF') {
+    showToast('⚠️ Bagan Playoff belum dibuka. Buka Tahap 2 Playoff terlebih dahulu.', 'warning');
+    return;
+  }
+
+  const hasPlayoffProgress = Array.isArray(groupPlayoffMatches) && groupPlayoffMatches.some(round => 
+    Array.isArray(round) && round.some(m => m && m.winner)
+  );
+
+  if (hasPlayoffProgress) {
+    if (!confirm('⚠️ PERINGATAN!\nSebagian pertandingan playoff sudah memiliki pemenang.\nJika Anda mengundi ulang bagan, seluruh pemenang dan progres playoff akan direset ke awal.\n\nApakah Anda yakin ingin mengundi ulang bagan Playoff?')) {
+      return;
+    }
+  } else {
+    if (!confirm('🎲 Acak dan undi ulang penempatan bagan Playoff MLBB?\n\n• Juara 1 Grup: Home Upper Bracket (8 match)\n• Juara 2 Grup: Away Upper Bracket (Beda grup dari Juara 1)\n• Juara 3 Grup: Away Lower Bracket (Beda grup dari lawan Upper di cabangnya)')) {
+      return;
+    }
+  }
+
+  initGroupPlayoff(true);
+  saveStageStateLocal();
+  saveState();
+  updateAuthUI();
+  renderGroupPlayoffTree();
+  saveTournamentStateOnly(true);
+  showToast('🎲 Undian bagan playoff berhasil diacak dan disimpan!', 'success');
 }
 
 function resetMLBBToStage1() {
@@ -4570,82 +4609,132 @@ function getSortedGroupTeams(gName) {
   return [...teams].sort((a, b) => compareMLBBTeams(a, b, gName));
 }
 
-function initGroupPlayoff() {
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function findValidBracketPermutation(candidates, forbiddenGroupsPerSlot) {
+  const n = candidates.length;
+  function backtrack(slotIdx, remainingItems, currentArr) {
+    if (slotIdx === n) return currentArr;
+    const shuffledRemaining = shuffleArray(remainingItems);
+    const forbidden = forbiddenGroupsPerSlot[slotIdx] || [];
+    for (let i = 0; i < shuffledRemaining.length; i++) {
+      const item = shuffledRemaining[i];
+      if (!forbidden.includes(item.group)) {
+        const nextRemaining = shuffledRemaining.filter((_, idx) => idx !== i);
+        const res = backtrack(slotIdx + 1, nextRemaining, [...currentArr, item]);
+        if (res) return res;
+      }
+    }
+    return null;
+  }
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const res = backtrack(0, candidates, []);
+    if (res) return res;
+  }
+  return null;
+}
+
+function initGroupPlayoff(doShuffle = false) {
   const gKeys = Object.keys(groupStageData);
   const numGroups = gKeys.length;
 
   if (numGroups === 8) {
     // 8 GRUP -> 16 BESAR DOUBLE ELIMINATION (5 HARI TURNAMEN)
-    // Juara 1 masuk Upper Bracket (8 Tim)
-    // Juara 2 masuk Lower Bracket (8 Tim)
-    const gA = getSortedGroupTeams('Grup A');
-    const gB = getSortedGroupTeams('Grup B');
-    const gC = getSortedGroupTeams('Grup C');
-    const gD = getSortedGroupTeams('Grup D');
-    const gE = getSortedGroupTeams('Grup E');
-    const gF = getSortedGroupTeams('Grup F');
-    const gG = getSortedGroupTeams('Grup G');
-    const gH = getSortedGroupTeams('Grup H');
+    // Sesuai aturan: Juara 1 & 2 masuk UPPER BRACKET (16 Tim). Juara 3 masuk LOWER BRACKET (8 Tim).
+    // Juara 1 = Home Upper (teamA), Juara 2 = Away Upper (teamB, beda grup).
+    // Kalah Upper = Home Lower (teamA), Juara 3 = Away Lower (teamB, beda grup dari Juara 1 & Juara 2 cabang tersebut).
+    const groupNames = ['Grup A', 'Grup B', 'Grup C', 'Grup D', 'Grup E', 'Grup F', 'Grup G', 'Grup H'];
 
-    // Sesuai aturan baru: Juara 1 & 2 masuk UPPER BRACKET (16 Tim). Juara 3 masuk LOWER BRACKET (8 Tim).
-    const a1 = gA[0]?.pts > 0 ? gA[0].name : (gA[0]?.name || 'Juara 1 Grup A');
-    const a2 = gA[1]?.pts > 0 ? gA[1].name : (gA[1]?.name || 'Juara 2 Grup A');
-    const a3 = gA[2]?.pts > 0 ? gA[2].name : (gA[2]?.name || 'Juara 3 Grup A');
+    const j1List = [];
+    const j2List = [];
+    const j3List = [];
 
-    const b1 = gB[0]?.pts > 0 ? gB[0].name : (gB[0]?.name || 'Juara 1 Grup B');
-    const b2 = gB[1]?.pts > 0 ? gB[1].name : (gB[1]?.name || 'Juara 2 Grup B');
-    const b3 = gB[2]?.pts > 0 ? gB[2].name : (gB[2]?.name || 'Juara 3 Grup B');
+    groupNames.forEach((gName, idx) => {
+      const sorted = getSortedGroupTeams(gName);
+      const letter = String.fromCharCode(65 + idx);
+      const t1 = sorted[0]?.pts > 0 ? sorted[0].name : (sorted[0]?.name || `Juara 1 Grup ${letter}`);
+      const t2 = sorted[1]?.pts > 0 ? sorted[1].name : (sorted[1]?.name || `Juara 2 Grup ${letter}`);
+      const t3 = sorted[2]?.pts > 0 ? sorted[2].name : (sorted[2]?.name || `Juara 3 Grup ${letter}`);
 
-    const c1 = gC[0]?.pts > 0 ? gC[0].name : (gC[0]?.name || 'Juara 1 Grup C');
-    const c2 = gC[1]?.pts > 0 ? gC[1].name : (gC[1]?.name || 'Juara 2 Grup C');
-    const c3 = gC[2]?.pts > 0 ? gC[2].name : (gC[2]?.name || 'Juara 3 Grup C');
+      j1List.push({ group: gName, team: t1 });
+      j2List.push({ group: gName, team: t2 });
+      j3List.push({ group: gName, team: t3 });
+    });
 
-    const d1 = gD[0]?.pts > 0 ? gD[0].name : (gD[0]?.name || 'Juara 1 Grup D');
-    const d2 = gD[1]?.pts > 0 ? gD[1].name : (gD[1]?.name || 'Juara 2 Grup D');
-    const d3 = gD[2]?.pts > 0 ? gD[2].name : (gD[2]?.name || 'Juara 3 Grup D');
+    let branchJ1 = [];
+    let branchJ2 = [];
+    let branchJ3 = [];
 
-    const e1 = gE[0]?.pts > 0 ? gE[0].name : (gE[0]?.name || 'Juara 1 Grup E');
-    const e2 = gE[1]?.pts > 0 ? gE[1].name : (gE[1]?.name || 'Juara 2 Grup E');
-    const e3 = gE[2]?.pts > 0 ? gE[2].name : (gE[2]?.name || 'Juara 3 Grup E');
+    if (doShuffle) {
+      // 1. Acak Juara 1 untuk 8 cabang Home Upper Bracket
+      branchJ1 = shuffleArray([...j1List]);
 
-    const f1 = gF[0]?.pts > 0 ? gF[0].name : (gF[0]?.name || 'Juara 1 Grup F');
-    const f2 = gF[1]?.pts > 0 ? gF[1].name : (gF[1]?.name || 'Runner-up 2 Grup F');
-    const f3 = gF[2]?.pts > 0 ? gF[2].name : (gF[2]?.name || 'Juara 3 Grup F');
+      // 2. Acak Juara 2 untuk 8 cabang Away Upper Bracket (Anti-bentrok grup dengan Juara 1)
+      const forbiddenForJ2 = branchJ1.map(j => [j.group]);
+      branchJ2 = findValidBracketPermutation(j2List, forbiddenForJ2);
+      if (!branchJ2) {
+        branchJ2 = branchJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 8]);
+      }
 
-    const g1 = gG[0]?.pts > 0 ? gG[0].name : (gG[0]?.name || 'Juara 1 Grup G');
-    const g2 = gG[1]?.pts > 0 ? gG[1].name : (gG[1]?.name || 'Juara 2 Grup G');
-    const g3 = gG[2]?.pts > 0 ? gG[2].name : (gG[2]?.name || 'Juara 3 Grup G');
-
-    const h1 = gH[0]?.pts > 0 ? gH[0].name : (gH[0]?.name || 'Juara 1 Grup H');
-    const h2 = gH[1]?.pts > 0 ? gH[1].name : (gH[1]?.name || 'Juara 2 Grup H');
-    const h3 = gH[2]?.pts > 0 ? gH[2].name : (gH[2]?.name || 'Juara 3 Grup H');
+      // 3. Acak Juara 3 untuk 8 cabang Away Lower Bracket (Anti-bentrok grup dengan Juara 1 maupun Juara 2 di cabangnya)
+      const forbiddenForJ3 = branchJ1.map((j, i) => [j.group, branchJ2[i].group]);
+      branchJ3 = findValidBracketPermutation(j3List, forbiddenForJ3);
+      if (!branchJ3) {
+        branchJ3 = branchJ1.map(j => j3List[(j1List.findIndex(x => x.group === j.group) + 2) % 8]);
+      }
+    } else {
+      // Susunan Standar Silang Default (Non-acak tapi dijamin beda grup)
+      // J1: A, C, E, G, B, D, F, H
+      // J2: B, D, F, H, A, C, E, G
+      // J3: C, E, G, A, D, F, H, B
+      const defaultOrder = [
+        { j1: 0, j2: 1, j3: 2 }, // A vs B -> C
+        { j1: 2, j2: 3, j3: 4 }, // C vs D -> E
+        { j1: 4, j2: 5, j3: 6 }, // E vs F -> G
+        { j1: 6, j2: 7, j3: 0 }, // G vs H -> A
+        { j1: 1, j2: 0, j3: 3 }, // B vs A -> D
+        { j1: 3, j2: 2, j3: 5 }, // D vs C -> F
+        { j1: 5, j2: 4, j3: 7 }, // F vs E -> H
+        { j1: 7, j2: 6, j3: 1 }  // H vs G -> B
+      ];
+      branchJ1 = defaultOrder.map(o => j1List[o.j1]);
+      branchJ2 = defaultOrder.map(o => j2List[o.j2]);
+      branchJ3 = defaultOrder.map(o => j3List[o.j3]);
+    }
 
     groupPlayoffMatches = [
-      // Ronde 0 (Hari 3): Upper Bracket 16 Besar (Juara 1 vs Juara 2 Beda Grup - 8 Match)
+      // Ronde 0 (Hari 3): Upper Bracket 16 Besar (Juara 1 Home vs Juara 2 Away Beda Grup - 8 Match)
       [
-        { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: a1, teamB: b2, winner: null },
-        { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: c1, teamB: d2, winner: null },
-        { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: e1, teamB: f2, winner: null },
-        { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: g1, teamB: h2, winner: null },
-        { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: b1, teamB: a2, winner: null },
-        { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: d1, teamB: c2, winner: null },
-        { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: f1, teamB: e2, winner: null },
-        { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: h1, teamB: g2, winner: null }
+        { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[0].team, teamB: branchJ2[0].team, winner: null },
+        { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[1].team, teamB: branchJ2[1].team, winner: null },
+        { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[2].team, teamB: branchJ2[2].team, winner: null },
+        { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[3].team, teamB: branchJ2[3].team, winner: null },
+        { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[4].team, teamB: branchJ2[4].team, winner: null },
+        { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[5].team, teamB: branchJ2[5].team, winner: null },
+        { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[6].team, teamB: branchJ2[6].team, winner: null },
+        { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: branchJ1[7].team, teamB: branchJ2[7].team, winner: null }
       ],
-      // Ronde 1 (Hari 3-4): Upper QF (4 Match) & Lower R1 (Juara 3 vs Kalah Upper R1 - 8 Match)
+      // Ronde 1 (Hari 3-4): Upper QF (4 Match) & Lower R1 (Kalah Upper R1 Home vs Juara 3 Away - 8 Match)
       [
         { matchLabel: 'UB_QF_1', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 1', teamB: 'Pemenang UB R1 2', winner: null },
         { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
         { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
         { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-        { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: a3, teamB: 'Gugur UB R1 1', winner: null },
-        { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: b3, teamB: 'Gugur UB R1 2', winner: null },
-        { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: c3, teamB: 'Gugur UB R1 3', winner: null },
-        { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: d3, teamB: 'Gugur UB R1 4', winner: null },
-        { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: e3, teamB: 'Gugur UB R1 5', winner: null },
-        { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: f3, teamB: 'Gugur UB R1 6', winner: null },
-        { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: g3, teamB: 'Gugur UB R1 7', winner: null },
-        { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: h3, teamB: 'Gugur UB R1 8', winner: null }
+        { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: branchJ3[0].team, winner: null },
+        { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: branchJ3[1].team, winner: null },
+        { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: branchJ3[2].team, winner: null },
+        { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: branchJ3[3].team, winner: null },
+        { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: branchJ3[4].team, winner: null },
+        { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: branchJ3[5].team, winner: null },
+        { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: branchJ3[6].team, winner: null },
+        { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: branchJ3[7].team, winner: null }
       ],
       // Ronde 2 (Hari 4): Upper SF (2 Match) & Lower R2 (4 Match) & Lower R3 (4 Match)
       [
@@ -4694,13 +4783,40 @@ function initGroupPlayoff() {
     const d1 = grpD[0]?.pts > 0 ? grpD[0].name : (grpD[0]?.name || 'Juara Grup D');
     const d2 = grpD[1]?.pts > 0 ? grpD[1].name : (grpD[1]?.name || 'Runner-up Grup D');
 
+    const j1List = [
+      { group: 'Grup A', team: a1 },
+      { group: 'Grup B', team: b1 },
+      { group: 'Grup C', team: c1 },
+      { group: 'Grup D', team: d1 }
+    ];
+    const j2List = [
+      { group: 'Grup A', team: a2 },
+      { group: 'Grup B', team: b2 },
+      { group: 'Grup C', team: c2 },
+      { group: 'Grup D', team: d2 }
+    ];
+
+    let bJ1 = [];
+    let bJ2 = [];
+    if (doShuffle) {
+      bJ1 = shuffleArray([...j1List]);
+      const forbidden = bJ1.map(j => [j.group]);
+      bJ2 = findValidBracketPermutation(j2List, forbidden);
+      if (!bJ2) {
+        bJ2 = bJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 4]);
+      }
+    } else {
+      bJ1 = [j1List[0], j1List[2], j1List[1], j1List[3]]; // A, C, B, D
+      bJ2 = [j2List[1], j2List[3], j2List[0], j2List[2]]; // B, D, A, C
+    }
+
     groupPlayoffMatches = [
       // Ronde 0: Perempat Final (8 Besar)
       [
-        { teamA: a1, teamB: b2, winner: null },
-        { teamA: c1, teamB: d2, winner: null },
-        { teamA: b1, teamB: a2, winner: null },
-        { teamA: d1, teamB: c2, winner: null }
+        { teamA: bJ1[0].team, teamB: bJ2[0].team, winner: null },
+        { teamA: bJ1[1].team, teamB: bJ2[1].team, winner: null },
+        { teamA: bJ1[2].team, teamB: bJ2[2].team, winner: null },
+        { teamA: bJ1[3].team, teamB: bJ2[3].team, winner: null }
       ],
       // Ronde 1: Semifinal Playoff (4 Besar)
       [
@@ -4757,9 +4873,9 @@ function pickGroupPlayoffWinner(rIdx, mIdx, winnerTeam) {
       else if (mIdx === 6) groupPlayoffMatches[1][3].teamA = winnerTeam;
       else if (mIdx === 7) groupPlayoffMatches[1][3].teamB = winnerTeam;
 
-      // Tim kalah dari Upper 16 Besar langsung turun ke Lower Bracket Ronde 1 melawan Juara 3!
+      // Tim kalah dari Upper 16 Besar langsung turun ke Lower Bracket Ronde 1 posisi Home (teamA) melawan Juara 3 (teamB)!
       if (groupPlayoffMatches[1][4 + mIdx]) {
-        groupPlayoffMatches[1][4 + mIdx].teamB = loserTeam;
+        groupPlayoffMatches[1][4 + mIdx].teamA = loserTeam;
       }
     } else if (rIdx === 1) {
       // Ronde 1 (Hari 3-4): UB QF (mIdx 0..3) & LB R1 (mIdx 4..11)
@@ -7193,10 +7309,15 @@ function renderGroupPlayoffTree() {
     banner.style.cssText = 'width:100%; margin-bottom:1rem; padding:0.75rem 1rem; background:rgba(255,183,3,0.08); border:1px solid rgba(255,183,3,0.25); border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;';
     banner.innerHTML = `
       <div style="font-size:0.85rem; font-weight:700; color:var(--yokke-gold); display:flex; align-items:center; gap:0.4rem;">
-        <span>⚡</span> <span>Sistem Playoff Double Elimination: Juara 1 & 2 Grup ➔ Upper Bracket | Juara 3 Grup ➔ Lower Bracket (Melawan Tim Kalah Upper)</span>
+        <span>⚡</span> <span>Sistem Playoff Double Elimination: Juara 1 (Home) & Juara 2 (Away) Upper Bracket | Gugur Upper (Home) vs Juara 3 (Away) Lower Bracket</span>
       </div>
-      <div style="font-size:0.78rem; color:var(--text-muted);">
-        📅 Hari 3: UB 16 Besar & LB R1 | Hari 4: UB QF/SF & LB R2/R3/QF | Hari 5: UB Final, LB Final & Grand Final BO5
+      <div style="font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <span>📅 Hari 3: UB 16 Besar & LB R1 | Hari 4: UB QF/SF & LB R2/R3/QF | Hari 5: UB Final, LB Final & Grand Final BO5</span>
+        ${isAdmin ? `
+          <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper)">
+            🎲 Undi / Acak Bagan Playoff
+          </button>
+        ` : ''}
       </div>
     `;
     tree.appendChild(banner);

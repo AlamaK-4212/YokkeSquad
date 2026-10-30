@@ -256,6 +256,88 @@ assert(indexHtmlCode.includes('id="idCardLightboxModal"') && indexHtmlCode.inclu
 assert(appCode.includes("modal.style.zIndex = '2500'"), 'openIdCardLightbox di app.js harus memastikan modal.style.zIndex = 2500');
 console.log('  ✅ [PASS] Lightbox ID Card dijamin tampil di depan popup verifikasi pemain (z-index: 2500).');
 
+// 12. Uji Pengundian Bagan Playoff MLBB (Home J1, Away J2, Away J3 vs Kalah Upper, Anti-Same Group Constraint)
+console.log('\n🎲 12. Menguji Pengundian Bagan Playoff MLBB & Anti-Same Group Constraint...');
+assert(appCode.includes('function shuffleMLBBPlayoffBracket('), 'shuffleMLBBPlayoffBracket harus ada di app.js');
+assert(appCode.includes('function findValidBracketPermutation('), 'findValidBracketPermutation harus ada di app.js');
+assert(indexHtmlCode.includes('id="btnShuffleMLBBPlayoff"'), 'Tombol btnShuffleMLBBPlayoff harus ada di index.html');
+assert(appCode.includes('btnShuffleMLBBPlayoff'), 'app.js harus mengontrol tampilan btnShuffleMLBBPlayoff');
+
+// Ekstrak fungsi & uji algoritma pengundian
+const testDrawEnv = new Function(`
+  const groupStageData = {
+    'Grup A': [{ name: 'A1', pts: 6 }, { name: 'A2', pts: 4 }, { name: 'A3', pts: 2 }],
+    'Grup B': [{ name: 'B1', pts: 6 }, { name: 'B2', pts: 4 }, { name: 'B3', pts: 2 }],
+    'Grup C': [{ name: 'C1', pts: 6 }, { name: 'C2', pts: 4 }, { name: 'C3', pts: 2 }],
+    'Grup D': [{ name: 'D1', pts: 6 }, { name: 'D2', pts: 4 }, { name: 'D3', pts: 2 }],
+    'Grup E': [{ name: 'E1', pts: 6 }, { name: 'E2', pts: 4 }, { name: 'E3', pts: 2 }],
+    'Grup F': [{ name: 'F1', pts: 6 }, { name: 'F2', pts: 4 }, { name: 'F3', pts: 2 }],
+    'Grup G': [{ name: 'G1', pts: 6 }, { name: 'G2', pts: 4 }, { name: 'G3', pts: 2 }],
+    'Grup H': [{ name: 'H1', pts: 6 }, { name: 'H2', pts: 4 }, { name: 'H3', pts: 2 }]
+  };
+  function getSortedGroupTeams(g) { return groupStageData[g]; }
+  function saveState() {}
+  function renderGroupPlayoffTree() {}
+  function saveTournamentStateOnly() {}
+  function showToast() {}
+  let groupPlayoffMatches = [];
+  let isAdmin = true;
+
+  ${appCode.match(/function shuffleArray\([\s\S]*?function pickGroupPlayoffWinner\([\s\S]*?\n\}/)[0]}
+
+  return {
+    draw: (shuff) => { initGroupPlayoff(shuff); return groupPlayoffMatches; },
+    pick: (r, m, win) => { pickGroupPlayoffWinner(r, m, win); return groupPlayoffMatches; }
+  };
+`)();
+
+// Uji 50x pengundian acak untuk memverifikasi seluruh constraint anti-bentrok grup
+for (let iter = 0; iter < 50; iter++) {
+  const matches = testDrawEnv.draw(true);
+  const ubR1 = matches[0];
+  const lbR1 = matches[1].slice(4, 12);
+
+  assert.strictEqual(ubR1.length, 8, 'Upper Bracket R1 harus 8 pertandingan');
+  assert.strictEqual(lbR1.length, 8, 'Lower Bracket R1 harus 8 pertandingan');
+
+  for (let i = 0; i < 8; i++) {
+    const ub = ubR1[i];
+    const lb = lbR1[i];
+
+    // Verifikasi Upper Bracket: Home = J1, Away = J2
+    assert(ub.teamA.endsWith('1'), 'teamA Upper Bracket harus Juara 1');
+    assert(ub.teamB.endsWith('2'), 'teamB Upper Bracket harus Juara 2');
+
+    const groupJ1 = ub.teamA[0]; // e.g. 'A' from 'A1'
+    const groupJ2 = ub.teamB[0]; // e.g. 'B' from 'B2'
+
+    // Constraint 1: Juara 1 & Juara 2 tidak boleh 1 grup
+    assert(groupJ1 !== groupJ2, 'Upper Bracket: tim Home (' + ub.teamA + ') dan Away (' + ub.teamB + ') tidak boleh dari grup yang sama');
+
+    // Verifikasi Lower Bracket: Home = Gugur UB, Away = J3
+    assert(lb.teamA.startsWith('Gugur UB R1'), 'teamA Lower Bracket harus placeholder Gugur UB R1');
+    assert(lb.teamB.endsWith('3'), 'teamB Lower Bracket harus Juara 3');
+
+    const groupJ3 = lb.teamB[0];
+    // Constraint 2: Juara 3 tidak boleh dari grup yang sama dengan kedua tim Upper di cabang tersebut
+    assert(groupJ3 !== groupJ1 && groupJ3 !== groupJ2, 'Lower Bracket: Juara 3 (' + lb.teamB + ') tidak boleh sama grup dengan lawan Upper (' + ub.teamA + ' / ' + ub.teamB + ')');
+  }
+}
+
+// Uji propagasi pemenang & yang kalah dari Upper R1 ke Lower R1 (Home / teamA)
+const matches = testDrawEnv.draw(true);
+const match0 = matches[0][0];
+const winner = match0.teamA;
+const loser = match0.teamB;
+
+testDrawEnv.pick(0, 0, winner);
+assert.strictEqual(matches[0][0].winner, winner, 'Pemenang UB R1 match 0 harus tersimpan');
+assert.strictEqual(matches[1][0].teamA, winner, 'Pemenang UB R1 match 0 harus melaju ke UB QF 1 teamA');
+assert.strictEqual(matches[1][4].teamA, loser, 'Tim yang kalah UB R1 harus mengisi slot Home (teamA) di LB R1 match 1');
+assert(matches[1][4].teamB.endsWith('3'), 'Slot Away (teamB) di LB R1 harus tetap diisi tim Juara 3');
+
+console.log('  ✅ [PASS] Pengundian Playoff MLBB 100% lolos uji Anti-Same Group Constraint & alur Home/Away.');
+
 console.log('\n====================================================');
 console.log('🎉 SEMUA PENGUJIAN URUTAN KLASEMEN, OPSI 0-0 & JADWAL LULUS!');
 console.log('====================================================');
