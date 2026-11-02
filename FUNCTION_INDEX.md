@@ -6,8 +6,8 @@
 
 ## 📊 Ringkasan Eksekutif
 - **Total Fungsi Terdaftar:** 289 fungsi (254 di `app.js`, 22 di `google_apps_script.js`)
-- **Total Titik Pemanggilan (Call Sites):** 1203 titik pemanggilan teridentifikasi
-- **Terakhir Diperbarui:** 2/11/2026, 13.27.15 WIB
+- **Total Titik Pemanggilan (Call Sites):** 1207 titik pemanggilan teridentifikasi
+- **Terakhir Diperbarui:** 2/11/2026, 13.44.04 WIB
 - **Cara Memperbarui Otomatis:**
   - Sekali jalan: `node scripts/generate_function_index.js`
   - Mode Pantau (Realtime Auto-Update saat simpan kode): `node scripts/generate_function_index.js --watch`
@@ -54,13 +54,13 @@
 | 17 | [**`toggleInvitedTeam()`**](#toggleinvitedteam) | [app.js:243](app.js#L243) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk toggleInvitedTeam | 2x |
 | 18 | [**`showGlobalLoader()`**](#showgloballoader) | [app.js:278](app.js#L278) | 📦 Modul Aplikasi Umum | Kontrol Loading Screen Fullscreen (Sinkronisasi Data Murni Google Sheets) | 1x |
 | 19 | [**`hideGlobalLoader()`**](#hidegloballoader) | [app.js:292](app.js#L292) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk hideGlobalLoader | 4x |
-| 20 | [**`saveStageStateLocal()`**](#savestagestatelocal) | [app.js:457](app.js#L457) | ☁️ Sinkronisasi Google Sheets & State Storage | Menyimpan status stage machine turnamen (fase grup/playoff, status lock TM,... | 12x |
+| 20 | [**`saveStageStateLocal()`**](#savestagestatelocal) | [app.js:457](app.js#L457) | ☁️ Sinkronisasi Google Sheets & State Storage | Menyimpan status stage machine turnamen (fase grup/playoff, status lock TM,... | 13x |
 | 21 | [**`getCommanderFormattedName()`**](#getcommanderformattedname) | [app.js:513](app.js#L513) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Helper Format Nama Commander: Hero [Alter] jika alter ada, atau Hero jika t... | 5x |
 | 22 | [**`renderCommanderCirclesHtml()`**](#rendercommandercircleshtml) | [app.js:524](app.js#L524) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Tabel Klasemen | 3x |
 | 23 | [**`renderCommanderCardVisualHtml()`**](#rendercommandercardvisualhtml) | [app.js:553](app.js#L553) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Kartu Hasil Undian | 1x |
 | 24 | [**`compressImage()`**](#compressimage) | [app.js:733](app.js#L733) | 🆔 Modal Dialog & Bukti ID Card | Client-side image compressor: compresses smartphone photos using HTML5 Canv... | 3x |
 | 25 | [**`compressImageFile()`**](#compressimagefile) | [app.js:792](app.js#L792) | 🆔 Modal Dialog & Bukti ID Card | Client-side image compression helper (Canvas <= 1200px, quality 0.75) | 3x |
-| 26 | [**`showToast()`**](#showtoast) | [app.js:799](app.js#L799) | 🔧 Helper & UI Utility | TOAST NOTIFICATIONS (CYBERPUNK DARK) | 31x |
+| 26 | [**`showToast()`**](#showtoast) | [app.js:799](app.js#L799) | 🔧 Helper & UI Utility | TOAST NOTIFICATIONS (CYBERPUNK DARK) | 32x |
 | 27 | [**`openGlossaryModal()`**](#openglossarymodal) | [app.js:832](app.js#L832) | 🆔 Modal Dialog & Bukti ID Card | Modal Glosarium Istilah Turnamen | 1x |
 | 28 | [**`closeGlossaryModal()`**](#closeglossarymodal) | [app.js:837](app.js#L837) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk closeGlossaryModal | 2x |
 | 29 | [**`openResetBaganModal()`**](#openresetbaganmodal) | [app.js:843](app.js#L843) | 🆔 Modal Dialog & Bukti ID Card | Modal Reset Bagan dengan Verifikasi Password/PIN | 1x |
@@ -86,7 +86,7 @@
 | 49 | [**`resetCacheAndFollowGSheet()`**](#resetcacheandfollowgsheet) | [app.js:1593](app.js#L1593) | ☁️ Sinkronisasi Google Sheets & State Storage | Reset cache lokal dan ikuti 100% data aktif dari Google Sheets | 1x |
 | 50 | [**`saveAllChangesToGoogleSheet()`**](#saveallchangestogooglesheet) | [app.js:1626](app.js#L1626) | ☁️ Sinkronisasi Google Sheets & State Storage | SIMPAN SEMUA PERUBAHAN KE GOOGLE SHEETS | 1x |
 | 51 | [**`syncTournamentSheetsToGSheet()`**](#synctournamentsheetstogsheet) | [app.js:1768](app.js#L1768) | ☁️ Sinkronisasi Google Sheets & State Storage | SYNC KHUSUS BUAT / PERBARUI 3 SHEET TURNAMEN DI GSHEET | 0x |
-| 52 | [**`saveState()`**](#savestate) | [app.js:1803](app.js#L1803) | 📦 Modul Aplikasi Umum | Menyimpan seluruh data aktif aplikasi (peserta, bagan, klasemen grup, lobi ... | 41x |
+| 52 | [**`saveState()`**](#savestate) | [app.js:1803](app.js#L1803) | 📦 Modul Aplikasi Umum | Menyimpan seluruh data aktif aplikasi (peserta, bagan, klasemen grup, lobi ... | 42x |
 | 53 | [**`updateCounts()`**](#updatecounts) | [app.js:1815](app.js#L1815) | 📦 Modul Aplikasi Umum | Memperbarui indikator counter jumlah tim MLBB, pemain MCGG, dan status veri... | 7x |
 | 54 | [**`formatRuleLine()`**](#formatruleline) | [app.js:1825](app.js#L1825) | 📋 Regulasi Turnamen (Rules Editor) | Helper formatting baris peraturan agar rapi & terstruktur (MLBB & MCGG) | 0x |
 | 55 | [**`fetchRulesFromGoogleDoc()`**](#fetchrulesfromgoogledoc) | [app.js:1871](app.js#L1871) | 📋 Regulasi Turnamen (Rules Editor) | Rules System: Mengambil dan Menampilkan Peraturan dari Google Docs (MLBB: t... | 2x |
@@ -107,7 +107,7 @@
 | 70 | [**`renderRegistrationUI()`**](#renderregistrationui) | [app.js:2202](app.js#L2202) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderRegistrationUI | 4x |
 | 71 | [**`toggleRegistrationStatus()`**](#toggleregistrationstatus) | [app.js:2268](app.js#L2268) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk toggleRegistrationStatus | 5x |
 | 72 | [**`resetMCGGPointsAndDraw()`**](#resetmcggpointsanddraw) | [app.js:2289](app.js#L2289) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk resetMCGGPointsAndDraw | 2x |
-| 73 | [**`updateAuthUI()`**](#updateauthui) | [app.js:2332](app.js#L2332) | 🛡️ Autentikasi & Hak Akses Panitia | Memperbarui visibilitas tombol admin, kontrol undian commander, stage lock,... | 14x |
+| 73 | [**`updateAuthUI()`**](#updateauthui) | [app.js:2332](app.js#L2332) | 🛡️ Autentikasi & Hak Akses Panitia | Memperbarui visibilitas tombol admin, kontrol undian commander, stage lock,... | 15x |
 | 74 | [**`switchTab()`**](#switchtab) | [app.js:2512](app.js#L2512) | 🔧 Helper & UI Utility | Navigation Tabs | 5x |
 | 75 | [**`openIdCardLightbox()`**](#openidcardlightbox) | [app.js:2530](app.js#L2530) | 🆔 Modal Dialog & Bukti ID Card | Lightbox for Viewing Full ID Card | 3x |
 | 76 | [**`closeIdCardLightbox()`**](#closeidcardlightbox) | [app.js:2571](app.js#L2571) | 🆔 Modal Dialog & Bukti ID Card | Menutup modal pop-up lightbox preview ID Card pegawai. | 2x |
@@ -165,130 +165,130 @@
 | 128 | [**`hasPrefixConflict()`**](#hasprefixconflict) | [app.js:4909](app.js#L4909) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk hasPrefixConflict | 2x |
 | 129 | [**`hasDeptConflict()`**](#hasdeptconflict) | [app.js:4910](app.js#L4910) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk hasDeptConflict | 1x |
 | 130 | [**`generateGroupStage()`**](#generategroupstage) | [app.js:4964](app.js#L4964) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk generateGroupStage | 3x |
-| 131 | [**`updateGroupRecord()`**](#updategrouprecord) | [app.js:5001](app.js#L5001) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk updateGroupRecord | 4x |
-| 132 | [**`getMLBBHeadToHeadWinner()`**](#getmlbbheadtoheadwinner) | [app.js:5015](app.js#L5015) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Helper mencari pemenang head-to-head (pertemuan langsung) antar 2 tim di fa... | 1x |
-| 133 | [**`compareMLBBTeams()`**](#comparemlbbteams) | [app.js:5082](app.js#L5082) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Komparator resmi urutan klasemen MLBB sesuai regulasi resmi Turnamen Yokke ... | 1x |
-| 134 | [**`getSortedGroupTeams()`**](#getsortedgroupteams) | [app.js:5116](app.js#L5116) | 📦 Modul Aplikasi Umum | Helper untuk mengambil daftar tim terurut di suatu grup MLBB dengan kalkula... | 13x |
-| 135 | [**`shuffleArray()`**](#shufflearray) | [app.js:5144](app.js#L5144) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk shuffleArray | 9x |
-| 136 | [**`findValidBracketPermutation()`**](#findvalidbracketpermutation) | [app.js:5153](app.js#L5153) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk findValidBracketPermutation | 4x |
-| 137 | [**`backtrack()`**](#backtrack) | [app.js:5155](app.js#L5155) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk backtrack | 5x |
-| 138 | [**`isTeamAtmo()`**](#isteamatmo) | [app.js:5177](app.js#L5177) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isTeamAtmo | 2x |
-| 139 | [**`isTeamAlpha()`**](#isteamalpha) | [app.js:5182](app.js#L5182) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isTeamAlpha | 2x |
-| 140 | [**`isPlayoffInvitedTeam()`**](#isplayoffinvitedteam) | [app.js:5188](app.js#L5188) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk isPlayoffInvitedTeam | 2x |
-| 141 | [**`solveRemainingBracketSlots()`**](#solveremainingbracketslots) | [app.js:5200](app.js#L5200) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk solveRemainingBracketSlots | 3x |
-| 142 | [**`backtrack()`**](#backtrack) | [app.js:5202](app.js#L5202) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk backtrack | 5x |
-| 143 | [**`drawMLBBPlayoffUpperBracket()`**](#drawmlbbplayoffupperbracket) | [app.js:5228](app.js#L5228) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Algoritma Pengundian Cerdas Playoff Upper Bracket 16 Besar (MLBB): 1. Undi ... | 1x |
-| 144 | [**`isInv()`**](#isinv) | [app.js:5229](app.js#L5229) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isInv | 8x |
-| 145 | [**`placePoolInvited()`**](#placepoolinvited) | [app.js:5277](app.js#L5277) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk placePoolInvited | 2x |
-| 146 | [**`drawMLBBPlayoffLowerBracket()`**](#drawmlbbplayofflowerbracket) | [app.js:5345](app.js#L5345) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Algoritma Pengundian Lower Bracket (MLBB Juara 3): Menyebarkan tim invited ... | 1x |
-| 147 | [**`isInv()`**](#isinv) | [app.js:5346](app.js#L5346) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isInv | 8x |
-| 148 | [**`initGroupPlayoff()`**](#initgroupplayoff) | [app.js:5382](app.js#L5382) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menghasilkan bagan Playoff MLBB berdasarkan klasemen akhir grup (Cross-Seed... | 11x |
-| 149 | [**`pickGroupPlayoffWinner()`**](#pickgroupplayoffwinner) | [app.js:5625](app.js#L5625) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menetapkan tim pemenang pada pertandingan bagan Playoff dan meloloskannya k... | 2x |
-| 150 | [**`promptPlayoffMVP()`**](#promptplayoffmvp) | [app.js:5793](app.js#L5793) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk promptPlayoffMVP | 1x |
-| 151 | [**`renderGroupStageUI()`**](#rendergroupstageui) | [app.js:5800](app.js#L5800) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderGroupStageUI | 15x |
-| 152 | [**`resolveTeamNameInGroup()`**](#resolveteamnameingroup) | [app.js:6155](app.js#L6155) | 📦 Modul Aplikasi Umum | Helper pencocokan nama tim di dalam grup (toleran terhadap variasi penulisa... | 2x |
-| 153 | [**`isSameTeamName()`**](#issameteamname) | [app.js:6171](app.js#L6171) | 📦 Modul Aplikasi Umum | Helper pencocokan nama tim yang toleran terhadap format huruf besar/kecil, ... | 36x |
-| 154 | [**`findGroupNameForTeam()`**](#findgroupnameforteam) | [app.js:6187](app.js#L6187) | 📦 Modul Aplikasi Umum | Helper untuk mendeteksi nama grup berdasarkan nama tim di groupStageData | 4x |
-| 155 | [**`setMLBBActiveWeek()`**](#setmlbbactiveweek) | [app.js:6239](app.js#L6239) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveWeek | 3x |
-| 156 | [**`setMLBBActiveDayFilter()`**](#setmlbbactivedayfilter) | [app.js:6247](app.js#L6247) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveDayFilter | 6x |
-| 157 | [**`setMLBBActiveGroupFilter()`**](#setmlbbactivegroupfilter) | [app.js:6252](app.js#L6252) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveGroupFilter | 1x |
-| 158 | [**`getGroupFixtures()`**](#getgroupfixtures) | [app.js:6258](app.js#L6258) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | --- BAGAN PERTANDINGAN FASE GRUP TERDISTRIBUSI 4 HARI (ROUND-ROBIN BO3) --- | 6x |
-| 159 | [**`getCanonicalGroupMatchId()`**](#getcanonicalgroupmatchid) | [app.js:6452](app.js#L6452) | 📦 Modul Aplikasi Umum | Helper untuk mendapatkan Canonical Match ID yang unik per pasangan tim (tid... | 7x |
-| 160 | [**`isGroupMatchesCompleted()`**](#isgroupmatchescompleted) | [app.js:6461](app.js#L6461) | 📦 Modul Aplikasi Umum | Helper untuk memeriksa apakah seluruh pertandingan dalam suatu grup telah s... | 3x |
-| 161 | [**`deduplicateGroupMatchResults()`**](#deduplicategroupmatchresults) | [app.js:6479](app.js#L6479) | 📦 Modul Aplikasi Umum | Pembersihan & Deduplikasi Otomatis groupMatchResults agar tidak ada entri t... | 3x |
-| 162 | [**`getGroupRestingTeams()`**](#getgrouprestingteams) | [app.js:6571](app.js#L6571) | 📦 Modul Aplikasi Umum | Mendapatkan daftar tim yang istirahat (tidak bermain) pada hari tertentu di... | 1x |
-| 163 | [**`setGroupMatchScore()`**](#setgroupmatchscore) | [app.js:6582](app.js#L6582) | 📦 Modul Aplikasi Umum | Menyimpan skor pertandingan grup MLBB dan memperbarui klasemen grup secara ... | 7x |
-| 164 | [**`promptGroupMatchWO()`**](#promptgroupmatchwo) | [app.js:6692](app.js#L6692) | 📦 Modul Aplikasi Umum | Dialog wasit untuk menetapkan tim yang Kalah WO (Walkover) baik 1 tim maupu... | 1x |
-| 165 | [**`setGroupMatchSpecialResult()`**](#setgroupmatchspecialresult) | [app.js:6717](app.js#L6717) | 📦 Modul Aplikasi Umum | Helper aksi instan wasit untuk hasil khusus (Keduanya WO, Tim WO, atau Imba... | 4x |
-| 166 | [**`saveGroupFixtureScore()`**](#savegroupfixturescore) | [app.js:6726](app.js#L6726) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk saveGroupFixtureScore | 1x |
-| 167 | [**`findTeamParticipant()`**](#findteamparticipant) | [app.js:6765](app.js#L6765) | 👥 Manajemen Peserta & Roster | Helper mencari data peserta tim dengan normalisasi nama | 4x |
-| 168 | [**`openMLBBGroupMvpModal()`**](#openmlbbgroupmvpmodal) | [app.js:6779](app.js#L6779) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk openMLBBGroupMvpModal | 3x |
-| 169 | [**`openMLBBPlayoffMvpModal()`**](#openmlbbplayoffmvpmodal) | [app.js:6853](app.js#L6853) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk openMLBBPlayoffMvpModal | 1x |
-| 170 | [**`initAndShowMvpModal()`**](#initandshowmvpmodal) | [app.js:6902](app.js#L6902) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk initAndShowMvpModal | 2x |
-| 171 | [**`renderMvpGameTabs()`**](#rendermvpgametabs) | [app.js:6949](app.js#L6949) | 🔧 Helper & UI Utility | Fungsi operasional untuk renderMvpGameTabs | 3x |
-| 172 | [**`switchMvpGameTab()`**](#switchmvpgametab) | [app.js:6981](app.js#L6981) | 🔧 Helper & UI Utility | Fungsi operasional untuk switchMvpGameTab | 1x |
-| 173 | [**`closeMLBBGroupMvpModal()`**](#closemlbbgroupmvpmodal) | [app.js:7039](app.js#L7039) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk closeMLBBGroupMvpModal | 5x |
-| 174 | [**`switchMvpTeamTab()`**](#switchmvpteamtab) | [app.js:7044](app.js#L7044) | 🔧 Helper & UI Utility | Fungsi operasional untuk switchMvpTeamTab | 4x |
-| 175 | [**`renderMvpRosterList()`**](#rendermvprosterlist) | [app.js:7075](app.js#L7075) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk renderMvpRosterList | 3x |
-| 176 | [**`filterMvpRosterList()`**](#filtermvprosterlist) | [app.js:7142](app.js#L7142) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk filterMvpRosterList | 1x |
-| 177 | [**`selectMvpPlayer()`**](#selectmvpplayer) | [app.js:7148](app.js#L7148) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk selectMvpPlayer | 1x |
-| 178 | [**`renderMvpQuickHeroChips()`**](#rendermvpquickherochips) | [app.js:7180](app.js#L7180) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderMvpQuickHeroChips | 3x |
-| 179 | [**`selectMvpQuickHero()`**](#selectmvpquickhero) | [app.js:7200](app.js#L7200) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk selectMvpQuickHero | 1x |
-| 180 | [**`saveSelectedMvp()`**](#saveselectedmvp) | [app.js:7217](app.js#L7217) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk saveSelectedMvp | 2x |
-| 181 | [**`deleteCurrentMvp()`**](#deletecurrentmvp) | [app.js:7289](app.js#L7289) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk deleteCurrentMvp | 1x |
-| 182 | [**`setGroupMatchMVP()`**](#setgroupmatchmvp) | [app.js:7341](app.js#L7341) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk setGroupMatchMVP | 3x |
-| 183 | [**`formatMatchMvpDisplayHtml()`**](#formatmatchmvpdisplayhtml) | [app.js:7429](app.js#L7429) | 🔧 Helper & UI Utility | Format render display HTML untuk MVP match (Mendukung Multi-Game BO3 / BO5) | 2x |
-| 184 | [**`promptGroupMatchMVP()`**](#promptgroupmatchmvp) | [app.js:7456](app.js#L7456) | 📦 Modul Aplikasi Umum | Delegasi fungsi promptGroupMatchMVP ke modal interaktif | 1x |
-| 185 | [**`openMatchPlayerVerifyModal()`**](#openmatchplayerverifymodal) | [app.js:7473](app.js#L7473) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk openMatchPlayerVerifyModal | 2x |
-| 186 | [**`closeMatchPlayerVerifyModal()`**](#closematchplayerverifymodal) | [app.js:7511](app.js#L7511) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk closeMatchPlayerVerifyModal | 2x |
-| 187 | [**`toggleMatchPlayerVerify()`**](#togglematchplayerverify) | [app.js:7520](app.js#L7520) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk toggleMatchPlayerVerify | 1x |
-| 188 | [**`verifyAllMatchPlayers()`**](#verifyallmatchplayers) | [app.js:7538](app.js#L7538) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk verifyAllMatchPlayers | 2x |
-| 189 | [**`renderMatchPlayerVerifyModalContent()`**](#rendermatchplayerverifymodalcontent) | [app.js:7561](app.js#L7561) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk renderMatchPlayerVerifyModalContent | 3x |
-| 190 | [**`renderTeamRosterColumn()`**](#renderteamrostercolumn) | [app.js:7617](app.js#L7617) | 👥 Manajemen Peserta & Roster | Helper untuk merender kolom roster tiap tim | 2x |
-| 191 | [**`resetGroupMatchScore()`**](#resetgroupmatchscore) | [app.js:7720](app.js#L7720) | 📦 Modul Aplikasi Umum | Mereset skor pertandingan grup MLBB ke status belum bertanding. | 0x |
-| 192 | [**`recalculateGroupStandingsFromFixtures()`**](#recalculategroupstandingsfromfixtures) | [app.js:7735](app.js#L7735) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menghitung ulang total poin, menang, dan kalah tim di grup berdasarkan selu... | 4x |
-| 193 | [**`renderGroupFixturesUI()`**](#rendergroupfixturesui) | [app.js:7875](app.js#L7875) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderGroupFixturesUI | 11x |
-| 194 | [**`renderGroupPlayoffTree()`**](#rendergroupplayofftree) | [app.js:8156](app.js#L8156) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Merender bagan pohon eliminasi Playoff (Semifinal & Grand Final) atau statu... | 7x |
-| 195 | [**`changeMCGGLobby()`**](#changemcgglobby) | [app.js:8273](app.js#L8273) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | MCGG MULTI-LOBBY STANDINGS | 0x |
-| 196 | [**`getCommanderById()`**](#getcommanderbyid) | [app.js:8279](app.js#L8279) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Mencari objek data commander dari master list berdasarkan ID, nama hero, at... | 1x |
-| 197 | [**`updateCommanderPoolFromSetup()`**](#updatecommanderpoolfromsetup) | [app.js:8292](app.js#L8292) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk updateCommanderPoolFromSetup | 1x |
-| 198 | [**`getVerifiedMCGGPlayers()`**](#getverifiedmcggplayers) | [app.js:8351](app.js#L8351) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk getVerifiedMCGGPlayers | 2x |
-| 199 | [**`syncMCGGPlayers()`**](#syncmcggplayers) | [app.js:8359](app.js#L8359) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk syncMCGGPlayers | 8x |
-| 200 | [**`findPrevious()`**](#findprevious) | [app.js:8371](app.js#L8371) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk findPrevious | 1x |
-| 201 | [**`mapPlayerObj()`**](#mapplayerobj) | [app.js:8383](app.js#L8383) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapPlayerObj | 2x |
-| 202 | [**`allocateLobbiesByCluster()`**](#allocatelobbiesbycluster) | [app.js:8402](app.js#L8402) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Helper alokasi lobi berbasis Klaster Divisi Resmi Yokke (Anti-Bentrok Fase ... | 3x |
-| 203 | [**`shuffleMCGGPlayers()`**](#shufflemcggplayers) | [app.js:8577](app.js#L8577) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk shuffleMCGGPlayers | 2x |
-| 204 | [**`isMCGGLobbyPointsFull()`**](#ismcgglobbypointsfull) | [app.js:8594](app.js#L8594) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk isMCGGLobbyPointsFull | 4x |
-| 205 | [**`isMCGGQualificationFull()`**](#ismcggqualificationfull) | [app.js:8600](app.js#L8600) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memeriksa apakah ronde kualifikasi Lobi A dan Lobi B telah selesai penuh (3... | 11x |
-| 206 | [**`isMCGGSemiFinalFull()`**](#ismcggsemifinalfull) | [app.js:8606](app.js#L8606) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk isMCGGSemiFinalFull | 1x |
-| 207 | [**`compareMCGGPlayers()`**](#comparemcggplayers) | [app.js:8618](app.js#L8618) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Komparator resmi urutan klasemen MCGG sesuai regulasi: 1. Total Poin Akhir ... | 0x |
-| 208 | [**`syncMCGGSemiFinal()`**](#syncmcggsemifinal) | [app.js:8649](app.js#L8649) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk syncMCGGSemiFinal | 2x |
-| 209 | [**`findPrevSemi()`**](#findprevsemi) | [app.js:8686](app.js#L8686) | 📦 Modul Aplikasi Umum | Preserve poin semifinal jika sudah ada | 1x |
-| 210 | [**`mapSemiPlayer()`**](#mapsemiplayer) | [app.js:8694](app.js#L8694) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapSemiPlayer | 0x |
-| 211 | [**`syncMCGGGrandFinal()`**](#syncmcgggrandfinal) | [app.js:8716](app.js#L8716) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Menyaring Top 4 Lobi A dan Top 4 Lobi B untuk ditempatkan ke Grand Final se... | 7x |
-| 212 | [**`findPrevInArr()`**](#findprevinarr) | [app.js:8723](app.js#L8723) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk findPrevInArr | 1x |
-| 213 | [**`mapGFPlayer()`**](#mapgfplayer) | [app.js:8732](app.js#L8732) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapGFPlayer | 4x |
-| 214 | [**`updateMCGGRank()`**](#updatemcggrank) | [app.js:8800](app.js#L8800) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memperbarui peringkat ronde (R1, R2, R3) pemain MCGG dan mengkalkulasi poin... | 1x |
-| 215 | [**`updateMCGGCommander()`**](#updatemcggcommander) | [app.js:8838](app.js#L8838) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memperbarui pilihan commander pemain dan memicu validasi duplikasi commande... | 1x |
-| 216 | [**`updateMCGGPenalty()`**](#updatemcggpenalty) | [app.js:8873](app.js#L8873) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Mengisi nilai penalti kedisiplinan pemain MCGG dan memperbarui total akumul... | 1x |
-| 217 | [**`renderLobbyCommanderDrawPanelHtml()`**](#renderlobbycommanderdrawpanelhtml) | [app.js:8912](app.js#L8912) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | MESIN UNDIAN COMMANDER MCGG (SESUAI REGULASI RESMI) | 5x |
-| 218 | [**`drawMatchPool()`**](#drawmatchpool) | [app.js:9162](app.js#L9162) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 1: Acak 8 Pool ... | 2x |
-| 219 | [**`assignMatchPoolToPlayers()`**](#assignmatchpooltoplayers) | [app.js:9237](app.js#L9237) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 2: Pasangkan 8 ... | 2x |
-| 220 | [**`toggleLockMatchDraw()`**](#togglelockmatchdraw) | [app.js:9288](app.js#L9288) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 3: Kunci Match ... | 1x |
-| 221 | [**`nextMatchDraw()`**](#nextmatchdraw) | [app.js:9315](app.js#L9315) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 4: Lanjut ke Ma... | 1x |
-| 222 | [**`drawMatchCommanders()`**](#drawmatchcommanders) | [app.js:9332](app.js#L9332) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Backward compatibility helper | 3x |
-| 223 | [**`switchLobbyDrawView()`**](#switchlobbydrawview) | [app.js:9338](app.js#L9338) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk switchLobbyDrawView | 5x |
-| 224 | [**`resetLobbyDraw()`**](#resetlobbydraw) | [app.js:9344](app.js#L9344) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk resetLobbyDraw | 2x |
-| 225 | [**`copyCommanderDrawText()`**](#copycommanderdrawtext) | [app.js:9365](app.js#L9365) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Menyalin rekapitulasi teks hasil undian Little Commander ke clipboard untuk... | 2x |
-| 226 | [**`showMatch3DraftInfo()`**](#showmatch3draftinfo) | [app.js:9400](app.js#L9400) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk showMatch3DraftInfo | 1x |
-| 227 | [**`changeCommanderDrawTarget()`**](#changecommanderdrawtarget) | [app.js:9411](app.js#L9411) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk changeCommanderDrawTarget | 1x |
-| 228 | [**`setDrawTargetAndScroll()`**](#setdrawtargetandscroll) | [app.js:9418](app.js#L9418) | 🔧 Helper & UI Utility | Fungsi operasional untuk setDrawTargetAndScroll | 0x |
-| 229 | [**`scrollToMCGGLobby()`**](#scrolltomcgglobby) | [app.js:9423](app.js#L9423) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk scrollToMCGGLobby | 3x |
-| 230 | [**`renderMCGGLobbyAnchorBar()`**](#rendermcgglobbyanchorbar) | [app.js:9430](app.js#L9430) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGLobbyAnchorBar | 2x |
-| 231 | [**`renderMCGGLobbySelectOptions()`**](#rendermcgglobbyselectoptions) | [app.js:9466](app.js#L9466) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGLobbySelectOptions | 3x |
-| 232 | [**`renderMCGGTable()`**](#rendermcggtable) | [app.js:9509](app.js#L9509) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Merender tabel klasemen dan poin turnamen Magic Chess Go Go untuk lobi yang... | 29x |
-| 233 | [**`getLobbyShortLabel()`**](#getlobbyshortlabel) | [app.js:9566](app.js#L9566) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk getLobbyShortLabel | 0x |
-| 234 | [**`renderLobbyRowsHtml()`**](#renderlobbyrowshtml) | [app.js:9736](app.js#L9736) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderLobbyRowsHtml | 5x |
-| 235 | [**`buildRoundCell()`**](#buildroundcell) | [app.js:9838](app.js#L9838) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk buildRoundCell | 3x |
-| 236 | [**`buildPenaltySelect()`**](#buildpenaltyselect) | [app.js:9915](app.js#L9915) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk buildPenaltySelect | 1x |
-| 237 | [**`loadSampleData()`**](#loadsampledata) | [app.js:9939](app.js#L9939) | 📦 Modul Aplikasi Umum | Sample Data Roster with Nicknames (Purely Generic Dummy Data for Simulation... | 1x |
-| 238 | [**`clearAllData()`**](#clearalldata) | [app.js:10143](app.js#L10143) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk clearAllData | 1x |
-| 239 | [**`setMLBBViewMode()`**](#setmlbbviewmode) | [app.js:10222](app.js#L10222) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | --- TAMPILAN VIEW SWITCHER MLBB --- | 6x |
-| 240 | [**`setMCGGViewMode()`**](#setmcggviewmode) | [app.js:10272](app.js#L10272) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | --- TAMPILAN VIEW SWITCHER MCGG --- | 4x |
-| 241 | [**`togglePlayoffBracketCollapse()`**](#toggleplayoffbracketcollapse) | [app.js:10308](app.js#L10308) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk togglePlayoffBracketCollapse | 1x |
-| 242 | [**`goToNextMLBBPlayoffPhase()`**](#gotonextmlbbplayoffphase) | [app.js:10320](app.js#L10320) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk goToNextMLBBPlayoffPhase | 2x |
-| 243 | [**`setPlayoffBracketFilter()`**](#setplayoffbracketfilter) | [app.js:10337](app.js#L10337) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setPlayoffBracketFilter | 2x |
-| 244 | [**`togglePlayoffFullscreen()`**](#toggleplayofffullscreen) | [app.js:10344](app.js#L10344) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk togglePlayoffFullscreen | 1x |
-| 245 | [**`renderSingleMatchNodeHtml()`**](#rendersinglematchnodehtml) | [app.js:10357](app.js#L10357) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderSingleMatchNodeHtml | 13x |
-| 246 | [**`renderSvgConnectorColumn()`**](#rendersvgconnectorcolumn) | [app.js:10409](app.js#L10409) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderSvgConnectorColumn | 9x |
-| 247 | [**`renderFullPlayoffBracketHtml()`**](#renderfullplayoffbrackethtml) | [app.js:10441](app.js#L10441) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderFullPlayoffBracketHtml | 2x |
-| 248 | [**`selectMLBBStageNode()`**](#selectmlbbstagenode) | [app.js:10654](app.js#L10654) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk selectMLBBStageNode | 17x |
-| 249 | [**`renderMLBBInteractiveHubUI()`**](#rendermlbbinteractivehubui) | [app.js:10665](app.js#L10665) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderMLBBInteractiveHubUI | 18x |
-| 250 | [**`renderMLBBDetailPanelContent()`**](#rendermlbbdetailpanelcontent) | [app.js:10887](app.js#L10887) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderMLBBDetailPanelContent | 1x |
-| 251 | [**`selectMCGGFlowNode()`**](#selectmcggflownode) | [app.js:11266](app.js#L11266) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | ---------------------------------------------------------------------------... | 7x |
-| 252 | [**`renderMCGGInteractiveHubUI()`**](#rendermcgginteractivehubui) | [app.js:11271](app.js#L11271) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGInteractiveHubUI | 5x |
-| 253 | [**`renderMCGGDetailPanelContent()`**](#rendermcggdetailpanelcontent) | [app.js:11399](app.js#L11399) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGDetailPanelContent | 1x |
-| 254 | [**`shuffleMCGG32Besar()`**](#shufflemcgg32besar) | [app.js:11608](app.js#L11608) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk shuffleMCGG32Besar | 1x |
+| 131 | [**`updateGroupRecord()`**](#updategrouprecord) | [app.js:5003](app.js#L5003) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk updateGroupRecord | 4x |
+| 132 | [**`getMLBBHeadToHeadWinner()`**](#getmlbbheadtoheadwinner) | [app.js:5017](app.js#L5017) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Helper mencari pemenang head-to-head (pertemuan langsung) antar 2 tim di fa... | 1x |
+| 133 | [**`compareMLBBTeams()`**](#comparemlbbteams) | [app.js:5084](app.js#L5084) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Komparator resmi urutan klasemen MLBB sesuai regulasi resmi Turnamen Yokke ... | 1x |
+| 134 | [**`getSortedGroupTeams()`**](#getsortedgroupteams) | [app.js:5118](app.js#L5118) | 📦 Modul Aplikasi Umum | Helper untuk mengambil daftar tim terurut di suatu grup MLBB dengan kalkula... | 13x |
+| 135 | [**`shuffleArray()`**](#shufflearray) | [app.js:5146](app.js#L5146) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk shuffleArray | 9x |
+| 136 | [**`findValidBracketPermutation()`**](#findvalidbracketpermutation) | [app.js:5155](app.js#L5155) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk findValidBracketPermutation | 4x |
+| 137 | [**`backtrack()`**](#backtrack) | [app.js:5157](app.js#L5157) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk backtrack | 5x |
+| 138 | [**`isTeamAtmo()`**](#isteamatmo) | [app.js:5179](app.js#L5179) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isTeamAtmo | 2x |
+| 139 | [**`isTeamAlpha()`**](#isteamalpha) | [app.js:5184](app.js#L5184) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isTeamAlpha | 2x |
+| 140 | [**`isTeamAppa()`**](#isteamappa) | [app.js:5190](app.js#L5190) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isTeamAppa | 1x |
+| 141 | [**`isPlayoffInvitedTeam()`**](#isplayoffinvitedteam) | [app.js:5195](app.js#L5195) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk isPlayoffInvitedTeam | 2x |
+| 142 | [**`solveRemainingBracketSlots()`**](#solveremainingbracketslots) | [app.js:5207](app.js#L5207) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk solveRemainingBracketSlots | 3x |
+| 143 | [**`backtrack()`**](#backtrack) | [app.js:5209](app.js#L5209) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk backtrack | 5x |
+| 144 | [**`drawMLBBPlayoffUpperBracket()`**](#drawmlbbplayoffupperbracket) | [app.js:5235](app.js#L5235) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Algoritma Pengundian Cerdas Playoff Upper Bracket 16 Besar (MLBB): 1. Undi ... | 1x |
+| 145 | [**`isInv()`**](#isinv) | [app.js:5236](app.js#L5236) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isInv | 7x |
+| 146 | [**`drawMLBBPlayoffLowerBracket()`**](#drawmlbbplayofflowerbracket) | [app.js:5355](app.js#L5355) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk drawMLBBPlayoffLowerBracket | 1x |
+| 147 | [**`isInv()`**](#isinv) | [app.js:5356](app.js#L5356) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk isInv | 7x |
+| 148 | [**`initGroupPlayoff()`**](#initgroupplayoff) | [app.js:5392](app.js#L5392) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menghasilkan bagan Playoff MLBB berdasarkan klasemen akhir grup (Cross-Seed... | 11x |
+| 149 | [**`pickGroupPlayoffWinner()`**](#pickgroupplayoffwinner) | [app.js:5635](app.js#L5635) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menetapkan tim pemenang pada pertandingan bagan Playoff dan meloloskannya k... | 2x |
+| 150 | [**`promptPlayoffMVP()`**](#promptplayoffmvp) | [app.js:5803](app.js#L5803) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk promptPlayoffMVP | 1x |
+| 151 | [**`renderGroupStageUI()`**](#rendergroupstageui) | [app.js:5810](app.js#L5810) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderGroupStageUI | 15x |
+| 152 | [**`resolveTeamNameInGroup()`**](#resolveteamnameingroup) | [app.js:6165](app.js#L6165) | 📦 Modul Aplikasi Umum | Helper pencocokan nama tim di dalam grup (toleran terhadap variasi penulisa... | 2x |
+| 153 | [**`isSameTeamName()`**](#issameteamname) | [app.js:6181](app.js#L6181) | 📦 Modul Aplikasi Umum | Helper pencocokan nama tim yang toleran terhadap format huruf besar/kecil, ... | 36x |
+| 154 | [**`findGroupNameForTeam()`**](#findgroupnameforteam) | [app.js:6197](app.js#L6197) | 📦 Modul Aplikasi Umum | Helper untuk mendeteksi nama grup berdasarkan nama tim di groupStageData | 4x |
+| 155 | [**`setMLBBActiveWeek()`**](#setmlbbactiveweek) | [app.js:6249](app.js#L6249) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveWeek | 3x |
+| 156 | [**`setMLBBActiveDayFilter()`**](#setmlbbactivedayfilter) | [app.js:6257](app.js#L6257) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveDayFilter | 6x |
+| 157 | [**`setMLBBActiveGroupFilter()`**](#setmlbbactivegroupfilter) | [app.js:6262](app.js#L6262) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setMLBBActiveGroupFilter | 1x |
+| 158 | [**`getGroupFixtures()`**](#getgroupfixtures) | [app.js:6268](app.js#L6268) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | --- BAGAN PERTANDINGAN FASE GRUP TERDISTRIBUSI 4 HARI (ROUND-ROBIN BO3) --- | 6x |
+| 159 | [**`getCanonicalGroupMatchId()`**](#getcanonicalgroupmatchid) | [app.js:6462](app.js#L6462) | 📦 Modul Aplikasi Umum | Helper untuk mendapatkan Canonical Match ID yang unik per pasangan tim (tid... | 7x |
+| 160 | [**`isGroupMatchesCompleted()`**](#isgroupmatchescompleted) | [app.js:6471](app.js#L6471) | 📦 Modul Aplikasi Umum | Helper untuk memeriksa apakah seluruh pertandingan dalam suatu grup telah s... | 3x |
+| 161 | [**`deduplicateGroupMatchResults()`**](#deduplicategroupmatchresults) | [app.js:6489](app.js#L6489) | 📦 Modul Aplikasi Umum | Pembersihan & Deduplikasi Otomatis groupMatchResults agar tidak ada entri t... | 3x |
+| 162 | [**`getGroupRestingTeams()`**](#getgrouprestingteams) | [app.js:6581](app.js#L6581) | 📦 Modul Aplikasi Umum | Mendapatkan daftar tim yang istirahat (tidak bermain) pada hari tertentu di... | 1x |
+| 163 | [**`setGroupMatchScore()`**](#setgroupmatchscore) | [app.js:6592](app.js#L6592) | 📦 Modul Aplikasi Umum | Menyimpan skor pertandingan grup MLBB dan memperbarui klasemen grup secara ... | 7x |
+| 164 | [**`promptGroupMatchWO()`**](#promptgroupmatchwo) | [app.js:6702](app.js#L6702) | 📦 Modul Aplikasi Umum | Dialog wasit untuk menetapkan tim yang Kalah WO (Walkover) baik 1 tim maupu... | 1x |
+| 165 | [**`setGroupMatchSpecialResult()`**](#setgroupmatchspecialresult) | [app.js:6727](app.js#L6727) | 📦 Modul Aplikasi Umum | Helper aksi instan wasit untuk hasil khusus (Keduanya WO, Tim WO, atau Imba... | 4x |
+| 166 | [**`saveGroupFixtureScore()`**](#savegroupfixturescore) | [app.js:6736](app.js#L6736) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk saveGroupFixtureScore | 1x |
+| 167 | [**`findTeamParticipant()`**](#findteamparticipant) | [app.js:6775](app.js#L6775) | 👥 Manajemen Peserta & Roster | Helper mencari data peserta tim dengan normalisasi nama | 4x |
+| 168 | [**`openMLBBGroupMvpModal()`**](#openmlbbgroupmvpmodal) | [app.js:6789](app.js#L6789) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk openMLBBGroupMvpModal | 3x |
+| 169 | [**`openMLBBPlayoffMvpModal()`**](#openmlbbplayoffmvpmodal) | [app.js:6863](app.js#L6863) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk openMLBBPlayoffMvpModal | 1x |
+| 170 | [**`initAndShowMvpModal()`**](#initandshowmvpmodal) | [app.js:6912](app.js#L6912) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk initAndShowMvpModal | 2x |
+| 171 | [**`renderMvpGameTabs()`**](#rendermvpgametabs) | [app.js:6959](app.js#L6959) | 🔧 Helper & UI Utility | Fungsi operasional untuk renderMvpGameTabs | 3x |
+| 172 | [**`switchMvpGameTab()`**](#switchmvpgametab) | [app.js:6991](app.js#L6991) | 🔧 Helper & UI Utility | Fungsi operasional untuk switchMvpGameTab | 1x |
+| 173 | [**`closeMLBBGroupMvpModal()`**](#closemlbbgroupmvpmodal) | [app.js:7049](app.js#L7049) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk closeMLBBGroupMvpModal | 5x |
+| 174 | [**`switchMvpTeamTab()`**](#switchmvpteamtab) | [app.js:7054](app.js#L7054) | 🔧 Helper & UI Utility | Fungsi operasional untuk switchMvpTeamTab | 4x |
+| 175 | [**`renderMvpRosterList()`**](#rendermvprosterlist) | [app.js:7085](app.js#L7085) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk renderMvpRosterList | 3x |
+| 176 | [**`filterMvpRosterList()`**](#filtermvprosterlist) | [app.js:7152](app.js#L7152) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk filterMvpRosterList | 1x |
+| 177 | [**`selectMvpPlayer()`**](#selectmvpplayer) | [app.js:7158](app.js#L7158) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk selectMvpPlayer | 1x |
+| 178 | [**`renderMvpQuickHeroChips()`**](#rendermvpquickherochips) | [app.js:7190](app.js#L7190) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderMvpQuickHeroChips | 3x |
+| 179 | [**`selectMvpQuickHero()`**](#selectmvpquickhero) | [app.js:7210](app.js#L7210) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk selectMvpQuickHero | 1x |
+| 180 | [**`saveSelectedMvp()`**](#saveselectedmvp) | [app.js:7227](app.js#L7227) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk saveSelectedMvp | 2x |
+| 181 | [**`deleteCurrentMvp()`**](#deletecurrentmvp) | [app.js:7299](app.js#L7299) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk deleteCurrentMvp | 1x |
+| 182 | [**`setGroupMatchMVP()`**](#setgroupmatchmvp) | [app.js:7351](app.js#L7351) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk setGroupMatchMVP | 3x |
+| 183 | [**`formatMatchMvpDisplayHtml()`**](#formatmatchmvpdisplayhtml) | [app.js:7439](app.js#L7439) | 🔧 Helper & UI Utility | Format render display HTML untuk MVP match (Mendukung Multi-Game BO3 / BO5) | 2x |
+| 184 | [**`promptGroupMatchMVP()`**](#promptgroupmatchmvp) | [app.js:7466](app.js#L7466) | 📦 Modul Aplikasi Umum | Delegasi fungsi promptGroupMatchMVP ke modal interaktif | 1x |
+| 185 | [**`openMatchPlayerVerifyModal()`**](#openmatchplayerverifymodal) | [app.js:7483](app.js#L7483) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk openMatchPlayerVerifyModal | 2x |
+| 186 | [**`closeMatchPlayerVerifyModal()`**](#closematchplayerverifymodal) | [app.js:7521](app.js#L7521) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk closeMatchPlayerVerifyModal | 2x |
+| 187 | [**`toggleMatchPlayerVerify()`**](#togglematchplayerverify) | [app.js:7530](app.js#L7530) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk toggleMatchPlayerVerify | 1x |
+| 188 | [**`verifyAllMatchPlayers()`**](#verifyallmatchplayers) | [app.js:7548](app.js#L7548) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk verifyAllMatchPlayers | 2x |
+| 189 | [**`renderMatchPlayerVerifyModalContent()`**](#rendermatchplayerverifymodalcontent) | [app.js:7571](app.js#L7571) | 🆔 Modal Dialog & Bukti ID Card | Fungsi operasional untuk renderMatchPlayerVerifyModalContent | 3x |
+| 190 | [**`renderTeamRosterColumn()`**](#renderteamrostercolumn) | [app.js:7627](app.js#L7627) | 👥 Manajemen Peserta & Roster | Helper untuk merender kolom roster tiap tim | 2x |
+| 191 | [**`resetGroupMatchScore()`**](#resetgroupmatchscore) | [app.js:7730](app.js#L7730) | 📦 Modul Aplikasi Umum | Mereset skor pertandingan grup MLBB ke status belum bertanding. | 0x |
+| 192 | [**`recalculateGroupStandingsFromFixtures()`**](#recalculategroupstandingsfromfixtures) | [app.js:7745](app.js#L7745) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Menghitung ulang total poin, menang, dan kalah tim di grup berdasarkan selu... | 4x |
+| 193 | [**`renderGroupFixturesUI()`**](#rendergroupfixturesui) | [app.js:7885](app.js#L7885) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderGroupFixturesUI | 11x |
+| 194 | [**`renderGroupPlayoffTree()`**](#rendergroupplayofftree) | [app.js:8166](app.js#L8166) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Merender bagan pohon eliminasi Playoff (Semifinal & Grand Final) atau statu... | 9x |
+| 195 | [**`changeMCGGLobby()`**](#changemcgglobby) | [app.js:8283](app.js#L8283) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | MCGG MULTI-LOBBY STANDINGS | 0x |
+| 196 | [**`getCommanderById()`**](#getcommanderbyid) | [app.js:8289](app.js#L8289) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Mencari objek data commander dari master list berdasarkan ID, nama hero, at... | 1x |
+| 197 | [**`updateCommanderPoolFromSetup()`**](#updatecommanderpoolfromsetup) | [app.js:8302](app.js#L8302) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk updateCommanderPoolFromSetup | 1x |
+| 198 | [**`getVerifiedMCGGPlayers()`**](#getverifiedmcggplayers) | [app.js:8361](app.js#L8361) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk getVerifiedMCGGPlayers | 2x |
+| 199 | [**`syncMCGGPlayers()`**](#syncmcggplayers) | [app.js:8369](app.js#L8369) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk syncMCGGPlayers | 8x |
+| 200 | [**`findPrevious()`**](#findprevious) | [app.js:8381](app.js#L8381) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk findPrevious | 1x |
+| 201 | [**`mapPlayerObj()`**](#mapplayerobj) | [app.js:8393](app.js#L8393) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapPlayerObj | 2x |
+| 202 | [**`allocateLobbiesByCluster()`**](#allocatelobbiesbycluster) | [app.js:8412](app.js#L8412) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Helper alokasi lobi berbasis Klaster Divisi Resmi Yokke (Anti-Bentrok Fase ... | 3x |
+| 203 | [**`shuffleMCGGPlayers()`**](#shufflemcggplayers) | [app.js:8587](app.js#L8587) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk shuffleMCGGPlayers | 2x |
+| 204 | [**`isMCGGLobbyPointsFull()`**](#ismcgglobbypointsfull) | [app.js:8604](app.js#L8604) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk isMCGGLobbyPointsFull | 4x |
+| 205 | [**`isMCGGQualificationFull()`**](#ismcggqualificationfull) | [app.js:8610](app.js#L8610) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memeriksa apakah ronde kualifikasi Lobi A dan Lobi B telah selesai penuh (3... | 11x |
+| 206 | [**`isMCGGSemiFinalFull()`**](#ismcggsemifinalfull) | [app.js:8616](app.js#L8616) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk isMCGGSemiFinalFull | 1x |
+| 207 | [**`compareMCGGPlayers()`**](#comparemcggplayers) | [app.js:8628](app.js#L8628) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Komparator resmi urutan klasemen MCGG sesuai regulasi: 1. Total Poin Akhir ... | 0x |
+| 208 | [**`syncMCGGSemiFinal()`**](#syncmcggsemifinal) | [app.js:8659](app.js#L8659) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk syncMCGGSemiFinal | 2x |
+| 209 | [**`findPrevSemi()`**](#findprevsemi) | [app.js:8696](app.js#L8696) | 📦 Modul Aplikasi Umum | Preserve poin semifinal jika sudah ada | 1x |
+| 210 | [**`mapSemiPlayer()`**](#mapsemiplayer) | [app.js:8704](app.js#L8704) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapSemiPlayer | 0x |
+| 211 | [**`syncMCGGGrandFinal()`**](#syncmcgggrandfinal) | [app.js:8726](app.js#L8726) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Menyaring Top 4 Lobi A dan Top 4 Lobi B untuk ditempatkan ke Grand Final se... | 7x |
+| 212 | [**`findPrevInArr()`**](#findprevinarr) | [app.js:8733](app.js#L8733) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk findPrevInArr | 1x |
+| 213 | [**`mapGFPlayer()`**](#mapgfplayer) | [app.js:8742](app.js#L8742) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk mapGFPlayer | 4x |
+| 214 | [**`updateMCGGRank()`**](#updatemcggrank) | [app.js:8810](app.js#L8810) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memperbarui peringkat ronde (R1, R2, R3) pemain MCGG dan mengkalkulasi poin... | 1x |
+| 215 | [**`updateMCGGCommander()`**](#updatemcggcommander) | [app.js:8848](app.js#L8848) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Memperbarui pilihan commander pemain dan memicu validasi duplikasi commande... | 1x |
+| 216 | [**`updateMCGGPenalty()`**](#updatemcggpenalty) | [app.js:8883](app.js#L8883) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Mengisi nilai penalti kedisiplinan pemain MCGG dan memperbarui total akumul... | 1x |
+| 217 | [**`renderLobbyCommanderDrawPanelHtml()`**](#renderlobbycommanderdrawpanelhtml) | [app.js:8922](app.js#L8922) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | MESIN UNDIAN COMMANDER MCGG (SESUAI REGULASI RESMI) | 5x |
+| 218 | [**`drawMatchPool()`**](#drawmatchpool) | [app.js:9172](app.js#L9172) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 1: Acak 8 Pool ... | 2x |
+| 219 | [**`assignMatchPoolToPlayers()`**](#assignmatchpooltoplayers) | [app.js:9247](app.js#L9247) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 2: Pasangkan 8 ... | 2x |
+| 220 | [**`toggleLockMatchDraw()`**](#togglelockmatchdraw) | [app.js:9298](app.js#L9298) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 3: Kunci Match ... | 1x |
+| 221 | [**`nextMatchDraw()`**](#nextmatchdraw) | [app.js:9325](app.js#L9325) | 📦 Modul Aplikasi Umum | ---------------------------------------------------- FUNGSI 4: Lanjut ke Ma... | 1x |
+| 222 | [**`drawMatchCommanders()`**](#drawmatchcommanders) | [app.js:9342](app.js#L9342) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Backward compatibility helper | 3x |
+| 223 | [**`switchLobbyDrawView()`**](#switchlobbydrawview) | [app.js:9348](app.js#L9348) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk switchLobbyDrawView | 5x |
+| 224 | [**`resetLobbyDraw()`**](#resetlobbydraw) | [app.js:9354](app.js#L9354) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk resetLobbyDraw | 2x |
+| 225 | [**`copyCommanderDrawText()`**](#copycommanderdrawtext) | [app.js:9375](app.js#L9375) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Menyalin rekapitulasi teks hasil undian Little Commander ke clipboard untuk... | 2x |
+| 226 | [**`showMatch3DraftInfo()`**](#showmatch3draftinfo) | [app.js:9410](app.js#L9410) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk showMatch3DraftInfo | 1x |
+| 227 | [**`changeCommanderDrawTarget()`**](#changecommanderdrawtarget) | [app.js:9421](app.js#L9421) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk changeCommanderDrawTarget | 1x |
+| 228 | [**`setDrawTargetAndScroll()`**](#setdrawtargetandscroll) | [app.js:9428](app.js#L9428) | 🔧 Helper & UI Utility | Fungsi operasional untuk setDrawTargetAndScroll | 0x |
+| 229 | [**`scrollToMCGGLobby()`**](#scrolltomcgglobby) | [app.js:9433](app.js#L9433) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk scrollToMCGGLobby | 3x |
+| 230 | [**`renderMCGGLobbyAnchorBar()`**](#rendermcgglobbyanchorbar) | [app.js:9440](app.js#L9440) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGLobbyAnchorBar | 2x |
+| 231 | [**`renderMCGGLobbySelectOptions()`**](#rendermcgglobbyselectoptions) | [app.js:9476](app.js#L9476) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGLobbySelectOptions | 3x |
+| 232 | [**`renderMCGGTable()`**](#rendermcggtable) | [app.js:9519](app.js#L9519) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Merender tabel klasemen dan poin turnamen Magic Chess Go Go untuk lobi yang... | 29x |
+| 233 | [**`getLobbyShortLabel()`**](#getlobbyshortlabel) | [app.js:9576](app.js#L9576) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk getLobbyShortLabel | 0x |
+| 234 | [**`renderLobbyRowsHtml()`**](#renderlobbyrowshtml) | [app.js:9746](app.js#L9746) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderLobbyRowsHtml | 5x |
+| 235 | [**`buildRoundCell()`**](#buildroundcell) | [app.js:9848](app.js#L9848) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk buildRoundCell | 3x |
+| 236 | [**`buildPenaltySelect()`**](#buildpenaltyselect) | [app.js:9925](app.js#L9925) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk buildPenaltySelect | 1x |
+| 237 | [**`loadSampleData()`**](#loadsampledata) | [app.js:9949](app.js#L9949) | 📦 Modul Aplikasi Umum | Sample Data Roster with Nicknames (Purely Generic Dummy Data for Simulation... | 1x |
+| 238 | [**`clearAllData()`**](#clearalldata) | [app.js:10153](app.js#L10153) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk clearAllData | 1x |
+| 239 | [**`setMLBBViewMode()`**](#setmlbbviewmode) | [app.js:10232](app.js#L10232) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | --- TAMPILAN VIEW SWITCHER MLBB --- | 6x |
+| 240 | [**`setMCGGViewMode()`**](#setmcggviewmode) | [app.js:10282](app.js#L10282) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | --- TAMPILAN VIEW SWITCHER MCGG --- | 4x |
+| 241 | [**`togglePlayoffBracketCollapse()`**](#toggleplayoffbracketcollapse) | [app.js:10318](app.js#L10318) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk togglePlayoffBracketCollapse | 1x |
+| 242 | [**`goToNextMLBBPlayoffPhase()`**](#gotonextmlbbplayoffphase) | [app.js:10330](app.js#L10330) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk goToNextMLBBPlayoffPhase | 2x |
+| 243 | [**`setPlayoffBracketFilter()`**](#setplayoffbracketfilter) | [app.js:10354](app.js#L10354) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk setPlayoffBracketFilter | 2x |
+| 244 | [**`togglePlayoffFullscreen()`**](#toggleplayofffullscreen) | [app.js:10361](app.js#L10361) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk togglePlayoffFullscreen | 1x |
+| 245 | [**`renderSingleMatchNodeHtml()`**](#rendersinglematchnodehtml) | [app.js:10374](app.js#L10374) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderSingleMatchNodeHtml | 13x |
+| 246 | [**`renderSvgConnectorColumn()`**](#rendersvgconnectorcolumn) | [app.js:10426](app.js#L10426) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk renderSvgConnectorColumn | 9x |
+| 247 | [**`renderFullPlayoffBracketHtml()`**](#renderfullplayoffbrackethtml) | [app.js:10458](app.js#L10458) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderFullPlayoffBracketHtml | 2x |
+| 248 | [**`selectMLBBStageNode()`**](#selectmlbbstagenode) | [app.js:10671](app.js#L10671) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk selectMLBBStageNode | 17x |
+| 249 | [**`renderMLBBInteractiveHubUI()`**](#rendermlbbinteractivehubui) | [app.js:10682](app.js#L10682) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderMLBBInteractiveHubUI | 19x |
+| 250 | [**`renderMLBBDetailPanelContent()`**](#rendermlbbdetailpanelcontent) | [app.js:10904](app.js#L10904) | ⚔️ Turnamen MLBB (Bagan, Grup & Playoff Engine) | Fungsi operasional untuk renderMLBBDetailPanelContent | 1x |
+| 251 | [**`selectMCGGFlowNode()`**](#selectmcggflownode) | [app.js:11283](app.js#L11283) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | ---------------------------------------------------------------------------... | 7x |
+| 252 | [**`renderMCGGInteractiveHubUI()`**](#rendermcgginteractivehubui) | [app.js:11288](app.js#L11288) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGInteractiveHubUI | 5x |
+| 253 | [**`renderMCGGDetailPanelContent()`**](#rendermcggdetailpanelcontent) | [app.js:11416](app.js#L11416) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk renderMCGGDetailPanelContent | 1x |
+| 254 | [**`shuffleMCGG32Besar()`**](#shufflemcgg32besar) | [app.js:11625](app.js#L11625) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk shuffleMCGG32Besar | 1x |
 | 255 | [**`getTargetSpreadsheet()`**](#gettargetspreadsheet) | [google_apps_script.js:38](google_apps_script.js#L38) | 🗄️ Google Sheets Schema & Master Data | Mendapatkan spreadsheet target turnamen secara andal. Membuka spreadsheet b... | 5x |
 | 256 | [**`safeSetSharing()`**](#safesetsharing) | [google_apps_script.js:58](google_apps_script.js#L58) | ⚙️ Backend Apps Script Utility | Mengatur permission sharing secara aman. Menghindari error 'Access denied: ... | 6x |
 | 257 | [**`getOrCreateUploadFolder()`**](#getorcreateuploadfolder) | [google_apps_script.js:76](google_apps_script.js#L76) | ⚙️ Backend Apps Script Utility | Mendapatkan atau membuat folder upload utama secara andal. Jika TARGET_FOLD... | 4x |
@@ -336,11 +336,11 @@
 
 - **Definisi:** [`app.js:2`](app.js#L2)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:9585`](app.js#L9585) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9595`](app.js#L9595) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_1_QUAL' ? 'active' : ''}`
-  - [`app.js:9588`](app.js#L9588) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9598`](app.js#L9598) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_2_SEMI' ? 'active' : ''}`
-  - [`app.js:9591`](app.js#L9591) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9601`](app.js#L9601) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_3_FINAL' ? 'active' : ''`
 - **Memanggil Fungsi Internal:** [`renderMCGGTable()`](#rendermcggtable)
 
@@ -361,7 +361,7 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:633`](index.html#L633) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMCGGGroupPage()" i`
-  - [`app.js:9603`](app.js#L9603) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9613`](app.js#L9613) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="btn btn-outline" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
   - [`functional_tests.js:866`](functional_tests.js#L866) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function prevMCGGGroupPage()'), 'Harus ada fungsi prevMCGGGroupPage');`
@@ -374,7 +374,7 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:639`](index.html#L639) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-right" onclick="nextMCGGGroupPage()" `
-  - [`app.js:9606`](app.js#L9606) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9616`](app.js#L9616) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="btn btn-primary" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
   - [`functional_tests.js:867`](functional_tests.js#L867) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function nextMCGGGroupPage()'), 'Harus ada fungsi nextMCGGGroupPage');`
@@ -385,7 +385,7 @@
 
 - **Definisi:** [`app.js:68`](app.js#L68)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9575`](app.js#L9575) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9585`](app.js#L9585) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="group-nav-tab-btn ${p === mcggGroupPageIndex ? 'active' : ''}" onclick=`
 - **Memanggil Fungsi Internal:** [`renderMCGGTable()`](#rendermcggtable)
 
@@ -402,13 +402,13 @@
 - **Definisi:** [`app.js:513`](app.js#L513)
 - **Deskripsi:** Helper Format Nama Commander: Hero [Alter] jika alter ada, atau Hero jika tidak ada
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:9385`](app.js#L9385) — di dalam fungsi `copyCommanderDrawText()`
+  - [`app.js:9395`](app.js#L9395) — di dalam fungsi `copyCommanderDrawText()`
     `const cmdName = getCommanderFormattedName(item.commander);`
-  - [`app.js:9848`](app.js#L9848) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9858`](app.js#L9858) — di dalam fungsi `buildRoundCell()`
     `const formattedName = getCommanderFormattedName(selectedCmd);`
-  - [`app.js:9874`](app.js#L9874) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9884`](app.js#L9884) — di dalam fungsi `buildRoundCell()`
     `const label = getCommanderFormattedName(c);`
-  - [`app.js:9883`](app.js#L9883) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9893`](app.js#L9893) — di dalam fungsi `buildRoundCell()`
     `const label = getCommanderFormattedName(c);`
   - [`functional_tests.js:706`](functional_tests.js#L706) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function getCommanderFormattedName('), 'Harus ada fungsi getCommanderFormat`
@@ -419,9 +419,9 @@
 - **Definisi:** [`app.js:524`](app.js#L524)
 - **Deskripsi:** Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Tabel Klasemen
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:9849`](app.js#L9849) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9859`](app.js#L9859) — di dalam fungsi `buildRoundCell()`
     `const circlesHtml = renderCommanderCirclesHtml(selectedCmd, 24);`
-  - [`app.js:9897`](app.js#L9897) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9907`](app.js#L9907) — di dalam fungsi `buildRoundCell()`
     `? renderCommanderCirclesHtml(selectedCmd, 22)`
   - [`functional_tests.js:707`](functional_tests.js#L707) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function renderCommanderCirclesHtml('), 'Harus ada fungsi renderCommanderCi`
@@ -432,7 +432,7 @@
 - **Definisi:** [`app.js:553`](app.js#L553)
 - **Deskripsi:** Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Kartu Hasil Undian
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9103`](app.js#L9103) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9113`](app.js#L9113) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `${renderCommanderCardVisualHtml(item.commander)}`
 
 <a id="resetmcggpointsanddraw"></a>
@@ -474,9 +474,9 @@
 - **Definisi:** [`app.js:4379`](app.js#L4379)
 - **Deskripsi:** 3. VALIDASI OTOMATIS COMMANDER DUPLIKAT MCGG (MATCH 2)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:8866`](app.js#L8866) — di dalam fungsi `updateMCGGCommander()`
+  - [`app.js:8876`](app.js#L8876) — di dalam fungsi `updateMCGGCommander()`
     `validateMCGGDuplicateCommander(targetLobby, idx);`
-  - [`app.js:9273`](app.js#L9273) — di dalam fungsi `assignMatchPoolToPlayers()`
+  - [`app.js:9283`](app.js#L9283) — di dalam fungsi `assignMatchPoolToPlayers()`
     `validateMCGGDuplicateCommander(lobbyKey, i);`
   - [`functional_tests.js:765`](functional_tests.js#L765) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function validateMCGGDuplicateCommander('), 'Harus ada fungsi validateMCGGD`
@@ -485,7 +485,7 @@
 <a id="changemcgglobby"></a>
 #### `changeMCGGLobby()`
 
-- **Definisi:** [`app.js:8273`](app.js#L8273)
+- **Definisi:** [`app.js:8283`](app.js#L8283)
 - **Deskripsi:** MCGG MULTI-LOBBY STANDINGS
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 - **Memanggil Fungsi Internal:** [`renderMCGGTable()`](#rendermcggtable)
@@ -493,16 +493,16 @@
 <a id="getcommanderbyid"></a>
 #### `getCommanderById(id)`
 
-- **Definisi:** [`app.js:8279`](app.js#L8279)
+- **Definisi:** [`app.js:8289`](app.js#L8289)
 - **Deskripsi:** Mencari objek data commander dari master list berdasarkan ID, nama hero, atau alter name.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9843`](app.js#L9843) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9853`](app.js#L9853) — di dalam fungsi `buildRoundCell()`
     `const selectedCmd = getCommanderById(selectedCmdId);`
 
 <a id="updatecommanderpoolfromsetup"></a>
 #### `updateCommanderPoolFromSetup(setupList)`
 
-- **Definisi:** [`app.js:8292`](app.js#L8292)
+- **Definisi:** [`app.js:8302`](app.js#L8302)
 - **Titik Pemanggilan (1 lokasi):**
   - [`app.js:1468`](app.js#L1468) — di dalam fungsi `fetchParticipantsFromGoogleSheet()`
     `updateCommanderPoolFromSetup(data.mcggCommanderSetup);`
@@ -511,9 +511,9 @@
 <a id="getverifiedmcggplayers"></a>
 #### `getVerifiedMCGGPlayers()`
 
-- **Definisi:** [`app.js:8351`](app.js#L8351)
+- **Definisi:** [`app.js:8361`](app.js#L8361)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8360`](app.js#L8360) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8370`](app.js#L8370) — di dalam fungsi `syncMCGGPlayers()`
     `let verified = getVerifiedMCGGPlayers();`
   - [`functional_tests.js:611`](functional_tests.js#L611) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function getVerifiedMCGGPlayers()'), 'Harus ada getVerifiedMCGGPlayers()');`
@@ -521,7 +521,7 @@
 <a id="syncmcggplayers"></a>
 #### `syncMCGGPlayers(doShuffle = false)`
 
-- **Definisi:** [`app.js:8359`](app.js#L8359)
+- **Definisi:** [`app.js:8369`](app.js#L8369)
 - **Titik Pemanggilan (8 lokasi):**
   - [`index.html:591`](index.html#L591) — Event `onclick`
     `<button id="adminSyncMCGG" class="btn btn-primary" style="display: none; font-size: 0.85rem;" onclic`
@@ -533,23 +533,23 @@
     `syncMCGGPlayers();`
   - [`app.js:3486`](app.js#L3486) — di dalam fungsi `saveParticipantEdit()`
     `syncMCGGPlayers();`
-  - [`app.js:8590`](app.js#L8590) — di dalam fungsi `shuffleMCGGPlayers()`
+  - [`app.js:8600`](app.js#L8600) — di dalam fungsi `shuffleMCGGPlayers()`
     `syncMCGGPlayers(true);`
-  - [`app.js:10140`](app.js#L10140) — di dalam fungsi `loadSampleData()`
+  - [`app.js:10150`](app.js#L10150) — di dalam fungsi `loadSampleData()`
     `syncMCGGPlayers();`
-  - [`app.js:10155`](app.js#L10155) — di dalam fungsi `clearAllData()`
+  - [`app.js:10165`](app.js#L10165) — di dalam fungsi `clearAllData()`
     `syncMCGGPlayers();`
 - **Memanggil Fungsi Internal:** [`getVerifiedMCGGPlayers()`](#getverifiedmcggplayers), [`findPrevious()`](#findprevious), [`getDepartmentCluster()`](#getdepartmentcluster), [`mapPlayerObj()`](#mapplayerobj), [`syncMCGGSemiFinal()`](#syncmcggsemifinal), [`syncMCGGGrandFinal()`](#syncmcgggrandfinal), [`saveState()`](#savestate), [`renderMCGGLobbySelectOptions()`](#rendermcgglobbyselectoptions), [`renderMCGGTable()`](#rendermcggtable), [`allocateLobbiesByCluster()`](#allocatelobbiesbycluster)
 
 <a id="allocatelobbiesbycluster"></a>
 #### `allocateLobbiesByCluster(playerList, lobbyKeys, targetCaps)`
 
-- **Definisi:** [`app.js:8402`](app.js#L8402)
+- **Definisi:** [`app.js:8412`](app.js#L8412)
 - **Deskripsi:** Helper alokasi lobi berbasis Klaster Divisi Resmi Yokke (Anti-Bentrok Fase Awal)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:8544`](app.js#L8544) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8554`](app.js#L8554) — di dalam fungsi `syncMCGGPlayers()`
     `allocateLobbiesByCluster(verified, ['LOBBY_A', 'LOBBY_B'], [countA, countB]);`
-  - [`app.js:8561`](app.js#L8561) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8571`](app.js#L8571) — di dalam fungsi `syncMCGGPlayers()`
     `allocateLobbiesByCluster(verified, qualKeys, targetCaps);`
   - [`functional_tests.js:1094`](functional_tests.js#L1094) — pada skenario pengujian
     `allocateLobbiesByCluster(verified, qualKeys, targetCaps);`
@@ -557,7 +557,7 @@
 <a id="shufflemcggplayers"></a>
 #### `shuffleMCGGPlayers()`
 
-- **Definisi:** [`app.js:8577`](app.js#L8577)
+- **Definisi:** [`app.js:8587`](app.js#L8587)
 - **Titik Pemanggilan (2 lokasi):**
   - [`index.html:592`](index.html#L592) — Event `onclick`
     `<button id="adminShuffleMCGG" class="btn btn-gold" style="display: none; font-size: 0.85rem;" onclic`
@@ -568,42 +568,42 @@
 <a id="ismcgglobbypointsfull"></a>
 #### `isMCGGLobbyPointsFull(lobbyKey)`
 
-- **Definisi:** [`app.js:8594`](app.js#L8594)
+- **Definisi:** [`app.js:8604`](app.js#L8604)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:8603`](app.js#L8603) — di dalam fungsi `isMCGGQualificationFull()`
+  - [`app.js:8613`](app.js#L8613) — di dalam fungsi `isMCGGQualificationFull()`
     `return qualKeys.every(k => isMCGGLobbyPointsFull(k));`
-  - [`app.js:8608`](app.js#L8608) — di dalam fungsi `isMCGGSemiFinalFull()`
+  - [`app.js:8618`](app.js#L8618) — di dalam fungsi `isMCGGSemiFinalFull()`
     `return isMCGGLobbyPointsFull('SEMI_A') && isMCGGLobbyPointsFull('SEMI_B');`
-  - [`app.js:9791`](app.js#L9791) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9801`](app.js#L9801) — di dalam fungsi `renderLobbyRowsHtml()`
     `const isLobbyFull = isMCGGLobbyPointsFull('LOBBY_A');`
-  - [`app.js:9804`](app.js#L9804) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9814`](app.js#L9814) — di dalam fungsi `renderLobbyRowsHtml()`
     `const isThisLobbyFull = isMCGGLobbyPointsFull(lobbyKey);`
 
 <a id="ismcggqualificationfull"></a>
 #### `isMCGGQualificationFull()`
 
-- **Definisi:** [`app.js:8600`](app.js#L8600)
+- **Definisi:** [`app.js:8610`](app.js#L8610)
 - **Deskripsi:** Memeriksa apakah ronde kualifikasi Lobi A dan Lobi B telah selesai penuh (3 ronde).
 - **Titik Pemanggilan (11 lokasi):**
-  - [`app.js:8653`](app.js#L8653) — di dalam fungsi `syncMCGGSemiFinal()`
+  - [`app.js:8663`](app.js#L8663) — di dalam fungsi `syncMCGGSemiFinal()`
     `const isQualDone = isMCGGQualificationFull();`
-  - [`app.js:8777`](app.js#L8777) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8787`](app.js#L8787) — di dalam fungsi `syncMCGGGrandFinal()`
     `const isFull = isMCGGQualificationFull();`
-  - [`app.js:8816`](app.js#L8816) — di dalam fungsi `updateMCGGRank()`
+  - [`app.js:8826`](app.js#L8826) — di dalam fungsi `updateMCGGRank()`
     `if (targetLobby === 'GRAND_FINAL' && !isMCGGQualificationFull()) {`
-  - [`app.js:8854`](app.js#L8854) — di dalam fungsi `updateMCGGCommander()`
+  - [`app.js:8864`](app.js#L8864) — di dalam fungsi `updateMCGGCommander()`
     `if (targetLobby === 'GRAND_FINAL' && !isMCGGQualificationFull()) {`
-  - [`app.js:8887`](app.js#L8887) — di dalam fungsi `updateMCGGPenalty()`
+  - [`app.js:8897`](app.js#L8897) — di dalam fungsi `updateMCGGPenalty()`
     `if (targetLobby === 'GRAND_FINAL' && !isMCGGQualificationFull()) {`
-  - [`app.js:9173`](app.js#L9173) — di dalam fungsi `drawMatchPool()`
+  - [`app.js:9183`](app.js#L9183) — di dalam fungsi `drawMatchPool()`
     `if (lobbyKey === 'GRAND_FINAL' && !isMCGGQualificationFull()) {`
-  - [`app.js:9435`](app.js#L9435) — di dalam fungsi `renderMCGGLobbyAnchorBar()`
+  - [`app.js:9445`](app.js#L9445) — di dalam fungsi `renderMCGGLobbyAnchorBar()`
     `const isQualFull = isMCGGQualificationFull();`
-  - [`app.js:9467`](app.js#L9467) — di dalam fungsi `renderMCGGLobbySelectOptions()`
+  - [`app.js:9477`](app.js#L9477) — di dalam fungsi `renderMCGGLobbySelectOptions()`
     `const isQualFull = isMCGGQualificationFull();`
-  - [`app.js:9533`](app.js#L9533) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9543`](app.js#L9543) — di dalam fungsi `renderMCGGTable()`
     `const isQualFull = isMCGGQualificationFull();`
-  - [`app.js:9738`](app.js#L9738) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9748`](app.js#L9748) — di dalam fungsi `renderLobbyRowsHtml()`
     `const isQualFull = isMCGGQualificationFull();`
   - [`functional_tests.js:625`](functional_tests.js#L625) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('isMCGGQualificationFull()'), 'app.js harus memeriksa apakah poin kualifikas`
@@ -612,93 +612,93 @@
 <a id="ismcggsemifinalfull"></a>
 #### `isMCGGSemiFinalFull()`
 
-- **Definisi:** [`app.js:8606`](app.js#L8606)
+- **Definisi:** [`app.js:8616`](app.js#L8616)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8747`](app.js#L8747) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8757`](app.js#L8757) — di dalam fungsi `syncMCGGGrandFinal()`
     `const semiDone = isMCGGSemiFinalFull();`
 - **Memanggil Fungsi Internal:** [`isMCGGLobbyPointsFull()`](#ismcgglobbypointsfull)
 
 <a id="comparemcggplayers"></a>
 #### `compareMCGGPlayers(a, b)`
 
-- **Definisi:** [`app.js:8618`](app.js#L8618)
+- **Definisi:** [`app.js:8628`](app.js#L8628)
 - **Deskripsi:** Komparator resmi urutan klasemen MCGG sesuai regulasi: 1. Total Poin Akhir (besar ke kecil) 2. Juara 1 / MVP Ronde (banyaknya finish posisi 1, besar ke kecil) 3. Top 4 Finish (banyaknya finish posisi 1-4, besar ke kecil) 4. Pengurangan Poin / Penalti (makin sering kena pengurangan makin bawah jika poin dkk sama: deductA - deductB) 5. Breakdown Posisi Finish Ronde 1 s/d 8 6. Nama Pemain (A-Z)
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 
 <a id="syncmcggsemifinal"></a>
 #### `syncMCGGSemiFinal()`
 
-- **Definisi:** [`app.js:8649`](app.js#L8649)
+- **Definisi:** [`app.js:8659`](app.js#L8659)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8511`](app.js#L8511) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8521`](app.js#L8521) — di dalam fungsi `syncMCGGPlayers()`
     `syncMCGGSemiFinal();`
-  - [`app.js:8568`](app.js#L8568) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8578`](app.js#L8578) — di dalam fungsi `syncMCGGPlayers()`
     `syncMCGGSemiFinal();`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`findPrevSemi()`](#findprevsemi)
 
 <a id="syncmcgggrandfinal"></a>
 #### `syncMCGGGrandFinal()`
 
-- **Definisi:** [`app.js:8716`](app.js#L8716)
+- **Definisi:** [`app.js:8726`](app.js#L8726)
 - **Deskripsi:** Menyaring Top 4 Lobi A dan Top 4 Lobi B untuk ditempatkan ke Grand Final setelah ronde kualifikasi penuh.
 - **Titik Pemanggilan (7 lokasi):**
   - [`app.js:2323`](app.js#L2323) — di dalam fungsi `resetMCGGPointsAndDraw()`
     `syncMCGGGrandFinal();`
-  - [`app.js:8512`](app.js#L8512) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8522`](app.js#L8522) — di dalam fungsi `syncMCGGPlayers()`
     `syncMCGGGrandFinal();`
-  - [`app.js:8545`](app.js#L8545) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8555`](app.js#L8555) — di dalam fungsi `syncMCGGPlayers()`
     `syncMCGGGrandFinal();`
-  - [`app.js:8569`](app.js#L8569) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8579`](app.js#L8579) — di dalam fungsi `syncMCGGPlayers()`
     `syncMCGGGrandFinal();`
-  - [`app.js:8831`](app.js#L8831) — di dalam fungsi `updateMCGGRank()`
+  - [`app.js:8841`](app.js#L8841) — di dalam fungsi `updateMCGGRank()`
     `syncMCGGGrandFinal();`
-  - [`app.js:8902`](app.js#L8902) — di dalam fungsi `updateMCGGPenalty()`
+  - [`app.js:8912`](app.js#L8912) — di dalam fungsi `updateMCGGPenalty()`
     `syncMCGGGrandFinal();`
-  - [`app.js:9640`](app.js#L9640) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9650`](app.js#L9650) — di dalam fungsi `renderMCGGTable()`
     `syncMCGGGrandFinal();`
 - **Memanggil Fungsi Internal:** [`findPrevInArr()`](#findprevinarr), [`isMCGGSemiFinalFull()`](#ismcggsemifinalfull), [`mapGFPlayer()`](#mapgfplayer), [`isMCGGQualificationFull()`](#ismcggqualificationfull)
 
 <a id="updatemcggrank"></a>
 #### `updateMCGGRank(arg1, arg2, arg3, arg4)`
 
-- **Definisi:** [`app.js:8800`](app.js#L8800)
+- **Definisi:** [`app.js:8810`](app.js#L8810)
 - **Deskripsi:** Memperbarui peringkat ronde (R1, R2, R3) pemain MCGG dan mengkalkulasi poin otomatis (+4 s/d -4).
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9908`](app.js#L9908) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9918`](app.js#L9918) — di dalam fungsi `buildRoundCell()`
     `<select onchange="updateMCGGRank('${lobbyKey}', ${originalIdx}, '${roundKey}', this.value)" style="p`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`syncMCGGGrandFinal()`](#syncmcgggrandfinal), [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="updatemcggcommander"></a>
 #### `updateMCGGCommander(arg1, arg2, arg3, arg4)`
 
-- **Definisi:** [`app.js:8838`](app.js#L8838)
+- **Definisi:** [`app.js:8848`](app.js#L8848)
 - **Deskripsi:** Memperbarui pilihan commander pemain dan memicu validasi duplikasi commander ronde 2.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9904`](app.js#L9904) — di dalam fungsi `buildRoundCell()`
+  - [`app.js:9914`](app.js#L9914) — di dalam fungsi `buildRoundCell()`
     `<select onchange="updateMCGGCommander('${lobbyKey}', ${originalIdx}, '${cmdKey}', this.value)" style`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`validateMCGGDuplicateCommander()`](#validatemcggduplicatecommander), [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="updatemcggpenalty"></a>
 #### `updateMCGGPenalty(arg1, arg2, arg3)`
 
-- **Definisi:** [`app.js:8873`](app.js#L8873)
+- **Definisi:** [`app.js:8883`](app.js#L8883)
 - **Deskripsi:** Mengisi nilai penalti kedisiplinan pemain MCGG dan memperbarui total akumulasi poin.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9928`](app.js#L9928) — di dalam fungsi `buildPenaltySelect()`
+  - [`app.js:9938`](app.js#L9938) — di dalam fungsi `buildPenaltySelect()`
     `<select onchange="updateMCGGPenalty('${lobbyKey}', ${originalIdx}, this.value)" style="padding: 0.25`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`syncMCGGGrandFinal()`](#syncmcgggrandfinal), [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="renderlobbycommanderdrawpanelhtml"></a>
 #### `renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull)`
 
-- **Definisi:** [`app.js:8912`](app.js#L8912)
+- **Definisi:** [`app.js:8922`](app.js#L8922)
 - **Deskripsi:** MESIN UNDIAN COMMANDER MCGG (SESUAI REGULASI RESMI)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:9708`](app.js#L9708) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9718`](app.js#L9718) — di dalam fungsi `renderMCGGTable()`
     `${renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull)}`
-  - [`app.js:11428`](app.js#L11428) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11445`](app.js#L11445) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `${renderLobbyCommanderDrawPanelHtml(lobbyKey, false, true)}`
-  - [`app.js:11533`](app.js#L11533) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11550`](app.js#L11550) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `${renderLobbyCommanderDrawPanelHtml(lobbyKey, false, true)}`
   - [`functional_tests.js:798`](functional_tests.js#L798) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function renderLobbyCommanderDrawPanelHtml('), 'Harus memiliki generator pa`
@@ -709,10 +709,10 @@
 <a id="drawmatchcommanders"></a>
 #### `drawMatchCommanders(matchNum, targetLobbyKey)`
 
-- **Definisi:** [`app.js:9332`](app.js#L9332)
+- **Definisi:** [`app.js:9342`](app.js#L9342)
 - **Deskripsi:** Backward compatibility helper
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:9702`](app.js#L9702) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9712`](app.js#L9712) — di dalam fungsi `renderMCGGTable()`
     `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.3rem 0.65rem; ${(!isRegistration`
   - [`functional_tests.js:741`](functional_tests.js#L741) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function drawMatchCommanders('), 'drawMatchCommanders harus tersedia');`
@@ -723,15 +723,15 @@
 <a id="switchlobbydrawview"></a>
 #### `switchLobbyDrawView(lobbyKey, matchNum)`
 
-- **Definisi:** [`app.js:9338`](app.js#L9338)
+- **Definisi:** [`app.js:9348`](app.js#L9348)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:8960`](app.js#L8960) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8970`](app.js#L8970) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn ${activeMatch === 1 ? 'btn-primary' : 'btn-outline'}" style="padding:0.25rem 0.65`
-  - [`app.js:8963`](app.js#L8963) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8973`](app.js#L8973) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn ${activeMatch === 2 ? 'btn-primary' : 'btn-outline'}" style="padding:0.25rem 0.65`
-  - [`app.js:9015`](app.js#L9015) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9025`](app.js#L9025) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn-score-mini ${activeMatch === 1 ? 'active' : ''}" style="font-size:0.75rem; paddin`
-  - [`app.js:9018`](app.js#L9018) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9028`](app.js#L9028) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn-score-mini ${activeMatch === 2 ? 'active' : ''}" style="font-size:0.75rem; paddin`
   - [`functional_tests.js:800`](functional_tests.js#L800) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function switchLobbyDrawView('), 'Harus memiliki fungsi switch view match 1`
@@ -740,9 +740,9 @@
 <a id="resetlobbydraw"></a>
 #### `resetLobbyDraw(lobbyKey)`
 
-- **Definisi:** [`app.js:9344`](app.js#L9344)
+- **Definisi:** [`app.js:9354`](app.js#L9354)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8969`](app.js#L8969) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8979`](app.js#L8979) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem; font-size:0.75rem; color:var(--yokke`
   - [`functional_tests.js:801`](functional_tests.js#L801) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function resetLobbyDraw('), 'Harus memiliki fungsi reset undian per-lobi re`
@@ -751,32 +751,32 @@
 <a id="copycommanderdrawtext"></a>
 #### `copyCommanderDrawText(lobbyKey)`
 
-- **Definisi:** [`app.js:9365`](app.js#L9365)
+- **Definisi:** [`app.js:9375`](app.js#L9375)
 - **Deskripsi:** Menyalin rekapitulasi teks hasil undian Little Commander ke clipboard untuk dibagikan ke WhatsApp grup.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8966`](app.js#L8966) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8976`](app.js#L8976) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.55rem; font-size:0.75rem; margin-left:auto;`
-  - [`app.js:9021`](app.js#L9021) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9031`](app.js#L9031) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="copyCom`
 - **Memanggil Fungsi Internal:** [`getCommanderFormattedName()`](#getcommanderformattedname)
 
 <a id="changecommanderdrawtarget"></a>
 #### `changeCommanderDrawTarget(val)`
 
-- **Definisi:** [`app.js:9411`](app.js#L9411)
+- **Definisi:** [`app.js:9421`](app.js#L9421)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9419`](app.js#L9419) — di dalam fungsi `setDrawTargetAndScroll()`
+  - [`app.js:9429`](app.js#L9429) — di dalam fungsi `setDrawTargetAndScroll()`
     `changeCommanderDrawTarget(lobbyKey);`
 - **Memanggil Fungsi Internal:** [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="scrolltomcgglobby"></a>
 #### `scrollToMCGGLobby(lobbyKey)`
 
-- **Definisi:** [`app.js:9423`](app.js#L9423)
+- **Definisi:** [`app.js:9433`](app.js#L9433)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:9420`](app.js#L9420) — di dalam fungsi `setDrawTargetAndScroll()`
+  - [`app.js:9430`](app.js#L9430) — di dalam fungsi `setDrawTargetAndScroll()`
     `scrollToMCGGLobby(lobbyKey);`
-  - [`app.js:9460`](app.js#L9460) — di dalam fungsi `renderMCGGLobbyAnchorBar()`
+  - [`app.js:9470`](app.js#L9470) — di dalam fungsi `renderMCGGLobbyAnchorBar()`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; bo`
   - [`functional_tests.js:699`](functional_tests.js#L699) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function scrollToMCGGLobby('), 'app.js harus menyediakan fungsi scrollToMCG`
@@ -784,9 +784,9 @@
 <a id="rendermcgglobbyanchorbar"></a>
 #### `renderMCGGLobbyAnchorBar()`
 
-- **Definisi:** [`app.js:9430`](app.js#L9430)
+- **Definisi:** [`app.js:9440`](app.js#L9440)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:9506`](app.js#L9506) — di dalam fungsi `renderMCGGLobbySelectOptions()`
+  - [`app.js:9516`](app.js#L9516) — di dalam fungsi `renderMCGGLobbySelectOptions()`
     `renderMCGGLobbyAnchorBar();`
   - [`functional_tests.js:697`](functional_tests.js#L697) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function renderMCGGLobbyAnchorBar('), 'app.js harus memiliki generator rend`
@@ -795,20 +795,20 @@
 <a id="rendermcgglobbyselectoptions"></a>
 #### `renderMCGGLobbySelectOptions()`
 
-- **Definisi:** [`app.js:9466`](app.js#L9466)
+- **Definisi:** [`app.js:9476`](app.js#L9476)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:8514`](app.js#L8514) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8524`](app.js#L8524) — di dalam fungsi `syncMCGGPlayers()`
     `renderMCGGLobbySelectOptions();`
-  - [`app.js:8573`](app.js#L8573) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8583`](app.js#L8583) — di dalam fungsi `syncMCGGPlayers()`
     `renderMCGGLobbySelectOptions();`
-  - [`app.js:9530`](app.js#L9530) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9540`](app.js#L9540) — di dalam fungsi `renderMCGGTable()`
     `renderMCGGLobbySelectOptions();`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`renderMCGGLobbyAnchorBar()`](#rendermcgglobbyanchorbar)
 
 <a id="rendermcggtable"></a>
 #### `renderMCGGTable()`
 
-- **Definisi:** [`app.js:9509`](app.js#L9509)
+- **Definisi:** [`app.js:9519`](app.js#L9519)
 - **Deskripsi:** Merender tabel klasemen dan poin turnamen Magic Chess Go Go untuk lobi yang sedang aktif.
 - **Titik Pemanggilan (29 lokasi):**
   - [`app.js:5`](app.js#L5) — di dalam fungsi `setMCGGStageFilter()`
@@ -835,78 +835,78 @@
     `renderMCGGTable();`
   - [`app.js:4395`](app.js#L4395) — di dalam fungsi `validateMCGGDuplicateCommander()`
     `renderMCGGTable();`
-  - [`app.js:8276`](app.js#L8276) — di dalam fungsi `changeMCGGLobby()`
+  - [`app.js:8286`](app.js#L8286) — di dalam fungsi `changeMCGGLobby()`
     `renderMCGGTable();`
-  - [`app.js:8347`](app.js#L8347) — di dalam fungsi `updateCommanderPoolFromSetup()`
+  - [`app.js:8357`](app.js#L8357) — di dalam fungsi `updateCommanderPoolFromSetup()`
     `renderMCGGTable();`
-  - [`app.js:8515`](app.js#L8515) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8525`](app.js#L8525) — di dalam fungsi `syncMCGGPlayers()`
     `renderMCGGTable();`
-  - [`app.js:8574`](app.js#L8574) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8584`](app.js#L8584) — di dalam fungsi `syncMCGGPlayers()`
     `renderMCGGTable();`
-  - [`app.js:8835`](app.js#L8835) — di dalam fungsi `updateMCGGRank()`
+  - [`app.js:8845`](app.js#L8845) — di dalam fungsi `updateMCGGRank()`
     `renderMCGGTable();`
-  - [`app.js:8870`](app.js#L8870) — di dalam fungsi `updateMCGGCommander()`
+  - [`app.js:8880`](app.js#L8880) — di dalam fungsi `updateMCGGCommander()`
     `renderMCGGTable();`
-  - [`app.js:8906`](app.js#L8906) — di dalam fungsi `updateMCGGPenalty()`
+  - [`app.js:8916`](app.js#L8916) — di dalam fungsi `updateMCGGPenalty()`
     `renderMCGGTable();`
-  - [`app.js:9231`](app.js#L9231) — di dalam fungsi `drawMatchPool()`
+  - [`app.js:9241`](app.js#L9241) — di dalam fungsi `drawMatchPool()`
     `renderMCGGTable();`
-  - [`app.js:9282`](app.js#L9282) — di dalam fungsi `assignMatchPoolToPlayers()`
+  - [`app.js:9292`](app.js#L9292) — di dalam fungsi `assignMatchPoolToPlayers()`
     `renderMCGGTable();`
-  - [`app.js:9302`](app.js#L9302) — di dalam fungsi `toggleLockMatchDraw()`
+  - [`app.js:9312`](app.js#L9312) — di dalam fungsi `toggleLockMatchDraw()`
     `renderMCGGTable();`
-  - [`app.js:9328`](app.js#L9328) — di dalam fungsi `nextMatchDraw()`
+  - [`app.js:9338`](app.js#L9338) — di dalam fungsi `nextMatchDraw()`
     `renderMCGGTable();`
-  - [`app.js:9341`](app.js#L9341) — di dalam fungsi `switchLobbyDrawView()`
+  - [`app.js:9351`](app.js#L9351) — di dalam fungsi `switchLobbyDrawView()`
     `renderMCGGTable();`
-  - [`app.js:9361`](app.js#L9361) — di dalam fungsi `resetLobbyDraw()`
+  - [`app.js:9371`](app.js#L9371) — di dalam fungsi `resetLobbyDraw()`
     `renderMCGGTable();`
-  - [`app.js:9415`](app.js#L9415) — di dalam fungsi `changeCommanderDrawTarget()`
+  - [`app.js:9425`](app.js#L9425) — di dalam fungsi `changeCommanderDrawTarget()`
     `renderMCGGTable();`
-  - [`app.js:10154`](app.js#L10154) — di dalam fungsi `clearAllData()`
+  - [`app.js:10164`](app.js#L10164) — di dalam fungsi `clearAllData()`
     `renderMCGGTable();`
-  - [`app.js:10177`](app.js#L10177) — cakupan global / event handler
+  - [`app.js:10187`](app.js#L10187) — cakupan global / event handler
     `renderMCGGTable();`
-  - [`app.js:10298`](app.js#L10298) — di dalam fungsi `setMCGGViewMode()`
+  - [`app.js:10308`](app.js#L10308) — di dalam fungsi `setMCGGViewMode()`
     `renderMCGGTable();`
 - **Memanggil Fungsi Internal:** [`renderMCGGInteractiveHubUI()`](#rendermcgginteractivehubui), [`renderMCGGLobbySelectOptions()`](#rendermcgglobbyselectoptions), [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`goToMCGGGroupPage()`](#gotomcgggrouppage), [`setMCGGStageFilter()`](#setmcggstagefilter), [`prevMCGGGroupPage()`](#prevmcgggrouppage), [`nextMCGGGroupPage()`](#nextmcgggrouppage), [`renderLobbyRowsHtml()`](#renderlobbyrowshtml), [`syncMCGGGrandFinal()`](#syncmcgggrandfinal), [`drawMatchCommanders()`](#drawmatchcommanders), [`renderLobbyCommanderDrawPanelHtml()`](#renderlobbycommanderdrawpanelhtml)
 
 <a id="getlobbyshortlabel"></a>
 #### `getLobbyShortLabel(k)`
 
-- **Definisi:** [`app.js:9566`](app.js#L9566)
+- **Definisi:** [`app.js:9576`](app.js#L9576)
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 
 <a id="renderlobbyrowshtml"></a>
 #### `renderLobbyRowsHtml(list, lobbyKey, isSingleLobby)`
 
-- **Definisi:** [`app.js:9736`](app.js#L9736)
+- **Definisi:** [`app.js:9746`](app.js#L9746)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:9627`](app.js#L9627) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9637`](app.js#L9637) — di dalam fungsi `renderMCGGTable()`
     `legacyTbody.innerHTML = renderLobbyRowsHtml(singleList, currentMCGGLobby, isSingleLobby);`
-  - [`app.js:9688`](app.js#L9688) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9698`](app.js#L9698) — di dalam fungsi `renderMCGGTable()`
     `const rowsHtml = renderLobbyRowsHtml(currentList, lobbyKey, isSingleLobby);`
-  - [`app.js:11449`](app.js#L11449) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11466`](app.js#L11466) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `${renderLobbyRowsHtml(list, lobbyKey, false)}`
-  - [`app.js:11551`](app.js#L11551) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11568`](app.js#L11568) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `${renderLobbyRowsHtml(list, lobbyKey, false)}`
-  - [`app.js:11598`](app.js#L11598) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11615`](app.js#L11615) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `${renderLobbyRowsHtml(list, 'GRAND_FINAL', false)}`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`isMCGGLobbyPointsFull()`](#ismcgglobbypointsfull), [`escapeHtml()`](#escapehtml), [`buildRoundCell()`](#buildroundcell), [`buildPenaltySelect()`](#buildpenaltyselect)
 
 <a id="buildpenaltyselect"></a>
 #### `buildPenaltySelect(player, targetLobby)`
 
-- **Definisi:** [`app.js:9915`](app.js#L9915)
+- **Definisi:** [`app.js:9925`](app.js#L9925)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9830`](app.js#L9830) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9840`](app.js#L9840) — di dalam fungsi `renderLobbyRowsHtml()`
     `<td style="text-align: center;">${buildPenaltySelect(p, lobbyKey)}</td>`
 - **Memanggil Fungsi Internal:** [`updateMCGGPenalty()`](#updatemcggpenalty)
 
 <a id="setmcggviewmode"></a>
 #### `setMCGGViewMode(mode)`
 
-- **Definisi:** [`app.js:10272`](app.js#L10272)
+- **Definisi:** [`app.js:10282`](app.js#L10282)
 - **Deskripsi:** --- TAMPILAN VIEW SWITCHER MCGG ---
 - **Titik Pemanggilan (4 lokasi):**
   - [`index.html:616`](index.html#L616) — Event `onclick`
@@ -922,20 +922,20 @@
 <a id="selectmcggflownode"></a>
 #### `selectMCGGFlowNode(nodeKey)`
 
-- **Definisi:** [`app.js:11266`](app.js#L11266)
+- **Definisi:** [`app.js:11283`](app.js#L11283)
 - **Deskripsi:** ---------------------------------------------------------------------------- 2. MASTER-DETAIL INTERACTIVE HUB MCGG ----------------------------------------------------------------------------
 - **Titik Pemanggilan (7 lokasi):**
-  - [`app.js:11302`](app.js#L11302) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11319`](app.js#L11319) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMCGGFlowNode(`
-  - [`app.js:11325`](app.js#L11325) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11342`](app.js#L11342) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'STAGE2_WILDCARD' ? 'active' : ''}" oncl`
-  - [`app.js:11335`](app.js#L11335) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11352`](app.js#L11352) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMCGGFlowNode(`
-  - [`app.js:11356`](app.js#L11356) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11373`](app.js#L11373) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'STAGE3_SEMI_A' ? 'active' : ''}" onclic`
-  - [`app.js:11360`](app.js#L11360) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11377`](app.js#L11377) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'STAGE3_SEMI_B' ? 'active' : ''}" onclic`
-  - [`app.js:11380`](app.js#L11380) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11397`](app.js#L11397) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `<button type="button" class="flow-node-btn is-final ${activeNode === 'STAGE4_GRAND_FINAL' ? 'active'`
   - [`functional_tests.js:1173`](functional_tests.js#L1173) — pada skenario pengujian
     `assert(appCode.includes('function selectMCGGFlowNode('), 'app.js harus memiliki selectMCGGFlowNode')`
@@ -944,15 +944,15 @@
 <a id="rendermcgginteractivehubui"></a>
 #### `renderMCGGInteractiveHubUI()`
 
-- **Definisi:** [`app.js:11271`](app.js#L11271)
+- **Definisi:** [`app.js:11288`](app.js#L11288)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:9523`](app.js#L9523) — di dalam fungsi `renderMCGGTable()`
+  - [`app.js:9533`](app.js#L9533) — di dalam fungsi `renderMCGGTable()`
     `renderMCGGInteractiveHubUI();`
-  - [`app.js:10291`](app.js#L10291) — di dalam fungsi `setMCGGViewMode()`
+  - [`app.js:10301`](app.js#L10301) — di dalam fungsi `setMCGGViewMode()`
     `renderMCGGInteractiveHubUI();`
-  - [`app.js:11268`](app.js#L11268) — di dalam fungsi `selectMCGGFlowNode()`
+  - [`app.js:11285`](app.js#L11285) — di dalam fungsi `selectMCGGFlowNode()`
     `renderMCGGInteractiveHubUI();`
-  - [`app.js:11613`](app.js#L11613) — di dalam fungsi `shuffleMCGG32Besar()`
+  - [`app.js:11630`](app.js#L11630) — di dalam fungsi `shuffleMCGG32Besar()`
     `renderMCGGInteractiveHubUI();`
   - [`functional_tests.js:1172`](functional_tests.js#L1172) — pada skenario pengujian
     `assert(appCode.includes('function renderMCGGInteractiveHubUI()'), 'app.js harus memiliki renderMCGGI`
@@ -961,18 +961,18 @@
 <a id="rendermcggdetailpanelcontent"></a>
 #### `renderMCGGDetailPanelContent(nodeKey)`
 
-- **Definisi:** [`app.js:11399`](app.js#L11399)
+- **Definisi:** [`app.js:11416`](app.js#L11416)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:11393`](app.js#L11393) — di dalam fungsi `renderMCGGInteractiveHubUI()`
+  - [`app.js:11410`](app.js#L11410) — di dalam fungsi `renderMCGGInteractiveHubUI()`
     `rightHtml += renderMCGGDetailPanelContent(activeNode);`
 - **Memanggil Fungsi Internal:** [`renderLobbyCommanderDrawPanelHtml()`](#renderlobbycommanderdrawpanelhtml), [`renderLobbyRowsHtml()`](#renderlobbyrowshtml), [`shuffleMCGG32Besar()`](#shufflemcgg32besar)
 
 <a id="shufflemcgg32besar"></a>
 #### `shuffleMCGG32Besar()`
 
-- **Definisi:** [`app.js:11608`](app.js#L11608)
+- **Definisi:** [`app.js:11625`](app.js#L11625)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:11493`](app.js#L11493) — di dalam fungsi `renderMCGGDetailPanelContent()`
+  - [`app.js:11510`](app.js#L11510) — di dalam fungsi `renderMCGGDetailPanelContent()`
     `<button class="btn btn-gold" style="padding:0.3rem 0.75rem;font-size:0.78rem;" onclick="shuffleMCGG3`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderMCGGInteractiveHubUI()`](#rendermcgginteractivehubui)
 
@@ -987,7 +987,7 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:536`](index.html#L536) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMLBBGroupPage()" i`
-  - [`app.js:5852`](app.js#L5852) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5862`](app.js#L5862) — di dalam fungsi `renderGroupStageUI()`
     `<button type="button" class="btn btn-outline" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
   - [`functional_tests.js:847`](functional_tests.js#L847) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function prevMLBBGroupPage()'), 'Harus ada fungsi prevMLBBGroupPage');`
@@ -1000,7 +1000,7 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:542`](index.html#L542) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-right" onclick="nextMLBBGroupPage()" `
-  - [`app.js:5855`](app.js#L5855) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5865`](app.js#L5865) — di dalam fungsi `renderGroupStageUI()`
     `<button type="button" class="btn btn-primary" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
   - [`functional_tests.js:848`](functional_tests.js#L848) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function nextMLBBGroupPage()'), 'Harus ada fungsi nextMLBBGroupPage');`
@@ -1011,7 +1011,7 @@
 
 - **Definisi:** [`app.js:27`](app.js#L27)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:5843`](app.js#L5843) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5853`](app.js#L5853) — di dalam fungsi `renderGroupStageUI()`
     `<button type="button" class="group-nav-tab-btn ${p === mlbbGroupPageIndex ? 'active' : ''}" onclick=`
   - [`functional_tests.js:849`](functional_tests.js#L849) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function goToMLBBGroupPage('), 'Harus ada fungsi goToMLBBGroupPage');`
@@ -1086,11 +1086,11 @@
     `renderCurrentMLBBFormat();`
   - [`app.js:4334`](app.js#L4334) — di dalam fungsi `resetMLBBToStage1()`
     `renderCurrentMLBBFormat();`
-  - [`app.js:10139`](app.js#L10139) — di dalam fungsi `loadSampleData()`
+  - [`app.js:10149`](app.js#L10149) — di dalam fungsi `loadSampleData()`
     `renderCurrentMLBBFormat();`
-  - [`app.js:10153`](app.js#L10153) — di dalam fungsi `clearAllData()`
+  - [`app.js:10163`](app.js#L10163) — di dalam fungsi `clearAllData()`
     `renderCurrentMLBBFormat();`
-  - [`app.js:10176`](app.js#L10176) — cakupan global / event handler
+  - [`app.js:10186`](app.js#L10186) — cakupan global / event handler
     `renderCurrentMLBBFormat();`
 - **Memanggil Fungsi Internal:** [`renderBracket()`](#renderbracket), [`renderGroupStageUI()`](#rendergroupstageui)
 
@@ -1134,9 +1134,9 @@
 - **Definisi:** [`app.js:3890`](app.js#L3890)
 - **Deskripsi:** Menetapkan pemenang pertandingan penentuan (Tie-Breaker BO1) dan memberikan +1 poin penentu ke klasemen.
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:6020`](app.js#L6020) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:6030`](app.js#L6030) — di dalam fungsi `renderGroupStageUI()`
     `<button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--yokke`
-  - [`app.js:6021`](app.js#L6021) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:6031`](app.js#L6031) — di dalam fungsi `renderGroupStageUI()`
     `<button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--yokke`
   - [`functional_tests.js:760`](functional_tests.js#L760) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function resolveMLBBTieBreaker('), 'Harus ada fungsi resolveMLBBTieBreaker'`
@@ -1150,7 +1150,7 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:485`](index.html#L485) — Event `onclick`
     `<button id="btnProceedMLBBStage2" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem`
-  - [`app.js:8173`](app.js#L8173) — di dalam fungsi `renderGroupPlayoffTree()`
+  - [`app.js:8183`](app.js#L8183) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem; background: var(--`
   - [`functional_tests.js:753`](functional_tests.js#L753) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function proceedToMLBBStage2()'), 'Harus ada fungsi proceedToMLBBStage2');`
@@ -1163,9 +1163,9 @@
 - **Titik Pemanggilan (3 lokasi):**
   - [`index.html:487`](index.html#L487) — Event `onclick`
     `<button id="btnShuffleMLBBPlayoff" class="btn btn-gold" style="font-size: 0.85rem; padding: 0.5rem 0`
-  - [`app.js:8219`](app.js#L8219) — di dalam fungsi `renderGroupPlayoffTree()`
+  - [`app.js:8229`](app.js#L8229) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" on`
-  - [`app.js:10613`](app.js#L10613) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10630`](app.js#L10630) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn btn-gold" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-wei`
 - **Memanggil Fungsi Internal:** [`showToast()`](#showtoast), [`initGroupPlayoff()`](#initgroupplayoff), [`saveStageStateLocal()`](#savestagestatelocal), [`saveState()`](#savestate), [`updateAuthUI()`](#updateauthui), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui), [`saveTournamentStateOnly()`](#savetournamentstateonly)
 
@@ -1178,11 +1178,11 @@
     `<button class="btn btn-gold" style="width: 100%; font-size: 0.82rem; padding: 0.45rem 0.75rem; font-`
   - [`app.js:4136`](app.js#L4136) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `<button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" on`
-  - [`app.js:8176`](app.js#L8176) — di dalam fungsi `renderGroupPlayoffTree()`
+  - [`app.js:8186`](app.js#L8186) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-color: var(`
-  - [`app.js:8222`](app.js#L8222) — di dalam fungsi `renderGroupPlayoffTree()`
+  - [`app.js:8232`](app.js#L8232) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.65rem; border-color:var(`
-  - [`app.js:10616`](app.js#L10616) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10633`](app.js#L10633) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn btn-outline" style="font-size:0.8rem; padding:0.4rem 0.85rem; borde`
 - **Memanggil Fungsi Internal:** [`showToast()`](#showtoast), [`openTestDrawModal()`](#opentestdrawmodal), [`initGroupPlayoff()`](#initgroupplayoff), [`saveStageStateLocal()`](#savestagestatelocal), [`saveState()`](#savestate), [`setMLBBViewMode()`](#setmlbbviewmode), [`updateAuthUI()`](#updateauthui), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`findTeamGroupAndRank()`](#findteamgroupandrank), [`escapeHtml()`](#escapehtml), [`getSortedGroupTeams()`](#getsortedgroupteams), [`openTestDrawInNewWindow()`](#opentestdrawinnewwindow), [`closeTestDrawModal()`](#closetestdrawmodal)
 
@@ -1272,91 +1272,90 @@
     `generateGroupStage(false);`
   - [`app.js:3827`](app.js#L3827) — di dalam fungsi `shuffleAndGenerateTournament()`
     `generateGroupStage(true);`
-- **Memanggil Fungsi Internal:** [`getVerifiedMLBBTeams()`](#getverifiedmlbbteams), [`getActiveMLBBFormat()`](#getactivemlbbformat), [`allocateMLBBGroups()`](#allocatemlbbgroups), [`saveState()`](#savestate), [`initGroupPlayoff()`](#initgroupplayoff), [`renderGroupStageUI()`](#rendergroupstageui)
+- **Memanggil Fungsi Internal:** [`getVerifiedMLBBTeams()`](#getverifiedmlbbteams), [`getActiveMLBBFormat()`](#getactivemlbbformat), [`allocateMLBBGroups()`](#allocatemlbbgroups), [`saveState()`](#savestate), [`initGroupPlayoff()`](#initgroupplayoff), [`renderGroupStageUI()`](#rendergroupstageui), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
 <a id="getmlbbheadtoheadwinner"></a>
 #### `getMLBBHeadToHeadWinner(teamA, teamB, gName)`
 
-- **Definisi:** [`app.js:5015`](app.js#L5015)
+- **Definisi:** [`app.js:5017`](app.js#L5017)
 - **Deskripsi:** Helper mencari pemenang head-to-head (pertemuan langsung) antar 2 tim di fase grup MLBB
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:5096`](app.js#L5096) — di dalam fungsi `compareMLBBTeams()`
+  - [`app.js:5098`](app.js#L5098) — di dalam fungsi `compareMLBBTeams()`
     `const h2h = getMLBBHeadToHeadWinner(a.name, b.name, gName);`
 - **Memanggil Fungsi Internal:** [`getCanonicalGroupMatchId()`](#getcanonicalgroupmatchid), [`isSameTeamName()`](#issameteamname)
 
 <a id="comparemlbbteams"></a>
 #### `compareMLBBTeams(a, b)`
 
-- **Definisi:** [`app.js:5082`](app.js#L5082)
+- **Definisi:** [`app.js:5084`](app.js#L5084)
 - **Deskripsi:** Komparator resmi urutan klasemen MLBB sesuai regulasi resmi Turnamen Yokke Squad: 1. Point (Total Poin, besar ke kecil) 2. Agregat Skor Game / Game Difference (Diff = Game Menang - Game Kalah, besar ke kecil) 3. Head-to-Head / H2H (Jika Poin & Agregat sama, pemenang pertemuan langsung di grup lebih atas) 4. Menang (Match Won / W, besar ke kecil) 5. Kalah (Match Lost / L, kecil ke besar: makin sedikit kalah makin di atas) 6. Total MVP Tim (besar ke kecil) 7. Nama Tim (A-Z)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:5141`](app.js#L5141) — di dalam fungsi `getSortedGroupTeams()`
+  - [`app.js:5143`](app.js#L5143) — di dalam fungsi `getSortedGroupTeams()`
     `return [...teams].sort((a, b) => compareMLBBTeams(a, b, gName));`
 - **Memanggil Fungsi Internal:** [`getMLBBHeadToHeadWinner()`](#getmlbbheadtoheadwinner)
 
 <a id="findvalidbracketpermutation"></a>
 #### `findValidBracketPermutation(candidates, forbiddenGroupsPerSlot)`
 
-- **Definisi:** [`app.js:5153`](app.js#L5153)
+- **Definisi:** [`app.js:5155`](app.js#L5155)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:5427`](app.js#L5427) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5437`](app.js#L5437) — di dalam fungsi `initGroupPlayoff()`
     `branchJ2 = findValidBracketPermutation(j2List, forbiddenForJ2);`
-  - [`app.js:5439`](app.js#L5439) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5449`](app.js#L5449) — di dalam fungsi `initGroupPlayoff()`
     `branchJ3 = findValidBracketPermutation(j3List, forbiddenForJ3);`
-  - [`app.js:5558`](app.js#L5558) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5568`](app.js#L5568) — di dalam fungsi `initGroupPlayoff()`
     `const candJ2 = findValidBracketPermutation(j2List, forbidden);`
-  - [`app.js:5576`](app.js#L5576) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5586`](app.js#L5586) — di dalam fungsi `initGroupPlayoff()`
     `bJ2 = findValidBracketPermutation(j2List, forbidden) || bJ1.map(j => j2List[(j1List.findIndex(x => x`
 - **Memanggil Fungsi Internal:** [`backtrack()`](#backtrack), [`shuffleArray()`](#shufflearray)
 
 <a id="isplayoffinvitedteam"></a>
 #### `isPlayoffInvitedTeam(teamName)`
 
-- **Definisi:** [`app.js:5188`](app.js#L5188)
+- **Definisi:** [`app.js:5195`](app.js#L5195)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:5229`](app.js#L5229) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5236`](app.js#L5236) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const isInv = (t) => isPlayoffInvitedTeam(t);`
-  - [`app.js:5346`](app.js#L5346) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5356`](app.js#L5356) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const isInv = (t) => isPlayoffInvitedTeam(t);`
 - **Memanggil Fungsi Internal:** [`isTeamInvited()`](#isteaminvited)
 
 <a id="solveremainingbracketslots"></a>
 #### `solveRemainingBracketSlots(remainingItems, emptySlots, currentArray, validatorFn)`
 
-- **Definisi:** [`app.js:5200`](app.js#L5200)
+- **Definisi:** [`app.js:5207`](app.js#L5207)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:5322`](app.js#L5322) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5336`](app.js#L5336) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const solvedBranchJ1 = solveRemainingBracketSlots(j1Regular, emptyJ1Slots, branchJ1, (slot, item) =>`
-  - [`app.js:5329`](app.js#L5329) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5343`](app.js#L5343) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const solvedBranchJ2 = solveRemainingBracketSlots(j2Regular, emptyJ2Slots, branchJ2, (slot, item) =>`
-  - [`app.js:5373`](app.js#L5373) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5383`](app.js#L5383) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const solved = solveRemainingBracketSlots(j3Regular, emptySlots, branchJ3, (slot, item) => {`
 - **Memanggil Fungsi Internal:** [`shuffleArray()`](#shufflearray), [`backtrack()`](#backtrack)
 
 <a id="drawmlbbplayoffupperbracket"></a>
 #### `drawMLBBPlayoffUpperBracket(j1List, j2List)`
 
-- **Definisi:** [`app.js:5228`](app.js#L5228)
+- **Definisi:** [`app.js:5235`](app.js#L5235)
 - **Deskripsi:** Algoritma Pengundian Cerdas Playoff Upper Bracket 16 Besar (MLBB): 1. Undi tim invited terlebih dahulu. 2. Bagi acak tim invited ke 2 wings (Pool Atas [0..3] vs Pool Bawah [4..7]). - Jika ada ATMO dan ALPHA (Aang Alpha), pisahkan mereka di wings/pool yang berbeda! 3. Pisahkan mereka pada match yang berbeda di Tahap 1 (tidak saling berhadapan di 16 Besar, beda sayap QF). 4. Setelah menempatkan tim invited, undi tim reguler lain untuk menempati bagan yang kosong. 5. Pastikan syarat anti-rematch grup (Juara 2 beda grup dari Juara 1 di slot yang sama) tetap 100% terpenuhi. /
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:5420`](app.js#L5420) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5430`](app.js#L5430) — di dalam fungsi `initGroupPlayoff()`
     `const drawnUpper = drawMLBBPlayoffUpperBracket(j1List, j2List);`
-- **Memanggil Fungsi Internal:** [`isPlayoffInvitedTeam()`](#isplayoffinvitedteam), [`isInv()`](#isinv), [`isTeamAtmo()`](#isteamatmo), [`isTeamAlpha()`](#isteamalpha), [`shuffleArray()`](#shufflearray), [`placePoolInvited()`](#placepoolinvited), [`solveRemainingBracketSlots()`](#solveremainingbracketslots)
+- **Memanggil Fungsi Internal:** [`isPlayoffInvitedTeam()`](#isplayoffinvitedteam), [`isInv()`](#isinv), [`isTeamAtmo()`](#isteamatmo), [`isTeamAlpha()`](#isteamalpha), [`isTeamAppa()`](#isteamappa), [`shuffleArray()`](#shufflearray), [`solveRemainingBracketSlots()`](#solveremainingbracketslots)
 
 <a id="drawmlbbplayofflowerbracket"></a>
 #### `drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2)`
 
-- **Definisi:** [`app.js:5345`](app.js#L5345)
-- **Deskripsi:** Algoritma Pengundian Lower Bracket (MLBB Juara 3): Menyebarkan tim invited Juara 3 ke cabang sayap Lower berbeda dan menjamin anti-rematch dengan Juara 1 & 2. /
+- **Definisi:** [`app.js:5355`](app.js#L5355)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:5434`](app.js#L5434) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5444`](app.js#L5444) — di dalam fungsi `initGroupPlayoff()`
     `const drawnLower = drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2);`
 - **Memanggil Fungsi Internal:** [`isPlayoffInvitedTeam()`](#isplayoffinvitedteam), [`isInv()`](#isinv), [`shuffleArray()`](#shufflearray), [`solveRemainingBracketSlots()`](#solveremainingbracketslots)
 
 <a id="initgroupplayoff"></a>
 #### `initGroupPlayoff(doShuffle = false)`
 
-- **Definisi:** [`app.js:5382`](app.js#L5382)
+- **Definisi:** [`app.js:5392`](app.js#L5392)
 - **Deskripsi:** Menghasilkan bagan Playoff MLBB berdasarkan klasemen akhir grup (Cross-Seeding Juara vs Runner-up).
 - **Titik Pemanggilan (11 lokasi):**
   - [`app.js:1536`](app.js#L1536) — di dalam fungsi `cleanOrphanedTournamentData()`
@@ -1370,35 +1369,35 @@
   - [`app.js:4000`](app.js#L4000) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `initGroupPlayoff(true);`
   - [`app.js:4997`](app.js#L4997) — di dalam fungsi `generateGroupStage()`
+    `initGroupPlayoff(doShuffle);`
+  - [`app.js:5012`](app.js#L5012) — di dalam fungsi `updateGroupRecord()`
     `initGroupPlayoff();`
-  - [`app.js:5010`](app.js#L5010) — di dalam fungsi `updateGroupRecord()`
+  - [`app.js:6697`](app.js#L6697) — di dalam fungsi `setGroupMatchScore()`
     `initGroupPlayoff();`
-  - [`app.js:6687`](app.js#L6687) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:7741`](app.js#L7741) — di dalam fungsi `resetGroupMatchScore()`
     `initGroupPlayoff();`
-  - [`app.js:7731`](app.js#L7731) — di dalam fungsi `resetGroupMatchScore()`
-    `initGroupPlayoff();`
-  - [`app.js:10322`](app.js#L10322) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
-    `if (typeof initGroupPlayoff === 'function') initGroupPlayoff(false);`
-  - [`app.js:10443`](app.js#L10443) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10333`](app.js#L10333) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+    `initGroupPlayoff(true);`
+  - [`app.js:10460`](app.js#L10460) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `if (typeof initGroupPlayoff === 'function') initGroupPlayoff(false);`
 - **Memanggil Fungsi Internal:** [`getSortedGroupTeams()`](#getsortedgroupteams), [`drawMLBBPlayoffUpperBracket()`](#drawmlbbplayoffupperbracket), [`shuffleArray()`](#shufflearray), [`findValidBracketPermutation()`](#findvalidbracketpermutation), [`drawMLBBPlayoffLowerBracket()`](#drawmlbbplayofflowerbracket), [`isTeamAtmo()`](#isteamatmo), [`isTeamAlpha()`](#isteamalpha)
 
 <a id="pickgroupplayoffwinner"></a>
 #### `pickGroupPlayoffWinner(rIdx, mIdx, winnerTeam)`
 
-- **Definisi:** [`app.js:5625`](app.js#L5625)
+- **Definisi:** [`app.js:5635`](app.js#L5635)
 - **Deskripsi:** Menetapkan tim pemenang pada pertandingan bagan Playoff dan meloloskannya ke ronde berikutnya.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:10389`](app.js#L10389) — di dalam fungsi `renderSingleMatchNodeHtml()`
+  - [`app.js:10406`](app.js#L10406) — di dalam fungsi `renderSingleMatchNodeHtml()`
     `<div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin ? 'admin-interact`
-  - [`app.js:10397`](app.js#L10397) — di dalam fungsi `renderSingleMatchNodeHtml()`
+  - [`app.js:10414`](app.js#L10414) — di dalam fungsi `renderSingleMatchNodeHtml()`
     `<div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin ? 'admin-interact`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
 <a id="promptplayoffmvp"></a>
 #### `promptPlayoffMVP(rIdx, mIdx)`
 
-- **Definisi:** [`app.js:5793`](app.js#L5793)
+- **Definisi:** [`app.js:5803`](app.js#L5803)
 - **Titik Pemanggilan (1 lokasi):**
   - [`functional_tests.js:792`](functional_tests.js#L792) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function promptPlayoffMVP('), 'Harus memiliki promptPlayoffMVP');`
@@ -1407,7 +1406,7 @@
 <a id="rendergroupstageui"></a>
 #### `renderGroupStageUI()`
 
-- **Definisi:** [`app.js:5800`](app.js#L5800)
+- **Definisi:** [`app.js:5810`](app.js#L5810)
 - **Titik Pemanggilan (15 lokasi):**
   - [`app.js:17`](app.js#L17) — di dalam fungsi `prevMLBBGroupPage()`
     `renderGroupStageUI();`
@@ -1423,80 +1422,80 @@
     `renderGroupStageUI();`
   - [`app.js:4998`](app.js#L4998) — di dalam fungsi `generateGroupStage()`
     `renderGroupStageUI();`
-  - [`app.js:5011`](app.js#L5011) — di dalam fungsi `updateGroupRecord()`
+  - [`app.js:5013`](app.js#L5013) — di dalam fungsi `updateGroupRecord()`
     `renderGroupStageUI();`
-  - [`app.js:6688`](app.js#L6688) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6698`](app.js#L6698) — di dalam fungsi `setGroupMatchScore()`
     `renderGroupStageUI();`
-  - [`app.js:7423`](app.js#L7423) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7433`](app.js#L7433) — di dalam fungsi `setGroupMatchMVP()`
     `renderGroupStageUI();`
-  - [`app.js:7515`](app.js#L7515) — di dalam fungsi `closeMatchPlayerVerifyModal()`
+  - [`app.js:7525`](app.js#L7525) — di dalam fungsi `closeMatchPlayerVerifyModal()`
     `if (typeof renderGroupStageUI === 'function') renderGroupStageUI();`
-  - [`app.js:7533`](app.js#L7533) — di dalam fungsi `toggleMatchPlayerVerify()`
+  - [`app.js:7543`](app.js#L7543) — di dalam fungsi `toggleMatchPlayerVerify()`
     `if (typeof renderGroupStageUI === 'function') renderGroupStageUI();`
-  - [`app.js:7556`](app.js#L7556) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7566`](app.js#L7566) — di dalam fungsi `verifyAllMatchPlayers()`
     `if (typeof renderGroupStageUI === 'function') renderGroupStageUI();`
-  - [`app.js:7732`](app.js#L7732) — di dalam fungsi `resetGroupMatchScore()`
+  - [`app.js:7742`](app.js#L7742) — di dalam fungsi `resetGroupMatchScore()`
     `renderGroupStageUI();`
-  - [`app.js:10256`](app.js#L10256) — di dalam fungsi `setMLBBViewMode()`
+  - [`app.js:10266`](app.js#L10266) — di dalam fungsi `setMLBBViewMode()`
     `renderGroupStageUI();`
 - **Memanggil Fungsi Internal:** [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui), [`goToMLBBGroupPage()`](#gotomlbbgrouppage), [`prevMLBBGroupPage()`](#prevmlbbgrouppage), [`nextMLBBGroupPage()`](#nextmlbbgrouppage), [`renderGroupFixturesUI()`](#rendergroupfixturesui), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`getSortedGroupTeams()`](#getsortedgroupteams), [`isGroupMatchesCompleted()`](#isgroupmatchescompleted), [`escapeHtml()`](#escapehtml), [`updateGroupRecord()`](#updategrouprecord), [`resolveMLBBTieBreaker()`](#resolvemlbbtiebreaker)
 
 <a id="setmlbbactiveweek"></a>
 #### `setMLBBActiveWeek(weekKey)`
 
-- **Definisi:** [`app.js:6239`](app.js#L6239)
+- **Definisi:** [`app.js:6249`](app.js#L6249)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:7887`](app.js#L7887) — di dalam fungsi `renderGroupFixturesUI()`
-    `<div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_1' ? 'active' : ''}" onclick="setMLBBActive`
-  - [`app.js:7892`](app.js#L7892) — di dalam fungsi `renderGroupFixturesUI()`
-    `<div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_2' ? 'active' : ''}" onclick="setMLBBActive`
   - [`app.js:7897`](app.js#L7897) — di dalam fungsi `renderGroupFixturesUI()`
+    `<div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_1' ? 'active' : ''}" onclick="setMLBBActive`
+  - [`app.js:7902`](app.js#L7902) — di dalam fungsi `renderGroupFixturesUI()`
+    `<div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_2' ? 'active' : ''}" onclick="setMLBBActive`
+  - [`app.js:7907`](app.js#L7907) — di dalam fungsi `renderGroupFixturesUI()`
     `<div class="schedule-week-btn ${mlbbActiveWeek === 'WEEK_3' ? 'active' : ''}" onclick="setMLBBActive`
 - **Memanggil Fungsi Internal:** [`renderGroupFixturesUI()`](#rendergroupfixturesui)
 
 <a id="setmlbbactivedayfilter"></a>
 #### `setMLBBActiveDayFilter(day)`
 
-- **Definisi:** [`app.js:6247`](app.js#L6247)
+- **Definisi:** [`app.js:6257`](app.js#L6257)
 - **Titik Pemanggilan (6 lokasi):**
-  - [`app.js:8004`](app.js#L8004) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8014`](app.js#L8014) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 'ALL' ? 'active' : ''}" onc`
-  - [`app.js:8007`](app.js#L8007) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8017`](app.js#L8017) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 1 ? 'active' : ''}" onclick`
-  - [`app.js:8010`](app.js#L8010) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8020`](app.js#L8020) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 2 ? 'active' : ''}" onclick`
-  - [`app.js:8013`](app.js#L8013) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8023`](app.js#L8023) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 3 ? 'active' : ''}" onclick`
-  - [`app.js:8016`](app.js#L8016) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8026`](app.js#L8026) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 4 ? 'active' : ''}" onclick`
-  - [`app.js:8019`](app.js#L8019) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8029`](app.js#L8029) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="schedule-day-pill ${mlbbActiveDayFilter === 5 ? 'active' : ''}" onclick`
 - **Memanggil Fungsi Internal:** [`renderGroupFixturesUI()`](#rendergroupfixturesui)
 
 <a id="setmlbbactivegroupfilter"></a>
 #### `setMLBBActiveGroupFilter(gName)`
 
-- **Definisi:** [`app.js:6252`](app.js#L6252)
+- **Definisi:** [`app.js:6262`](app.js#L6262)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8025`](app.js#L8025) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8035`](app.js#L8035) — di dalam fungsi `renderGroupFixturesUI()`
     `<select onchange="setMLBBActiveGroupFilter(this.value)" style="background:#0f172a; border:1px solid `
 - **Memanggil Fungsi Internal:** [`renderGroupFixturesUI()`](#rendergroupfixturesui)
 
 <a id="getgroupfixtures"></a>
 #### `getGroupFixtures(gName, dayFilter = null)`
 
-- **Definisi:** [`app.js:6258`](app.js#L6258)
+- **Definisi:** [`app.js:6268`](app.js#L6268)
 - **Deskripsi:** --- BAGAN PERTANDINGAN FASE GRUP TERDISTRIBUSI 4 HARI (ROUND-ROBIN BO3) ---
 - **Titik Pemanggilan (6 lokasi):**
   - [`app.js:3858`](app.js#L3858) — di dalam fungsi `isAllMLBBGroupMatchesFinished()`
     `const fixtures = getGroupFixtures(gName);`
-  - [`app.js:6462`](app.js#L6462) — di dalam fungsi `isGroupMatchesCompleted()`
+  - [`app.js:6472`](app.js#L6472) — di dalam fungsi `isGroupMatchesCompleted()`
     `const fixtures = (typeof getGroupFixtures === 'function') ? getGroupFixtures(gName) : [];`
-  - [`app.js:6573`](app.js#L6573) — di dalam fungsi `getGroupRestingTeams()`
+  - [`app.js:6583`](app.js#L6583) — di dalam fungsi `getGroupRestingTeams()`
     `const dayFixtures = getGroupFixtures(gName, day);`
-  - [`app.js:8038`](app.js#L8038) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8048`](app.js#L8048) — di dalam fungsi `renderGroupFixturesUI()`
     `const fixtures = getGroupFixtures(gName, mlbbActiveDayFilter);`
-  - [`app.js:10938`](app.js#L10938) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10955`](app.js#L10955) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `const fixtures = getGroupFixtures(gName);`
   - [`functional_tests.js:675`](functional_tests.js#L675) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function getGroupFixtures('), 'app.js harus memiliki generator jadwal getGr`
@@ -1505,90 +1504,90 @@
 <a id="savegroupfixturescore"></a>
 #### `saveGroupFixtureScore(matchId, gName, teamA, teamB)`
 
-- **Definisi:** [`app.js:6726`](app.js#L6726)
+- **Definisi:** [`app.js:6736`](app.js#L6736)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8137`](app.js#L8137) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8147`](app.js#L8147) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="btn btn-primary" style="font-size:0.68rem; padding:2px 8px;" onclick="s`
 - **Memanggil Fungsi Internal:** [`setGroupMatchScore()`](#setgroupmatchscore)
 
 <a id="openmlbbgroupmvpmodal"></a>
 #### `openMLBBGroupMvpModal(matchId, gName, teamA, teamB, scoreA, scoreB)`
 
-- **Definisi:** [`app.js:6779`](app.js#L6779)
+- **Definisi:** [`app.js:6789`](app.js#L6789)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:7461`](app.js#L7461) — di dalam fungsi `promptGroupMatchMVP()`
+  - [`app.js:7471`](app.js#L7471) — di dalam fungsi `promptGroupMatchMVP()`
     `openMLBBGroupMvpModal(matchId, gName, teamA, teamB, null, null);`
-  - [`app.js:8141`](app.js#L8141) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8151`](app.js#L8151) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 8px; color:var(-`
-  - [`app.js:11094`](app.js#L11094) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11111`](app.js#L11111) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="openMLBB`
 - **Memanggil Fungsi Internal:** [`findGroupNameForTeam()`](#findgroupnameforteam), [`getCanonicalGroupMatchId()`](#getcanonicalgroupmatchid), [`isSameTeamName()`](#issameteamname), [`initAndShowMvpModal()`](#initandshowmvpmodal)
 
 <a id="openmlbbplayoffmvpmodal"></a>
 #### `openMLBBPlayoffMvpModal(rIdx, mIdx)`
 
-- **Definisi:** [`app.js:6853`](app.js#L6853)
+- **Definisi:** [`app.js:6863`](app.js#L6863)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:5797`](app.js#L5797) — di dalam fungsi `promptPlayoffMVP()`
+  - [`app.js:5807`](app.js#L5807) — di dalam fungsi `promptPlayoffMVP()`
     `openMLBBPlayoffMvpModal(rIdx, mIdx);`
 - **Memanggil Fungsi Internal:** [`initAndShowMvpModal()`](#initandshowmvpmodal)
 
 <a id="closemlbbgroupmvpmodal"></a>
 #### `closeMLBBGroupMvpModal()`
 
-- **Definisi:** [`app.js:7039`](app.js#L7039)
+- **Definisi:** [`app.js:7049`](app.js#L7049)
 - **Titik Pemanggilan (5 lokasi):**
   - [`index.html:864`](index.html#L864) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" on`
   - [`index.html:932`](index.html#L932) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;" on`
-  - [`app.js:7286`](app.js#L7286) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7296`](app.js#L7296) — di dalam fungsi `saveSelectedMvp()`
     `closeMLBBGroupMvpModal();`
-  - [`app.js:7296`](app.js#L7296) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7306`](app.js#L7306) — di dalam fungsi `deleteCurrentMvp()`
     `closeMLBBGroupMvpModal();`
-  - [`app.js:7338`](app.js#L7338) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7348`](app.js#L7348) — di dalam fungsi `deleteCurrentMvp()`
     `closeMLBBGroupMvpModal();`
 
 <a id="recalculategroupstandingsfromfixtures"></a>
 #### `recalculateGroupStandingsFromFixtures()`
 
-- **Definisi:** [`app.js:7735`](app.js#L7735)
+- **Definisi:** [`app.js:7745`](app.js#L7745)
 - **Deskripsi:** Menghitung ulang total poin, menang, dan kalah tim di grup berdasarkan seluruh hasil pertandingan BO3.
 - **Titik Pemanggilan (4 lokasi):**
   - [`app.js:1428`](app.js#L1428) — di dalam fungsi `fetchParticipantsFromGoogleSheet()`
     `if (typeof recalculateGroupStandingsFromFixtures === 'function') recalculateGroupStandingsFromFixtur`
-  - [`app.js:6685`](app.js#L6685) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6695`](app.js#L6695) — di dalam fungsi `setGroupMatchScore()`
     `recalculateGroupStandingsFromFixtures();`
-  - [`app.js:7729`](app.js#L7729) — di dalam fungsi `resetGroupMatchScore()`
+  - [`app.js:7739`](app.js#L7739) — di dalam fungsi `resetGroupMatchScore()`
     `recalculateGroupStandingsFromFixtures();`
-  - [`app.js:10189`](app.js#L10189) — cakupan global / event handler
+  - [`app.js:10199`](app.js#L10199) — cakupan global / event handler
     `if (typeof recalculateGroupStandingsFromFixtures === 'function') recalculateGroupStandingsFromFixtur`
 - **Memanggil Fungsi Internal:** [`deduplicateGroupMatchResults()`](#deduplicategroupmatchresults), [`getCanonicalGroupMatchId()`](#getcanonicalgroupmatchid), [`isSameTeamName()`](#issameteamname)
 
 <a id="rendergroupfixturesui"></a>
 #### `renderGroupFixturesUI()`
 
-- **Definisi:** [`app.js:7875`](app.js#L7875)
+- **Definisi:** [`app.js:7885`](app.js#L7885)
 - **Titik Pemanggilan (11 lokasi):**
   - [`app.js:34`](app.js#L34) — di dalam fungsi `toggleAllMLBBFixtures()`
     `renderGroupFixturesUI();`
-  - [`app.js:5889`](app.js#L5889) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5899`](app.js#L5899) — di dalam fungsi `renderGroupStageUI()`
     `renderGroupFixturesUI();`
-  - [`app.js:6036`](app.js#L6036) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:6046`](app.js#L6046) — di dalam fungsi `renderGroupStageUI()`
     `renderGroupFixturesUI();`
-  - [`app.js:6244`](app.js#L6244) — di dalam fungsi `setMLBBActiveWeek()`
+  - [`app.js:6254`](app.js#L6254) — di dalam fungsi `setMLBBActiveWeek()`
     `renderGroupFixturesUI();`
-  - [`app.js:6249`](app.js#L6249) — di dalam fungsi `setMLBBActiveDayFilter()`
+  - [`app.js:6259`](app.js#L6259) — di dalam fungsi `setMLBBActiveDayFilter()`
     `renderGroupFixturesUI();`
-  - [`app.js:6254`](app.js#L6254) — di dalam fungsi `setMLBBActiveGroupFilter()`
+  - [`app.js:6264`](app.js#L6264) — di dalam fungsi `setMLBBActiveGroupFilter()`
     `renderGroupFixturesUI();`
-  - [`app.js:7424`](app.js#L7424) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7434`](app.js#L7434) — di dalam fungsi `setGroupMatchMVP()`
     `if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();`
-  - [`app.js:7516`](app.js#L7516) — di dalam fungsi `closeMatchPlayerVerifyModal()`
+  - [`app.js:7526`](app.js#L7526) — di dalam fungsi `closeMatchPlayerVerifyModal()`
     `if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();`
-  - [`app.js:7534`](app.js#L7534) — di dalam fungsi `toggleMatchPlayerVerify()`
+  - [`app.js:7544`](app.js#L7544) — di dalam fungsi `toggleMatchPlayerVerify()`
     `if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();`
-  - [`app.js:7557`](app.js#L7557) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7567`](app.js#L7567) — di dalam fungsi `verifyAllMatchPlayers()`
     `if (typeof renderGroupFixturesUI === 'function') renderGroupFixturesUI();`
   - [`functional_tests.js:677`](functional_tests.js#L677) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function renderGroupFixturesUI('), 'app.js harus memiliki renderer bagan re`
@@ -1597,29 +1596,33 @@
 <a id="rendergroupplayofftree"></a>
 #### `renderGroupPlayoffTree()`
 
-- **Definisi:** [`app.js:8156`](app.js#L8156)
+- **Definisi:** [`app.js:8166`](app.js#L8166)
 - **Deskripsi:** Merender bagan pohon eliminasi Playoff (Semifinal & Grand Final) atau status terkunci jika grup belum selesai.
-- **Titik Pemanggilan (7 lokasi):**
+- **Titik Pemanggilan (9 lokasi):**
   - [`app.js:3964`](app.js#L3964) — di dalam fungsi `shuffleMLBBPlayoffBracket()`
     `renderGroupPlayoffTree();`
   - [`app.js:4010`](app.js#L4010) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `renderGroupPlayoffTree();`
-  - [`app.js:5789`](app.js#L5789) — di dalam fungsi `pickGroupPlayoffWinner()`
+  - [`app.js:4999`](app.js#L4999) — di dalam fungsi `generateGroupStage()`
+    `if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();`
+  - [`app.js:5799`](app.js#L5799) — di dalam fungsi `pickGroupPlayoffWinner()`
     `renderGroupPlayoffTree();`
-  - [`app.js:5890`](app.js#L5890) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5900`](app.js#L5900) — di dalam fungsi `renderGroupStageUI()`
     `renderGroupPlayoffTree();`
-  - [`app.js:6037`](app.js#L6037) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:6047`](app.js#L6047) — di dalam fungsi `renderGroupStageUI()`
     `renderGroupPlayoffTree();`
-  - [`app.js:7276`](app.js#L7276) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7286`](app.js#L7286) — di dalam fungsi `saveSelectedMvp()`
     `renderGroupPlayoffTree();`
-  - [`app.js:7328`](app.js#L7328) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7338`](app.js#L7338) — di dalam fungsi `deleteCurrentMvp()`
     `renderGroupPlayoffTree();`
+  - [`app.js:10338`](app.js#L10338) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+    `if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();`
 - **Memanggil Fungsi Internal:** [`proceedToMLBBStage2()`](#proceedtomlbbstage2), [`testMLBBPlayoffWithCurrentStandings()`](#testmlbbplayoffwithcurrentstandings), [`shuffleMLBBPlayoffBracket()`](#shufflemlbbplayoffbracket)
 
 <a id="setmlbbviewmode"></a>
 #### `setMLBBViewMode(mode)`
 
-- **Definisi:** [`app.js:10222`](app.js#L10222)
+- **Definisi:** [`app.js:10232`](app.js#L10232)
 - **Deskripsi:** --- TAMPILAN VIEW SWITCHER MLBB ---
 - **Titik Pemanggilan (6 lokasi):**
   - [`index.html:513`](index.html#L513) — Event `onclick`
@@ -1639,88 +1642,88 @@
 <a id="toggleplayoffbracketcollapse"></a>
 #### `togglePlayoffBracketCollapse()`
 
-- **Definisi:** [`app.js:10308`](app.js#L10308)
+- **Definisi:** [`app.js:10318`](app.js#L10318)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:10627`](app.js#L10627) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10644`](app.js#L10644) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.38rem 0.7rem; bord`
 
 <a id="gotonextmlbbplayoffphase"></a>
 #### `goToNextMLBBPlayoffPhase()`
 
-- **Definisi:** [`app.js:10320`](app.js#L10320)
+- **Definisi:** [`app.js:10330`](app.js#L10330)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:10758`](app.js#L10758) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10775`](app.js#L10775) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="btn btn-primary" style="width:100%; font-size:0.82rem; padding:0.6rem 0`
-  - [`app.js:10964`](app.js#L10964) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10981`](app.js#L10981) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-primary" style="font-size:0.75rem; padding:0.25rem 0.65rem; fon`
-- **Memanggil Fungsi Internal:** [`initGroupPlayoff()`](#initgroupplayoff), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
+- **Memanggil Fungsi Internal:** [`initGroupPlayoff()`](#initgroupplayoff), [`saveStageStateLocal()`](#savestagestatelocal), [`saveState()`](#savestate), [`updateAuthUI()`](#updateauthui), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui), [`showToast()`](#showtoast)
 
 <a id="setplayoffbracketfilter"></a>
 #### `setPlayoffBracketFilter(filter)`
 
-- **Definisi:** [`app.js:10337`](app.js#L10337)
+- **Definisi:** [`app.js:10354`](app.js#L10354)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:10636`](app.js#L10636) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10653`](app.js#L10653) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn ${currentPlayoffBracketFilter === 'UPPER' ? 'btn-primary' : 'btn-ou`
-  - [`app.js:10639`](app.js#L10639) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10656`](app.js#L10656) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn ${currentPlayoffBracketFilter === 'LOWER' ? 'btn-gold' : 'btn-outli`
 - **Memanggil Fungsi Internal:** [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
 <a id="toggleplayofffullscreen"></a>
 #### `togglePlayoffFullscreen()`
 
-- **Definisi:** [`app.js:10344`](app.js#L10344)
+- **Definisi:** [`app.js:10361`](app.js#L10361)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:10624`](app.js#L10624) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10641`](app.js#L10641) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `<button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.38rem 0.7rem; bord`
 
 <a id="renderfullplayoffbrackethtml"></a>
 #### `renderFullPlayoffBracketHtml(activeNodeKey = '')`
 
-- **Definisi:** [`app.js:10441`](app.js#L10441)
+- **Definisi:** [`app.js:10458`](app.js#L10458)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:10892`](app.js#L10892) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10909`](app.js#L10909) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `content += renderFullPlayoffBracketHtml(nodeKey);`
-  - [`app.js:10928`](app.js#L10928) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10945`](app.js#L10945) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `content += renderFullPlayoffBracketHtml(nodeKey);`
 - **Memanggil Fungsi Internal:** [`initGroupPlayoff()`](#initgroupplayoff), [`renderSingleMatchNodeHtml()`](#rendersinglematchnodehtml), [`renderSvgConnectorColumn()`](#rendersvgconnectorcolumn), [`shuffleMLBBPlayoffBracket()`](#shufflemlbbplayoffbracket), [`testMLBBPlayoffWithCurrentStandings()`](#testmlbbplayoffwithcurrentstandings), [`togglePlayoffFullscreen()`](#toggleplayofffullscreen), [`togglePlayoffBracketCollapse()`](#toggleplayoffbracketcollapse), [`setPlayoffBracketFilter()`](#setplayoffbracketfilter)
 
 <a id="selectmlbbstagenode"></a>
 #### `selectMLBBStageNode(nodeKey)`
 
-- **Definisi:** [`app.js:10654`](app.js#L10654)
+- **Definisi:** [`app.js:10671`](app.js#L10671)
 - **Titik Pemanggilan (17 lokasi):**
-  - [`app.js:10377`](app.js#L10377) — di dalam fungsi `renderSingleMatchNodeHtml()`
+  - [`app.js:10394`](app.js#L10394) — di dalam fungsi `renderSingleMatchNodeHtml()`
     `? 'onclick="if(event.target.closest('.bracket-node-team') || event.target.closest('button')) return;`
-  - [`app.js:10679`](app.js#L10679) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10696`](app.js#L10696) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<select id="mobileStageSelect" class="mobile-stage-select" onchange="selectMLBBStageNode(this.value)`
-  - [`app.js:10746`](app.js#L10746) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10763`](app.js#L10763) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMLBBStageNode`
-  - [`app.js:10773`](app.js#L10773) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10790`](app.js#L10790) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.2rem 0.55rem; colo`
-  - [`app.js:10799`](app.js#L10799) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10816`](app.js#L10816) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMLBBStageNode`
-  - [`app.js:10822`](app.js#L10822) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10839`](app.js#L10839) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'DAY3_UPPER_QF' ? 'active' : ''}" onclic`
-  - [`app.js:10826`](app.js#L10826) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10843`](app.js#L10843) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'DAY3_LOWER_R1' ? 'active' : ''}" onclic`
-  - [`app.js:10844`](app.js#L10844) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10861`](app.js#L10861) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'DAY4_UPPER' ? 'active' : ''}" onclick="`
-  - [`app.js:10848`](app.js#L10848) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10865`](app.js#L10865) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn ${activeNode === 'DAY4_LOWER' ? 'active' : ''}" onclick="`
-  - [`app.js:10868`](app.js#L10868) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10885`](app.js#L10885) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `<button type="button" class="flow-node-btn is-final ${activeNode === 'GRAND_FINAL_OFFLINE' ? 'active`
-  - [`app.js:10902`](app.js#L10902) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10919`](app.js#L10919) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
-  - [`app.js:10905`](app.js#L10905) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10922`](app.js#L10922) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
-  - [`app.js:10908`](app.js#L10908) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10925`](app.js#L10925) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
-  - [`app.js:10911`](app.js#L10911) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10928`](app.js#L10928) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
-  - [`app.js:10914`](app.js#L10914) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10931`](app.js#L10931) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
-  - [`app.js:10917`](app.js#L10917) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10934`](app.js#L10934) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button type="button" class="btn btn-outline" style="text-align:left; padding:0.5rem 0.75rem; font-s`
   - [`functional_tests.js:1166`](functional_tests.js#L1166) — pada skenario pengujian
     `assert(appCode.includes('function selectMLBBStageNode('), 'app.js harus memiliki selectMLBBStageNode`
@@ -1729,41 +1732,43 @@
 <a id="rendermlbbinteractivehubui"></a>
 #### `renderMLBBInteractiveHubUI()`
 
-- **Definisi:** [`app.js:10665`](app.js#L10665)
-- **Titik Pemanggilan (18 lokasi):**
+- **Definisi:** [`app.js:10682`](app.js#L10682)
+- **Titik Pemanggilan (19 lokasi):**
   - [`app.js:3786`](app.js#L3786) — di dalam fungsi `changeTournamentFormat()`
     `if (typeof renderMLBBInteractiveHubUI === "function") renderMLBBInteractiveHubUI();`
   - [`app.js:3965`](app.js#L3965) — di dalam fungsi `shuffleMLBBPlayoffBracket()`
     `if (typeof renderMLBBInteractiveHubUI === "function") renderMLBBInteractiveHubUI();`
-  - [`app.js:5790`](app.js#L5790) — di dalam fungsi `pickGroupPlayoffWinner()`
+  - [`app.js:5000`](app.js#L5000) — di dalam fungsi `generateGroupStage()`
+    `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
+  - [`app.js:5800`](app.js#L5800) — di dalam fungsi `pickGroupPlayoffWinner()`
     `if (typeof renderMLBBInteractiveHubUI === "function") renderMLBBInteractiveHubUI();`
-  - [`app.js:5816`](app.js#L5816) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5826`](app.js#L5826) — di dalam fungsi `renderGroupStageUI()`
     `renderMLBBInteractiveHubUI();`
-  - [`app.js:7425`](app.js#L7425) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7435`](app.js#L7435) — di dalam fungsi `setGroupMatchMVP()`
     `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
-  - [`app.js:7517`](app.js#L7517) — di dalam fungsi `closeMatchPlayerVerifyModal()`
+  - [`app.js:7527`](app.js#L7527) — di dalam fungsi `closeMatchPlayerVerifyModal()`
     `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
-  - [`app.js:7535`](app.js#L7535) — di dalam fungsi `toggleMatchPlayerVerify()`
+  - [`app.js:7545`](app.js#L7545) — di dalam fungsi `toggleMatchPlayerVerify()`
     `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
-  - [`app.js:7558`](app.js#L7558) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7568`](app.js#L7568) — di dalam fungsi `verifyAllMatchPlayers()`
     `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
-  - [`app.js:10247`](app.js#L10247) — di dalam fungsi `setMLBBViewMode()`
+  - [`app.js:10257`](app.js#L10257) — di dalam fungsi `setMLBBViewMode()`
     `renderMLBBInteractiveHubUI();`
-  - [`app.js:10325`](app.js#L10325) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+  - [`app.js:10339`](app.js#L10339) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+    `if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();`
+  - [`app.js:10357`](app.js#L10357) — di dalam fungsi `setPlayoffBracketFilter()`
     `renderMLBBInteractiveHubUI();`
-  - [`app.js:10340`](app.js#L10340) — di dalam fungsi `setPlayoffBracketFilter()`
+  - [`app.js:10673`](app.js#L10673) — di dalam fungsi `selectMLBBStageNode()`
     `renderMLBBInteractiveHubUI();`
-  - [`app.js:10656`](app.js#L10656) — di dalam fungsi `selectMLBBStageNode()`
-    `renderMLBBInteractiveHubUI();`
-  - [`app.js:10995`](app.js#L10995) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11012`](app.js#L11012) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<input type="number" min="0" value="${t.win}" style="width:42px;padding:0.2rem;text-align:center;" o`
-  - [`app.js:10998`](app.js#L10998) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11015`](app.js#L11015) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<input type="number" min="0" value="${t.lose}" style="width:42px;padding:0.2rem;text-align:center;" `
-  - [`app.js:11090`](app.js#L11090) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11107`](app.js#L11107) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `renderMLBBInteractiveHubUI();`
-  - [`app.js:11092`](app.js#L11092) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11109`](app.js#L11109) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;borde`
-  - [`app.js:11093`](app.js#L11093) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11110`](app.js#L11110) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#fbbf24;borde`
   - [`functional_tests.js:1165`](functional_tests.js#L1165) — pada skenario pengujian
     `assert(appCode.includes('function renderMLBBInteractiveHubUI()'), 'app.js harus memiliki renderMLBBI`
@@ -1772,9 +1777,9 @@
 <a id="rendermlbbdetailpanelcontent"></a>
 #### `renderMLBBDetailPanelContent(nodeKey)`
 
-- **Definisi:** [`app.js:10887`](app.js#L10887)
+- **Definisi:** [`app.js:10904`](app.js#L10904)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:10881`](app.js#L10881) — di dalam fungsi `renderMLBBInteractiveHubUI()`
+  - [`app.js:10898`](app.js#L10898) — di dalam fungsi `renderMLBBInteractiveHubUI()`
     `rightHtml += renderMLBBDetailPanelContent(activeNode);`
 - **Memanggil Fungsi Internal:** [`renderFullPlayoffBracketHtml()`](#renderfullplayoffbrackethtml), [`selectMLBBStageNode()`](#selectmlbbstagenode), [`getSortedGroupTeams()`](#getsortedgroupteams), [`getGroupFixtures()`](#getgroupfixtures), [`isGroupMatchesCompleted()`](#isgroupmatchescompleted), [`escapeHtml()`](#escapehtml), [`goToNextMLBBPlayoffPhase()`](#gotonextmlbbplayoffphase), [`updateGroupRecord()`](#updategrouprecord), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui), [`isSameTeamName()`](#issameteamname), [`setGroupMatchScore()`](#setgroupmatchscore), [`setGroupMatchSpecialResult()`](#setgroupmatchspecialresult), [`openMLBBGroupMvpModal()`](#openmlbbgroupmvpmodal)
 
@@ -1836,9 +1841,9 @@
     `return getDepartmentCluster(raw, teamName).toLowerCase();`
   - [`app.js:4798`](app.js#L4798) — di dalam fungsi `allocateMLBBGroups()`
     `if (typeof getDepartmentCluster === 'function') return getDepartmentCluster(d, team).toLowerCase();`
-  - [`app.js:8406`](app.js#L8406) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8416`](app.js#L8416) — di dalam fungsi `syncMCGGPlayers()`
     `const cluster = getDepartmentCluster(ply.dept, ply.name);`
-  - [`app.js:8436`](app.js#L8436) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8446`](app.js#L8446) — di dalam fungsi `syncMCGGPlayers()`
     `return getDepartmentCluster(d, p.name) === clusterName;`
   - [`functional_tests.js:932`](functional_tests.js#L932) — pada skenario pengujian
     `assert(appCode.includes('function getDepartmentCluster('), 'app.js harus memiliki helper getDepartme`
@@ -1871,7 +1876,7 @@
     `const isInv = typeof isTeamInvited === 'function' && isTeamInvited(tName);`
   - [`app.js:4806`](app.js#L4806) — di dalam fungsi `allocateMLBBGroups()`
     `if (typeof isTeamInvited === 'function') return isTeamInvited(team);`
-  - [`app.js:5191`](app.js#L5191) — di dalam fungsi `isPlayoffInvitedTeam()`
+  - [`app.js:5198`](app.js#L5198) — di dalam fungsi `isPlayoffInvitedTeam()`
     `if (typeof isTeamInvited === 'function' && isTeamInvited(teamName)) return true;`
   - [`functional_tests.js:878`](functional_tests.js#L878) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('isTeamInvited('), 'app.js harus memiliki helper isTeamInvited');`
@@ -1897,7 +1902,7 @@
 - **Definisi:** [`app.js:278`](app.js#L278)
 - **Deskripsi:** Kontrol Loading Screen Fullscreen (Sinkronisasi Data Murni Google Sheets)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:10162`](app.js#L10162) — cakupan global / event handler
+  - [`app.js:10172`](app.js#L10172) — cakupan global / event handler
     `showGlobalLoader('Menyinkronkan data terkini dari Google Sheets...');`
 - **Memanggil Fungsi Internal:** [`hideGlobalLoader()`](#hidegloballoader)
 
@@ -1910,9 +1915,9 @@
     `hideGlobalLoader();`
   - [`app.js:908`](app.js#L908) — di dalam fungsi `bypassLoaderWithCache()`
     `hideGlobalLoader();`
-  - [`app.js:10194`](app.js#L10194) — cakupan global / event handler
+  - [`app.js:10204`](app.js#L10204) — cakupan global / event handler
     `hideGlobalLoader();`
-  - [`app.js:10205`](app.js#L10205) — cakupan global / event handler
+  - [`app.js:10215`](app.js#L10215) — cakupan global / event handler
     `hideGlobalLoader();`
 
 <a id="bypassloaderwithcache"></a>
@@ -1938,9 +1943,9 @@
 
 - **Definisi:** [`app.js:979`](app.js#L979)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:10171`](app.js#L10171) — cakupan global / event handler
+  - [`app.js:10181`](app.js#L10181) — cakupan global / event handler
     `restoreFormDraft('MLBB');`
-  - [`app.js:10172`](app.js#L10172) — cakupan global / event handler
+  - [`app.js:10182`](app.js#L10182) — cakupan global / event handler
     `restoreFormDraft('MCGG');`
 - **Memanggil Fungsi Internal:** [`toggleOfficial2Form()`](#toggleofficial2form)
 
@@ -1993,7 +1998,7 @@
 
 - **Definisi:** [`app.js:1803`](app.js#L1803)
 - **Deskripsi:** Menyimpan seluruh data aktif aplikasi (peserta, bagan, klasemen grup, lobi MCGG) ke localStorage.
-- **Titik Pemanggilan (41 lokasi):**
+- **Titik Pemanggilan (42 lokasi):**
   - [`app.js:248`](app.js#L248) — di dalam fungsi `toggleInvitedTeam()`
     `saveState();`
   - [`app.js:886`](app.js#L886) — di dalam fungsi `confirmResetBaganWithPin()`
@@ -2030,51 +2035,53 @@
     `saveState();`
   - [`app.js:4996`](app.js#L4996) — di dalam fungsi `generateGroupStage()`
     `saveState();`
-  - [`app.js:5009`](app.js#L5009) — di dalam fungsi `updateGroupRecord()`
+  - [`app.js:5011`](app.js#L5011) — di dalam fungsi `updateGroupRecord()`
     `saveState();`
-  - [`app.js:5788`](app.js#L5788) — di dalam fungsi `pickGroupPlayoffWinner()`
+  - [`app.js:5798`](app.js#L5798) — di dalam fungsi `pickGroupPlayoffWinner()`
     `saveState();`
-  - [`app.js:6686`](app.js#L6686) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6696`](app.js#L6696) — di dalam fungsi `setGroupMatchScore()`
     `saveState();`
-  - [`app.js:7275`](app.js#L7275) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7285`](app.js#L7285) — di dalam fungsi `saveSelectedMvp()`
     `saveState();`
-  - [`app.js:7327`](app.js#L7327) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7337`](app.js#L7337) — di dalam fungsi `deleteCurrentMvp()`
     `saveState();`
-  - [`app.js:7422`](app.js#L7422) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7432`](app.js#L7432) — di dalam fungsi `setGroupMatchMVP()`
     `saveState();`
-  - [`app.js:7514`](app.js#L7514) — di dalam fungsi `closeMatchPlayerVerifyModal()`
+  - [`app.js:7524`](app.js#L7524) — di dalam fungsi `closeMatchPlayerVerifyModal()`
     `saveState();`
-  - [`app.js:7531`](app.js#L7531) — di dalam fungsi `toggleMatchPlayerVerify()`
+  - [`app.js:7541`](app.js#L7541) — di dalam fungsi `toggleMatchPlayerVerify()`
     `saveState();`
-  - [`app.js:7554`](app.js#L7554) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7564`](app.js#L7564) — di dalam fungsi `verifyAllMatchPlayers()`
     `saveState();`
-  - [`app.js:7730`](app.js#L7730) — di dalam fungsi `resetGroupMatchScore()`
+  - [`app.js:7740`](app.js#L7740) — di dalam fungsi `resetGroupMatchScore()`
     `saveState();`
-  - [`app.js:8513`](app.js#L8513) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8523`](app.js#L8523) — di dalam fungsi `syncMCGGPlayers()`
     `saveState();`
-  - [`app.js:8572`](app.js#L8572) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8582`](app.js#L8582) — di dalam fungsi `syncMCGGPlayers()`
     `saveState();`
-  - [`app.js:8834`](app.js#L8834) — di dalam fungsi `updateMCGGRank()`
+  - [`app.js:8844`](app.js#L8844) — di dalam fungsi `updateMCGGRank()`
     `saveState();`
-  - [`app.js:8869`](app.js#L8869) — di dalam fungsi `updateMCGGCommander()`
+  - [`app.js:8879`](app.js#L8879) — di dalam fungsi `updateMCGGCommander()`
     `saveState();`
-  - [`app.js:8905`](app.js#L8905) — di dalam fungsi `updateMCGGPenalty()`
+  - [`app.js:8915`](app.js#L8915) — di dalam fungsi `updateMCGGPenalty()`
     `saveState();`
-  - [`app.js:9230`](app.js#L9230) — di dalam fungsi `drawMatchPool()`
+  - [`app.js:9240`](app.js#L9240) — di dalam fungsi `drawMatchPool()`
     `saveState();`
-  - [`app.js:9281`](app.js#L9281) — di dalam fungsi `assignMatchPoolToPlayers()`
+  - [`app.js:9291`](app.js#L9291) — di dalam fungsi `assignMatchPoolToPlayers()`
     `saveState();`
-  - [`app.js:9301`](app.js#L9301) — di dalam fungsi `toggleLockMatchDraw()`
+  - [`app.js:9311`](app.js#L9311) — di dalam fungsi `toggleLockMatchDraw()`
     `saveState();`
-  - [`app.js:9327`](app.js#L9327) — di dalam fungsi `nextMatchDraw()`
+  - [`app.js:9337`](app.js#L9337) — di dalam fungsi `nextMatchDraw()`
     `saveState();`
-  - [`app.js:9360`](app.js#L9360) — di dalam fungsi `resetLobbyDraw()`
+  - [`app.js:9370`](app.js#L9370) — di dalam fungsi `resetLobbyDraw()`
     `saveState();`
-  - [`app.js:10138`](app.js#L10138) — di dalam fungsi `loadSampleData()`
+  - [`app.js:10148`](app.js#L10148) — di dalam fungsi `loadSampleData()`
     `saveState();`
-  - [`app.js:10151`](app.js#L10151) — di dalam fungsi `clearAllData()`
+  - [`app.js:10161`](app.js#L10161) — di dalam fungsi `clearAllData()`
     `saveState();`
-  - [`app.js:11612`](app.js#L11612) — di dalam fungsi `shuffleMCGG32Besar()`
+  - [`app.js:10336`](app.js#L10336) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+    `saveState();`
+  - [`app.js:11629`](app.js#L11629) — di dalam fungsi `shuffleMCGG32Besar()`
     `saveState();`
 - **Memanggil Fungsi Internal:** [`renderParticipants()`](#renderparticipants), [`updateAuthUI()`](#updateauthui), [`updateCounts()`](#updatecounts)
 
@@ -2094,9 +2101,9 @@
     `updateCounts();`
   - [`app.js:3262`](app.js#L3262) — di dalam fungsi `deleteParticipant()`
     `updateCounts();`
-  - [`app.js:10156`](app.js#L10156) — di dalam fungsi `clearAllData()`
+  - [`app.js:10166`](app.js#L10166) — di dalam fungsi `clearAllData()`
     `updateCounts();`
-  - [`app.js:10178`](app.js#L10178) — cakupan global / event handler
+  - [`app.js:10188`](app.js#L10188) — cakupan global / event handler
     `updateCounts();`
 
 <a id="toggleofficial2form"></a>
@@ -2111,7 +2118,7 @@
     `toggleOfficial2Form();`
   - [`app.js:3188`](app.js#L3188) — di dalam fungsi `handleRegister()`
     `toggleOfficial2Form();`
-  - [`app.js:10166`](app.js#L10166) — cakupan global / event handler
+  - [`app.js:10176`](app.js#L10176) — cakupan global / event handler
     `toggleOfficial2Form();`
 
 <a id="renderplayersforminputs"></a>
@@ -2122,7 +2129,7 @@
 - **Titik Pemanggilan (2 lokasi):**
   - [`app.js:3186`](app.js#L3186) — di dalam fungsi `handleRegister()`
     `renderPlayersFormInputs();`
-  - [`app.js:10164`](app.js#L10164) — cakupan global / event handler
+  - [`app.js:10174`](app.js#L10174) — cakupan global / event handler
     `renderPlayersFormInputs();`
 - **Memanggil Fungsi Internal:** [`handlePlayerIdCardPreview()`](#handleplayeridcardpreview)
 
@@ -2136,7 +2143,7 @@
     `<select id="gameCategory" required onchange="toggleCategoryForm()" style="font-size: 1rem; font-weig`
   - [`app.js:3187`](app.js#L3187) — di dalam fungsi `handleRegister()`
     `toggleCategoryForm();`
-  - [`app.js:10165`](app.js#L10165) — cakupan global / event handler
+  - [`app.js:10175`](app.js#L10175) — cakupan global / event handler
     `toggleCategoryForm();`
 
 <a id="renderregistrationui"></a>
@@ -2322,22 +2329,22 @@
 <a id="updategrouprecord"></a>
 #### `updateGroupRecord(gName, idx, field, val)`
 
-- **Definisi:** [`app.js:5001`](app.js#L5001)
+- **Definisi:** [`app.js:5003`](app.js#L5003)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:5951`](app.js#L5951) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5961`](app.js#L5961) — di dalam fungsi `renderGroupStageUI()`
     `<input type="number" min="0" value="${t.win}" style="width:45px;padding:0.2rem;text-align:center;" o`
-  - [`app.js:5955`](app.js#L5955) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5965`](app.js#L5965) — di dalam fungsi `renderGroupStageUI()`
     `<input type="number" min="0" value="${t.lose}" style="width:45px;padding:0.2rem;text-align:center;" `
-  - [`app.js:10995`](app.js#L10995) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11012`](app.js#L11012) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<input type="number" min="0" value="${t.win}" style="width:42px;padding:0.2rem;text-align:center;" o`
-  - [`app.js:10998`](app.js#L10998) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11015`](app.js#L11015) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<input type="number" min="0" value="${t.lose}" style="width:42px;padding:0.2rem;text-align:center;" `
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`initGroupPlayoff()`](#initgroupplayoff), [`renderGroupStageUI()`](#rendergroupstageui)
 
 <a id="getsortedgroupteams"></a>
 #### `getSortedGroupTeams(gName)`
 
-- **Definisi:** [`app.js:5116`](app.js#L5116)
+- **Definisi:** [`app.js:5118`](app.js#L5118)
 - **Deskripsi:** Helper untuk mengambil daftar tim terurut di suatu grup MLBB dengan kalkulasi MVP terkini
 - **Titik Pemanggilan (13 lokasi):**
   - [`app.js:3867`](app.js#L3867) — di dalam fungsi `evaluateMLBBTieBreaker()`
@@ -2348,171 +2355,165 @@
     `const sorted = getSortedGroupTeams(gName);`
   - [`app.js:4481`](app.js#L4481) — di dalam fungsi `syncSingleMatchRowToGSheet()`
     `const sorted = typeof getSortedGroupTeams === 'function' ? getSortedGroupTeams(gName) : groupTeams;`
-  - [`app.js:5398`](app.js#L5398) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5408`](app.js#L5408) — di dalam fungsi `initGroupPlayoff()`
     `const sorted = getSortedGroupTeams(gName);`
-  - [`app.js:5524`](app.js#L5524) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5534`](app.js#L5534) — di dalam fungsi `initGroupPlayoff()`
     `const grpA = getSortedGroupTeams('Grup A');`
-  - [`app.js:5525`](app.js#L5525) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5535`](app.js#L5535) — di dalam fungsi `initGroupPlayoff()`
     `const grpB = getSortedGroupTeams('Grup B');`
-  - [`app.js:5526`](app.js#L5526) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5536`](app.js#L5536) — di dalam fungsi `initGroupPlayoff()`
     `const grpC = getSortedGroupTeams('Grup C');`
-  - [`app.js:5527`](app.js#L5527) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5537`](app.js#L5537) — di dalam fungsi `initGroupPlayoff()`
     `const grpD = getSortedGroupTeams('Grup D');`
-  - [`app.js:5603`](app.js#L5603) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5613`](app.js#L5613) — di dalam fungsi `initGroupPlayoff()`
     `const grpA = getSortedGroupTeams('Grup A');`
-  - [`app.js:5604`](app.js#L5604) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5614`](app.js#L5614) — di dalam fungsi `initGroupPlayoff()`
     `const grpB = getSortedGroupTeams('Grup B');`
-  - [`app.js:5922`](app.js#L5922) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5932`](app.js#L5932) — di dalam fungsi `renderGroupStageUI()`
     `const sorted = getSortedGroupTeams(gName);`
-  - [`app.js:10937`](app.js#L10937) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10954`](app.js#L10954) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `const sorted = getSortedGroupTeams(gName);`
 - **Memanggil Fungsi Internal:** [`compareMLBBTeams()`](#comparemlbbteams)
 
 <a id="shufflearray"></a>
 #### `shuffleArray(arr)`
 
-- **Definisi:** [`app.js:5144`](app.js#L5144)
+- **Definisi:** [`app.js:5146`](app.js#L5146)
 - **Titik Pemanggilan (9 lokasi):**
-  - [`app.js:5157`](app.js#L5157) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5159`](app.js#L5159) — di dalam fungsi `findValidBracketPermutation()`
     `const shuffledRemaining = shuffleArray(remainingItems);`
-  - [`app.js:5201`](app.js#L5201) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5208`](app.js#L5208) — di dalam fungsi `solveRemainingBracketSlots()`
     `const shuffledItems = shuffleArray(remainingItems);`
-  - [`app.js:5244`](app.js#L5244) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `const otherInvited = shuffleArray(allInvited.filter(x => x !== atmoItem && x !== alphaItem));`
-  - [`app.js:5278`](app.js#L5278) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `const shuffledWings = shuffleArray(poolWings);`
-  - [`app.js:5355`](app.js#L5355) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5252`](app.js#L5252) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+    `const otherInvited = shuffleArray(allInvited.filter(x => x !== atmoItem && x !== alphaItem && x !== `
+  - [`app.js:5304`](app.js#L5304) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+    `const wingSlots = shuffleArray([w * 2, w * 2 + 1]);`
+  - [`app.js:5365`](app.js#L5365) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const shuffledInv = shuffleArray(j3Invited);`
-  - [`app.js:5356`](app.js#L5356) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5366`](app.js#L5366) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const targetWings = shuffleArray([0, 1, 2, 3]);`
-  - [`app.js:5425`](app.js#L5425) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5435`](app.js#L5435) — di dalam fungsi `initGroupPlayoff()`
     `branchJ1 = shuffleArray([...j1List]);`
-  - [`app.js:5556`](app.js#L5556) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5566`](app.js#L5566) — di dalam fungsi `initGroupPlayoff()`
     `const candJ1 = shuffleArray([...j1List]);`
-  - [`app.js:5574`](app.js#L5574) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5584`](app.js#L5584) — di dalam fungsi `initGroupPlayoff()`
     `bJ1 = shuffleArray([...j1List]);`
 
 <a id="backtrack"></a>
 #### `backtrack(slotIdx, remainingItems, currentArr)`
 
-- **Definisi:** [`app.js:5155`](app.js#L5155)
+- **Definisi:** [`app.js:5157`](app.js#L5157)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:5163`](app.js#L5163) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5165`](app.js#L5165) — di dalam fungsi `findValidBracketPermutation()`
     `const res = backtrack(slotIdx + 1, nextRemaining, [...currentArr, item]);`
-  - [`app.js:5170`](app.js#L5170) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5172`](app.js#L5172) — di dalam fungsi `findValidBracketPermutation()`
     `const res = backtrack(0, candidates, []);`
-  - [`app.js:5202`](app.js#L5202) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5209`](app.js#L5209) — di dalam fungsi `solveRemainingBracketSlots()`
     `function backtrack(idx, arr) {`
-  - [`app.js:5211`](app.js#L5211) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5218`](app.js#L5218) — di dalam fungsi `solveRemainingBracketSlots()`
     `const res = backtrack(idx + 1, nextArr);`
-  - [`app.js:5216`](app.js#L5216) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5223`](app.js#L5223) — di dalam fungsi `solveRemainingBracketSlots()`
     `return backtrack(0, [...currentArray]);`
 
 <a id="isteamatmo"></a>
 #### `isTeamAtmo(teamName)`
 
-- **Definisi:** [`app.js:5177`](app.js#L5177)
+- **Definisi:** [`app.js:5179`](app.js#L5179)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:5242`](app.js#L5242) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5249`](app.js#L5249) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const atmoItem = allInvited.find(x => isTeamAtmo(x.team));`
-  - [`app.js:5560`](app.js#L5560) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5570`](app.js#L5570) — di dalam fungsi `initGroupPlayoff()`
     `const atmoIdx = candJ1.findIndex(x => isTeamAtmo(x.team)) !== -1 ? candJ1.findIndex(x => isTeamAtmo(`
 
 <a id="isteamalpha"></a>
 #### `isTeamAlpha(teamName)`
 
-- **Definisi:** [`app.js:5182`](app.js#L5182)
+- **Definisi:** [`app.js:5184`](app.js#L5184)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:5243`](app.js#L5243) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5250`](app.js#L5250) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const alphaItem = allInvited.find(x => isTeamAlpha(x.team) && x !== atmoItem);`
-  - [`app.js:5561`](app.js#L5561) — di dalam fungsi `initGroupPlayoff()`
+  - [`app.js:5571`](app.js#L5571) — di dalam fungsi `initGroupPlayoff()`
     `const alphaIdx = candJ1.findIndex(x => isTeamAlpha(x.team)) !== -1 ? candJ1.findIndex(x => isTeamAlp`
+
+<a id="isteamappa"></a>
+#### `isTeamAppa(teamName)`
+
+- **Definisi:** [`app.js:5190`](app.js#L5190)
+- **Titik Pemanggilan (1 lokasi):**
+  - [`app.js:5251`](app.js#L5251) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+    `const appaItem = allInvited.find(x => isTeamAppa(x.team) && x !== atmoItem && x !== alphaItem);`
 
 <a id="backtrack"></a>
 #### `backtrack(idx, arr)`
 
-- **Definisi:** [`app.js:5202`](app.js#L5202)
+- **Definisi:** [`app.js:5209`](app.js#L5209)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`app.js:5155`](app.js#L5155) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5157`](app.js#L5157) — di dalam fungsi `findValidBracketPermutation()`
     `function backtrack(slotIdx, remainingItems, currentArr) {`
-  - [`app.js:5163`](app.js#L5163) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5165`](app.js#L5165) — di dalam fungsi `findValidBracketPermutation()`
     `const res = backtrack(slotIdx + 1, nextRemaining, [...currentArr, item]);`
-  - [`app.js:5170`](app.js#L5170) — di dalam fungsi `findValidBracketPermutation()`
+  - [`app.js:5172`](app.js#L5172) — di dalam fungsi `findValidBracketPermutation()`
     `const res = backtrack(0, candidates, []);`
-  - [`app.js:5211`](app.js#L5211) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5218`](app.js#L5218) — di dalam fungsi `solveRemainingBracketSlots()`
     `const res = backtrack(idx + 1, nextArr);`
-  - [`app.js:5216`](app.js#L5216) — di dalam fungsi `solveRemainingBracketSlots()`
+  - [`app.js:5223`](app.js#L5223) — di dalam fungsi `solveRemainingBracketSlots()`
     `return backtrack(0, [...currentArray]);`
 
 <a id="isinv"></a>
 #### `isInv(t)`
 
-- **Definisi:** [`app.js:5229`](app.js#L5229)
-- **Titik Pemanggilan (8 lokasi):**
-  - [`app.js:5231`](app.js#L5231) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+- **Definisi:** [`app.js:5236`](app.js#L5236)
+- **Titik Pemanggilan (7 lokasi):**
+  - [`app.js:5238`](app.js#L5238) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j1Invited = j1List.filter(item => isInv(item.team));`
-  - [`app.js:5232`](app.js#L5232) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5239`](app.js#L5239) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j1Regular = j1List.filter(item => !isInv(item.team));`
-  - [`app.js:5233`](app.js#L5233) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5240`](app.js#L5240) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j2Invited = j2List.filter(item => isInv(item.team));`
-  - [`app.js:5234`](app.js#L5234) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5241`](app.js#L5241) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j2Regular = j2List.filter(item => !isInv(item.team));`
-  - [`app.js:5296`](app.js#L5296) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5316`](app.js#L5316) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `(!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))`
-  - [`app.js:5301`](app.js#L5301) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `(!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))`
-  - [`app.js:5347`](app.js#L5347) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5357`](app.js#L5357) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const j3Invited = j3List.filter(item => isInv(item.team));`
-  - [`app.js:5348`](app.js#L5348) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5358`](app.js#L5358) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const j3Regular = j3List.filter(item => !isInv(item.team));`
-
-<a id="placepoolinvited"></a>
-#### `placePoolInvited(poolInvitedList, poolWings, poolSlots)`
-
-- **Definisi:** [`app.js:5277`](app.js#L5277)
-- **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:5317`](app.js#L5317) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `if (!placePoolInvited(topInvited, [0, 1], [0, 1, 2, 3])) continue;`
-  - [`app.js:5318`](app.js#L5318) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `if (!placePoolInvited(botInvited, [2, 3], [4, 5, 6, 7])) continue;`
 
 <a id="isinv"></a>
 #### `isInv(t)`
 
-- **Definisi:** [`app.js:5346`](app.js#L5346)
-- **Titik Pemanggilan (8 lokasi):**
-  - [`app.js:5231`](app.js#L5231) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+- **Definisi:** [`app.js:5356`](app.js#L5356)
+- **Titik Pemanggilan (7 lokasi):**
+  - [`app.js:5238`](app.js#L5238) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j1Invited = j1List.filter(item => isInv(item.team));`
-  - [`app.js:5232`](app.js#L5232) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5239`](app.js#L5239) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j1Regular = j1List.filter(item => !isInv(item.team));`
-  - [`app.js:5233`](app.js#L5233) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5240`](app.js#L5240) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j2Invited = j2List.filter(item => isInv(item.team));`
-  - [`app.js:5234`](app.js#L5234) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5241`](app.js#L5241) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `const j2Regular = j2List.filter(item => !isInv(item.team));`
-  - [`app.js:5296`](app.js#L5296) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
+  - [`app.js:5316`](app.js#L5316) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
     `(!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))`
-  - [`app.js:5301`](app.js#L5301) — di dalam fungsi `drawMLBBPlayoffUpperBracket()`
-    `(!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))`
-  - [`app.js:5347`](app.js#L5347) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5357`](app.js#L5357) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const j3Invited = j3List.filter(item => isInv(item.team));`
-  - [`app.js:5348`](app.js#L5348) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
+  - [`app.js:5358`](app.js#L5358) — di dalam fungsi `drawMLBBPlayoffLowerBracket()`
     `const j3Regular = j3List.filter(item => !isInv(item.team));`
 
 <a id="resolveteamnameingroup"></a>
 #### `resolveTeamNameInGroup(rawName, groupTeams)`
 
-- **Definisi:** [`app.js:6155`](app.js#L6155)
+- **Definisi:** [`app.js:6165`](app.js#L6165)
 - **Deskripsi:** Helper pencocokan nama tim di dalam grup (toleran terhadap variasi penulisan alias/tanda kurung di poster)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:6269`](app.js#L6269) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6279`](app.js#L6279) — di dalam fungsi `getGroupFixtures()`
     `const realTeamA = resolveTeamNameInGroup(item.teamA, teams);`
-  - [`app.js:6270`](app.js#L6270) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6280`](app.js#L6280) — di dalam fungsi `getGroupFixtures()`
     `const realTeamB = resolveTeamNameInGroup(item.teamB, teams);`
 
 <a id="issameteamname"></a>
 #### `isSameTeamName(name1, name2)`
 
-- **Definisi:** [`app.js:6171`](app.js#L6171)
+- **Definisi:** [`app.js:6181`](app.js#L6181)
 - **Deskripsi:** Helper pencocokan nama tim yang toleran terhadap format huruf besar/kecil, spasi, tanda kurung, dan alias
 - **Titik Pemanggilan (36 lokasi):**
   - [`app.js:3974`](app.js#L3974) — di dalam fungsi `findTeamGroupAndRank()`
@@ -2521,165 +2522,165 @@
     `const teamObj = groupTeams.find(t => isSameTeamName(t.name, tName)) || { name: tName };`
   - [`app.js:4488`](app.js#L4488) — di dalam fungsi `syncSingleMatchRowToGSheet()`
     `const rankIdx = sorted.findIndex(t => isSameTeamName(t.name, tName));`
-  - [`app.js:5027`](app.js#L5027) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5029`](app.js#L5029) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `if ((isSameTeamName(m.teamA, teamA) && isSameTeamName(m.teamB, teamB)) ||`
-  - [`app.js:5028`](app.js#L5028) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5030`](app.js#L5030) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `(isSameTeamName(m.teamA, teamB) && isSameTeamName(m.teamB, teamA))) {`
-  - [`app.js:5054`](app.js#L5054) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5056`](app.js#L5056) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `if (isSameTeamName(winner, teamA) || isSameTeamName(cleanWinner, teamA)) {`
-  - [`app.js:5057`](app.js#L5057) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5059`](app.js#L5059) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `if (isSameTeamName(winner, teamB) || isSameTeamName(cleanWinner, teamB)) {`
-  - [`app.js:5064`](app.js#L5064) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5066`](app.js#L5066) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `const isAFirst = isSameTeamName(match.teamA, teamA);`
-  - [`app.js:6191`](app.js#L6191) — di dalam fungsi `findGroupNameForTeam()`
+  - [`app.js:6201`](app.js#L6201) — di dalam fungsi `findGroupNameForTeam()`
     `if (Array.isArray(gsd[g]) && gsd[g].some(t => isSameTeamName(t.name, teamName))) {`
-  - [`app.js:6368`](app.js#L6368) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6378`](app.js#L6378) — di dalam fungsi `getGroupFixtures()`
     `if ((isSameTeamName(item.teamA, p.teamA) && isSameTeamName(item.teamB, p.teamB)) ||`
-  - [`app.js:6369`](app.js#L6369) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6379`](app.js#L6379) — di dalam fungsi `getGroupFixtures()`
     `(isSameTeamName(item.teamA, p.teamB) && isSameTeamName(item.teamB, p.teamA))) {`
-  - [`app.js:6387`](app.js#L6387) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6397`](app.js#L6397) — di dalam fungsi `getGroupFixtures()`
     `} else if (isSameTeamName(saved.teamA, p.teamA)) {`
-  - [`app.js:6390`](app.js#L6390) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6400`](app.js#L6400) — di dalam fungsi `getGroupFixtures()`
     `} else if (isSameTeamName(saved.teamA, p.teamB)) {`
-  - [`app.js:6403`](app.js#L6403) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6413`](app.js#L6413) — di dalam fungsi `getGroupFixtures()`
     `if (isSameTeamName(saved.winner, p.teamA) && Number(scoreA) < Number(scoreB)) {`
-  - [`app.js:6406`](app.js#L6406) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6416`](app.js#L6416) — di dalam fungsi `getGroupFixtures()`
     `if (isSameTeamName(saved.teamA, p.teamA)) {`
-  - [`app.js:6412`](app.js#L6412) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6422`](app.js#L6422) — di dalam fungsi `getGroupFixtures()`
     `} else if (isSameTeamName(saved.winner, p.teamB) && Number(scoreB) < Number(scoreA)) {`
-  - [`app.js:6415`](app.js#L6415) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6425`](app.js#L6425) — di dalam fungsi `getGroupFixtures()`
     `if (isSameTeamName(saved.teamA, p.teamB)) {`
-  - [`app.js:6499`](app.js#L6499) — di dalam fungsi `deduplicateGroupMatchResults()`
+  - [`app.js:6509`](app.js#L6509) — di dalam fungsi `deduplicateGroupMatchResults()`
     `if (isSameTeamName(m.teamA, canonTeamB) && isSameTeamName(m.teamB, canonTeamA)) {`
-  - [`app.js:6511`](app.js#L6511) — di dalam fungsi `deduplicateGroupMatchResults()`
+  - [`app.js:6521`](app.js#L6521) — di dalam fungsi `deduplicateGroupMatchResults()`
     `if (isSameTeamName(normWinner, canonTeamA) && sA < sB) {`
-  - [`app.js:6513`](app.js#L6513) — di dalam fungsi `deduplicateGroupMatchResults()`
+  - [`app.js:6523`](app.js#L6523) — di dalam fungsi `deduplicateGroupMatchResults()`
     `} else if (isSameTeamName(normWinner, canonTeamB) && sB < sA) {`
-  - [`app.js:6545`](app.js#L6545) — di dalam fungsi `deduplicateGroupMatchResults()`
+  - [`app.js:6555`](app.js#L6555) — di dalam fungsi `deduplicateGroupMatchResults()`
     `if (isSameTeamName(mergedWinner, canonTeamA) && sA < sB) {`
-  - [`app.js:6547`](app.js#L6547) — di dalam fungsi `deduplicateGroupMatchResults()`
+  - [`app.js:6557`](app.js#L6557) — di dalam fungsi `deduplicateGroupMatchResults()`
     `} else if (isSameTeamName(mergedWinner, canonTeamB) && sB < sA) {`
-  - [`app.js:6635`](app.js#L6635) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6645`](app.js#L6645) — di dalam fungsi `setGroupMatchScore()`
     `if (isSameTeamName(winner, teamA) && Number(scoreA) < Number(scoreB)) {`
-  - [`app.js:6637`](app.js#L6637) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6647`](app.js#L6647) — di dalam fungsi `setGroupMatchScore()`
     `} else if (isSameTeamName(winner, teamB) && Number(scoreB) < Number(scoreA)) {`
-  - [`app.js:6653`](app.js#L6653) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6663`](app.js#L6663) — di dalam fungsi `setGroupMatchScore()`
     `if ((isSameTeamName(item.teamA, teamA) && isSameTeamName(item.teamB, teamB)) ||`
-  - [`app.js:6654`](app.js#L6654) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6664`](app.js#L6664) — di dalam fungsi `setGroupMatchScore()`
     `(isSameTeamName(item.teamA, teamB) && isSameTeamName(item.teamB, teamA))) {`
-  - [`app.js:6795`](app.js#L6795) — di dalam fungsi `openMLBBGroupMvpModal()`
+  - [`app.js:6805`](app.js#L6805) — di dalam fungsi `openMLBBGroupMvpModal()`
     `if ((isSameTeamName(item.teamA, teamA) && isSameTeamName(item.teamB, teamB)) ||`
-  - [`app.js:6796`](app.js#L6796) — di dalam fungsi `openMLBBGroupMvpModal()`
+  - [`app.js:6806`](app.js#L6806) — di dalam fungsi `openMLBBGroupMvpModal()`
     `(isSameTeamName(item.teamA, teamB) && isSameTeamName(item.teamB, teamA))) {`
-  - [`app.js:7770`](app.js#L7770) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7780`](app.js#L7780) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `const isTeamA = isSameTeamName(m.teamA, t.name);`
-  - [`app.js:7771`](app.js#L7771) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7781`](app.js#L7781) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `const isTeamB = isSameTeamName(m.teamB, t.name);`
-  - [`app.js:7798`](app.js#L7798) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7808`](app.js#L7808) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `isSameTeamName(m.winner, t.name) ||`
-  - [`app.js:7799`](app.js#L7799) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7809`](app.js#L7809) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `isSameTeamName(cleanWinner, t.name)`
-  - [`app.js:8093`](app.js#L8093) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8103`](app.js#L8103) — di dalam fungsi `renderGroupFixturesUI()`
     `const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cle`
-  - [`app.js:8094`](app.js#L8094) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8104`](app.js#L8104) — di dalam fungsi `renderGroupFixturesUI()`
     `const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cle`
-  - [`app.js:11063`](app.js#L11063) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11080`](app.js#L11080) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `const isWinnerA = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamA) || isSameTeamName(cle`
-  - [`app.js:11064`](app.js#L11064) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11081`](app.js#L11081) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `const isWinnerB = !isDoubleWO && !isDraw && (isSameTeamName(f.winner, f.teamB) || isSameTeamName(cle`
 
 <a id="findgroupnameforteam"></a>
 #### `findGroupNameForTeam(teamName)`
 
-- **Definisi:** [`app.js:6187`](app.js#L6187)
+- **Definisi:** [`app.js:6197`](app.js#L6197)
 - **Deskripsi:** Helper untuk mendeteksi nama grup berdasarkan nama tim di groupStageData
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:6783`](app.js#L6783) — di dalam fungsi `openMLBBGroupMvpModal()`
+  - [`app.js:6793`](app.js#L6793) — di dalam fungsi `openMLBBGroupMvpModal()`
     `gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';`
-  - [`app.js:7366`](app.js#L7366) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7376`](app.js#L7376) — di dalam fungsi `setGroupMatchMVP()`
     `gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';`
-  - [`app.js:7459`](app.js#L7459) — di dalam fungsi `promptGroupMatchMVP()`
+  - [`app.js:7469`](app.js#L7469) — di dalam fungsi `promptGroupMatchMVP()`
     `gName = findGroupNameForTeam(teamA) || findGroupNameForTeam(teamB) || '';`
-  - [`app.js:7475`](app.js#L7475) — di dalam fungsi `openMatchPlayerVerifyModal()`
+  - [`app.js:7485`](app.js#L7485) — di dalam fungsi `openMatchPlayerVerifyModal()`
     `gName = (typeof findGroupNameForTeam === 'function' && (findGroupNameForTeam(teamA) || findGroupName`
 - **Memanggil Fungsi Internal:** [`isSameTeamName()`](#issameteamname)
 
 <a id="getcanonicalgroupmatchid"></a>
 #### `getCanonicalGroupMatchId(gName, teamA, teamB)`
 
-- **Definisi:** [`app.js:6452`](app.js#L6452)
+- **Definisi:** [`app.js:6462`](app.js#L6462)
 - **Deskripsi:** Helper untuk mendapatkan Canonical Match ID yang unik per pasangan tim (tidak terpengaruh urutan teamA vs teamB)
 - **Titik Pemanggilan (7 lokasi):**
-  - [`app.js:5019`](app.js#L5019) — di dalam fungsi `getMLBBHeadToHeadWinner()`
+  - [`app.js:5021`](app.js#L5021) — di dalam fungsi `getMLBBHeadToHeadWinner()`
     `const canonId = getCanonicalGroupMatchId(gName || '', teamA, teamB);`
-  - [`app.js:6358`](app.js#L6358) — di dalam fungsi `getGroupFixtures()`
+  - [`app.js:6368`](app.js#L6368) — di dalam fungsi `getGroupFixtures()`
     `const canonId = getCanonicalGroupMatchId(gName, p.teamA, p.teamB);`
-  - [`app.js:6644`](app.js#L6644) — di dalam fungsi `setGroupMatchScore()`
+  - [`app.js:6654`](app.js#L6654) — di dalam fungsi `setGroupMatchScore()`
     `const canonId = getCanonicalGroupMatchId(gName, teamA, teamB);`
-  - [`app.js:6785`](app.js#L6785) — di dalam fungsi `openMLBBGroupMvpModal()`
+  - [`app.js:6795`](app.js#L6795) — di dalam fungsi `openMLBBGroupMvpModal()`
     `const canonId = getCanonicalGroupMatchId(gName, teamA, teamB);`
-  - [`app.js:7369`](app.js#L7369) — di dalam fungsi `setGroupMatchMVP()`
+  - [`app.js:7379`](app.js#L7379) — di dalam fungsi `setGroupMatchMVP()`
     `const canonId = (teamA && teamB) ? getCanonicalGroupMatchId(gName, teamA, teamB) : matchId;`
-  - [`app.js:7477`](app.js#L7477) — di dalam fungsi `openMatchPlayerVerifyModal()`
+  - [`app.js:7487`](app.js#L7487) — di dalam fungsi `openMatchPlayerVerifyModal()`
     `const canonId = typeof getCanonicalGroupMatchId === 'function' ? getCanonicalGroupMatchId(gName, tea`
-  - [`app.js:7754`](app.js#L7754) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7764`](app.js#L7764) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `const pairKey = getCanonicalGroupMatchId(gName, m.teamA, m.teamB);`
 
 <a id="isgroupmatchescompleted"></a>
 #### `isGroupMatchesCompleted(gName)`
 
-- **Definisi:** [`app.js:6461`](app.js#L6461)
+- **Definisi:** [`app.js:6471`](app.js#L6471)
 - **Deskripsi:** Helper untuk memeriksa apakah seluruh pertandingan dalam suatu grup telah selesai diinput
 - **Titik Pemanggilan (3 lokasi):**
   - [`app.js:4482`](app.js#L4482) — di dalam fungsi `syncSingleMatchRowToGSheet()`
     `const isGroupAllDone = typeof isGroupMatchesCompleted === 'function' ? isGroupMatchesCompleted(gName`
-  - [`app.js:5923`](app.js#L5923) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5933`](app.js#L5933) — di dalam fungsi `renderGroupStageUI()`
     `const isGroupAllDone = isGroupMatchesCompleted(gName);`
-  - [`app.js:10939`](app.js#L10939) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10956`](app.js#L10956) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `const isGroupAllDone = isGroupMatchesCompleted(gName);`
 - **Memanggil Fungsi Internal:** [`getGroupFixtures()`](#getgroupfixtures)
 
 <a id="deduplicategroupmatchresults"></a>
 #### `deduplicateGroupMatchResults()`
 
-- **Definisi:** [`app.js:6479`](app.js#L6479)
+- **Definisi:** [`app.js:6489`](app.js#L6489)
 - **Deskripsi:** Pembersihan & Deduplikasi Otomatis groupMatchResults agar tidak ada entri terbalik / ganda
 - **Titik Pemanggilan (3 lokasi):**
   - [`app.js:1427`](app.js#L1427) — di dalam fungsi `fetchParticipantsFromGoogleSheet()`
     `if (typeof deduplicateGroupMatchResults === 'function') deduplicateGroupMatchResults();`
-  - [`app.js:7736`](app.js#L7736) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
+  - [`app.js:7746`](app.js#L7746) — di dalam fungsi `recalculateGroupStandingsFromFixtures()`
     `deduplicateGroupMatchResults();`
-  - [`app.js:10188`](app.js#L10188) — cakupan global / event handler
+  - [`app.js:10198`](app.js#L10198) — cakupan global / event handler
     `if (typeof deduplicateGroupMatchResults === 'function') deduplicateGroupMatchResults();`
 - **Memanggil Fungsi Internal:** [`isSameTeamName()`](#issameteamname)
 
 <a id="getgrouprestingteams"></a>
 #### `getGroupRestingTeams(gName, day)`
 
-- **Definisi:** [`app.js:6571`](app.js#L6571)
+- **Definisi:** [`app.js:6581`](app.js#L6581)
 - **Deskripsi:** Mendapatkan daftar tim yang istirahat (tidak bermain) pada hari tertentu di grup tertentu
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8057`](app.js#L8057) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8067`](app.js#L8067) — di dalam fungsi `renderGroupFixturesUI()`
     `const resting = getGroupRestingTeams(gName, parseInt(mlbbActiveDayFilter, 10));`
 - **Memanggil Fungsi Internal:** [`getGroupFixtures()`](#getgroupfixtures)
 
 <a id="setgroupmatchscore"></a>
 #### `setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB, explicitWinner = null)`
 
-- **Definisi:** [`app.js:6582`](app.js#L6582)
+- **Definisi:** [`app.js:6592`](app.js#L6592)
 - **Deskripsi:** Menyimpan skor pertandingan grup MLBB dan memperbarui klasemen grup secara otomatis.
 - **Titik Pemanggilan (7 lokasi):**
-  - [`app.js:6706`](app.js#L6706) — di dalam fungsi `promptGroupMatchWO()`
+  - [`app.js:6716`](app.js#L6716) — di dalam fungsi `promptGroupMatchWO()`
     `setGroupMatchScore(matchId, gName, teamA, teamB, 0, 2, '${teamB} (Menang WO)');`
-  - [`app.js:6708`](app.js#L6708) — di dalam fungsi `promptGroupMatchWO()`
+  - [`app.js:6718`](app.js#L6718) — di dalam fungsi `promptGroupMatchWO()`
     `setGroupMatchScore(matchId, gName, teamA, teamB, 2, 0, '${teamA} (Menang WO)');`
-  - [`app.js:6710`](app.js#L6710) — di dalam fungsi `promptGroupMatchWO()`
+  - [`app.js:6720`](app.js#L6720) — di dalam fungsi `promptGroupMatchWO()`
     `setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, 'Keduanya WO (0-0)');`
-  - [`app.js:6722`](app.js#L6722) — di dalam fungsi `setGroupMatchSpecialResult()`
+  - [`app.js:6732`](app.js#L6732) — di dalam fungsi `setGroupMatchSpecialResult()`
     `setGroupMatchScore(matchId, gName, teamA, teamB, 0, 0, 'Imbang (0-0)');`
-  - [`app.js:6733`](app.js#L6733) — di dalam fungsi `saveGroupFixtureScore()`
+  - [`app.js:6743`](app.js#L6743) — di dalam fungsi `saveGroupFixtureScore()`
     `setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB);`
-  - [`app.js:11089`](app.js#L11089) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11106`](app.js#L11106) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${esc`
   - [`functional_tests.js:676`](functional_tests.js#L676) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function setGroupMatchScore('), 'app.js harus memiliki setter skor setGroup`
@@ -2688,75 +2689,75 @@
 <a id="promptgroupmatchwo"></a>
 #### `promptGroupMatchWO(matchId, gName, teamA, teamB)`
 
-- **Definisi:** [`app.js:6692`](app.js#L6692)
+- **Definisi:** [`app.js:6702`](app.js#L6702)
 - **Deskripsi:** Dialog wasit untuk menetapkan tim yang Kalah WO (Walkover) baik 1 tim maupun kedua tim
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:6720`](app.js#L6720) — di dalam fungsi `setGroupMatchSpecialResult()`
+  - [`app.js:6730`](app.js#L6730) — di dalam fungsi `setGroupMatchSpecialResult()`
     `promptGroupMatchWO(matchId, gName, teamA, teamB);`
 - **Memanggil Fungsi Internal:** [`setGroupMatchScore()`](#setgroupmatchscore)
 
 <a id="setgroupmatchspecialresult"></a>
 #### `setGroupMatchSpecialResult(matchId, gName, teamA, teamB, resultType)`
 
-- **Definisi:** [`app.js:6717`](app.js#L6717)
+- **Definisi:** [`app.js:6727`](app.js#L6727)
 - **Deskripsi:** Helper aksi instan wasit untuk hasil khusus (Keduanya WO, Tim WO, atau Imbang)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:8138`](app.js#L8138) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8148`](app.js#L8148) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 6px; color:#f871`
-  - [`app.js:8139`](app.js#L8139) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8149`](app.js#L8149) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 6px; color:#fbbf`
-  - [`app.js:11092`](app.js#L11092) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11109`](app.js#L11109) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;borde`
-  - [`app.js:11093`](app.js#L11093) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11110`](app.js#L11110) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#fbbf24;borde`
 - **Memanggil Fungsi Internal:** [`promptGroupMatchWO()`](#promptgroupmatchwo), [`setGroupMatchScore()`](#setgroupmatchscore)
 
 <a id="selectmvpplayer"></a>
 #### `selectMvpPlayer(nickname, realName, teamName)`
 
-- **Definisi:** [`app.js:7148`](app.js#L7148)
+- **Definisi:** [`app.js:7158`](app.js#L7158)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:7121`](app.js#L7121) — di dalam fungsi `renderMvpRosterList()`
+  - [`app.js:7131`](app.js#L7131) — di dalam fungsi `renderMvpRosterList()`
     `<div class="mvp-roster-chip ${isSelected ? 'selected' : ''}" onclick="selectMvpPlayer('${safeIgn}', `
 - **Memanggil Fungsi Internal:** [`renderMvpGameTabs()`](#rendermvpgametabs), [`renderMvpRosterList()`](#rendermvprosterlist)
 
 <a id="rendermvpquickherochips"></a>
 #### `renderMvpQuickHeroChips(activeHero)`
 
-- **Definisi:** [`app.js:7180`](app.js#L7180)
+- **Definisi:** [`app.js:7190`](app.js#L7190)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:6941`](app.js#L6941) — di dalam fungsi `initAndShowMvpModal()`
+  - [`app.js:6951`](app.js#L6951) — di dalam fungsi `initAndShowMvpModal()`
     `renderMvpQuickHeroChips(ctx.selectedHero);`
-  - [`app.js:7035`](app.js#L7035) — di dalam fungsi `switchMvpGameTab()`
+  - [`app.js:7045`](app.js#L7045) — di dalam fungsi `switchMvpGameTab()`
     `renderMvpQuickHeroChips(ctx.selectedHero);`
-  - [`app.js:7214`](app.js#L7214) — di dalam fungsi `selectMvpQuickHero()`
+  - [`app.js:7224`](app.js#L7224) — di dalam fungsi `selectMvpQuickHero()`
     `renderMvpQuickHeroChips(heroName);`
 - **Memanggil Fungsi Internal:** [`selectMvpQuickHero()`](#selectmvpquickhero)
 
 <a id="selectmvpquickhero"></a>
 #### `selectMvpQuickHero(heroName)`
 
-- **Definisi:** [`app.js:7200`](app.js#L7200)
+- **Definisi:** [`app.js:7210`](app.js#L7210)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:7191`](app.js#L7191) — di dalam fungsi `renderMvpQuickHeroChips()`
+  - [`app.js:7201`](app.js#L7201) — di dalam fungsi `renderMvpQuickHeroChips()`
     `<span class="mvp-hero-pill ${isActive ? 'active' : ''}" onclick="selectMvpQuickHero('${safeHero}')">`
 - **Memanggil Fungsi Internal:** [`renderMvpQuickHeroChips()`](#rendermvpquickherochips)
 
 <a id="saveselectedmvp"></a>
 #### `saveSelectedMvp()`
 
-- **Definisi:** [`app.js:7217`](app.js#L7217)
+- **Definisi:** [`app.js:7227`](app.js#L7227)
 - **Titik Pemanggilan (2 lokasi):**
   - [`index.html:935`](index.html#L935) — Event `onclick`
     `<button type="button" class="btn btn-primary" style="background: var(--yokke-gold); color: #0b1120; `
-  - [`app.js:7313`](app.js#L7313) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7323`](app.js#L7323) — di dalam fungsi `deleteCurrentMvp()`
     `saveSelectedMvp();`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`syncSingleMatchRowToGSheet()`](#syncsinglematchrowtogsheet), [`showToast()`](#showtoast), [`setGroupMatchMVP()`](#setgroupmatchmvp), [`closeMLBBGroupMvpModal()`](#closemlbbgroupmvpmodal)
 
 <a id="deletecurrentmvp"></a>
 #### `deleteCurrentMvp()`
 
-- **Definisi:** [`app.js:7289`](app.js#L7289)
+- **Definisi:** [`app.js:7299`](app.js#L7299)
 - **Titik Pemanggilan (1 lokasi):**
   - [`index.html:928`](index.html#L928) — Event `onclick`
     `<button type="button" id="btnDeleteMvp" class="btn btn-outline" style="color: var(--yokke-red); bord`
@@ -2765,11 +2766,11 @@
 <a id="setgroupmatchmvp"></a>
 #### `setGroupMatchMVP(matchId, mvpPlayer, mvpHero, mvpTeam, gameMvps = null)`
 
-- **Definisi:** [`app.js:7341`](app.js#L7341)
+- **Definisi:** [`app.js:7351`](app.js#L7351)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:7281`](app.js#L7281) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7291`](app.js#L7291) — di dalam fungsi `saveSelectedMvp()`
     `setGroupMatchMVP(ctx.canonId, summaryPlayer, summaryHero, summaryTeam, validGames);`
-  - [`app.js:7333`](app.js#L7333) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7343`](app.js#L7343) — di dalam fungsi `deleteCurrentMvp()`
     `setGroupMatchMVP(ctx.canonId, null, null, null, []);`
   - [`functional_tests.js:790`](functional_tests.js#L790) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function setGroupMatchMVP('), 'Harus memiliki setGroupMatchMVP');`
@@ -2778,7 +2779,7 @@
 <a id="promptgroupmatchmvp"></a>
 #### `promptGroupMatchMVP(matchId, teamA, teamB, gName = '')`
 
-- **Definisi:** [`app.js:7456`](app.js#L7456)
+- **Definisi:** [`app.js:7466`](app.js#L7466)
 - **Deskripsi:** Delegasi fungsi promptGroupMatchMVP ke modal interaktif
 - **Titik Pemanggilan (1 lokasi):**
   - [`functional_tests.js:791`](functional_tests.js#L791) — di dalam fungsi `runLiveIntegrationTests()`
@@ -2788,27 +2789,27 @@
 <a id="togglematchplayerverify"></a>
 #### `toggleMatchPlayerVerify(playerKey)`
 
-- **Definisi:** [`app.js:7520`](app.js#L7520)
+- **Definisi:** [`app.js:7530`](app.js#L7530)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:7694`](app.js#L7694) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7704`](app.js#L7704) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<button type="button" class="btn ${isVerified ? 'btn-primary' : 'btn-outline'}" style="font-size:0.7`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderMatchPlayerVerifyModalContent()`](#rendermatchplayerverifymodalcontent), [`renderGroupStageUI()`](#rendergroupstageui), [`renderGroupFixturesUI()`](#rendergroupfixturesui), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
 <a id="verifyallmatchplayers"></a>
 #### `verifyAllMatchPlayers(teamName, shouldVerify = true)`
 
-- **Definisi:** [`app.js:7538`](app.js#L7538)
+- **Definisi:** [`app.js:7548`](app.js#L7548)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:7605`](app.js#L7605) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7615`](app.js#L7615) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; bor`
-  - [`app.js:7608`](app.js#L7608) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7618`](app.js#L7618) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; bor`
 - **Memanggil Fungsi Internal:** [`findTeamParticipant()`](#findteamparticipant), [`saveState()`](#savestate), [`renderMatchPlayerVerifyModalContent()`](#rendermatchplayerverifymodalcontent), [`renderGroupStageUI()`](#rendergroupstageui), [`renderGroupFixturesUI()`](#rendergroupfixturesui), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
 <a id="resetgroupmatchscore"></a>
 #### `resetGroupMatchScore(matchId)`
 
-- **Definisi:** [`app.js:7720`](app.js#L7720)
+- **Definisi:** [`app.js:7730`](app.js#L7730)
 - **Deskripsi:** Mereset skor pertandingan grup MLBB ke status belum bertanding.
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 - **Memanggil Fungsi Internal:** [`recalculateGroupStandingsFromFixtures()`](#recalculategroupstandingsfromfixtures), [`saveState()`](#savestate), [`initGroupPlayoff()`](#initgroupplayoff), [`renderGroupStageUI()`](#rendergroupstageui)
@@ -2816,127 +2817,127 @@
 <a id="findprevious"></a>
 #### `findPrevious(ply)`
 
-- **Definisi:** [`app.js:8371`](app.js#L8371)
+- **Definisi:** [`app.js:8381`](app.js#L8381)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8384`](app.js#L8384) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8394`](app.js#L8394) — di dalam fungsi `syncMCGGPlayers()`
     `const prev = findPrevious(pItem) || {};`
 
 <a id="mapplayerobj"></a>
 #### `mapPlayerObj(pItem)`
 
-- **Definisi:** [`app.js:8383`](app.js#L8383)
+- **Definisi:** [`app.js:8393`](app.js#L8393)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8454`](app.js#L8454) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8464`](app.js#L8464) — di dalam fungsi `syncMCGGPlayers()`
     `mcggLobbies[bestKey].push(mapPlayerObj(ply));`
-  - [`app.js:8506`](app.js#L8506) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8516`](app.js#L8516) — di dalam fungsi `syncMCGGPlayers()`
     `mcggLobbies[sortedLobbies[0]].push(mapPlayerObj(uPly));`
 
 <a id="findprevsemi"></a>
 #### `findPrevSemi(ply)`
 
-- **Definisi:** [`app.js:8686`](app.js#L8686)
+- **Definisi:** [`app.js:8696`](app.js#L8696)
 - **Deskripsi:** Preserve poin semifinal jika sudah ada
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8695`](app.js#L8695) — di dalam fungsi `syncMCGGSemiFinal()`
+  - [`app.js:8705`](app.js#L8705) — di dalam fungsi `syncMCGGSemiFinal()`
     `const prev = findPrevSemi(p) || {};`
 
 <a id="mapsemiplayer"></a>
 #### `mapSemiPlayer(p)`
 
-- **Definisi:** [`app.js:8694`](app.js#L8694)
+- **Definisi:** [`app.js:8704`](app.js#L8704)
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 
 <a id="findprevinarr"></a>
 #### `findPrevInArr(p, arr)`
 
-- **Definisi:** [`app.js:8723`](app.js#L8723)
+- **Definisi:** [`app.js:8733`](app.js#L8733)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8733`](app.js#L8733) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8743`](app.js#L8743) — di dalam fungsi `syncMCGGGrandFinal()`
     `const prev = findPrevInArr(p, existingGF);`
 
 <a id="mapgfplayer"></a>
 #### `mapGFPlayer(p)`
 
-- **Definisi:** [`app.js:8732`](app.js#L8732)
+- **Definisi:** [`app.js:8742`](app.js#L8742)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:8765`](app.js#L8765) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8775`](app.js#L8775) — di dalam fungsi `syncMCGGGrandFinal()`
     `topA.forEach(p => mcggLobbies.GRAND_FINAL.push(mapGFPlayer(p)));`
-  - [`app.js:8766`](app.js#L8766) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8776`](app.js#L8776) — di dalam fungsi `syncMCGGGrandFinal()`
     `topB.forEach(p => mcggLobbies.GRAND_FINAL.push(mapGFPlayer(p)));`
-  - [`app.js:8795`](app.js#L8795) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8805`](app.js#L8805) — di dalam fungsi `syncMCGGGrandFinal()`
     `topA.forEach(p => mcggLobbies.GRAND_FINAL.push(mapGFPlayer(p)));`
-  - [`app.js:8796`](app.js#L8796) — di dalam fungsi `syncMCGGGrandFinal()`
+  - [`app.js:8806`](app.js#L8806) — di dalam fungsi `syncMCGGGrandFinal()`
     `topB.forEach(p => mcggLobbies.GRAND_FINAL.push(mapGFPlayer(p)));`
 
 <a id="drawmatchpool"></a>
 #### `drawMatchPool(matchNum, targetLobbyKey)`
 
-- **Definisi:** [`app.js:9162`](app.js#L9162)
+- **Definisi:** [`app.js:9172`](app.js#L9172)
 - **Deskripsi:** ---------------------------------------------------- FUNGSI 1: Acak 8 Pool Commander untuk Group/Lobby Ini ----------------------------------------------------
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8977`](app.js#L8977) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8987`](app.js#L8987) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `onclick="${!isRegistrationClosed ? "alert('⚠️ Pendaftaran turnamen masih dibuka. Harap tutup pendaft`
-  - [`app.js:9333`](app.js#L9333) — di dalam fungsi `drawMatchCommanders()`
+  - [`app.js:9343`](app.js#L9343) — di dalam fungsi `drawMatchCommanders()`
     `drawMatchPool(matchNum, targetLobbyKey);`
 - **Memanggil Fungsi Internal:** [`isMCGGQualificationFull()`](#ismcggqualificationfull), [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="assignmatchpooltoplayers"></a>
 #### `assignMatchPoolToPlayers(matchNum, targetLobbyKey)`
 
-- **Definisi:** [`app.js:9237`](app.js#L9237)
+- **Definisi:** [`app.js:9247`](app.js#L9247)
 - **Deskripsi:** ---------------------------------------------------- FUNGSI 2: Pasangkan 8 Pool Commander ke Masing-Masing Pemain ----------------------------------------------------
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8984`](app.js#L8984) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:8994`](app.js#L8994) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `onclick="${!hasPool ? "alert('⚠️ Silakan acak 8 Pool Commander terlebih dahulu.')" : (isMatchLocked `
-  - [`app.js:9334`](app.js#L9334) — di dalam fungsi `drawMatchCommanders()`
+  - [`app.js:9344`](app.js#L9344) — di dalam fungsi `drawMatchCommanders()`
     `assignMatchPoolToPlayers(matchNum, targetLobbyKey);`
 - **Memanggil Fungsi Internal:** [`validateMCGGDuplicateCommander()`](#validatemcggduplicatecommander), [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="togglelockmatchdraw"></a>
 #### `toggleLockMatchDraw(matchNum, targetLobbyKey)`
 
-- **Definisi:** [`app.js:9288`](app.js#L9288)
+- **Definisi:** [`app.js:9298`](app.js#L9298)
 - **Deskripsi:** ---------------------------------------------------- FUNGSI 3: Kunci Match (Lock) / Buka Kunci ----------------------------------------------------
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8991`](app.js#L8991) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9001`](app.js#L9001) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `onclick="${!hasAssigned ? "alert('⚠️ Pasangkan commander ke pemain terlebih dahulu sebelum mengunci.`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable), [`saveTournamentStateOnly()`](#savetournamentstateonly)
 
 <a id="nextmatchdraw"></a>
 #### `nextMatchDraw(targetLobbyKey, nextMatchNum)`
 
-- **Definisi:** [`app.js:9315`](app.js#L9315)
+- **Definisi:** [`app.js:9325`](app.js#L9325)
 - **Deskripsi:** ---------------------------------------------------- FUNGSI 4: Lanjut ke Match Berikutnya (Match 2) ----------------------------------------------------
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8999`](app.js#L8999) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9009`](app.js#L9009) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `onclick="nextMatchDraw('${lobbyKey}', 2)">`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderMCGGTable()`](#rendermcggtable)
 
 <a id="showmatch3draftinfo"></a>
 #### `showMatch3DraftInfo()`
 
-- **Definisi:** [`app.js:9400`](app.js#L9400)
+- **Definisi:** [`app.js:9410`](app.js#L9410)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:9004`](app.js#L9004) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9014`](app.js#L9014) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `onclick="showMatch3DraftInfo()">`
 
 <a id="buildroundcell"></a>
 #### `buildRoundCell(player, roundKey, cmdKey, targetLobby)`
 
-- **Definisi:** [`app.js:9838`](app.js#L9838)
+- **Definisi:** [`app.js:9848`](app.js#L9848)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:9826`](app.js#L9826) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9836`](app.js#L9836) — di dalam fungsi `renderLobbyRowsHtml()`
     `<td>${buildRoundCell(p, 'r1', 'c1', lobbyKey)}</td>`
-  - [`app.js:9827`](app.js#L9827) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9837`](app.js#L9837) — di dalam fungsi `renderLobbyRowsHtml()`
     `<td>${buildRoundCell(p, 'r2', 'c2', lobbyKey)}</td>`
-  - [`app.js:9828`](app.js#L9828) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9838`](app.js#L9838) — di dalam fungsi `renderLobbyRowsHtml()`
     `<td>${buildRoundCell(p, 'r3', 'c3', lobbyKey)}</td>`
 - **Memanggil Fungsi Internal:** [`getCommanderById()`](#getcommanderbyid), [`getCommanderFormattedName()`](#getcommanderformattedname), [`renderCommanderCirclesHtml()`](#rendercommandercircleshtml), [`updateMCGGCommander()`](#updatemcggcommander), [`updateMCGGRank()`](#updatemcggrank)
 
 <a id="loadsampledata"></a>
 #### `loadSampleData()`
 
-- **Definisi:** [`app.js:9939`](app.js#L9939)
+- **Definisi:** [`app.js:9949`](app.js#L9949)
 - **Deskripsi:** Sample Data Roster with Nicknames (Purely Generic Dummy Data for Simulation - No Sensitive Info)
 - **Titik Pemanggilan (1 lokasi):**
   - [`index.html:331`](index.html#L331) — Event `onclick`
@@ -2946,7 +2947,7 @@
 <a id="clearalldata"></a>
 #### `clearAllData()`
 
-- **Definisi:** [`app.js:10143`](app.js#L10143)
+- **Definisi:** [`app.js:10153`](app.js#L10153)
 - **Titik Pemanggilan (1 lokasi):**
   - [`index.html:332`](index.html#L332) — Event `onclick`
     `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;" onclick="clearAll`
@@ -2955,58 +2956,58 @@
 <a id="rendersinglematchnodehtml"></a>
 #### `renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower = false)`
 
-- **Definisi:** [`app.js:10357`](app.js#L10357)
+- **Definisi:** [`app.js:10374`](app.js#L10374)
 - **Titik Pemanggilan (13 lokasi):**
-  - [`app.js:10463`](app.js#L10463) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10480`](app.js#L10480) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][4 + i], 1, 4 + i, c8[i] - 38, activeNodeKey`
-  - [`app.js:10479`](app.js#L10479) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10496`](app.js#L10496) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][2 + i], 2, 2 + i, c4[i] - 38, activeNodeKey`
-  - [`app.js:10495`](app.js#L10495) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10512`](app.js#L10512) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][6 + i], 2, 6 + i, c4[i] - 38, activeNodeKey`
-  - [`app.js:10508`](app.js#L10508) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10525`](app.js#L10525) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][0], 3, 0, c2[0] - 38, activeNodeKey, true);`
-  - [`app.js:10509`](app.js#L10509) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10526`](app.js#L10526) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][1], 3, 1, c2[1] - 38, activeNodeKey, true);`
-  - [`app.js:10518`](app.js#L10518) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10535`](app.js#L10535) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][4], 4, 4, c1[0] - 38, activeNodeKey, true);`
-  - [`app.js:10527`](app.js#L10527) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10544`](app.js#L10544) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false)`
-  - [`app.js:10539`](app.js#L10539) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10556`](app.js#L10556) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[0][i], 0, i, c8[i] - 38, activeNodeKey, false)`
-  - [`app.js:10555`](app.js#L10555) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10572`](app.js#L10572) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][i], 1, i, c4[i] - 38, activeNodeKey, false)`
-  - [`app.js:10568`](app.js#L10568) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10585`](app.js#L10585) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][0], 2, 0, c2[0] - 38, activeNodeKey, false)`
-  - [`app.js:10569`](app.js#L10569) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10586`](app.js#L10586) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][1], 2, 1, c2[1] - 38, activeNodeKey, false)`
-  - [`app.js:10578`](app.js#L10578) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10595`](app.js#L10595) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][0], 4, 0, c1[0] - 38, activeNodeKey, false)`
-  - [`app.js:10587`](app.js#L10587) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10604`](app.js#L10604) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false)`
 - **Memanggil Fungsi Internal:** [`selectMLBBStageNode()`](#selectmlbbstagenode), [`pickGroupPlayoffWinner()`](#pickgroupplayoffwinner), [`escapeHtml()`](#escapehtml)
 
 <a id="rendersvgconnectorcolumn"></a>
 #### `renderSvgConnectorColumn(pairs, strokeColor = '#00d2ff', width = 50, height = 750)`
 
-- **Definisi:** [`app.js:10409`](app.js#L10409)
+- **Definisi:** [`app.js:10426`](app.js#L10426)
 - **Titik Pemanggilan (9 lokasi):**
-  - [`app.js:10474`](app.js#L10474) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10491`](app.js#L10491) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg0 = renderSvgConnectorColumn(pairs0, '#ffb703');`
-  - [`app.js:10490`](app.js#L10490) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10507`](app.js#L10507) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg1 = renderSvgConnectorColumn(pairs1, '#ffb703');`
-  - [`app.js:10504`](app.js#L10504) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10521`](app.js#L10521) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg2 = renderSvgConnectorColumn(pairs2, '#ffb703');`
-  - [`app.js:10514`](app.js#L10514) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10531`](app.js#L10531) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg3 = renderSvgConnectorColumn(pairs3, '#ffb703');`
-  - [`app.js:10523`](app.js#L10523) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10540`](app.js#L10540) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg4 = renderSvgConnectorColumn(pairs4, '#ffb703');`
-  - [`app.js:10550`](app.js#L10550) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10567`](app.js#L10567) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg0 = renderSvgConnectorColumn(pairs0, '#00d2ff');`
-  - [`app.js:10564`](app.js#L10564) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10581`](app.js#L10581) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg1 = renderSvgConnectorColumn(pairs1, '#00d2ff');`
-  - [`app.js:10574`](app.js#L10574) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10591`](app.js#L10591) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg2 = renderSvgConnectorColumn(pairs2, '#00d2ff');`
-  - [`app.js:10583`](app.js#L10583) — di dalam fungsi `renderFullPlayoffBracketHtml()`
+  - [`app.js:10600`](app.js#L10600) — di dalam fungsi `renderFullPlayoffBracketHtml()`
     `const svg3 = renderSvgConnectorColumn(pairs3, '#00d2ff');`
 
 <a id="runtest"></a>
@@ -3219,7 +3220,7 @@
     `const isInv = typeof isTeamInvited === 'function' && isTeamInvited(tName);`
   - [`app.js:4806`](app.js#L4806) — di dalam fungsi `allocateMLBBGroups()`
     `if (typeof isTeamInvited === 'function') return isTeamInvited(team);`
-  - [`app.js:5191`](app.js#L5191) — di dalam fungsi `isPlayoffInvitedTeam()`
+  - [`app.js:5198`](app.js#L5198) — di dalam fungsi `isPlayoffInvitedTeam()`
     `if (typeof isTeamInvited === 'function' && isTeamInvited(teamName)) return true;`
   - [`functional_tests.js:878`](functional_tests.js#L878) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('isTeamInvited('), 'app.js harus memiliki helper isTeamInvited');`
@@ -3265,7 +3266,7 @@
     `const isInv = typeof isTeamInvited === 'function' && isTeamInvited(tName);`
   - [`app.js:4806`](app.js#L4806) — di dalam fungsi `allocateMLBBGroups()`
     `if (typeof isTeamInvited === 'function') return isTeamInvited(team);`
-  - [`app.js:5191`](app.js#L5191) — di dalam fungsi `isPlayoffInvitedTeam()`
+  - [`app.js:5198`](app.js#L5198) — di dalam fungsi `isPlayoffInvitedTeam()`
     `if (typeof isTeamInvited === 'function' && isTeamInvited(teamName)) return true;`
   - [`functional_tests.js:878`](functional_tests.js#L878) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('isTeamInvited('), 'app.js harus memiliki helper isTeamInvited');`
@@ -3277,7 +3278,7 @@
 
 - **Definisi:** [`functional_tests.js:1085`](functional_tests.js#L1085)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:8384`](app.js#L8384) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8394`](app.js#L8394) — di dalam fungsi `syncMCGGPlayers()`
     `const prev = findPrevious(pItem) || {};`
 
 <a id="mapplayerobj"></a>
@@ -3285,9 +3286,9 @@
 
 - **Definisi:** [`functional_tests.js:1087`](functional_tests.js#L1087)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8454`](app.js#L8454) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8464`](app.js#L8464) — di dalam fungsi `syncMCGGPlayers()`
     `mcggLobbies[bestKey].push(mapPlayerObj(ply));`
-  - [`app.js:8506`](app.js#L8506) — di dalam fungsi `syncMCGGPlayers()`
+  - [`app.js:8516`](app.js#L8516) — di dalam fungsi `syncMCGGPlayers()`
     `mcggLobbies[sortedLobbies[0]].push(mapPlayerObj(uPly));`
 
 ---
@@ -3324,9 +3325,9 @@
     `autoLinkParticipantsAssets();`
   - [`app.js:3603`](app.js#L3603) — di dalam fungsi `renderParticipants()`
     `autoLinkParticipantsAssets();`
-  - [`app.js:10137`](app.js#L10137) — di dalam fungsi `loadSampleData()`
+  - [`app.js:10147`](app.js#L10147) — di dalam fungsi `loadSampleData()`
     `autoLinkParticipantsAssets();`
-  - [`app.js:10163`](app.js#L10163) — cakupan global / event handler
+  - [`app.js:10173`](app.js#L10173) — cakupan global / event handler
     `autoLinkParticipantsAssets();`
 - **Memanggil Fungsi Internal:** [`findLogoByTeamName()`](#findlogobyteamname), [`saveLogoToMap()`](#savelogotomap), [`findIdCardByEmpIdOrName()`](#findidcardbyempidorname), [`saveIdCardToMap()`](#saveidcardtomap)
 
@@ -3340,9 +3341,9 @@
     `<button class="btn btn-primary" id="btnSyncGSheet" style="padding: 0.45rem 0.9rem; font-size: 0.82re`
   - [`app.js:1611`](app.js#L1611) — di dalam fungsi `resetCacheAndFollowGSheet()`
     `await fetchParticipantsFromGoogleSheet(false, true);`
-  - [`app.js:10195`](app.js#L10195) — cakupan global / event handler
+  - [`app.js:10205`](app.js#L10205) — cakupan global / event handler
     `fetchParticipantsFromGoogleSheet(true, true).catch(err => {`
-  - [`app.js:10201`](app.js#L10201) — cakupan global / event handler
+  - [`app.js:10211`](app.js#L10211) — cakupan global / event handler
     `await fetchParticipantsFromGoogleSheet(true, true);`
 - **Memanggil Fungsi Internal:** [`getItemKey()`](#getitemkey), [`findLogoByTeamName()`](#findlogobyteamname), [`saveLogoToMap()`](#savelogotomap), [`findIdCardByEmpIdOrName()`](#findidcardbyempidorname), [`saveIdCardToMap()`](#saveidcardtomap), [`renderRules()`](#renderrules), [`deduplicateGroupMatchResults()`](#deduplicategroupmatchresults), [`recalculateGroupStandingsFromFixtures()`](#recalculategroupstandingsfromfixtures), [`setLastSyncedMatches()`](#setlastsyncedmatches), [`renderMCGGTable()`](#rendermcggtable), [`renderRegistrationUI()`](#renderregistrationui), [`updateAuthUI()`](#updateauthui), [`updateCommanderPoolFromSetup()`](#updatecommanderpoolfromsetup), [`autoLinkParticipantsAssets()`](#autolinkparticipantsassets), [`cleanOrphanedTournamentData()`](#cleanorphanedtournamentdata), [`saveState()`](#savestate), [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`syncMCGGPlayers()`](#syncmcggplayers), [`updateCounts()`](#updatecounts), [`showToast()`](#showtoast)
 
@@ -3442,44 +3443,44 @@
     `renderParticipants();`
   - [`app.js:3484`](app.js#L3484) — di dalam fungsi `saveParticipantEdit()`
     `renderParticipants();`
-  - [`app.js:10152`](app.js#L10152) — di dalam fungsi `clearAllData()`
+  - [`app.js:10162`](app.js#L10162) — di dalam fungsi `clearAllData()`
     `renderParticipants();`
-  - [`app.js:10175`](app.js#L10175) — cakupan global / event handler
+  - [`app.js:10185`](app.js#L10185) — cakupan global / event handler
     `renderParticipants();`
 - **Memanggil Fungsi Internal:** [`autoLinkParticipantsAssets()`](#autolinkparticipantsassets), [`updateRegistrationDatalists()`](#updateregistrationdatalists), [`findIdCardByEmpIdOrName()`](#findidcardbyempidorname), [`findLogoByTeamName()`](#findlogobyteamname), [`formatDriveImageUrl()`](#formatdriveimageurl), [`toggleInvitedTeam()`](#toggleinvitedteam), [`openEditParticipantModal()`](#openeditparticipantmodal), [`setParticipantStatus()`](#setparticipantstatus), [`deleteParticipant()`](#deleteparticipant), [`viewRosterDetail()`](#viewrosterdetail)
 
 <a id="findteamparticipant"></a>
 #### `findTeamParticipant(teamName)`
 
-- **Definisi:** [`app.js:6765`](app.js#L6765)
+- **Definisi:** [`app.js:6775`](app.js#L6775)
 - **Deskripsi:** Helper mencari data peserta tim dengan normalisasi nama
 - **Titik Pemanggilan (4 lokasi):**
-  - [`app.js:7080`](app.js#L7080) — di dalam fungsi `renderMvpRosterList()`
+  - [`app.js:7090`](app.js#L7090) — di dalam fungsi `renderMvpRosterList()`
     `const teamPart = findTeamParticipant(teamName);`
-  - [`app.js:7547`](app.js#L7547) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7557`](app.js#L7557) — di dalam fungsi `verifyAllMatchPlayers()`
     `const teamPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(teamName) : null;`
-  - [`app.js:7570`](app.js#L7570) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7580`](app.js#L7580) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `const teamAPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(ctx.teamA) : null;`
-  - [`app.js:7571`](app.js#L7571) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7581`](app.js#L7581) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `const teamBPart = typeof findTeamParticipant === 'function' ? findTeamParticipant(ctx.teamB) : null;`
 
 <a id="rendermvprosterlist"></a>
 #### `renderMvpRosterList(teamName)`
 
-- **Definisi:** [`app.js:7075`](app.js#L7075)
+- **Definisi:** [`app.js:7085`](app.js#L7085)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:7072`](app.js#L7072) — di dalam fungsi `switchMvpTeamTab()`
+  - [`app.js:7082`](app.js#L7082) — di dalam fungsi `switchMvpTeamTab()`
     `renderMvpRosterList(targetTeam);`
-  - [`app.js:7145`](app.js#L7145) — di dalam fungsi `filterMvpRosterList()`
+  - [`app.js:7155`](app.js#L7155) — di dalam fungsi `filterMvpRosterList()`
     `renderMvpRosterList(targetTeam);`
-  - [`app.js:7177`](app.js#L7177) — di dalam fungsi `selectMvpPlayer()`
+  - [`app.js:7187`](app.js#L7187) — di dalam fungsi `selectMvpPlayer()`
     `renderMvpRosterList(targetTeam);`
 - **Memanggil Fungsi Internal:** [`findTeamParticipant()`](#findteamparticipant), [`escapeHtml()`](#escapehtml), [`selectMvpPlayer()`](#selectmvpplayer)
 
 <a id="filtermvprosterlist"></a>
 #### `filterMvpRosterList()`
 
-- **Definisi:** [`app.js:7142`](app.js#L7142)
+- **Definisi:** [`app.js:7152`](app.js#L7152)
 - **Titik Pemanggilan (1 lokasi):**
   - [`index.html:892`](index.html#L892) — Event `oninput`
     `<input type="text" id="mvpPlayerSearchInput" placeholder="🔍 Cari nama pemain atau IGN..." style="wi`
@@ -3488,12 +3489,12 @@
 <a id="renderteamrostercolumn"></a>
 #### `renderTeamRosterColumn(teamName, roster, count)`
 
-- **Definisi:** [`app.js:7617`](app.js#L7617)
+- **Definisi:** [`app.js:7627`](app.js#L7627)
 - **Deskripsi:** Helper untuk merender kolom roster tiap tim
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:7714`](app.js#L7714) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7724`](app.js#L7724) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${renderTeamRosterColumn(ctx.teamA, rosterA, countA)}`
-  - [`app.js:7715`](app.js#L7715) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7725`](app.js#L7725) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${renderTeamRosterColumn(ctx.teamB, rosterB, countB)}`
 
 ---
@@ -3505,7 +3506,7 @@
 
 - **Definisi:** [`app.js:457`](app.js#L457)
 - **Deskripsi:** Menyimpan status stage machine turnamen (fase grup/playoff, status lock TM, data tie-breaker) ke localStorage.
-- **Titik Pemanggilan (12 lokasi):**
+- **Titik Pemanggilan (13 lokasi):**
   - [`app.js:885`](app.js#L885) — di dalam fungsi `confirmResetBaganWithPin()`
     `saveStageStateLocal();`
   - [`app.js:2321`](app.js#L2321) — di dalam fungsi `resetMCGGPointsAndDraw()`
@@ -3529,6 +3530,8 @@
   - [`app.js:4371`](app.js#L4371) — di dalam fungsi `toggleLockMCGGLobbies()`
     `saveStageStateLocal();`
   - [`app.js:4562`](app.js#L4562) — di dalam fungsi `saveTournamentStateOnly()`
+    `saveStageStateLocal();`
+  - [`app.js:10335`](app.js#L10335) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
     `saveStageStateLocal();`
 
 <a id="resetcacheandfollowgsheet"></a>
@@ -3597,13 +3600,13 @@
 - **Titik Pemanggilan (5 lokasi):**
   - [`app.js:4604`](app.js#L4604) — di dalam fungsi `saveTournamentStateOnly()`
     `await syncSingleMatchRowToGSheet(m.canonId);`
-  - [`app.js:7277`](app.js#L7277) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7287`](app.js#L7287) — di dalam fungsi `saveSelectedMvp()`
     `syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || 'PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffM`
-  - [`app.js:7282`](app.js#L7282) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7292`](app.js#L7292) — di dalam fungsi `saveSelectedMvp()`
     `syncSingleMatchRowToGSheet(ctx.canonId).catch(e => console.warn(e));`
-  - [`app.js:7329`](app.js#L7329) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7339`](app.js#L7339) — di dalam fungsi `deleteCurrentMvp()`
     `syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || 'PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffM`
-  - [`app.js:7334`](app.js#L7334) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7344`](app.js#L7344) — di dalam fungsi `deleteCurrentMvp()`
     `syncSingleMatchRowToGSheet(ctx.canonId).catch(e => console.warn(e));`
 - **Memanggil Fungsi Internal:** [`getSortedGroupTeams()`](#getsortedgroupteams), [`isGroupMatchesCompleted()`](#isgroupmatchescompleted), [`isSameTeamName()`](#issameteamname), [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`getLastSyncedMatches()`](#getlastsyncedmatches), [`setLastSyncedMatches()`](#setlastsyncedmatches)
 
@@ -3637,9 +3640,9 @@
     `saveTournamentStateOnly(true);`
   - [`app.js:4373`](app.js#L4373) — di dalam fungsi `toggleLockMCGGLobbies()`
     `saveTournamentStateOnly(true);`
-  - [`app.js:9303`](app.js#L9303) — di dalam fungsi `toggleLockMatchDraw()`
+  - [`app.js:9313`](app.js#L9313) — di dalam fungsi `toggleLockMatchDraw()`
     `saveTournamentStateOnly(true);`
-  - [`app.js:9362`](app.js#L9362) — di dalam fungsi `resetLobbyDraw()`
+  - [`app.js:9372`](app.js#L9372) — di dalam fungsi `resetLobbyDraw()`
     `saveTournamentStateOnly(true);`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`saveStageStateLocal()`](#savestagestatelocal), [`getUnsyncedMatches()`](#getunsyncedmatches), [`showToast()`](#showtoast), [`syncSingleMatchRowToGSheet()`](#syncsinglematchrowtogsheet)
 
@@ -3777,7 +3780,7 @@
     `const cardSrc = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (team.category === 'MCGG' ? `
   - [`app.js:3642`](app.js#L3642) — di dalam fungsi `renderParticipants()`
     `const card = m.idCard || findIdCardByEmpIdOrName(m.empId, m.name) || (p.category === 'MCGG' ? (p.idC`
-  - [`app.js:7650`](app.js#L7650) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7660`](app.js#L7660) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `const cardSrc = m.idCard || (typeof findIdCardByEmpIdOrName === 'function' ? findIdCardByEmpIdOrName`
 - **Memanggil Fungsi Internal:** [`getIdCardMap()`](#getidcardmap)
 
@@ -3872,7 +3875,7 @@
     `<div class="idcard-thumb-sm" id="edit_m_${idx}_thumb" onclick="if(editRosterIdCards[${idx}]) openIdC`
   - [`app.js:3566`](app.js#L3566) — di dalam fungsi `viewRosterDetail()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.75rem; color:var(--yokke-`
-  - [`app.js:7661`](app.js#L7661) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7671`](app.js#L7671) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<div style="width:48px; height:48px; flex-shrink:0; cursor:pointer; border-radius:6px; overflow:hidd`
 - **Memanggil Fungsi Internal:** [`formatDriveImageUrl()`](#formatdriveimageurl)
 
@@ -3965,29 +3968,29 @@
 <a id="initandshowmvpmodal"></a>
 #### `initAndShowMvpModal()`
 
-- **Definisi:** [`app.js:6902`](app.js#L6902)
+- **Definisi:** [`app.js:6912`](app.js#L6912)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:6850`](app.js#L6850) — di dalam fungsi `openMLBBGroupMvpModal()`
+  - [`app.js:6860`](app.js#L6860) — di dalam fungsi `openMLBBGroupMvpModal()`
     `initAndShowMvpModal();`
-  - [`app.js:6899`](app.js#L6899) — di dalam fungsi `openMLBBPlayoffMvpModal()`
+  - [`app.js:6909`](app.js#L6909) — di dalam fungsi `openMLBBPlayoffMvpModal()`
     `initAndShowMvpModal();`
 - **Memanggil Fungsi Internal:** [`escapeHtml()`](#escapehtml), [`renderMvpGameTabs()`](#rendermvpgametabs), [`renderMvpQuickHeroChips()`](#rendermvpquickherochips), [`switchMvpTeamTab()`](#switchmvpteamtab)
 
 <a id="openmatchplayerverifymodal"></a>
 #### `openMatchPlayerVerifyModal(matchId, gName, teamA, teamB)`
 
-- **Definisi:** [`app.js:7473`](app.js#L7473)
+- **Definisi:** [`app.js:7483`](app.js#L7483)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8127`](app.js#L8127) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8137`](app.js#L8137) — di dalam fungsi `renderGroupFixturesUI()`
     `<button type="button" class="btn btn-outline" style="font-size:0.68rem; padding:2px 7px; color:var(-`
-  - [`app.js:11109`](app.js#L11109) — cakupan global / event handler
+  - [`app.js:11126`](app.js#L11126) — cakupan global / event handler
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; col`
 - **Memanggil Fungsi Internal:** [`findGroupNameForTeam()`](#findgroupnameforteam), [`getCanonicalGroupMatchId()`](#getcanonicalgroupmatchid), [`renderMatchPlayerVerifyModalContent()`](#rendermatchplayerverifymodalcontent)
 
 <a id="closematchplayerverifymodal"></a>
 #### `closeMatchPlayerVerifyModal()`
 
-- **Definisi:** [`app.js:7511`](app.js#L7511)
+- **Definisi:** [`app.js:7521`](app.js#L7521)
 - **Titik Pemanggilan (2 lokasi):**
   - [`index.html:953`](index.html#L953) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" on`
@@ -3998,13 +4001,13 @@
 <a id="rendermatchplayerverifymodalcontent"></a>
 #### `renderMatchPlayerVerifyModalContent()`
 
-- **Definisi:** [`app.js:7561`](app.js#L7561)
+- **Definisi:** [`app.js:7571`](app.js#L7571)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:7506`](app.js#L7506) — di dalam fungsi `openMatchPlayerVerifyModal()`
+  - [`app.js:7516`](app.js#L7516) — di dalam fungsi `openMatchPlayerVerifyModal()`
     `renderMatchPlayerVerifyModalContent();`
-  - [`app.js:7532`](app.js#L7532) — di dalam fungsi `toggleMatchPlayerVerify()`
+  - [`app.js:7542`](app.js#L7542) — di dalam fungsi `toggleMatchPlayerVerify()`
     `renderMatchPlayerVerifyModalContent();`
-  - [`app.js:7555`](app.js#L7555) — di dalam fungsi `verifyAllMatchPlayers()`
+  - [`app.js:7565`](app.js#L7565) — di dalam fungsi `verifyAllMatchPlayers()`
     `renderMatchPlayerVerifyModalContent();`
 - **Memanggil Fungsi Internal:** [`findTeamParticipant()`](#findteamparticipant), [`escapeHtml()`](#escapehtml), [`verifyAllMatchPlayers()`](#verifyallmatchplayers), [`findIdCardByEmpIdOrName()`](#findidcardbyempidorname), [`formatDriveImageUrl()`](#formatdriveimageurl), [`openIdCardLightbox()`](#openidcardlightbox), [`toggleMatchPlayerVerify()`](#togglematchplayerverify), [`renderTeamRosterColumn()`](#renderteamrostercolumn)
 
@@ -4017,7 +4020,7 @@
 
 - **Definisi:** [`app.js:799`](app.js#L799)
 - **Deskripsi:** TOAST NOTIFICATIONS (CYBERPUNK DARK)
-- **Titik Pemanggilan (31 lokasi):**
+- **Titik Pemanggilan (32 lokasi):**
   - [`app.js:867`](app.js#L867) — di dalam fungsi `confirmResetBaganWithPin()`
     `showToast('PIN Panitia salah! Tindakan reset dibatalkan.', 'error');`
   - [`app.js:894`](app.js#L894) — di dalam fungsi `confirmResetBaganWithPin()`
@@ -4072,14 +4075,16 @@
     `showToast('✅ Seluruh data pertandingan sudah sinkron dengan Google Sheets. Tidak ada perubahan baru.`
   - [`app.js:4622`](app.js#L4622) — di dalam fungsi `saveTournamentStateOnly()`
     `showToast('✅ Berhasil menyinkronkan ${successCount} pertandingan (${successCount * 3} baris data) ke`
-  - [`app.js:7278`](app.js#L7278) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7288`](app.js#L7288) — di dalam fungsi `saveSelectedMvp()`
     `showToast('⭐ Berhasil menyimpan ${validGames.length} MVP Playoff (${ctx.format || 'BO3'}) & disinkro`
-  - [`app.js:7283`](app.js#L7283) — di dalam fungsi `saveSelectedMvp()`
+  - [`app.js:7293`](app.js#L7293) — di dalam fungsi `saveSelectedMvp()`
     `showToast('⭐ Berhasil menyimpan ${validGames.length} MVP Match (${ctx.format || 'BO3'}) & disinkronk`
-  - [`app.js:7330`](app.js#L7330) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7340`](app.js#L7340) — di dalam fungsi `deleteCurrentMvp()`
     `showToast('Data MVP Playoff telah dihapus & disinkronkan ke GSheet.', 'info');`
-  - [`app.js:7335`](app.js#L7335) — di dalam fungsi `deleteCurrentMvp()`
+  - [`app.js:7345`](app.js#L7345) — di dalam fungsi `deleteCurrentMvp()`
     `showToast('Data MVP match telah dihapus & disinkronkan ke GSheet (3 baris).', 'info');`
+  - [`app.js:10341`](app.js#L10341) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
+    `showToast('🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');`
 - **Memanggil Fungsi Internal:** [`escapeHtml()`](#escapehtml)
 
 <a id="formatdriveimageurl"></a>
@@ -4100,7 +4105,7 @@
     `<div class="idcard-thumb-sm"><img src="${formatDriveImageUrl(cardSrc)}"></div>`
   - [`app.js:3657`](app.js#L3657) — di dalam fungsi `renderParticipants()`
     `const formattedLogo = formatDriveImageUrl(teamLogoSrc);`
-  - [`app.js:7651`](app.js#L7651) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7661`](app.js#L7661) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `const formattedCard = cardSrc ? (typeof formatDriveImageUrl === 'function' ? formatDriveImageUrl(car`
   - [`functional_tests.js:94`](functional_tests.js#L94) — di dalam fungsi `formatDriveImageUrl()`
     `function formatDriveImageUrl(url) {`
@@ -4175,121 +4180,121 @@
     `<span style="font-weight:600;">${escapeHtml(tName)}</span>`
   - [`app.js:4304`](app.js#L4304) — di dalam fungsi `testMLBBGroupAllocationDraw()`
     `${dept ? '<span style="font-size:0.68rem; color:var(--text-muted); display:block;">🏢 ${escapeHtml(d`
-  - [`app.js:5928`](app.js#L5928) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5938`](app.js#L5938) — di dalam fungsi `renderGroupStageUI()`
     `<span>🛡️ ${escapeHtml(gName)}</span>`
-  - [`app.js:5967`](app.js#L5967) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:5977`](app.js#L5977) — di dalam fungsi `renderGroupStageUI()`
     `<span>${escapeHtml(t.name)}</span>`
-  - [`app.js:6010`](app.js#L6010) — di dalam fungsi `renderGroupStageUI()`
-    `⚠️ TIE-BREAKER MATCH DIPERLUKAN (${escapeHtml(tb.group)})`
-  - [`app.js:6013`](app.js#L6013) — di dalam fungsi `renderGroupStageUI()`
-    `Peringkat 2 & 3 grup <strong>${escapeHtml(tb.group)}</strong> memiliki poin sama (<strong>${escapeHt`
   - [`app.js:6020`](app.js#L6020) — di dalam fungsi `renderGroupStageUI()`
+    `⚠️ TIE-BREAKER MATCH DIPERLUKAN (${escapeHtml(tb.group)})`
+  - [`app.js:6023`](app.js#L6023) — di dalam fungsi `renderGroupStageUI()`
+    `Peringkat 2 & 3 grup <strong>${escapeHtml(tb.group)}</strong> memiliki poin sama (<strong>${escapeHt`
+  - [`app.js:6030`](app.js#L6030) — di dalam fungsi `renderGroupStageUI()`
     `<button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--yokke`
-  - [`app.js:6021`](app.js#L6021) — di dalam fungsi `renderGroupStageUI()`
+  - [`app.js:6031`](app.js#L6031) — di dalam fungsi `renderGroupStageUI()`
     `<button class="btn btn-primary" style="padding:0.4rem 0.8rem;font-size:0.8rem;background:var(--yokke`
-  - [`app.js:6923`](app.js#L6923) — di dalam fungsi `initAndShowMvpModal()`
+  - [`app.js:6933`](app.js#L6933) — di dalam fungsi `initAndShowMvpModal()`
     `tabA.innerHTML = '${escapeHtml(ctx.teamA)} ${isWinA ? '🏆' : ''}';`
-  - [`app.js:6924`](app.js#L6924) — di dalam fungsi `initAndShowMvpModal()`
+  - [`app.js:6934`](app.js#L6934) — di dalam fungsi `initAndShowMvpModal()`
     `tabB.innerHTML = '${escapeHtml(ctx.teamB)} ${isWinB ? '🏆' : ''}';`
-  - [`app.js:7090`](app.js#L7090) — di dalam fungsi `renderMvpRosterList()`
+  - [`app.js:7100`](app.js#L7100) — di dalam fungsi `renderMvpRosterList()`
     `Tidak ada data roster terdaftar untuk tim ${escapeHtml(teamName)}. Anda dapat mengetik manual nama p`
-  - [`app.js:7123`](app.js#L7123) — di dalam fungsi `renderMvpRosterList()`
+  - [`app.js:7133`](app.js#L7133) — di dalam fungsi `renderMvpRosterList()`
     `${escapeHtml(ign || realName)}`
-  - [`app.js:7126`](app.js#L7126) — di dalam fungsi `renderMvpRosterList()`
-    `${escapeHtml(realName)}`
-  - [`app.js:7129`](app.js#L7129) — di dalam fungsi `renderMvpRosterList()`
-    `${escapeHtml(role)}`
   - [`app.js:7136`](app.js#L7136) — di dalam fungsi `renderMvpRosterList()`
+    `${escapeHtml(realName)}`
+  - [`app.js:7139`](app.js#L7139) — di dalam fungsi `renderMvpRosterList()`
+    `${escapeHtml(role)}`
+  - [`app.js:7146`](app.js#L7146) — di dalam fungsi `renderMvpRosterList()`
     `html = '<div style="grid-column:1/-1; padding:0.75rem; text-align:center; color:var(--text-muted); f`
-  - [`app.js:7435`](app.js#L7435) — di dalam fungsi `formatMatchMvpDisplayHtml()`
+  - [`app.js:7445`](app.js#L7445) — di dalam fungsi `formatMatchMvpDisplayHtml()`
     `const heroTag = g.hero ? ' <span style="color:#cbd5e1;font-weight:400;">(${escapeHtml(g.hero)})</spa`
-  - [`app.js:7436`](app.js#L7436) — di dalam fungsi `formatMatchMvpDisplayHtml()`
+  - [`app.js:7446`](app.js#L7446) — di dalam fungsi `formatMatchMvpDisplayHtml()`
     `const teamTag = g.team ? ' <span style="color:var(--yokke-cyan);font-size:0.65rem;font-weight:600;">`
-  - [`app.js:7437`](app.js#L7437) — di dalam fungsi `formatMatchMvpDisplayHtml()`
-    `return '<span class="badge" style="background:rgba(255,183,3,0.12);color:var(--yokke-gold);border:1p`
-  - [`app.js:7443`](app.js#L7443) — di dalam fungsi `formatMatchMvpDisplayHtml()`
-    `const heroTag = m.mvpHero ? ' <span style="color:#cbd5e1;font-weight:400;">(${escapeHtml(m.mvpHero)}`
-  - [`app.js:7444`](app.js#L7444) — di dalam fungsi `formatMatchMvpDisplayHtml()`
-    `const teamTag = m.mvpTeam ? '<span style="font-size:0.68rem;color:var(--yokke-cyan);margin-left:auto`
   - [`app.js:7447`](app.js#L7447) — di dalam fungsi `formatMatchMvpDisplayHtml()`
+    `return '<span class="badge" style="background:rgba(255,183,3,0.12);color:var(--yokke-gold);border:1p`
+  - [`app.js:7453`](app.js#L7453) — di dalam fungsi `formatMatchMvpDisplayHtml()`
+    `const heroTag = m.mvpHero ? ' <span style="color:#cbd5e1;font-weight:400;">(${escapeHtml(m.mvpHero)}`
+  - [`app.js:7454`](app.js#L7454) — di dalam fungsi `formatMatchMvpDisplayHtml()`
+    `const teamTag = m.mvpTeam ? '<span style="font-size:0.68rem;color:var(--yokke-cyan);margin-left:auto`
+  - [`app.js:7457`](app.js#L7457) — di dalam fungsi `formatMatchMvpDisplayHtml()`
     `<span>⭐ MVP: <strong style="color:#fff;">${escapeHtml(m.mvpPlayer)}</strong>${heroTag}</span>`
-  - [`app.js:7597`](app.js#L7597) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7607`](app.js#L7607) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${escapeHtml(ctx.teamA)}: <strong>${countA}/${rosterA.length}</strong> Terverifikasi ${countA >= 5 ?`
-  - [`app.js:7600`](app.js#L7600) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7610`](app.js#L7610) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${escapeHtml(ctx.teamB)}: <strong>${countB}/${rosterB.length}</strong> Terverifikasi ${countB >= 5 ?`
-  - [`app.js:7605`](app.js#L7605) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7615`](app.js#L7615) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; bor`
-  - [`app.js:7606`](app.js#L7606) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7616`](app.js#L7616) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `✅ Verifikasi Semua ${escapeHtml(ctx.teamA)}`
-  - [`app.js:7608`](app.js#L7608) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7618`](app.js#L7618) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; bor`
-  - [`app.js:7609`](app.js#L7609) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7619`](app.js#L7619) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `✅ Verifikasi Semua ${escapeHtml(ctx.teamB)}`
-  - [`app.js:7623`](app.js#L7623) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7633`](app.js#L7633) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `<span>⚔️</span> <span>${escapeHtml(teamName)}</span>`
-  - [`app.js:7673`](app.js#L7673) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7683`](app.js#L7683) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${escapeHtml(m.nickname || m.name || '-')}`
-  - [`app.js:7685`](app.js#L7685) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7695`](app.js#L7695) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `${escapeHtml(m.name || '-')} • <code style="font-size:0.7rem;">NIP: ${escapeHtml(nipLabel)}</code>`
-  - [`app.js:7688`](app.js#L7688) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7698`](app.js#L7698) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `ID Game: <strong style="color:#fff;">${escapeHtml(m.gameId || '-')}</strong>`
-  - [`app.js:8047`](app.js#L8047) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8057`](app.js#L8057) — di dalam fungsi `renderGroupFixturesUI()`
     `<span>🛡️</span> <span>Jadwal ${escapeHtml(gName)} • ${dayLabel}</span>`
-  - [`app.js:8061`](app.js#L8061) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8071`](app.js#L8071) — di dalam fungsi `renderGroupFixturesUI()`
     `<span>☕</span> <span><strong>Tim Istirahat Hari ${mlbbActiveDayFilter} (${MLBB_SCHEDULE_DATES[mlbbAc`
-  - [`app.js:8068`](app.js#L8068) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8078`](app.js#L8078) — di dalam fungsi `renderGroupFixturesUI()`
     `html += '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;">Tidak ada pertanding`
-  - [`app.js:8110`](app.js#L8110) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8120`](app.js#L8120) — di dalam fungsi `renderGroupFixturesUI()`
     `${escapeHtml(f.teamA)}`
-  - [`app.js:8117`](app.js#L8117) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8127`](app.js#L8127) — di dalam fungsi `renderGroupFixturesUI()`
     `${escapeHtml(f.teamB)}`
-  - [`app.js:9105`](app.js#L9105) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9115`](app.js#L9115) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<div style="font-size: 0.8rem; font-weight: 700; color: var(--yokke-cyan); white-space: nowrap; over`
-  - [`app.js:9106`](app.js#L9106) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9116`](app.js#L9116) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `🎮 ${escapeHtml(item.playerNick)}`
-  - [`app.js:9108`](app.js#L9108) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9118`](app.js#L9118) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `<div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text`
-  - [`app.js:9109`](app.js#L9109) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
+  - [`app.js:9119`](app.js#L9119) — di dalam fungsi `renderLobbyCommanderDrawPanelHtml()`
     `👤 ${escapeHtml(item.playerName)}`
-  - [`app.js:9819`](app.js#L9819) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9829`](app.js#L9829) — di dalam fungsi `renderLobbyRowsHtml()`
     `<span>🎮</span> <span>${(p.nickname && p.nickname !== '-' && p.nickname !== 'undefined') ? escapeHtm`
-  - [`app.js:9822`](app.js#L9822) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9832`](app.js#L9832) — di dalam fungsi `renderLobbyRowsHtml()`
     `${(p.nickname && p.nickname !== '-' && p.nickname !== p.name) ? '<span>👤 ${escapeHtml(p.name)}</spa`
-  - [`app.js:9823`](app.js#L9823) — di dalam fungsi `renderLobbyRowsHtml()`
+  - [`app.js:9833`](app.js#L9833) — di dalam fungsi `renderLobbyRowsHtml()`
     `${p.gameId && p.gameId !== '-' ? '${(p.nickname && p.nickname !== '-' && p.nickname !== p.name) ? ' `
-  - [`app.js:10391`](app.js#L10391) — di dalam fungsi `renderSingleMatchNodeHtml()`
+  - [`app.js:10408`](app.js#L10408) — di dalam fungsi `renderSingleMatchNodeHtml()`
     `${escapeHtml(m.teamA || '-')}`
-  - [`app.js:10399`](app.js#L10399) — di dalam fungsi `renderSingleMatchNodeHtml()`
+  - [`app.js:10416`](app.js#L10416) — di dalam fungsi `renderSingleMatchNodeHtml()`
     `${escapeHtml(m.teamB || '-')}`
-  - [`app.js:10945`](app.js#L10945) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10962`](app.js#L10962) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<span>🛡️</span> <span>Klasemen & Pertandingan: ${escapeHtml(gName)}</span>`
-  - [`app.js:10963`](app.js#L10963) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:10980`](app.js#L10980) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<h4 style="margin:0;font-size:0.95rem;color:var(--yokke-gold);">📊 Klasemen ${isGroupAllDone ? 'Akhi`
-  - [`app.js:11013`](app.js#L11013) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11030`](app.js#L11030) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `) : '<span style="color:var(--text-muted);font-style:italic;font-size:0.75rem;" title="Status kelolo`
-  - [`app.js:11018`](app.js#L11018) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11035`](app.js#L11035) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<td style="font-weight:700;color:#fff;">${escapeHtml(t.name)}</td>`
-  - [`app.js:11039`](app.js#L11039) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11056`](app.js#L11056) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">⚔️ Jadwal & Hasil Match BO3`
-  - [`app.js:11078`](app.js#L11078) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11095`](app.js#L11095) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `${escapeHtml(f.teamA)}`
-  - [`app.js:11089`](app.js#L11089) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11106`](app.js#L11106) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `setGroupMatchScore('${f.matchId}', '${gName}', '${escapeHtml(f.teamA).replace(/'/g, "\\'")}', '${esc`
-  - [`app.js:11092`](app.js#L11092) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11109`](app.js#L11109) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#f87171;borde`
-  - [`app.js:11093`](app.js#L11093) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11110`](app.js#L11110) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;color:#fbbf24;borde`
-  - [`app.js:11094`](app.js#L11094) — di dalam fungsi `renderMLBBDetailPanelContent()`
+  - [`app.js:11111`](app.js#L11111) — di dalam fungsi `renderMLBBDetailPanelContent()`
     `<button class="btn btn-outline" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onclick="openMLBB`
-  - [`app.js:11100`](app.js#L11100) — cakupan global / event handler
+  - [`app.js:11117`](app.js#L11117) — cakupan global / event handler
     `${isWinnerB ? '🏆 ' : ''}${escapeHtml(f.teamB)}`
-  - [`app.js:11109`](app.js#L11109) — cakupan global / event handler
+  - [`app.js:11126`](app.js#L11126) — cakupan global / event handler
     `<button type="button" class="btn btn-outline" style="font-size:0.72rem; padding:0.25rem 0.55rem; col`
-  - [`app.js:11142`](app.js#L11142) — cakupan global / event handler
+  - [`app.js:11159`](app.js#L11159) — cakupan global / event handler
     `${escapeHtml(actualMatch.teamA)} <span style="color:var(--yokke-gold); font-size:0.78rem;">(Home)</s`
-  - [`app.js:11144`](app.js#L11144) — cakupan global / event handler
+  - [`app.js:11161`](app.js#L11161) — cakupan global / event handler
     `${escapeHtml(actualMatch.teamB)} <span style="color:var(--text-muted); font-size:0.78rem;">(Away)</s`
-  - [`app.js:11146`](app.js#L11146) — cakupan global / event handler
+  - [`app.js:11163`](app.js#L11163) — cakupan global / event handler
     `${actualMatch.winner ? '<div style="font-size:0.8rem; color:var(--yokke-green); font-weight:700; mar`
 
 <a id="filterlist"></a>
@@ -4319,56 +4324,56 @@
 <a id="rendermvpgametabs"></a>
 #### `renderMvpGameTabs()`
 
-- **Definisi:** [`app.js:6949`](app.js#L6949)
+- **Definisi:** [`app.js:6959`](app.js#L6959)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`app.js:6928`](app.js#L6928) — di dalam fungsi `initAndShowMvpModal()`
+  - [`app.js:6938`](app.js#L6938) — di dalam fungsi `initAndShowMvpModal()`
     `renderMvpGameTabs();`
-  - [`app.js:7034`](app.js#L7034) — di dalam fungsi `switchMvpGameTab()`
+  - [`app.js:7044`](app.js#L7044) — di dalam fungsi `switchMvpGameTab()`
     `renderMvpGameTabs();`
-  - [`app.js:7174`](app.js#L7174) — di dalam fungsi `selectMvpPlayer()`
+  - [`app.js:7184`](app.js#L7184) — di dalam fungsi `selectMvpPlayer()`
     `renderMvpGameTabs();`
 - **Memanggil Fungsi Internal:** [`switchMvpGameTab()`](#switchmvpgametab)
 
 <a id="switchmvpgametab"></a>
 #### `switchMvpGameTab(targetGame)`
 
-- **Definisi:** [`app.js:6981`](app.js#L6981)
+- **Definisi:** [`app.js:6991`](app.js#L6991)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`app.js:6972`](app.js#L6972) — di dalam fungsi `renderMvpGameTabs()`
+  - [`app.js:6982`](app.js#L6982) — di dalam fungsi `renderMvpGameTabs()`
     `<button type="button" class="${pillClass}" onclick="switchMvpGameTab(${g})">`
 - **Memanggil Fungsi Internal:** [`renderMvpGameTabs()`](#rendermvpgametabs), [`renderMvpQuickHeroChips()`](#rendermvpquickherochips), [`switchMvpTeamTab()`](#switchmvpteamtab)
 
 <a id="switchmvpteamtab"></a>
 #### `switchMvpTeamTab(teamKey)`
 
-- **Definisi:** [`app.js:7044`](app.js#L7044)
+- **Definisi:** [`app.js:7054`](app.js#L7054)
 - **Titik Pemanggilan (4 lokasi):**
   - [`index.html:882`](index.html#L882) — Event `onclick`
     `<button type="button" id="mvpTabTeamA" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; f`
   - [`index.html:885`](index.html#L885) — Event `onclick`
     `<button type="button" id="mvpTabTeamB" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; f`
-  - [`app.js:6944`](app.js#L6944) — di dalam fungsi `initAndShowMvpModal()`
+  - [`app.js:6954`](app.js#L6954) — di dalam fungsi `initAndShowMvpModal()`
     `switchMvpTeamTab(ctx.activeTeam);`
-  - [`app.js:7036`](app.js#L7036) — di dalam fungsi `switchMvpGameTab()`
+  - [`app.js:7046`](app.js#L7046) — di dalam fungsi `switchMvpGameTab()`
     `switchMvpTeamTab(ctx.activeTeam);`
 - **Memanggil Fungsi Internal:** [`renderMvpRosterList()`](#rendermvprosterlist)
 
 <a id="formatmatchmvpdisplayhtml"></a>
 #### `formatMatchMvpDisplayHtml(m)`
 
-- **Definisi:** [`app.js:7429`](app.js#L7429)
+- **Definisi:** [`app.js:7439`](app.js#L7439)
 - **Deskripsi:** Format render display HTML untuk MVP match (Mendukung Multi-Game BO3 / BO5)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`app.js:8122`](app.js#L8122) — di dalam fungsi `renderGroupFixturesUI()`
+  - [`app.js:8132`](app.js#L8132) — di dalam fungsi `renderGroupFixturesUI()`
     `${formatMatchMvpDisplayHtml(f)}`
-  - [`app.js:11104`](app.js#L11104) — cakupan global / event handler
+  - [`app.js:11121`](app.js#L11121) — cakupan global / event handler
     `${formatMatchMvpDisplayHtml(f)}`
 - **Memanggil Fungsi Internal:** [`escapeHtml()`](#escapehtml)
 
 <a id="setdrawtargetandscroll"></a>
 #### `setDrawTargetAndScroll(lobbyKey)`
 
-- **Definisi:** [`app.js:9418`](app.js#L9418)
+- **Definisi:** [`app.js:9428`](app.js#L9428)
 - **Titik Pemanggilan (Call Sites):** *Tidak ada pemanggilan internal langsung (Event global / Entry point / Dipanggil via konsol browser)*
 - **Memanggil Fungsi Internal:** [`changeCommanderDrawTarget()`](#changecommanderdrawtarget), [`scrollToMCGGLobby()`](#scrolltomcgglobby)
 
@@ -4403,7 +4408,7 @@
     `<div class="idcard-thumb-sm"><img src="${formatDriveImageUrl(cardSrc)}"></div>`
   - [`app.js:3657`](app.js#L3657) — di dalam fungsi `renderParticipants()`
     `const formattedLogo = formatDriveImageUrl(teamLogoSrc);`
-  - [`app.js:7651`](app.js#L7651) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
+  - [`app.js:7661`](app.js#L7661) — di dalam fungsi `renderMatchPlayerVerifyModalContent()`
     `const formattedCard = cardSrc ? (typeof formatDriveImageUrl === 'function' ? formatDriveImageUrl(car`
   - [`functional_tests.js:103`](functional_tests.js#L103) — pada skenario pengujian
     `const formatted = formatDriveImageUrl(driveUrl);`
@@ -4466,7 +4471,7 @@
 
 - **Definisi:** [`app.js:2332`](app.js#L2332)
 - **Deskripsi:** Memperbarui visibilitas tombol admin, kontrol undian commander, stage lock, dan form interaktif.
-- **Titik Pemanggilan (14 lokasi):**
+- **Titik Pemanggilan (15 lokasi):**
   - [`app.js:890`](app.js#L890) — di dalam fungsi `confirmResetBaganWithPin()`
     `updateAuthUI();`
   - [`app.js:1462`](app.js#L1462) — di dalam fungsi `fetchParticipantsFromGoogleSheet()`
@@ -4493,7 +4498,9 @@
     `updateAuthUI();`
   - [`app.js:4372`](app.js#L4372) — di dalam fungsi `toggleLockMCGGLobbies()`
     `updateAuthUI();`
-  - [`app.js:10168`](app.js#L10168) — cakupan global / event handler
+  - [`app.js:10178`](app.js#L10178) — cakupan global / event handler
+    `updateAuthUI();`
+  - [`app.js:10337`](app.js#L10337) — di dalam fungsi `goToNextMLBBPlayoffPhase()`
     `updateAuthUI();`
 - **Memanggil Fungsi Internal:** [`renderRegistrationUI()`](#renderregistrationui)
 
@@ -4536,7 +4543,7 @@
     `renderRules();`
   - [`app.js:2524`](app.js#L2524) — di dalam fungsi `switchTab()`
     `renderRules();`
-  - [`app.js:10167`](app.js#L10167) — cakupan global / event handler
+  - [`app.js:10177`](app.js#L10177) — cakupan global / event handler
     `renderRules();`
 
 <a id="toggleeditrules"></a>

@@ -4994,8 +4994,10 @@ function generateGroupStage(doShuffle = false) {
   });
 
   saveState();
-  initGroupPlayoff();
+  initGroupPlayoff(doShuffle);
   renderGroupStageUI();
+  if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
 }
 
 function updateGroupRecord(gName, idx, field, val) {
@@ -5185,6 +5187,11 @@ function isTeamAlpha(teamName) {
   return c.includes('aang alpha') || (c.includes('alpha') && !c.includes('beta'));
 }
 
+function isTeamAppa(teamName) {
+  if (!teamName) return false;
+  return teamName.trim().toLowerCase().includes('appa');
+}
+
 function isPlayoffInvitedTeam(teamName) {
   if (!teamName) return false;
   const clean = teamName.trim().toLowerCase();
@@ -5241,90 +5248,97 @@ function drawMLBBPlayoffUpperBracket(j1List, j2List) {
   for (let attempt = 0; attempt < 500; attempt++) {
     const atmoItem = allInvited.find(x => isTeamAtmo(x.team));
     const alphaItem = allInvited.find(x => isTeamAlpha(x.team) && x !== atmoItem);
-    const otherInvited = shuffleArray(allInvited.filter(x => x !== atmoItem && x !== alphaItem));
+    const appaItem = allInvited.find(x => isTeamAppa(x.team) && x !== atmoItem && x !== alphaItem);
+    const otherInvited = shuffleArray(allInvited.filter(x => x !== atmoItem && x !== alphaItem && x !== appaItem));
 
-    const topInvited = [];
-    const botInvited = [];
+    // Wings: Wing 0, 1 (Top Half - Menuju Semifinal 1); Wing 2, 3 (Bottom Half - Menuju Semifinal 2)
+    let atmoWing = null;
+    let alphaWing = null;
+    let appaWing = null;
 
-    // Jika ada ATMO dan ALPHA, pisahkan di pool/wing berbeda (Top vs Bottom)
+    // 1. ATMO dan AANG ALPHA selalu di pool/wings berbeda (satu di Top 0/1, satu di Bottom 2/3)
     if (atmoItem && alphaItem) {
       if (Math.random() < 0.5) {
-        topInvited.push(atmoItem);
-        botInvited.push(alphaItem);
+        atmoWing = Math.random() < 0.5 ? 0 : 1;
+        alphaWing = Math.random() < 0.5 ? 2 : 3;
       } else {
-        topInvited.push(alphaItem);
-        botInvited.push(atmoItem);
+        alphaWing = Math.random() < 0.5 ? 0 : 1;
+        atmoWing = Math.random() < 0.5 ? 2 : 3;
       }
     } else if (atmoItem) {
-      if (Math.random() < 0.5) topInvited.push(atmoItem);
-      else botInvited.push(atmoItem);
+      atmoWing = Math.floor(Math.random() * 4);
     } else if (alphaItem) {
-      if (Math.random() < 0.5) topInvited.push(alphaItem);
-      else botInvited.push(alphaItem);
+      alphaWing = Math.floor(Math.random() * 4);
     }
 
-    otherInvited.forEach(item => {
-      if (topInvited.length <= botInvited.length) {
-        topInvited.push(item);
+    // 2. APPA LINUX: Tidak boleh bertemu ATMO maupun AANG ALPHA di match awal (16 Besar & QF)
+    // Berikan APPA sayap QF yang berbeda dari sayap ATMO dan berbeda dari sayap ALPHA!
+    if (appaItem) {
+      const availableWings = [0, 1, 2, 3].filter(w => w !== atmoWing && w !== alphaWing);
+      if (availableWings.length > 0) {
+        appaWing = availableWings[Math.floor(Math.random() * availableWings.length)];
       } else {
-        botInvited.push(item);
+        appaWing = Math.floor(Math.random() * 4);
       }
-    });
+    }
+
+    // Alokasikan invited per sayap
+    const wingInvitedItems = { 0: [], 1: [], 2: [], 3: [] };
+    if (atmoItem && atmoWing !== null) wingInvitedItems[atmoWing].push(atmoItem);
+    if (alphaItem && alphaWing !== null) wingInvitedItems[alphaWing].push(alphaItem);
+    if (appaItem && appaWing !== null) wingInvitedItems[appaWing].push(appaItem);
+
+    // Distribusikan sisa tim invited (misal Native, Wingskanan, dll) ke sayap yang masih kosong / paling sedikit
+    for (const item of otherInvited) {
+      const sortedWings = [0, 1, 2, 3].sort((w1, w2) => wingInvitedItems[w1].length - wingInvitedItems[w2].length);
+      wingInvitedItems[sortedWings[0]].push(item);
+    }
 
     const branchJ1 = new Array(8).fill(null);
     const branchJ2 = new Array(8).fill(null);
+    let placementOk = true;
 
-    function placePoolInvited(poolInvitedList, poolWings, poolSlots) {
-      const shuffledWings = shuffleArray(poolWings);
-      let wingPointer = 0;
-      const sortedPool = [...poolInvitedList].sort((a, b) => (a.role === 'J1' ? -1 : 1));
+    // Tempatkan invited ke masing-masing wing
+    for (let w = 0; w < 4; w++) {
+      const items = wingInvitedItems[w];
+      const wingSlots = shuffleArray([w * 2, w * 2 + 1]);
 
-      for (const item of sortedPool) {
-        const targetWing = shuffledWings[wingPointer % shuffledWings.length];
-        wingPointer++;
-        const wingSlots = [targetWing * 2, targetWing * 2 + 1];
+      // Urutkan: J1 dulu, baru J2
+      const sortedItems = [...items].sort((a, b) => (a.role === 'J1' ? -1 : 1));
 
+      for (const item of sortedItems) {
         let candidateSlots = [];
         if (item.role === 'J1') {
           candidateSlots = wingSlots.filter(s => branchJ1[s] === null && (!branchJ2[s] || branchJ2[s].group !== item.group));
-          if (candidateSlots.length === 0) {
-            candidateSlots = poolSlots.filter(s => branchJ1[s] === null && (!branchJ2[s] || branchJ2[s].group !== item.group));
-          }
         } else {
           candidateSlots = wingSlots.filter(s => 
             branchJ2[s] === null && 
             (!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))
           );
-          if (candidateSlots.length === 0) {
-            candidateSlots = poolSlots.filter(s => 
-              branchJ2[s] === null && 
-              (!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))
-            );
-          }
         }
 
-        if (candidateSlots.length === 0) return false;
-        const chosenSlot = candidateSlots[Math.floor(Math.random() * candidateSlots.length)];
-        if (item.role === 'J1') {
-          branchJ1[chosenSlot] = item;
-        } else {
-          branchJ2[chosenSlot] = item;
+        if (candidateSlots.length === 0) {
+          placementOk = false;
+          break;
         }
+
+        const chosenSlot = candidateSlots[0];
+        if (item.role === 'J1') branchJ1[chosenSlot] = item;
+        else branchJ2[chosenSlot] = item;
       }
-      return true;
+      if (!placementOk) break;
     }
 
-    if (!placePoolInvited(topInvited, [0, 1], [0, 1, 2, 3])) continue;
-    if (!placePoolInvited(botInvited, [2, 3], [4, 5, 6, 7])) continue;
+    if (!placementOk) continue;
 
-    // Isi branchJ1 yang kosong dengan sisa j1Regular
+    // Isi branchJ1 kosong dengan sisa j1Regular
     const emptyJ1Slots = [0, 1, 2, 3, 4, 5, 6, 7].filter(s => branchJ1[s] === null);
     const solvedBranchJ1 = solveRemainingBracketSlots(j1Regular, emptyJ1Slots, branchJ1, (slot, item) => {
       return !branchJ2[slot] || branchJ2[slot].group !== item.group;
     });
     if (!solvedBranchJ1) continue;
 
-    // Isi branchJ2 yang kosong dengan sisa j2Regular
+    // Isi branchJ2 kosong dengan sisa j2Regular
     const emptyJ2Slots = [0, 1, 2, 3, 4, 5, 6, 7].filter(s => branchJ2[s] === null);
     const solvedBranchJ2 = solveRemainingBracketSlots(j2Regular, emptyJ2Slots, branchJ2, (slot, item) => {
       return solvedBranchJ1[slot].group !== item.group;
@@ -5338,10 +5352,6 @@ function drawMLBBPlayoffUpperBracket(j1List, j2List) {
   return null;
 }
 
-/**
- * Algoritma Pengundian Lower Bracket (MLBB Juara 3):
- * Menyebarkan tim invited Juara 3 ke cabang sayap Lower berbeda dan menjamin anti-rematch dengan Juara 1 & 2.
- */
 function drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2) {
   const isInv = (t) => isPlayoffInvitedTeam(t);
   const j3Invited = j3List.filter(item => isInv(item.team));
@@ -10318,11 +10328,18 @@ function togglePlayoffBracketCollapse() {
 }
 
 function goToNextMLBBPlayoffPhase() {
-  if (!Array.isArray(groupPlayoffMatches) || groupPlayoffMatches.length === 0) {
-    if (typeof initGroupPlayoff === 'function') initGroupPlayoff(false);
-  }
   currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
-  renderMLBBInteractiveHubUI();
+  if (typeof initGroupPlayoff === 'function') {
+    initGroupPlayoff(true);
+  }
+  saveStageStateLocal();
+  saveState();
+  updateAuthUI();
+  if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+  if (typeof showToast === 'function') {
+    showToast('🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');
+  }
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const detailEl = document.querySelector('.flow-detail-panel');
     if (detailEl && typeof detailEl.scrollIntoView === 'function') {
