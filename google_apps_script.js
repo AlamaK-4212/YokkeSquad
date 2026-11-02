@@ -855,12 +855,40 @@ function doGet(e) {
           if (key === "tournamentStageState") appConfig.tournamentStageState = JSON.parse(val);
           if (key === "invitedTeams") appConfig.invitedTeams = JSON.parse(val);
           if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
+          if (key === "isPlayoffLocked" || key.toLowerCase() === "is_playoff_locked") {
+            var lockVal = (val.toString().trim().toLowerCase() === "true" || val.toString().trim() === "1");
+            appConfig.isPlayoffLocked = lockVal;
+            if (!appConfig.tournamentStageState) appConfig.tournamentStageState = { mlbb: {}, mcgg: {} };
+            if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
+            appConfig.tournamentStageState.mlbb.isPlayoffLocked = lockVal;
+          }
+          if (key === "isGroupLocked" || key.toLowerCase() === "is_group_locked") {
+            var gLockVal = (val.toString().trim().toLowerCase() === "true" || val.toString().trim() === "1");
+            appConfig.isGroupLocked = gLockVal;
+            if (!appConfig.tournamentStageState) appConfig.tournamentStageState = { mlbb: {}, mcgg: {} };
+            if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
+            appConfig.tournamentStageState.mlbb.isGroupLocked = gLockVal;
+          }
           if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
             appConfig.adminPassword = val.toString().trim();
           }
         } catch(e) {
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
           if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
+          if (key === "isPlayoffLocked" || key.toLowerCase() === "is_playoff_locked") {
+            var lockVal = (val.toString().trim().toLowerCase() === "true" || val.toString().trim() === "1");
+            appConfig.isPlayoffLocked = lockVal;
+            if (!appConfig.tournamentStageState) appConfig.tournamentStageState = { mlbb: {}, mcgg: {} };
+            if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
+            appConfig.tournamentStageState.mlbb.isPlayoffLocked = lockVal;
+          }
+          if (key === "isGroupLocked" || key.toLowerCase() === "is_group_locked") {
+            var gLockVal = (val.toString().trim().toLowerCase() === "true" || val.toString().trim() === "1");
+            appConfig.isGroupLocked = gLockVal;
+            if (!appConfig.tournamentStageState) appConfig.tournamentStageState = { mlbb: {}, mcgg: {} };
+            if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
+            appConfig.tournamentStageState.mlbb.isGroupLocked = gLockVal;
+          }
           if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
             appConfig.adminPassword = val.toString().trim();
           }
@@ -1196,6 +1224,8 @@ function doPost(e) {
         { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null },
         { key: "mcggDrawState", val: data.mcggDrawState ? JSON.stringify(data.mcggDrawState) : null },
         { key: "tournamentStageState", val: data.tournamentStageState ? JSON.stringify(data.tournamentStageState) : null },
+        { key: "isPlayoffLocked", val: data.isPlayoffLocked !== undefined ? (data.isPlayoffLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isPlayoffLocked !== undefined ? (data.tournamentStageState.mlbb.isPlayoffLocked ? "true" : "false") : null) },
+        { key: "isGroupLocked", val: data.isGroupLocked !== undefined ? (data.isGroupLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isGroupLocked !== undefined ? (data.tournamentStageState.mlbb.isGroupLocked ? "true" : "false") : null) },
         { key: "isRegistrationClosed", val: data.isRegistrationClosed !== undefined ? (data.isRegistrationClosed ? "true" : "false") : null },
         { key: "adminpassword", val: data.adminPassword || null }
       ];

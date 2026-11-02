@@ -1444,6 +1444,16 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           tournamentStageState = data.config.tournamentStageState;
           localStorage.setItem('yokke_stage_state', JSON.stringify(tournamentStageState));
         }
+        if (data.config.isPlayoffLocked !== undefined && data.config.isPlayoffLocked !== null) {
+          if (!tournamentStageState.mlbb) tournamentStageState.mlbb = {};
+          tournamentStageState.mlbb.isPlayoffLocked = (data.config.isPlayoffLocked === true || data.config.isPlayoffLocked === 'true');
+          localStorage.setItem('yokke_stage_state', JSON.stringify(tournamentStageState));
+        }
+        if (data.config.isGroupLocked !== undefined && data.config.isGroupLocked !== null) {
+          if (!tournamentStageState.mlbb) tournamentStageState.mlbb = {};
+          tournamentStageState.mlbb.isGroupLocked = (data.config.isGroupLocked === true || data.config.isGroupLocked === 'true');
+          localStorage.setItem('yokke_stage_state', JSON.stringify(tournamentStageState));
+        }
         if (data.config.invitedTeams && Array.isArray(data.config.invitedTeams)) {
           const invSet = new Set(data.config.invitedTeams.map(t => (t || '').toLowerCase().trim()));
           (merged || []).forEach(p => {
@@ -1794,6 +1804,8 @@ async function syncTournamentConfigToGSheet(options = {}) {
       groupStageData: groupStageData,
       groupMatchResults: groupMatchResults,
       groupPlayoffMatches: groupPlayoffMatches,
+      isPlayoffLocked: !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked),
+      isGroupLocked: !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isGroupLocked),
       invitedTeams: (participants || []).filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
       mcggLobbies: mcggLobbies,
       mcggDrawState: mcggDrawState,
