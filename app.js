@@ -7993,45 +7993,31 @@ function renderGroupPlayoffTree() {
     header.innerText = roundNames[rIdx] || `Ronde ${rIdx + 1}`;
     col.appendChild(header);
 
-    round.forEach((m, mIdx) => {
-      const matchDiv = document.createElement('div');
-      matchDiv.className = 'matchup';
+    for (let i = 0; i < round.length; i += 2) {
+      const m1 = round[i];
+      const m2 = round[i + 1];
+      const isIncoming = (rIdx > 0);
+      const isLower = (m1 && m1.bracket === 'LOWER');
 
-      const safeA = (m.teamA || '').replace(/'/g, "\\'");
-      const safeB = (m.teamB || '').replace(/'/g, "\\'");
-
-      const bracketBadge = m.bracket === 'UPPER' 
-        ? '<span style="font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3); margin-left:0.3rem;">UPPER</span>'
-        : (m.bracket === 'LOWER' 
-            ? '<span style="font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(255,183,3,0.15); color:var(--yokke-gold); border:1px solid rgba(255,183,3,0.3); margin-left:0.3rem;">LOWER</span>'
-            : (m.bracket === 'GRAND_FINAL' ? '<span style="font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(6,214,160,0.15); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.3); margin-left:0.3rem;">FINAL BO5</span>' : ''));
-
-      matchDiv.innerHTML = `
-        ${m.matchLabel || m.phaseName ? `
-          <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:0.25rem; display:flex; justify-content:space-between; align-items:center;">
-            <span>${m.matchLabel || ''}</span>
-            <span>${bracketBadge}</span>
-          </div>
-        ` : ''}
-        <div class="matchup-team ${m.winner === m.teamA ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
-          <span style="font-size: 0.88rem;">${m.teamA}</span>
-          <span style="font-size: 0.8rem; font-weight: 700;">${m.winner === m.teamA ? 'WIN 🏆' : '-'}</span>
-        </div>
-        <div class="matchup-team ${m.winner === m.teamB ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
-          <span style="font-size: 0.88rem;">${m.teamB}</span>
-          <span style="font-size: 0.8rem; font-weight: 700;">${m.winner === m.teamB ? 'WIN 🏆' : '-'}</span>
-        </div>
-        ${formatMatchMvpDisplayHtml(m)}
-        ${isAdmin && m.winner ? `
-          <div style="text-align:center; margin-top:0.35rem;">
-            <button class="btn btn-outline" style="font-size:0.68rem; padding:0.15rem 0.5rem;" onclick="promptPlayoffMVP(${rIdx}, ${mIdx})">
-              ⭐ ${m.mvpPlayer ? 'Ubah MVP' : 'Set MVP'}
-            </button>
-          </div>
-        ` : ''}
-      `;
-      col.appendChild(matchDiv);
-    });
+      if (m2) {
+        const pairDiv = document.createElement('div');
+        pairDiv.className = 'bracket-pair';
+        pairDiv.innerHTML = `
+          ${renderPlayoffMatchCardHtml(m1, rIdx, i, '', isIncoming, isLower)}
+          ${renderPlayoffMatchCardHtml(m2, rIdx, i + 1, '', isIncoming, isLower)}
+          <div class="bracket-pair-fork ${isLower ? 'is-lower' : ''}"></div>
+        `;
+        col.appendChild(pairDiv);
+      } else {
+        const singleDiv = document.createElement('div');
+        singleDiv.className = 'bracket-single';
+        singleDiv.innerHTML = `
+          ${renderPlayoffMatchCardHtml(m1, rIdx, i, '', isIncoming, isLower)}
+          ${rIdx < groupPlayoffMatches.length - 1 ? `<div class="bracket-single-bridge ${isLower ? 'is-lower' : ''}"></div>` : ''}
+        `;
+        col.appendChild(singleDiv);
+      }
+    }
 
   });
 }
@@ -10100,109 +10086,308 @@ function goToNextMLBBPlayoffPhase() {
   }
 }
 
+let currentPlayoffBracketFilter = 'UPPER'; // 'UPPER' | 'LOWER' | 'ALL'
+
+function setPlayoffBracketFilter(filter) {
+  currentPlayoffBracketFilter = filter;
+  if (typeof renderMLBBInteractiveHubUI === 'function') {
+    renderMLBBInteractiveHubUI();
+  }
+}
+
+function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey, isIncoming = false, isLower = false) {
+  let matchNodeKey = '';
+  if (groupPlayoffMatches.length === 6) {
+    if (rIdx === 0) matchNodeKey = 'UB_16_M' + (mIdx + 1);
+    else if (rIdx === 1) matchNodeKey = (mIdx < 4) ? 'DAY3_UPPER_QF' : 'DAY3_LOWER_R1';
+    else if (rIdx >= 2 && rIdx <= 4) matchNodeKey = (m.bracket === 'UPPER') ? 'DAY4_UPPER' : 'DAY4_LOWER';
+    else if (rIdx === 5) matchNodeKey = 'GRAND_FINAL_OFFLINE';
+  }
+
+  const isMatchActive = (activeNodeKey && matchNodeKey && activeNodeKey === matchNodeKey);
+  const safeA = (m.teamA || '').replace(/'/g, "\\'");
+  const safeB = (m.teamB || '').replace(/'/g, "\\'");
+
+  const bracketBadge = m.bracket === 'UPPER' 
+    ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.35); font-weight:700;">UPPER</span>'
+    : (m.bracket === 'LOWER' 
+        ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(255,183,3,0.18); color:var(--yokke-gold); border:1px solid rgba(255,183,3,0.35); font-weight:700;">LOWER</span>'
+        : (m.bracket === 'GRAND_FINAL' ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(6,214,160,0.18); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.35); font-weight:700;">FINAL BO5</span>' : ''));
+
+  const activeStyle = isMatchActive
+    ? 'border: 2px solid var(--yokke-cyan); box-shadow: 0 0 14px rgba(0,210,255,0.45); background: rgba(0,210,255,0.08);'
+    : '';
+
+  const clickHandler = matchNodeKey
+    ? `onclick="if(event.target.closest('.matchup-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
+    : '';
+
+  return `
+    <div class="matchup ${isIncoming ? 'bracket-has-incoming' : ''} ${isLower ? 'is-lower' : ''} ${isMatchActive ? 'is-active-matchup' : ''}" style="${activeStyle}; cursor:pointer;" ${clickHandler} title="${matchNodeKey ? 'Klik untuk melihat detail & skema pairing babak ini di bawah' : ''}">
+      <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); padding:0.35rem 0.6rem; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25);">
+        <span>${m.matchLabel || m.phaseName || ('Match #' + (mIdx + 1))}</span>
+        <div style="display:flex; align-items:center; gap:0.3rem;">
+          ${isMatchActive ? '<span style="color:var(--yokke-cyan); font-size:0.62rem; font-weight:800;">[DIPILIH]</span>' : ''}
+          ${bracketBadge}
+        </div>
+      </div>
+      <div class="matchup-team ${m.winner === m.teamA ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
+        <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamA ? '800' : '600'}; color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
+          ${escapeHtml(m.teamA || '-')}
+        </span>
+        <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
+          ${m.winner === m.teamA ? 'WIN 🏆' : '-'}
+        </span>
+      </div>
+      <div class="matchup-team ${m.winner === m.teamB ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
+        <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamB ? '800' : '600'}; color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
+          ${escapeHtml(m.teamB || '-')}
+        </span>
+        <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
+          ${m.winner === m.teamB ? 'WIN 🏆' : '-'}
+        </span>
+      </div>
+      ${formatMatchMvpDisplayHtml(m)}
+      ${isAdmin && m.winner ? `
+        <div style="text-align:center; padding:0.3rem; background:rgba(0,0,0,0.2);">
+          <button class="btn btn-outline" style="font-size:0.68rem; padding:0.15rem 0.5rem;" onclick="promptPlayoffMVP(${rIdx}, ${mIdx})">
+            ⭐ ${m.mvpPlayer ? 'Ubah MVP' : 'Set MVP'}
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
 function renderFullPlayoffBracketHtml(activeNodeKey = '') {
   if (!Array.isArray(groupPlayoffMatches) || groupPlayoffMatches.length === 0) {
     if (typeof initGroupPlayoff === 'function') initGroupPlayoff(false);
   }
 
-  const roundNamesMap = {
-    1: ['Grand Final'],
-    2: ['Semifinal Playoff (4 Besar)', 'Grand Final'],
-    3: ['Perempat Final (8 Besar)', 'Semifinal Playoff (4 Besar)', 'Grand Final'],
-    5: ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)'],
-    6: ['Upper 16 Besar (Hari 3)', 'Upper QF & Lower R1 (Hari 3-4)', 'Upper SF & Lower R2/R3 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)']
-  };
-
-  const roundNames = roundNamesMap[groupPlayoffMatches.length] || ['Babak Playoff', 'Grand Final'];
-
+  const is6Round = (groupPlayoffMatches.length === 6);
   let roundsHtml = '';
-  groupPlayoffMatches.forEach((round, rIdx) => {
+
+  if (is6Round && currentPlayoffBracketFilter === 'UPPER') {
+    // ========================================================
+    // TAMPILAN UPPER BRACKET DENGAN GARIS CABANG PENUH (8 -> 4 -> 2 -> 1 -> GF)
+    // ========================================================
+    // Col 0: Upper 16 Besar (8 matches, 4 pairs)
     roundsHtml += `
       <div class="bracket-round">
-        <div class="round-header" style="padding:0.4rem 0.6rem; border-radius:6px; background:rgba(0,210,255,0.08); border:1px solid rgba(0,210,255,0.2); font-size:0.78rem; margin-bottom:0.85rem;">
-          ${roundNames[rIdx] || ('Ronde ' + (rIdx + 1))}
-        </div>
+        <div class="round-header">Upper 16 Besar (Hari 2-3)</div>
     `;
-
-    round.forEach((m, mIdx) => {
-      // Pemetaan node key untuk highlight interaktif
-      let matchNodeKey = '';
-      if (groupPlayoffMatches.length === 6) {
-        if (rIdx === 0) matchNodeKey = 'UB_16_M' + (mIdx + 1);
-        else if (rIdx === 1) matchNodeKey = (mIdx < 4) ? 'DAY3_UPPER_QF' : 'DAY3_LOWER_R1';
-        else if (rIdx >= 2 && rIdx <= 4) matchNodeKey = (m.bracket === 'UPPER') ? 'DAY4_UPPER' : 'DAY4_LOWER';
-        else if (rIdx === 5) matchNodeKey = 'GRAND_FINAL_OFFLINE';
-      }
-
-      const isMatchActive = (activeNodeKey && matchNodeKey && activeNodeKey === matchNodeKey);
-
-      const safeA = (m.teamA || '').replace(/'/g, "\\'");
-      const safeB = (m.teamB || '').replace(/'/g, "\\'");
-
-      const bracketBadge = m.bracket === 'UPPER' 
-        ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.35); font-weight:700;">UPPER</span>'
-        : (m.bracket === 'LOWER' 
-            ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(255,183,3,0.18); color:var(--yokke-gold); border:1px solid rgba(255,183,3,0.35); font-weight:700;">LOWER</span>'
-            : (m.bracket === 'GRAND_FINAL' ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(6,214,160,0.18); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.35); font-weight:700;">FINAL BO5</span>' : ''));
-
-      const activeStyle = isMatchActive
-        ? 'border: 2px solid var(--yokke-cyan); box-shadow: 0 0 14px rgba(0,210,255,0.45); background: rgba(0,210,255,0.08);'
-        : '';
-
-      const clickHandler = matchNodeKey
-        ? `onclick="if(event.target.closest('.matchup-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
-        : '';
-
+    for (let i = 0; i < 8; i += 2) {
+      const m1 = groupPlayoffMatches[0][i];
+      const m2 = groupPlayoffMatches[0][i + 1];
       roundsHtml += `
-        <div class="matchup ${isMatchActive ? 'is-active-matchup' : ''}" style="${activeStyle}; cursor:pointer;" ${clickHandler} title="${matchNodeKey ? 'Klik untuk melihat detail & skema pairing babak ini di bawah' : ''}">
-          <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); padding:0.35rem 0.6rem; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25);">
-            <span>${m.matchLabel || m.phaseName || ('Match #' + (mIdx + 1))}</span>
-            <div style="display:flex; align-items:center; gap:0.3rem;">
-              ${isMatchActive ? '<span style="color:var(--yokke-cyan); font-size:0.62rem; font-weight:800;">[DIPILIH]</span>' : ''}
-              ${bracketBadge}
-            </div>
-          </div>
-          <div class="matchup-team ${m.winner === m.teamA ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
-            <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamA ? '800' : '600'}; color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
-              ${escapeHtml(m.teamA || '-')}
-            </span>
-            <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
-              ${m.winner === m.teamA ? 'WIN 🏆' : '-'}
-            </span>
-          </div>
-          <div class="matchup-team ${m.winner === m.teamB ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
-            <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamB ? '800' : '600'}; color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
-              ${escapeHtml(m.teamB || '-')}
-            </span>
-            <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
-              ${m.winner === m.teamB ? 'WIN 🏆' : '-'}
-            </span>
-          </div>
-          ${formatMatchMvpDisplayHtml(m)}
-          ${isAdmin && m.winner ? `
-            <div style="text-align:center; padding:0.3rem; background:rgba(0,0,0,0.2);">
-              <button class="btn btn-outline" style="font-size:0.68rem; padding:0.15rem 0.5rem;" onclick="promptPlayoffMVP(${rIdx}, ${mIdx})">
-                ⭐ ${m.mvpPlayer ? 'Ubah MVP' : 'Set MVP'}
-              </button>
-            </div>
-          ` : ''}
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(m1, 0, i, activeNodeKey, false, false)}
+          ${renderPlayoffMatchCardHtml(m2, 0, i + 1, activeNodeKey, false, false)}
+          <div class="bracket-pair-fork"></div>
         </div>
       `;
-    });
-
+    }
     roundsHtml += '</div>';
-  });
+
+    // Col 1: Upper Quarter Final (4 matches, 2 pairs)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header">Upper QF (Hari 3)</div>
+    `;
+    for (let i = 0; i < 4; i += 2) {
+      const m1 = groupPlayoffMatches[1][i];
+      const m2 = groupPlayoffMatches[1][i + 1];
+      roundsHtml += `
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(m1, 1, i, activeNodeKey, true, false)}
+          ${renderPlayoffMatchCardHtml(m2, 1, i + 1, activeNodeKey, true, false)}
+          <div class="bracket-pair-fork"></div>
+        </div>
+      `;
+    }
+    roundsHtml += '</div>';
+
+    // Col 2: Upper Semifinal (2 matches, 1 pair)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header">Upper Semifinal (Hari 4)</div>
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[2][0], 2, 0, activeNodeKey, true, false)}
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[2][1], 2, 1, activeNodeKey, true, false)}
+          <div class="bracket-pair-fork"></div>
+        </div>
+      </div>
+    `;
+
+    // Col 3: Upper Final (1 match, single bridge to GF)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header">Upper Final (Hari 5)</div>
+        <div class="bracket-single">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[4][0], 4, 0, activeNodeKey, true, false)}
+          <div class="bracket-single-bridge"></div>
+        </div>
+      </div>
+    `;
+
+    // Col 4: Super Grand Final (BO5)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header" style="background:rgba(255,183,3,0.15); color:var(--yokke-gold); border-color:var(--yokke-gold);">🏆 Grand Final (BO5)</div>
+        <div class="bracket-single">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[5][0], 5, 0, activeNodeKey, true, false)}
+        </div>
+      </div>
+    `;
+
+  } else if (is6Round && currentPlayoffBracketFilter === 'LOWER') {
+    // ========================================================
+    // TAMPILAN LOWER BRACKET DENGAN GARIS CABANG EMAS (8 -> 4 -> 4 -> 2 -> Final)
+    // ========================================================
+    // Col 0: Lower Bracket R1 (8 matches, 4 pairs)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header is-lower">Lower R1 (Hari 3-4)</div>
+    `;
+    for (let i = 0; i < 8; i += 2) {
+      const m1 = groupPlayoffMatches[1][4 + i];
+      const m2 = groupPlayoffMatches[1][4 + i + 1];
+      roundsHtml += `
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(m1, 1, 4 + i, activeNodeKey, false, true)}
+          ${renderPlayoffMatchCardHtml(m2, 1, 4 + i + 1, activeNodeKey, false, true)}
+          <div class="bracket-pair-fork is-lower"></div>
+        </div>
+      `;
+    }
+    roundsHtml += '</div>';
+
+    // Col 1: Lower Bracket R2 (4 matches, 2 pairs)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header is-lower">Lower R2 (Hari 4)</div>
+    `;
+    for (let i = 0; i < 4; i += 2) {
+      const m1 = groupPlayoffMatches[2][2 + i];
+      const m2 = groupPlayoffMatches[2][2 + i + 1];
+      roundsHtml += `
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(m1, 2, 2 + i, activeNodeKey, true, true)}
+          ${renderPlayoffMatchCardHtml(m2, 2, 2 + i + 1, activeNodeKey, true, true)}
+          <div class="bracket-pair-fork is-lower"></div>
+        </div>
+      `;
+    }
+    roundsHtml += '</div>';
+
+    // Col 2: Lower Bracket R3 (4 matches, 2 pairs)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header is-lower">Lower R3 (Hari 4)</div>
+    `;
+    for (let i = 0; i < 4; i += 2) {
+      const m1 = groupPlayoffMatches[2][6 + i];
+      const m2 = groupPlayoffMatches[2][6 + i + 1];
+      roundsHtml += `
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(m1, 2, 6 + i, activeNodeKey, true, true)}
+          ${renderPlayoffMatchCardHtml(m2, 2, 6 + i + 1, activeNodeKey, true, true)}
+          <div class="bracket-pair-fork is-lower"></div>
+        </div>
+      `;
+    }
+    roundsHtml += '</div>';
+
+    // Col 3: Lower Quarter Final (2 matches, 1 pair)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header is-lower">Lower QF (Hari 4)</div>
+        <div class="bracket-pair">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[3][0], 3, 0, activeNodeKey, true, true)}
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[3][1], 3, 1, activeNodeKey, true, true)}
+          <div class="bracket-pair-fork is-lower"></div>
+        </div>
+      </div>
+    `;
+
+    // Col 4: Lower Final Penentu (1 match)
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header is-lower">Lower Final (Hari 5)</div>
+        <div class="bracket-single">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[4][4], 4, 4, activeNodeKey, true, true)}
+          <div class="bracket-single-bridge is-lower"></div>
+        </div>
+      </div>
+    `;
+
+    // Col 5: Grand Final
+    roundsHtml += `
+      <div class="bracket-round">
+        <div class="round-header" style="background:rgba(255,183,3,0.15); color:var(--yokke-gold); border-color:var(--yokke-gold);">🏆 Grand Final (BO5)</div>
+        <div class="bracket-single">
+          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[5][0], 5, 0, activeNodeKey, true, false)}
+        </div>
+      </div>
+    `;
+
+  } else {
+    // ========================================================
+    // TAMPILAN SELURUH BABAK (ALL ROUNDS) DENGAN GARIS PENGHUBUNG
+    // ========================================================
+    const roundNamesMap = {
+      1: ['Grand Final'],
+      2: ['Semifinal Playoff (4 Besar)', 'Grand Final'],
+      3: ['Perempat Final (8 Besar)', 'Semifinal Playoff (4 Besar)', 'Grand Final'],
+      5: ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)'],
+      6: ['Upper 16 Besar (Hari 3)', 'Upper QF & Lower R1 (Hari 3-4)', 'Upper SF & Lower R2/R3 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)']
+    };
+    const roundNames = roundNamesMap[groupPlayoffMatches.length] || ['Babak Playoff', 'Grand Final'];
+
+    groupPlayoffMatches.forEach((round, rIdx) => {
+      roundsHtml += `
+        <div class="bracket-round">
+          <div class="round-header">${roundNames[rIdx] || ('Ronde ' + (rIdx + 1))}</div>
+      `;
+
+      for (let i = 0; i < round.length; i += 2) {
+        const m1 = round[i];
+        const m2 = round[i + 1];
+        const isIncoming = (rIdx > 0);
+        const isLower = (m1 && m1.bracket === 'LOWER');
+
+        if (m2) {
+          roundsHtml += `
+            <div class="bracket-pair">
+              ${renderPlayoffMatchCardHtml(m1, rIdx, i, activeNodeKey, isIncoming, isLower)}
+              ${renderPlayoffMatchCardHtml(m2, rIdx, i + 1, activeNodeKey, isIncoming, isLower)}
+              <div class="bracket-pair-fork ${isLower ? 'is-lower' : ''}"></div>
+            </div>
+          `;
+        } else {
+          roundsHtml += `
+            <div class="bracket-single">
+              ${renderPlayoffMatchCardHtml(m1, rIdx, i, activeNodeKey, isIncoming, isLower)}
+              ${rIdx < groupPlayoffMatches.length - 1 ? `<div class="bracket-single-bridge ${isLower ? 'is-lower' : ''}"></div>` : ''}
+            </div>
+          `;
+        }
+      }
+
+      roundsHtml += '</div>';
+    });
+  }
 
   return `
     <div class="flow-playoff-full-bracket-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(0, 210, 255, 0.28); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 22px rgba(0,0,0,0.45);">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.6rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
         <div>
           <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
             <h4 style="margin:0; font-size:1.15rem; color:var(--yokke-cyan); font-weight:800; display:flex; align-items:center; gap:0.4rem;">
               <span>🏆</span> <span>Bagan Playoff Keseluruhan (Double Elimination)</span>
             </h4>
             <span style="font-size:0.72rem; padding:0.18rem 0.6rem; border-radius:12px; font-weight:700; background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3);">
-              Upper & Lower Bracket • 5 Hari
+              Bagan Pohon Resmi • Bergaris Cabang
             </span>
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">
@@ -10230,9 +10415,23 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
         </div>
       </div>
 
+      <!-- FILTER TABS BAGAN: UPPER, LOWER, ALL -->
+      <div style="display:flex; gap:0.35rem; align-items:center; margin-bottom:0.85rem; flex-wrap:wrap;">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-right:0.25rem;">🔍 Tampilkan Cabang:</span>
+        <button type="button" class="btn ${currentPlayoffBracketFilter === 'UPPER' ? 'btn-primary' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('UPPER')">
+          👑 Upper Bracket (16 Besar ➔ Final)
+        </button>
+        <button type="button" class="btn ${currentPlayoffBracketFilter === 'LOWER' ? 'btn-gold' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('LOWER')">
+          🛡️ Lower Bracket (Gugur Upper vs Juara 3)
+        </button>
+        <button type="button" class="btn ${currentPlayoffBracketFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('ALL')">
+          ⚡ Seluruh Babak (Semua Match)
+        </button>
+      </div>
+
       <!-- BRACKET SCROLL CONTAINER -->
       <div class="bracket-wrapper" id="flowPlayoffBracketWrapper" style="padding:0.5rem 0.2rem; overflow-x:auto; display:${_isPlayoffBracketCollapsed ? 'none' : 'block'};">
-        <div class="bracket-container" style="display:flex; gap:1.8rem; min-width:960px;">
+        <div class="bracket-container" style="display:flex; gap:3.2rem; min-width:960px;">
           ${roundsHtml}
         </div>
       </div>

@@ -556,16 +556,22 @@ tr:hover {
   z-index: 3;
 }
 
-/* Bracket Styles */
+/* ========================================================
+   BRACKET STYLES & GLOWING CONNECTOR LINES (GARIS CABANG)
+   ======================================================== */
 .bracket-wrapper {
   overflow-x: auto;
-  padding: 1.5rem 0.5rem;
+  padding: 1.25rem 0.5rem;
+  position: relative;
 }
 
 .bracket-container {
   display: flex;
-  gap: 2.5rem;
-  min-width: 800px;
+  gap: 3.2rem;
+  min-width: 960px;
+  position: relative;
+  align-items: stretch;
+  padding-right: 1.5rem;
 }
 
 .bracket-round {
@@ -574,24 +580,140 @@ tr:hover {
   flex-direction: column;
   justify-content: space-around;
   gap: 1.5rem;
+  position: relative;
+  min-width: 220px;
 }
 
 .round-header {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--yokke-cyan);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+}
+
+.round-header.is-lower {
+  color: var(--yokke-gold);
+  background: rgba(255, 183, 3, 0.08);
+  border-color: rgba(255, 183, 3, 0.25);
 }
 
 .matchup {
   background: #090e1c;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.matchup:hover {
+  border-color: rgba(0, 210, 255, 0.45);
+  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+}
+
+/* Pair container for 2 matches feeding into next round */
+.bracket-pair {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 0.6rem 0;
+}
+
+/* The vertical fork line joining 2 matches in a pair */
+.bracket-pair::after,
+.bracket-pair-fork {
+  position: absolute;
+  right: -1.6rem;
+  top: 25%;
+  bottom: 25%;
+  width: 1.6rem;
+  border-right: 2px solid var(--yokke-cyan);
+  border-top: 2px solid var(--yokke-cyan);
+  border-bottom: 2px solid var(--yokke-cyan);
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 2px 0 8px rgba(0, 210, 255, 0.35);
+  pointer-events: none;
+}
+
+/* Horizontal stem leading from the fork to the next round */
+.bracket-pair::before,
+.bracket-pair-fork::after {
+  content: '';
+  position: absolute;
+  right: -1.6rem;
+  top: calc(50% - 1px);
+  width: 1.6rem;
+  height: 2px;
+  background: var(--yokke-cyan);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+}
+
+/* Single match bridge line (e.g. Upper Final to Grand Final) */
+.bracket-single {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+
+.bracket-single-bridge {
+  position: absolute;
+  right: -3.2rem;
+  top: calc(50% - 1px);
+  width: 3.2rem;
+  height: 2px;
+  background: var(--yokke-cyan);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+  pointer-events: none;
+}
+
+/* Incoming connector line on matches in later rounds */
+.bracket-has-incoming {
+  position: relative;
+}
+.bracket-has-incoming::before {
+  content: '';
+  position: absolute;
+  left: -1.6rem;
+  top: calc(50% - 1px);
+  width: 1.6rem;
+  height: 2px;
+  background: var(--yokke-cyan);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+  pointer-events: none;
+}
+
+/* Lower Bracket theme: Warm Gold lines */
+.bracket-pair-fork.is-lower {
+  border-right-color: var(--yokke-gold);
+  border-top-color: var(--yokke-gold);
+  border-bottom-color: var(--yokke-gold);
+  box-shadow: 2px 0 8px rgba(255, 183, 3, 0.35);
+}
+.bracket-pair-fork.is-lower::after,
+.bracket-single-bridge.is-lower,
+.bracket-has-incoming.is-lower::before {
+  background: var(--yokke-gold);
+  box-shadow: 0 0 8px rgba(255, 183, 3, 0.4);
+}
+
+/* Grand Final Card highlight with dual incoming connectors */
+.bracket-grand-final-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 250px;
 }
 
 .matchup-team {
