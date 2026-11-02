@@ -15,16 +15,15 @@ const appCode = fs.readFileSync(appPath, 'utf8');
 
 // 1. Memeriksa CSS Garis Penghubung di style.css
 console.log('🎨 1. Memeriksa CSS Garis Penghubung di style.css...');
-assert(cssCode.includes('.bracket-pair'), 'style.css harus mendefinisikan .bracket-pair');
-assert(cssCode.includes('.bracket-pair::after') || cssCode.includes('.bracket-pair:after'), 'style.css harus memiliki pseudo-element garis vertikal cabang');
-assert(cssCode.includes('.bracket-pair::before') || cssCode.includes('.bracket-pair:before'), 'style.css harus memiliki pseudo-element garis horizontal penghubung');
-assert(cssCode.includes('.bracket-has-incoming'), 'style.css harus memiliki garis masuk (.bracket-has-incoming)');
-console.log('  ✅ [PASS] CSS garis cabang dan penghubung terdefinisi di style.css\n');
+assert(cssCode.includes('.bracket-canvas'), 'style.css harus mendefinisikan .bracket-canvas');
+assert(cssCode.includes('.bracket-svg-col'), 'style.css harus mendefinisikan .bracket-svg-col');
+assert(cssCode.includes('.bracket-match-node'), 'style.css harus mendefinisikan .bracket-match-node');
+console.log('  ✅ [PASS] CSS garis cabang dan kanvas SVG terdefinisi di style.css\n');
 
 // 2. Memeriksa markup pasangan match dan garis cabang di app.js
 console.log('⚡ 2. Memeriksa integrasi garis cabang di app.js...');
-assert(appCode.includes('bracket-pair'), 'app.js harus menghasilkan elemen dengan class bracket-pair');
-assert(appCode.includes('bracket-has-incoming'), 'app.js harus menambahkan class bracket-has-incoming untuk ronde lanjutan');
+assert(appCode.includes('renderSvgConnectorColumn'), 'app.js harus menghasilkan SVG connector lines');
+assert(appCode.includes('bracket-match-node'), 'app.js harus menghasilkan elemen dengan class bracket-match-node');
 assert(appCode.includes('setPlayoffBracketFilter'), 'app.js harus menyediakan filter navigasi Upper/Lower/Semua Bagan');
 console.log('  ✅ [PASS] Logika markup garis cabang terpasang di app.js\n');
 

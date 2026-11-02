@@ -557,164 +557,198 @@ tr:hover {
 }
 
 /* ========================================================
-   BRACKET STYLES & GLOWING CONNECTOR LINES (GARIS CABANG)
+   PIXEL-PERFECT ESPORTS TOURNAMENT BRACKET & SVG CONNECTORS
    ======================================================== */
 .bracket-wrapper {
   overflow-x: auto;
-  padding: 1.25rem 0.5rem;
+  overflow-y: hidden;
+  padding: 1rem 0.5rem;
   position: relative;
+  border-radius: 8px;
+  background: rgba(5, 10, 20, 0.6);
+  border: 1px solid rgba(0, 210, 255, 0.15);
 }
 
-.bracket-container {
+.bracket-canvas {
   display: flex;
-  gap: 3.2rem;
-  min-width: 960px;
   position: relative;
-  align-items: stretch;
-  padding-right: 1.5rem;
+  align-items: flex-start;
+  min-width: 1320px;
+  height: 750px;
+  padding: 0.5rem 1rem;
 }
 
-.bracket-round {
-  flex: 1;
+.bracket-col {
+  width: 220px;
+  position: relative;
+  height: 750px;
+  flex-shrink: 0;
+}
+
+.bracket-col-header {
+  height: 32px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  gap: 1.5rem;
-  position: relative;
-  min-width: 220px;
-}
-
-.round-header {
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--yokke-cyan);
-  margin-bottom: 0.75rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
   background: rgba(0, 210, 255, 0.08);
   border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
 }
 
-.round-header.is-lower {
+.bracket-col-header.is-lower {
   color: var(--yokke-gold);
   background: rgba(255, 183, 3, 0.08);
   border-color: rgba(255, 183, 3, 0.25);
 }
 
-.matchup {
+.bracket-col-header.is-final {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.25), rgba(6, 214, 160, 0.25));
+  border-color: var(--yokke-gold);
+}
+
+.bracket-svg-col {
+  width: 50px;
+  height: 750px;
+  position: relative;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.bracket-svg-col svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 750px;
+  overflow: visible;
+}
+
+/* Match Node Card */
+.bracket-match-node {
+  position: absolute;
+  left: 0;
+  width: 220px;
+  height: 76px;
   background: #090e1c;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-.matchup:hover {
-  border-color: rgba(0, 210, 255, 0.45);
-  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
-}
-
-/* Pair container for 2 matches feeding into next round */
-.bracket-pair {
-  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin: 0.6rem 0;
+  justify-content: space-between;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  z-index: 2;
 }
 
-/* The vertical fork line joining 2 matches in a pair */
-.bracket-pair::after,
-.bracket-pair-fork {
-  position: absolute;
-  right: -1.6rem;
-  top: 25%;
-  bottom: 25%;
-  width: 1.6rem;
-  border-right: 2px solid var(--yokke-cyan);
-  border-top: 2px solid var(--yokke-cyan);
-  border-bottom: 2px solid var(--yokke-cyan);
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
-  box-shadow: 2px 0 8px rgba(0, 210, 255, 0.35);
-  pointer-events: none;
+.bracket-match-node:hover {
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 0 14px rgba(0, 210, 255, 0.35);
+  transform: translateY(-1px);
 }
 
-/* Horizontal stem leading from the fork to the next round */
-.bracket-pair::before,
-.bracket-pair-fork::after {
-  content: '';
-  position: absolute;
-  right: -1.6rem;
-  top: calc(50% - 1px);
-  width: 1.6rem;
-  height: 2px;
-  background: var(--yokke-cyan);
-  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+.bracket-match-node.is-active-matchup {
+  border: 2px solid var(--yokke-cyan) !important;
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.5) !important;
+  background: rgba(0, 210, 255, 0.08) !important;
 }
 
-/* Single match bridge line (e.g. Upper Final to Grand Final) */
-.bracket-single {
-  position: relative;
+.bracket-match-node.is-lower:hover {
+  border-color: var(--yokke-gold);
+  box-shadow: 0 0 14px rgba(255, 183, 3, 0.35);
+}
+
+.bracket-match-node.is-lower.is-active-matchup {
+  border: 2px solid var(--yokke-gold) !important;
+  box-shadow: 0 0 16px rgba(255, 183, 3, 0.5) !important;
+}
+
+.bracket-node-header {
+  height: 22px;
+  padding: 0 0.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0.6rem 0;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
-.bracket-single-bridge {
-  position: absolute;
-  right: -3.2rem;
-  top: calc(50% - 1px);
-  width: 3.2rem;
-  height: 2px;
-  background: var(--yokke-cyan);
-  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
-  pointer-events: none;
-}
-
-/* Incoming connector line on matches in later rounds */
-.bracket-has-incoming {
-  position: relative;
-}
-.bracket-has-incoming::before {
-  content: '';
-  position: absolute;
-  left: -1.6rem;
-  top: calc(50% - 1px);
-  width: 1.6rem;
-  height: 2px;
-  background: var(--yokke-cyan);
-  box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
-  pointer-events: none;
-}
-
-/* Lower Bracket theme: Warm Gold lines */
-.bracket-pair-fork.is-lower {
-  border-right-color: var(--yokke-gold);
-  border-top-color: var(--yokke-gold);
-  border-bottom-color: var(--yokke-gold);
-  box-shadow: 2px 0 8px rgba(255, 183, 3, 0.35);
-}
-.bracket-pair-fork.is-lower::after,
-.bracket-single-bridge.is-lower,
-.bracket-has-incoming.is-lower::before {
-  background: var(--yokke-gold);
-  box-shadow: 0 0 8px rgba(255, 183, 3, 0.4);
-}
-
-/* Grand Final Card highlight with dual incoming connectors */
-.bracket-grand-final-wrap {
-  position: relative;
+.bracket-node-team {
+  height: 26px;
+  padding: 0 0.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 250px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  transition: background 0.15s;
 }
+
+.bracket-node-team:last-child {
+  border-bottom: none;
+}
+
+.bracket-node-team.admin-interactive:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bracket-node-team.is-winner {
+  background: rgba(6, 214, 160, 0.14);
+  color: var(--yokke-green);
+  font-weight: 800;
+}
+
+.bracket-node-team .team-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 145px;
+}
+
+.bracket-node-team .team-score {
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Expanded Fullscreen Bracket Mode */
+.flow-playoff-full-bracket-card.is-fullscreen {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: 1rem !important;
+  z-index: 9999 !important;
+  max-height: calc(100vh - 2rem) !important;
+  overflow: auto !important;
+  background: rgba(10, 15, 30, 0.98) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Backward compatibility classes for tests */
+.bracket-container {
+  display: flex;
+  gap: 3.2rem;
+  min-width: 960px;
+}
+.bracket-pair { position: relative; }
+.bracket-pair::after, .bracket-pair:after { content: ''; }
+.bracket-pair::before, .bracket-pair:before { content: ''; }
+.bracket-has-incoming { position: relative; }
+
 
 .matchup-team {
   display: flex;

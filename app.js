@@ -10087,6 +10087,7 @@ function goToNextMLBBPlayoffPhase() {
 }
 
 let currentPlayoffBracketFilter = 'UPPER'; // 'UPPER' | 'LOWER' | 'ALL'
+let _isPlayoffFullscreen = false;
 
 function setPlayoffBracketFilter(filter) {
   currentPlayoffBracketFilter = filter;
@@ -10095,7 +10096,20 @@ function setPlayoffBracketFilter(filter) {
   }
 }
 
-function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey, isIncoming = false, isLower = false) {
+function togglePlayoffFullscreen() {
+  _isPlayoffFullscreen = !_isPlayoffFullscreen;
+  const card = document.querySelector('.flow-playoff-full-bracket-card');
+  const label = document.getElementById('toggleFullscreenLabel');
+  if (card) {
+    if (_isPlayoffFullscreen) card.classList.add('is-fullscreen');
+    else card.classList.remove('is-fullscreen');
+  }
+  if (label) {
+    label.innerText = _isPlayoffFullscreen ? 'Kecilkan' : '⛶ Lebar Penuh';
+  }
+}
+
+function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower = false) {
   let matchNodeKey = '';
   if (groupPlayoffMatches.length === 6) {
     if (rIdx === 0) matchNodeKey = 'UB_16_M' + (mIdx + 1);
@@ -10109,52 +10123,72 @@ function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey, isIncoming = f
   const safeB = (m.teamB || '').replace(/'/g, "\\'");
 
   const bracketBadge = m.bracket === 'UPPER' 
-    ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.35); font-weight:700;">UPPER</span>'
+    ? '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); font-weight:700;">UPPER</span>'
     : (m.bracket === 'LOWER' 
-        ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(255,183,3,0.18); color:var(--yokke-gold); border:1px solid rgba(255,183,3,0.35); font-weight:700;">LOWER</span>'
-        : (m.bracket === 'GRAND_FINAL' ? '<span style="font-size:0.62rem; padding:0.1rem 0.35rem; border-radius:4px; background:rgba(6,214,160,0.18); color:var(--yokke-green); border:1px solid rgba(6,214,160,0.35); font-weight:700;">FINAL BO5</span>' : ''));
-
-  const activeStyle = isMatchActive
-    ? 'border: 2px solid var(--yokke-cyan); box-shadow: 0 0 14px rgba(0,210,255,0.45); background: rgba(0,210,255,0.08);'
-    : '';
+        ? '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(255,183,3,0.18); color:var(--yokke-gold); font-weight:700;">LOWER</span>'
+        : '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(6,214,160,0.18); color:var(--yokke-green); font-weight:700;">BO5</span>');
 
   const clickHandler = matchNodeKey
-    ? `onclick="if(event.target.closest('.matchup-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
+    ? `onclick="if(event.target.closest('.bracket-node-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
     : '';
 
   return `
-    <div class="matchup ${isIncoming ? 'bracket-has-incoming' : ''} ${isLower ? 'is-lower' : ''} ${isMatchActive ? 'is-active-matchup' : ''}" style="${activeStyle}; cursor:pointer;" ${clickHandler} title="${matchNodeKey ? 'Klik untuk melihat detail & skema pairing babak ini di bawah' : ''}">
-      <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); padding:0.35rem 0.6rem; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25);">
+    <div class="bracket-match-node ${isLower ? 'is-lower' : ''} ${isMatchActive ? 'is-active-matchup' : ''}" style="top:${topPx}px;" ${clickHandler} title="${matchNodeKey ? 'Klik untuk melihat detail babak ini di bawah' : ''}">
+      <div class="bracket-node-header">
         <span>${m.matchLabel || m.phaseName || ('Match #' + (mIdx + 1))}</span>
-        <div style="display:flex; align-items:center; gap:0.3rem;">
-          ${isMatchActive ? '<span style="color:var(--yokke-cyan); font-size:0.62rem; font-weight:800;">[DIPILIH]</span>' : ''}
+        <div style="display:flex; align-items:center; gap:0.25rem;">
+          ${isMatchActive ? '<span style="color:var(--yokke-cyan); font-size:0.58rem; font-weight:800;">[DIPILIH]</span>' : ''}
           ${bracketBadge}
         </div>
       </div>
-      <div class="matchup-team ${m.winner === m.teamA ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
-        <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamA ? '800' : '600'}; color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
+      <div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
+        <span class="team-label" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'};">
           ${escapeHtml(m.teamA || '-')}
         </span>
-        <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
+        <span class="team-score" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'};">
           ${m.winner === m.teamA ? 'WIN 🏆' : '-'}
         </span>
       </div>
-      <div class="matchup-team ${m.winner === m.teamB ? 'winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
-        <span style="font-size: 0.85rem; font-weight:${m.winner === m.teamB ? '800' : '600'}; color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px; display:inline-block;">
+      <div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
+        <span class="team-label" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'};">
           ${escapeHtml(m.teamB || '-')}
         </span>
-        <span style="font-size: 0.78rem; font-weight: 800; color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; margin-left:0.3rem;">
+        <span class="team-score" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'};">
           ${m.winner === m.teamB ? 'WIN 🏆' : '-'}
         </span>
       </div>
-      ${formatMatchMvpDisplayHtml(m)}
-      ${isAdmin && m.winner ? `
-        <div style="text-align:center; padding:0.3rem; background:rgba(0,0,0,0.2);">
-          <button class="btn btn-outline" style="font-size:0.68rem; padding:0.15rem 0.5rem;" onclick="promptPlayoffMVP(${rIdx}, ${mIdx})">
-            ⭐ ${m.mvpPlayer ? 'Ubah MVP' : 'Set MVP'}
-          </button>
-        </div>
-      ` : ''}
+    </div>
+  `;
+}
+
+function renderSvgConnectorColumn(pairs, strokeColor = '#00d2ff', width = 50, height = 750) {
+  const midX = width / 2;
+  let paths = '';
+  pairs.forEach(p => {
+    const y1 = p.y1;
+    const y2 = p.y2;
+    const yTarget = p.targetY;
+    if (y1 !== undefined && y2 !== undefined) {
+      // Fork line connecting two feeder matches to target match
+      paths += `<path d="M 0 ${y1} H ${midX} V ${y2} H 0 M ${midX} ${yTarget} H ${width}" stroke="${strokeColor}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />`;
+    } else if (y1 !== undefined && yTarget !== undefined) {
+      // Straight horizontal bridge from single match to next match
+      paths += `<path d="M 0 ${y1} H ${width}" stroke="${strokeColor}" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85" />`;
+    }
+  });
+
+  return `
+    <div class="bracket-svg-col">
+      <svg width="${width}" height="${height}">
+        <defs>
+          <filter id="bracketGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="${strokeColor}" flood-opacity="0.6"/>
+          </filter>
+        </defs>
+        <g filter="url(#bracketGlow)">
+          ${paths}
+        </g>
+      </svg>
     </div>
   `;
 }
@@ -10165,221 +10199,154 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
   }
 
   const is6Round = (groupPlayoffMatches.length === 6);
-  let roundsHtml = '';
+  let canvasHtml = '';
 
-  if (is6Round && currentPlayoffBracketFilter === 'UPPER') {
+  // Y-Coordinates Center untuk 8 Match (Tinggi card = 76px, Gap = 18px -> Center interval = 94px)
+  // Top = Center - 38px
+  const c8 = [50, 144, 238, 332, 426, 520, 614, 708]; // 8 centers
+  const c4 = [97, 285, 473, 661];                      // 4 centers
+  const c2 = [191, 567];                                // 2 centers
+  const c1 = [379];                                     // 1 center (Final)
+
+  if (is6Round && currentPlayoffBracketFilter === 'LOWER') {
     // ========================================================
-    // TAMPILAN UPPER BRACKET DENGAN GARIS CABANG PENUH (8 -> 4 -> 2 -> 1 -> GF)
+    // TAMPILAN LOWER BRACKET (WARM GOLD SVG CONNECTORS)
     // ========================================================
-    // Col 0: Upper 16 Besar (8 matches, 4 pairs)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header">Upper 16 Besar (Hari 2-3)</div>
-    `;
-    for (let i = 0; i < 8; i += 2) {
-      const m1 = groupPlayoffMatches[0][i];
-      const m2 = groupPlayoffMatches[0][i + 1];
-      roundsHtml += `
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(m1, 0, i, activeNodeKey, false, false)}
-          ${renderPlayoffMatchCardHtml(m2, 0, i + 1, activeNodeKey, false, false)}
-          <div class="bracket-pair-fork"></div>
-        </div>
-      `;
+    // Col 0: Lower R1 (8 Match)
+    let col0 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R1 (Hari 3-4)</div>';
+    for (let i = 0; i < 8; i++) {
+      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][4 + i], 1, 4 + i, c8[i] - 38, activeNodeKey, true);
     }
-    roundsHtml += '</div>';
+    col0 += '</div>';
 
-    // Col 1: Upper Quarter Final (4 matches, 2 pairs)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header">Upper QF (Hari 3)</div>
-    `;
-    for (let i = 0; i < 4; i += 2) {
-      const m1 = groupPlayoffMatches[1][i];
-      const m2 = groupPlayoffMatches[1][i + 1];
-      roundsHtml += `
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(m1, 1, i, activeNodeKey, true, false)}
-          ${renderPlayoffMatchCardHtml(m2, 1, i + 1, activeNodeKey, true, false)}
-          <div class="bracket-pair-fork"></div>
-        </div>
-      `;
+    // SVG Connector 0 -> 1
+    const pairs0 = [
+      { y1: c8[0], y2: c8[1], targetY: c4[0] },
+      { y1: c8[2], y2: c8[3], targetY: c4[1] },
+      { y1: c8[4], y2: c8[5], targetY: c4[2] },
+      { y1: c8[6], y2: c8[7], targetY: c4[3] }
+    ];
+    const svg0 = renderSvgConnectorColumn(pairs0, '#ffb703');
+
+    // Col 1: Lower R2 (4 Match)
+    let col1 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R2 (Hari 4)</div>';
+    for (let i = 0; i < 4; i++) {
+      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][2 + i], 2, 2 + i, c4[i] - 38, activeNodeKey, true);
     }
-    roundsHtml += '</div>';
+    col1 += '</div>';
 
-    // Col 2: Upper Semifinal (2 matches, 1 pair)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header">Upper Semifinal (Hari 4)</div>
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[2][0], 2, 0, activeNodeKey, true, false)}
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[2][1], 2, 1, activeNodeKey, true, false)}
-          <div class="bracket-pair-fork"></div>
-        </div>
-      </div>
-    `;
+    // SVG Connector 1 -> 2
+    const pairs1 = [
+      { y1: c4[0], targetY: c4[0] },
+      { y1: c4[1], targetY: c4[1] },
+      { y1: c4[2], targetY: c4[2] },
+      { y1: c4[3], targetY: c4[3] }
+    ];
+    const svg1 = renderSvgConnectorColumn(pairs1, '#ffb703');
 
-    // Col 3: Upper Final (1 match, single bridge to GF)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header">Upper Final (Hari 5)</div>
-        <div class="bracket-single">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[4][0], 4, 0, activeNodeKey, true, false)}
-          <div class="bracket-single-bridge"></div>
-        </div>
-      </div>
-    `;
-
-    // Col 4: Super Grand Final (BO5)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header" style="background:rgba(255,183,3,0.15); color:var(--yokke-gold); border-color:var(--yokke-gold);">🏆 Grand Final (BO5)</div>
-        <div class="bracket-single">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[5][0], 5, 0, activeNodeKey, true, false)}
-        </div>
-      </div>
-    `;
-
-  } else if (is6Round && currentPlayoffBracketFilter === 'LOWER') {
-    // ========================================================
-    // TAMPILAN LOWER BRACKET DENGAN GARIS CABANG EMAS (8 -> 4 -> 4 -> 2 -> Final)
-    // ========================================================
-    // Col 0: Lower Bracket R1 (8 matches, 4 pairs)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header is-lower">Lower R1 (Hari 3-4)</div>
-    `;
-    for (let i = 0; i < 8; i += 2) {
-      const m1 = groupPlayoffMatches[1][4 + i];
-      const m2 = groupPlayoffMatches[1][4 + i + 1];
-      roundsHtml += `
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(m1, 1, 4 + i, activeNodeKey, false, true)}
-          ${renderPlayoffMatchCardHtml(m2, 1, 4 + i + 1, activeNodeKey, false, true)}
-          <div class="bracket-pair-fork is-lower"></div>
-        </div>
-      `;
+    // Col 2: Lower R3 (4 Match)
+    let col2 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R3 (Hari 4)</div>';
+    for (let i = 0; i < 4; i++) {
+      col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][6 + i], 2, 6 + i, c4[i] - 38, activeNodeKey, true);
     }
-    roundsHtml += '</div>';
+    col2 += '</div>';
 
-    // Col 1: Lower Bracket R2 (4 matches, 2 pairs)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header is-lower">Lower R2 (Hari 4)</div>
-    `;
-    for (let i = 0; i < 4; i += 2) {
-      const m1 = groupPlayoffMatches[2][2 + i];
-      const m2 = groupPlayoffMatches[2][2 + i + 1];
-      roundsHtml += `
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(m1, 2, 2 + i, activeNodeKey, true, true)}
-          ${renderPlayoffMatchCardHtml(m2, 2, 2 + i + 1, activeNodeKey, true, true)}
-          <div class="bracket-pair-fork is-lower"></div>
-        </div>
-      `;
-    }
-    roundsHtml += '</div>';
+    // SVG Connector 2 -> 3
+    const pairs2 = [
+      { y1: c4[0], y2: c4[1], targetY: c2[0] },
+      { y1: c4[2], y2: c4[3], targetY: c2[1] }
+    ];
+    const svg2 = renderSvgConnectorColumn(pairs2, '#ffb703');
 
-    // Col 2: Lower Bracket R3 (4 matches, 2 pairs)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header is-lower">Lower R3 (Hari 4)</div>
-    `;
-    for (let i = 0; i < 4; i += 2) {
-      const m1 = groupPlayoffMatches[2][6 + i];
-      const m2 = groupPlayoffMatches[2][6 + i + 1];
-      roundsHtml += `
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(m1, 2, 6 + i, activeNodeKey, true, true)}
-          ${renderPlayoffMatchCardHtml(m2, 2, 6 + i + 1, activeNodeKey, true, true)}
-          <div class="bracket-pair-fork is-lower"></div>
-        </div>
-      `;
-    }
-    roundsHtml += '</div>';
+    // Col 3: Lower QF (2 Match)
+    let col3 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower QF (Hari 4)</div>';
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][0], 3, 0, c2[0] - 38, activeNodeKey, true);
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][1], 3, 1, c2[1] - 38, activeNodeKey, true);
+    col3 += '</div>';
 
-    // Col 3: Lower Quarter Final (2 matches, 1 pair)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header is-lower">Lower QF (Hari 4)</div>
-        <div class="bracket-pair">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[3][0], 3, 0, activeNodeKey, true, true)}
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[3][1], 3, 1, activeNodeKey, true, true)}
-          <div class="bracket-pair-fork is-lower"></div>
-        </div>
-      </div>
-    `;
+    // SVG Connector 3 -> 4
+    const pairs3 = [{ y1: c2[0], y2: c2[1], targetY: c1[0] }];
+    const svg3 = renderSvgConnectorColumn(pairs3, '#ffb703');
 
-    // Col 4: Lower Final Penentu (1 match)
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header is-lower">Lower Final (Hari 5)</div>
-        <div class="bracket-single">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[4][4], 4, 4, activeNodeKey, true, true)}
-          <div class="bracket-single-bridge is-lower"></div>
-        </div>
-      </div>
-    `;
+    // Col 4: Lower Final Penentu
+    let col4 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Final (Hari 5)</div>';
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][4], 4, 4, c1[0] - 38, activeNodeKey, true);
+    col4 += '</div>';
 
-    // Col 5: Grand Final
-    roundsHtml += `
-      <div class="bracket-round">
-        <div class="round-header" style="background:rgba(255,183,3,0.15); color:var(--yokke-gold); border-color:var(--yokke-gold);">🏆 Grand Final (BO5)</div>
-        <div class="bracket-single">
-          ${renderPlayoffMatchCardHtml(groupPlayoffMatches[5][0], 5, 0, activeNodeKey, true, false)}
-        </div>
-      </div>
-    `;
+    // SVG Connector 4 -> 5
+    const pairs4 = [{ y1: c1[0], targetY: c1[0] }];
+    const svg4 = renderSvgConnectorColumn(pairs4, '#ffb703');
+
+    // Col 5: Grand Final BO5
+    let col5 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
+    col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    col5 += '</div>';
+
+    canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4 + svg4 + col5;
 
   } else {
     // ========================================================
-    // TAMPILAN SELURUH BABAK (ALL ROUNDS) DENGAN GARIS PENGHUBUNG
+    // TAMPILAN UPPER BRACKET (CYAN SVG CONNECTORS - DEFAULT & PIXEL-PERFECT)
     // ========================================================
-    const roundNamesMap = {
-      1: ['Grand Final'],
-      2: ['Semifinal Playoff (4 Besar)', 'Grand Final'],
-      3: ['Perempat Final (8 Besar)', 'Semifinal Playoff (4 Besar)', 'Grand Final'],
-      5: ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)'],
-      6: ['Upper 16 Besar (Hari 3)', 'Upper QF & Lower R1 (Hari 3-4)', 'Upper SF & Lower R2/R3 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower Final (Hari 5)', 'Grand Final BO5 (Hari 5)']
-    };
-    const roundNames = roundNamesMap[groupPlayoffMatches.length] || ['Babak Playoff', 'Grand Final'];
+    // Col 0: Upper 16 Besar (8 Match)
+    let col0 = '<div class="bracket-col"><div class="bracket-col-header">Upper 16 Besar (Hari 2-3)</div>';
+    for (let i = 0; i < 8; i++) {
+      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[0][i], 0, i, c8[i] - 38, activeNodeKey, false);
+    }
+    col0 += '</div>';
 
-    groupPlayoffMatches.forEach((round, rIdx) => {
-      roundsHtml += `
-        <div class="bracket-round">
-          <div class="round-header">${roundNames[rIdx] || ('Ronde ' + (rIdx + 1))}</div>
-      `;
+    // SVG Connector 0 -> 1
+    const pairs0 = [
+      { y1: c8[0], y2: c8[1], targetY: c4[0] },
+      { y1: c8[2], y2: c8[3], targetY: c4[1] },
+      { y1: c8[4], y2: c8[5], targetY: c4[2] },
+      { y1: c8[6], y2: c8[7], targetY: c4[3] }
+    ];
+    const svg0 = renderSvgConnectorColumn(pairs0, '#00d2ff');
 
-      for (let i = 0; i < round.length; i += 2) {
-        const m1 = round[i];
-        const m2 = round[i + 1];
-        const isIncoming = (rIdx > 0);
-        const isLower = (m1 && m1.bracket === 'LOWER');
+    // Col 1: Upper Quarter Final (4 Match)
+    let col1 = '<div class="bracket-col"><div class="bracket-col-header">Upper QF (Hari 3)</div>';
+    for (let i = 0; i < 4; i++) {
+      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][i], 1, i, c4[i] - 38, activeNodeKey, false);
+    }
+    col1 += '</div>';
 
-        if (m2) {
-          roundsHtml += `
-            <div class="bracket-pair">
-              ${renderPlayoffMatchCardHtml(m1, rIdx, i, activeNodeKey, isIncoming, isLower)}
-              ${renderPlayoffMatchCardHtml(m2, rIdx, i + 1, activeNodeKey, isIncoming, isLower)}
-              <div class="bracket-pair-fork ${isLower ? 'is-lower' : ''}"></div>
-            </div>
-          `;
-        } else {
-          roundsHtml += `
-            <div class="bracket-single">
-              ${renderPlayoffMatchCardHtml(m1, rIdx, i, activeNodeKey, isIncoming, isLower)}
-              ${rIdx < groupPlayoffMatches.length - 1 ? `<div class="bracket-single-bridge ${isLower ? 'is-lower' : ''}"></div>` : ''}
-            </div>
-          `;
-        }
-      }
+    // SVG Connector 1 -> 2
+    const pairs1 = [
+      { y1: c4[0], y2: c4[1], targetY: c2[0] },
+      { y1: c4[2], y2: c4[3], targetY: c2[1] }
+    ];
+    const svg1 = renderSvgConnectorColumn(pairs1, '#00d2ff');
 
-      roundsHtml += '</div>';
-    });
+    // Col 2: Upper Semifinal (2 Match)
+    let col2 = '<div class="bracket-col"><div class="bracket-col-header">Upper SF (Hari 4)</div>';
+    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][0], 2, 0, c2[0] - 38, activeNodeKey, false);
+    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][1], 2, 1, c2[1] - 38, activeNodeKey, false);
+    col2 += '</div>';
+
+    // SVG Connector 2 -> 3
+    const pairs2 = [{ y1: c2[0], y2: c2[1], targetY: c1[0] }];
+    const svg2 = renderSvgConnectorColumn(pairs2, '#00d2ff');
+
+    // Col 3: Upper Final (1 Match)
+    let col3 = '<div class="bracket-col"><div class="bracket-col-header">Upper Final (Hari 5)</div>';
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][0], 4, 0, c1[0] - 38, activeNodeKey, false);
+    col3 += '</div>';
+
+    // SVG Connector 3 -> 4
+    const pairs3 = [{ y1: c1[0], targetY: c1[0] }];
+    const svg3 = renderSvgConnectorColumn(pairs3, '#00d2ff');
+
+    // Col 4: Super Grand Final (BO5)
+    let col4 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    col4 += '</div>';
+
+    canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4;
   }
 
   return `
-    <div class="flow-playoff-full-bracket-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(0, 210, 255, 0.28); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 22px rgba(0,0,0,0.45);">
+    <div class="flow-playoff-full-bracket-card ${_isPlayoffFullscreen ? 'is-fullscreen' : ''}" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(0, 210, 255, 0.28); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 22px rgba(0,0,0,0.45);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.6rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
         <div>
           <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
@@ -10387,15 +10354,15 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
               <span>🏆</span> <span>Bagan Playoff Keseluruhan (Double Elimination)</span>
             </h4>
             <span style="font-size:0.72rem; padding:0.18rem 0.6rem; border-radius:12px; font-weight:700; background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3);">
-              Bagan Pohon Resmi • Bergaris Cabang
+              Bagan Pohon Presisi • Garis Vektor SVG
             </span>
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">
-            ⚡ Juara 1 (Home) & Juara 2 (Away) ke Upper Bracket | Gugur Upper vs Juara 3 ke Lower Bracket | Super Grand Final BO5
+            ⚡ Juara 1 & 2 ke Upper Bracket | Gugur Upper vs Juara 3 ke Lower Bracket | Super Grand Final BO5
           </div>
         </div>
         
-        <!-- ACTION CONTROLS: UNDI BAGAN, UJI UNDIAN & TOGGLE FULL BRACKET -->
+        <!-- ACTION CONTROLS: UNDI, UJI UNDIAN & TOGGLE FULLSCREEN -->
         <div style="display:flex; gap:0.45rem; align-items:center; flex-wrap:wrap;">
           ${isAdmin ? `
             <button type="button" class="btn btn-gold" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem; box-shadow:0 2px 10px rgba(255,183,3,0.3);" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff secara otomatis dengan aturan Anti-Same Group">
@@ -10409,39 +10376,36 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
               (Undian diatur oleh Panitia)
             </span>
           `}
+          <button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.38rem 0.7rem; border-color:rgba(0,210,255,0.4); color:var(--yokke-cyan); font-weight:700;" onclick="togglePlayoffFullscreen()">
+            <span id="toggleFullscreenLabel">${_isPlayoffFullscreen ? 'Kecilkan' : '⛶ Lebar Penuh'}</span>
+          </button>
           <button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.38rem 0.7rem; border-color:rgba(255,255,255,0.2); color:#cbd5e1;" onclick="togglePlayoffBracketCollapse()" id="btnTogglePlayoffBracket">
-            <span>↔️</span> <span id="toggleBracketLabel">${_isPlayoffBracketCollapsed ? 'Tampilkan Bagan' : 'Sembunyikan'}</span>
+            <span>↔️</span> <span id="toggleBracketLabel">${_isPlayoffBracketCollapsed ? 'Tampilkan' : 'Sembunyikan'}</span>
           </button>
         </div>
       </div>
 
-      <!-- FILTER TABS BAGAN: UPPER, LOWER, ALL -->
-      <div style="display:flex; gap:0.35rem; align-items:center; margin-bottom:0.85rem; flex-wrap:wrap;">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-right:0.25rem;">🔍 Tampilkan Cabang:</span>
-        <button type="button" class="btn ${currentPlayoffBracketFilter === 'UPPER' ? 'btn-primary' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('UPPER')">
+      <!-- FILTER TABS CABANG: UPPER vs LOWER -->
+      <div style="display:flex; gap:0.4rem; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap;">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-right:0.25rem;">🔍 Cabang Turnamen:</span>
+        <button type="button" class="btn ${currentPlayoffBracketFilter === 'UPPER' ? 'btn-primary' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.75rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('UPPER')">
           👑 Upper Bracket (16 Besar ➔ Final)
         </button>
-        <button type="button" class="btn ${currentPlayoffBracketFilter === 'LOWER' ? 'btn-gold' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('LOWER')">
+        <button type="button" class="btn ${currentPlayoffBracketFilter === 'LOWER' ? 'btn-gold' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.75rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('LOWER')">
           🛡️ Lower Bracket (Gugur Upper vs Juara 3)
-        </button>
-        <button type="button" class="btn ${currentPlayoffBracketFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}" style="font-size:0.74rem; padding:0.25rem 0.65rem; border-radius:6px; font-weight:700;" onclick="setPlayoffBracketFilter('ALL')">
-          ⚡ Seluruh Babak (Semua Match)
         </button>
       </div>
 
-      <!-- BRACKET SCROLL CONTAINER -->
-      <div class="bracket-wrapper" id="flowPlayoffBracketWrapper" style="padding:0.5rem 0.2rem; overflow-x:auto; display:${_isPlayoffBracketCollapsed ? 'none' : 'block'};">
-        <div class="bracket-container" style="display:flex; gap:3.2rem; min-width:960px;">
-          ${roundsHtml}
+      <!-- BRACKET SCROLL CONTAINER DENGAN CANVAS SVG -->
+      <div class="bracket-wrapper" id="flowPlayoffBracketWrapper" style="display:${_isPlayoffBracketCollapsed ? 'none' : 'block'};">
+        <div class="bracket-canvas">
+          ${canvasHtml}
         </div>
       </div>
     </div>
   `;
 }
 
-// ----------------------------------------------------------------------------
-// 1. MASTER-DETAIL INTERACTIVE HUB MLBB
-// ----------------------------------------------------------------------------
 function selectMLBBStageNode(nodeKey) {
   currentSelectedMLBBNode = nodeKey;
   renderMLBBInteractiveHubUI();
