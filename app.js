@@ -228,9 +228,16 @@ const MLBB_SEEDED_8 = [
 function isTeamInvited(teamName) {
   if (!teamName) return false;
   const clean = teamName.trim().toLowerCase();
-  const p = participants.find(x => x.category === 'MLBB' && (x.name || '').trim().toLowerCase() === clean);
+  const p = (typeof participants !== 'undefined' && Array.isArray(participants))
+    ? participants.find(x => x.category === 'MLBB' && (x.name || '').trim().toLowerCase() === clean)
+    : null;
   if (p && p.isInvited !== undefined) return !!p.isInvited;
-  return MLBB_SEEDED_8.includes(clean);
+  if (typeof MLBB_SEEDED_8 !== 'undefined' && Array.isArray(MLBB_SEEDED_8)) {
+    if (MLBB_SEEDED_8.includes(clean)) return true;
+    if (MLBB_SEEDED_8.some(s => clean === s || clean.includes(s) || s.includes(clean))) return true;
+  }
+  const forcePowerhouses = ['atmo', 'appa', 'native', 'aang alpha'];
+  return forcePowerhouses.some(k => clean.includes(k));
 }
 
 function toggleInvitedTeam(id) {
@@ -5166,6 +5173,212 @@ function findValidBracketPermutation(candidates, forbiddenGroupsPerSlot) {
   return null;
 }
 
+
+function isTeamAtmo(teamName) {
+  if (!teamName) return false;
+  return teamName.trim().toLowerCase().includes('atmo');
+}
+
+function isTeamAlpha(teamName) {
+  if (!teamName) return false;
+  const c = teamName.trim().toLowerCase();
+  return c.includes('aang alpha') || (c.includes('alpha') && !c.includes('beta'));
+}
+
+function isPlayoffInvitedTeam(teamName) {
+  if (!teamName) return false;
+  const clean = teamName.trim().toLowerCase();
+  if (typeof isTeamInvited === 'function' && isTeamInvited(teamName)) return true;
+  if (typeof MLBB_SEEDED_8 !== 'undefined' && Array.isArray(MLBB_SEEDED_8)) {
+    if (MLBB_SEEDED_8.includes(clean)) return true;
+    if (MLBB_SEEDED_8.some(s => clean === s || clean.includes(s) || s.includes(clean))) return true;
+  }
+  const forcePowerhouses = ['atmo', 'appa', 'native', 'aang alpha'];
+  return forcePowerhouses.some(k => clean.includes(k));
+}
+
+function solveRemainingBracketSlots(remainingItems, emptySlots, currentArray, validatorFn) {
+  const shuffledItems = shuffleArray(remainingItems);
+  function backtrack(idx, arr) {
+    if (idx === shuffledItems.length) return arr;
+    const item = shuffledItems[idx];
+    const availSlots = emptySlots.filter(s => arr[s] === null);
+
+    for (const slot of availSlots) {
+      if (!validatorFn(slot, item)) continue;
+      const nextArr = [...arr];
+      nextArr[slot] = item;
+      const res = backtrack(idx + 1, nextArr);
+      if (res) return res;
+    }
+    return null;
+  }
+  return backtrack(0, [...currentArray]);
+}
+
+/**
+ * Algoritma Pengundian Cerdas Playoff Upper Bracket 16 Besar (MLBB):
+ * 1. Undi tim invited terlebih dahulu.
+ * 2. Bagi acak tim invited ke 2 wings (Pool Atas [0..3] vs Pool Bawah [4..7]).
+ *    - Jika ada ATMO dan ALPHA (Aang Alpha), pisahkan mereka di wings/pool yang berbeda!
+ * 3. Pisahkan mereka pada match yang berbeda di Tahap 1 (tidak saling berhadapan di 16 Besar, beda sayap QF).
+ * 4. Setelah menempatkan tim invited, undi tim reguler lain untuk menempati bagan yang kosong.
+ * 5. Pastikan syarat anti-rematch grup (Juara 2 beda grup dari Juara 1 di slot yang sama) tetap 100% terpenuhi.
+ */
+function drawMLBBPlayoffUpperBracket(j1List, j2List) {
+  const isInv = (t) => isPlayoffInvitedTeam(t);
+
+  const j1Invited = j1List.filter(item => isInv(item.team));
+  const j1Regular = j1List.filter(item => !isInv(item.team));
+  const j2Invited = j2List.filter(item => isInv(item.team));
+  const j2Regular = j2List.filter(item => !isInv(item.team));
+
+  const allInvited = [
+    ...j1Invited.map(item => ({ ...item, role: 'J1' })),
+    ...j2Invited.map(item => ({ ...item, role: 'J2' }))
+  ];
+
+  for (let attempt = 0; attempt < 500; attempt++) {
+    const atmoItem = allInvited.find(x => isTeamAtmo(x.team));
+    const alphaItem = allInvited.find(x => isTeamAlpha(x.team) && x !== atmoItem);
+    const otherInvited = shuffleArray(allInvited.filter(x => x !== atmoItem && x !== alphaItem));
+
+    const topInvited = [];
+    const botInvited = [];
+
+    // Jika ada ATMO dan ALPHA, pisahkan di pool/wing berbeda (Top vs Bottom)
+    if (atmoItem && alphaItem) {
+      if (Math.random() < 0.5) {
+        topInvited.push(atmoItem);
+        botInvited.push(alphaItem);
+      } else {
+        topInvited.push(alphaItem);
+        botInvited.push(atmoItem);
+      }
+    } else if (atmoItem) {
+      if (Math.random() < 0.5) topInvited.push(atmoItem);
+      else botInvited.push(atmoItem);
+    } else if (alphaItem) {
+      if (Math.random() < 0.5) topInvited.push(alphaItem);
+      else botInvited.push(alphaItem);
+    }
+
+    otherInvited.forEach(item => {
+      if (topInvited.length <= botInvited.length) {
+        topInvited.push(item);
+      } else {
+        botInvited.push(item);
+      }
+    });
+
+    const branchJ1 = new Array(8).fill(null);
+    const branchJ2 = new Array(8).fill(null);
+
+    function placePoolInvited(poolInvitedList, poolWings, poolSlots) {
+      const shuffledWings = shuffleArray(poolWings);
+      let wingPointer = 0;
+      const sortedPool = [...poolInvitedList].sort((a, b) => (a.role === 'J1' ? -1 : 1));
+
+      for (const item of sortedPool) {
+        const targetWing = shuffledWings[wingPointer % shuffledWings.length];
+        wingPointer++;
+        const wingSlots = [targetWing * 2, targetWing * 2 + 1];
+
+        let candidateSlots = [];
+        if (item.role === 'J1') {
+          candidateSlots = wingSlots.filter(s => branchJ1[s] === null && (!branchJ2[s] || branchJ2[s].group !== item.group));
+          if (candidateSlots.length === 0) {
+            candidateSlots = poolSlots.filter(s => branchJ1[s] === null && (!branchJ2[s] || branchJ2[s].group !== item.group));
+          }
+        } else {
+          candidateSlots = wingSlots.filter(s => 
+            branchJ2[s] === null && 
+            (!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))
+          );
+          if (candidateSlots.length === 0) {
+            candidateSlots = poolSlots.filter(s => 
+              branchJ2[s] === null && 
+              (!branchJ1[s] || (!isInv(branchJ1[s].team) && branchJ1[s].group !== item.group))
+            );
+          }
+        }
+
+        if (candidateSlots.length === 0) return false;
+        const chosenSlot = candidateSlots[Math.floor(Math.random() * candidateSlots.length)];
+        if (item.role === 'J1') {
+          branchJ1[chosenSlot] = item;
+        } else {
+          branchJ2[chosenSlot] = item;
+        }
+      }
+      return true;
+    }
+
+    if (!placePoolInvited(topInvited, [0, 1], [0, 1, 2, 3])) continue;
+    if (!placePoolInvited(botInvited, [2, 3], [4, 5, 6, 7])) continue;
+
+    // Isi branchJ1 yang kosong dengan sisa j1Regular
+    const emptyJ1Slots = [0, 1, 2, 3, 4, 5, 6, 7].filter(s => branchJ1[s] === null);
+    const solvedBranchJ1 = solveRemainingBracketSlots(j1Regular, emptyJ1Slots, branchJ1, (slot, item) => {
+      return !branchJ2[slot] || branchJ2[slot].group !== item.group;
+    });
+    if (!solvedBranchJ1) continue;
+
+    // Isi branchJ2 yang kosong dengan sisa j2Regular
+    const emptyJ2Slots = [0, 1, 2, 3, 4, 5, 6, 7].filter(s => branchJ2[s] === null);
+    const solvedBranchJ2 = solveRemainingBracketSlots(j2Regular, emptyJ2Slots, branchJ2, (slot, item) => {
+      return solvedBranchJ1[slot].group !== item.group;
+    });
+
+    if (solvedBranchJ2) {
+      return { branchJ1: solvedBranchJ1, branchJ2: solvedBranchJ2 };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Algoritma Pengundian Lower Bracket (MLBB Juara 3):
+ * Menyebarkan tim invited Juara 3 ke cabang sayap Lower berbeda dan menjamin anti-rematch dengan Juara 1 & 2.
+ */
+function drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2) {
+  const isInv = (t) => isPlayoffInvitedTeam(t);
+  const j3Invited = j3List.filter(item => isInv(item.team));
+  const j3Regular = j3List.filter(item => !isInv(item.team));
+
+  const slots = [0, 1, 2, 3, 4, 5, 6, 7];
+  const forbiddenGroupsPerSlot = branchJ1.map((j, i) => [j.group, branchJ2[i].group]);
+
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const branchJ3 = new Array(8).fill(null);
+    const shuffledInv = shuffleArray(j3Invited);
+    const targetWings = shuffleArray([0, 1, 2, 3]);
+
+    let ok = true;
+    for (let idx = 0; idx < shuffledInv.length; idx++) {
+      const item = shuffledInv[idx];
+      const wing = targetWings[idx % 4];
+      const wingSlots = [wing * 2, wing * 2 + 1].filter(s => branchJ3[s] === null && !forbiddenGroupsPerSlot[s].includes(item.group));
+      if (wingSlots.length === 0) {
+        ok = false;
+        break;
+      }
+      const chosen = wingSlots[Math.floor(Math.random() * wingSlots.length)];
+      branchJ3[chosen] = item;
+    }
+    if (!ok) continue;
+
+    const emptySlots = slots.filter(s => branchJ3[s] === null);
+    const solved = solveRemainingBracketSlots(j3Regular, emptySlots, branchJ3, (slot, item) => {
+      return !forbiddenGroupsPerSlot[slot].includes(item.group);
+    });
+    if (solved) return solved;
+  }
+
+  return null;
+}
+
 function initGroupPlayoff(doShuffle = false) {
   const gKeys = Object.keys(groupStageData);
   const numGroups = gKeys.length;
@@ -5198,21 +5411,35 @@ function initGroupPlayoff(doShuffle = false) {
     let branchJ3 = [];
 
     if (doShuffle) {
-      // 1. Acak Juara 1 untuk 8 cabang Home Upper Bracket
-      branchJ1 = shuffleArray([...j1List]);
-
-      // 2. Acak Juara 2 untuk 8 cabang Away Upper Bracket (Anti-bentrok grup dengan Juara 1)
-      const forbiddenForJ2 = branchJ1.map(j => [j.group]);
-      branchJ2 = findValidBracketPermutation(j2List, forbiddenForJ2);
-      if (!branchJ2) {
-        branchJ2 = branchJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 8]);
+      // 1 & 2. Undian Cerdas Upper Bracket 16 Besar (Aturan Khusus Tim Invited & Keseimbangan Wings):
+      // - Undi tim invited terlebih dahulu
+      // - Bagi acak ke 2 wings (Pool Atas [0..3] vs Pool Bawah [4..7])
+      // - Pastikan ATMO dan ALPHA (Aang Alpha) berada di wings/pool berbeda
+      // - Pisahkan tim invited ke match yang berbeda di Tahap 1 (tidak saling berhadapan di 16 Besar, beda sayap QF)
+      // - Undi tim reguler lain untuk menempati bagan yang kosong dengan jaminan Anti-Rematch Grup
+      const drawnUpper = drawMLBBPlayoffUpperBracket(j1List, j2List);
+      if (drawnUpper) {
+        branchJ1 = drawnUpper.branchJ1;
+        branchJ2 = drawnUpper.branchJ2;
+      } else {
+        branchJ1 = shuffleArray([...j1List]);
+        const forbiddenForJ2 = branchJ1.map(j => [j.group]);
+        branchJ2 = findValidBracketPermutation(j2List, forbiddenForJ2);
+        if (!branchJ2) {
+          branchJ2 = branchJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 8]);
+        }
       }
 
-      // 3. Acak Juara 3 untuk 8 cabang Away Lower Bracket (Anti-bentrok grup dengan Juara 1 maupun Juara 2 di cabangnya)
-      const forbiddenForJ3 = branchJ1.map((j, i) => [j.group, branchJ2[i].group]);
-      branchJ3 = findValidBracketPermutation(j3List, forbiddenForJ3);
-      if (!branchJ3) {
-        branchJ3 = branchJ1.map(j => j3List[(j1List.findIndex(x => x.group === j.group) + 2) % 8]);
+      // 3. Undian Cerdas Lower Bracket (Anti-bentrok grup dan persebaran seimbang tim invited Juara 3)
+      const drawnLower = drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2);
+      if (drawnLower) {
+        branchJ3 = drawnLower;
+      } else {
+        const forbiddenForJ3 = branchJ1.map((j, i) => [j.group, branchJ2[i].group]);
+        branchJ3 = findValidBracketPermutation(j3List, forbiddenForJ3);
+        if (!branchJ3) {
+          branchJ3 = branchJ1.map(j => j3List[(j1List.findIndex(x => x.group === j.group) + 2) % 8]);
+        }
       }
     } else {
       // Susunan Standar Silang Default (Non-acak tapi dijamin beda grup)
@@ -5324,11 +5551,29 @@ function initGroupPlayoff(doShuffle = false) {
     let bJ1 = [];
     let bJ2 = [];
     if (doShuffle) {
-      bJ1 = shuffleArray([...j1List]);
-      const forbidden = bJ1.map(j => [j.group]);
-      bJ2 = findValidBracketPermutation(j2List, forbidden);
-      if (!bJ2) {
-        bJ2 = bJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 4]);
+      let drawn = false;
+      for (let att = 0; att < 100; att++) {
+        const candJ1 = shuffleArray([...j1List]);
+        const forbidden = candJ1.map(j => [j.group]);
+        const candJ2 = findValidBracketPermutation(j2List, forbidden);
+        if (candJ2) {
+          const atmoIdx = candJ1.findIndex(x => isTeamAtmo(x.team)) !== -1 ? candJ1.findIndex(x => isTeamAtmo(x.team)) : candJ2.findIndex(x => isTeamAtmo(x.team));
+          const alphaIdx = candJ1.findIndex(x => isTeamAlpha(x.team)) !== -1 ? candJ1.findIndex(x => isTeamAlpha(x.team)) : candJ2.findIndex(x => isTeamAlpha(x.team));
+          if (atmoIdx !== -1 && alphaIdx !== -1) {
+            const atmoWing = atmoIdx < 2 ? 'TOP' : 'BOTTOM';
+            const alphaWing = alphaIdx < 2 ? 'TOP' : 'BOTTOM';
+            if (atmoWing === alphaWing) continue;
+          }
+          bJ1 = candJ1;
+          bJ2 = candJ2;
+          drawn = true;
+          break;
+        }
+      }
+      if (!drawn) {
+        bJ1 = shuffleArray([...j1List]);
+        const forbidden = bJ1.map(j => [j.group]);
+        bJ2 = findValidBracketPermutation(j2List, forbidden) || bJ1.map(j => j2List[(j1List.findIndex(x => x.group === j.group) + 1) % 4]);
       }
     } else {
       bJ1 = [j1List[0], j1List[2], j1List[1], j1List[3]]; // A, C, B, D
