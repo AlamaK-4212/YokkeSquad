@@ -446,6 +446,7 @@ let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') 
   mlbb: {
     stage: 'STAGE_1_GROUP', // 'STAGE_1_GROUP' | 'STAGE_2_PLAYOFF'
     isGroupLocked: false,
+    isPlayoffLocked: false,
     tieBreaker: { needed: false, group: '', teamA: '', teamB: '', winner: null }
   },
   mcgg: {
@@ -453,6 +454,10 @@ let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') 
     lockedMatches: { LOBBY_A: {}, LOBBY_B: {}, GRAND_FINAL: {} }
   }
 }));
+
+if (tournamentStageState.mlbb && typeof tournamentStageState.mlbb.isPlayoffLocked === 'undefined') {
+  tournamentStageState.mlbb.isPlayoffLocked = false;
+}
 
 function saveStageStateLocal() {
   localStorage.setItem('yokke_stage_state', JSON.stringify(tournamentStageState));
@@ -877,6 +882,7 @@ function confirmResetBaganWithPin() {
   bracketMatches = [];
   tournamentStageState.mlbb.stage = 'STAGE_1_GROUP';
   tournamentStageState.mlbb.isGroupLocked = false;
+  tournamentStageState.mlbb.isPlayoffLocked = false;
   tournamentStageState.mlbb.tieBreaker = { needed: false, group: '', teamA: '', teamB: '', winner: null };
 
   // 2. Bersihkan dan simpan ke LocalStorage
@@ -2357,6 +2363,7 @@ function updateAuthUI() {
   const btnProceedMLBB = document.getElementById('btnProceedMLBBStage2');
   const btnResetMLBB = document.getElementById('btnResetMLBBStage1');
   const btnShuffleMLBBPlayoff = document.getElementById('btnShuffleMLBBPlayoff');
+  const btnLockMLBBPlayoff = document.getElementById('btnLockMLBBPlayoff');
   const btnTestPlayoffStandings = document.getElementById('btnTestPlayoffStandings');
   const btnSaveMLBB = document.getElementById('btnSaveBracketGSheet');
 
@@ -2435,8 +2442,18 @@ function updateAuthUI() {
       btnResetMLBB.style.display = isStage2 ? 'inline-flex' : 'none';
     }
 
+    const isPlayoffLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
+    if (btnLockMLBBPlayoff) {
+      btnLockMLBBPlayoff.style.display = isStage2 ? 'inline-flex' : 'none';
+      btnLockMLBBPlayoff.innerHTML = isPlayoffLocked ? '🔓 Buka Kunci Playoff' : '🔒 Kunci Undian Playoff';
+      btnLockMLBBPlayoff.className = isPlayoffLocked ? 'btn btn-gold' : 'btn btn-outline';
+      btnLockMLBBPlayoff.title = isPlayoffLocked ? 'Buka kunci undian bagan playoff untuk mengacak ulang' : 'Kunci susunan undian bagan playoff agar tidak berubah';
+    }
+
     if (btnShuffleMLBBPlayoff) {
       btnShuffleMLBBPlayoff.style.display = isStage2 ? 'inline-flex' : 'none';
+      btnShuffleMLBBPlayoff.disabled = isPlayoffLocked;
+      btnShuffleMLBBPlayoff.title = isPlayoffLocked ? 'Undian playoff sedang dikunci. Buka kunci untuk mengacak ulang.' : 'Acak ulang undian bagan playoff';
     }
 
     if (btnTestPlayoffStandings) {
@@ -2496,6 +2513,7 @@ function updateAuthUI() {
     if (btnLockMCGG) btnLockMCGG.style.display = 'none';
     if (btnSaveMCGG) btnSaveMCGG.style.display = 'none';
     if (btnShuffleMLBBPlayoff) btnShuffleMLBBPlayoff.style.display = 'none';
+    if (btnLockMLBBPlayoff) btnLockMLBBPlayoff.style.display = 'none';
     if (btnTestPlayoffStandings) btnTestPlayoffStandings.style.display = 'none';
 
     // Tampilkan notifikasi jika belum ada undian untuk match saat ini
@@ -3924,6 +3942,7 @@ function proceedToMLBBStage2() {
   }
 
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
+  tournamentStageState.mlbb.isPlayoffLocked = false;
   initGroupPlayoff(true);
   saveStageStateLocal();
   saveState();
@@ -3940,6 +3959,10 @@ function shuffleMLBBPlayoffBracket() {
   }
   if (tournamentStageState.mlbb.stage !== 'STAGE_2_PLAYOFF') {
     showToast('⚠️ Bagan Playoff belum dibuka. Buka Tahap 2 Playoff terlebih dahulu.', 'warning');
+    return;
+  }
+  if (tournamentStageState.mlbb.isPlayoffLocked) {
+    showToast('🔒 Bagan playoff sedang dikunci. Buka kunci undian terlebih dahulu untuk mengacak ulang.', 'warning');
     return;
   }
 
@@ -3965,6 +3988,343 @@ function shuffleMLBBPlayoffBracket() {
   if (typeof renderMLBBInteractiveHubUI === "function") renderMLBBInteractiveHubUI();
   saveTournamentStateOnly(true);
   showToast('🎲 Undian bagan playoff berhasil diacak dan disimpan!', 'success');
+}
+
+function toggleLockMLBBPlayoff() {
+  if (!isAdmin) {
+    showToast('Akses ditolak: Hanya panitia yang dapat mengunci undian playoff.', 'error');
+    return;
+  }
+  if (tournamentStageState.mlbb.stage !== 'STAGE_2_PLAYOFF') {
+    showToast('⚠️ Bagan Playoff belum dibuka. Buka Tahap 2 Playoff terlebih dahulu.', 'warning');
+    return;
+  }
+  const currentLock = !!tournamentStageState.mlbb.isPlayoffLocked;
+  if (!currentLock) {
+    if (!confirm('🔒 Kunci susunan undian bagan playoff sekarang?\n\nSetelah dikunci, tombol acak bagan akan dinonaktifkan sehingga susunan pertandingan aman untuk dimulai.')) {
+      return;
+    }
+    tournamentStageState.mlbb.isPlayoffLocked = true;
+    showToast('🔒 Undian Playoff berhasil dikunci! Susunan bagan telah diamankan.', 'success');
+  } else {
+    if (!confirm('🔓 Buka kunci susunan undian bagan playoff?\n\nSetelah dibuka, panitia dapat mengacak ulang undian bagan jika diperlukan.')) {
+      return;
+    }
+    tournamentStageState.mlbb.isPlayoffLocked = false;
+    showToast('🔓 Kunci undian Playoff dibuka. Bagan dapat diacak kembali.', 'info');
+  }
+  saveStageStateLocal();
+  saveState();
+  updateAuthUI();
+  renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+  saveTournamentStateOnly(true);
+}
+
+// ========================================================
+// SISTEM SKOR & PENENTUAN PEMENANG PLAYOFF MLBB
+// ========================================================
+let currentPlayoffScoreContext = null;
+
+function openPlayoffScoreModal(rIdx, mIdx, preselectWinner = null) {
+  if (!isAdmin) return;
+  const match = groupPlayoffMatches[rIdx]?.[mIdx];
+  if (!match) {
+    showToast('Data pertandingan playoff tidak ditemukan.', 'error');
+    return;
+  }
+
+  const isGrandFinal = (rIdx === groupPlayoffMatches.length - 1 || match.matchLabel === 'GRAND_FINAL');
+  const isBO5 = isGrandFinal;
+  const maxScore = isBO5 ? 3 : 2;
+
+  let initA = (match.scoreA !== null && match.scoreA !== undefined) ? Number(match.scoreA) : null;
+  let initB = (match.scoreB !== null && match.scoreB !== undefined) ? Number(match.scoreB) : null;
+
+  // Jika skor belum ada tapi ada preselectWinner dari klik tim di bagan
+  if (initA === null && initB === null && preselectWinner) {
+    if (isSameTeamName(preselectWinner, match.teamA)) {
+      initA = maxScore;
+      initB = 0;
+    } else if (isSameTeamName(preselectWinner, match.teamB)) {
+      initA = 0;
+      initB = maxScore;
+    }
+  }
+
+  currentPlayoffScoreContext = {
+    rIdx,
+    mIdx,
+    match,
+    isBO5,
+    maxScore,
+    scoreA: initA !== null ? initA : 0,
+    scoreB: initB !== null ? initB : 0,
+    hasInitialScore: (initA !== null && initB !== null)
+  };
+
+  const modal = document.getElementById('playoffScoreModal');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('playoffModalTitle');
+  if (titleEl) {
+    titleEl.innerHTML = `<span>⚔️</span> <span>Input Skor: ${escapeHtml(match.matchLabel || match.phaseName || `Match #${mIdx + 1}`)}</span>`;
+  }
+  const subEl = document.getElementById('playoffModalSubtitle');
+  if (subEl) {
+    subEl.innerText = match.phaseName || (isGrandFinal ? 'Super Grand Final' : (match.bracket === 'LOWER' ? 'Lower Bracket' : 'Upper Bracket'));
+  }
+  const phaseBadge = document.getElementById('playoffModalPhaseBadge');
+  if (phaseBadge) {
+    phaseBadge.innerText = match.phaseName || `Ronde ${rIdx + 1}`;
+  }
+  const formatBadge = document.getElementById('playoffModalFormatBadge');
+  if (formatBadge) {
+    formatBadge.innerText = isBO5 ? 'Best of 5 (BO5 • First to 3)' : 'Best of 3 (BO3 • First to 2)';
+  }
+
+  const nameA = document.getElementById('playoffModalTeamAName');
+  if (nameA) nameA.innerText = match.teamA || '(TBD)';
+  const nameB = document.getElementById('playoffModalTeamBName');
+  if (nameB) nameB.innerText = match.teamB || '(TBD)';
+
+  const inpA = document.getElementById('playoffModalScoreA');
+  if (inpA) {
+    inpA.value = currentPlayoffScoreContext.scoreA;
+    inpA.max = isBO5 ? 5 : 3;
+  }
+  const inpB = document.getElementById('playoffModalScoreB');
+  if (inpB) {
+    inpB.value = currentPlayoffScoreContext.scoreB;
+    inpB.max = isBO5 ? 5 : 3;
+  }
+
+  // Tombol skor cepat
+  const quickContainer = document.getElementById('playoffModalQuickButtons');
+  if (quickContainer) {
+    const pairs = isBO5 
+      ? [[3, 0], [3, 1], [3, 2], [2, 3], [1, 3], [0, 3]]
+      : [[2, 0], [2, 1], [1, 2], [0, 2]];
+    quickContainer.innerHTML = pairs.map(([sA, sB]) => `
+      <button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.6rem; font-weight:700;" onclick="setPlayoffModalQuickScore(${sA}, ${sB})">
+        ${sA} - ${sB}
+      </button>
+    `).join('');
+  }
+
+  updatePlayoffModalWinnerPreview();
+  modal.classList.add('active');
+}
+
+function closePlayoffScoreModal() {
+  const modal = document.getElementById('playoffScoreModal');
+  if (modal) modal.classList.remove('active');
+  currentPlayoffScoreContext = null;
+}
+
+function stepPlayoffModalScore(team, delta) {
+  if (!currentPlayoffScoreContext) return;
+  const maxAllowed = currentPlayoffScoreContext.isBO5 ? 5 : 3;
+  if (team === 'A') {
+    currentPlayoffScoreContext.scoreA = Math.max(0, Math.min(maxAllowed, currentPlayoffScoreContext.scoreA + delta));
+    const el = document.getElementById('playoffModalScoreA');
+    if (el) el.value = currentPlayoffScoreContext.scoreA;
+  } else {
+    currentPlayoffScoreContext.scoreB = Math.max(0, Math.min(maxAllowed, currentPlayoffScoreContext.scoreB + delta));
+    const el = document.getElementById('playoffModalScoreB');
+    if (el) el.value = currentPlayoffScoreContext.scoreB;
+  }
+  updatePlayoffModalWinnerPreview();
+}
+
+function setPlayoffModalQuickScore(sA, sB) {
+  if (!currentPlayoffScoreContext) return;
+  currentPlayoffScoreContext.scoreA = sA;
+  currentPlayoffScoreContext.scoreB = sB;
+  const inpA = document.getElementById('playoffModalScoreA');
+  const inpB = document.getElementById('playoffModalScoreB');
+  if (inpA) inpA.value = sA;
+  if (inpB) inpB.value = sB;
+  updatePlayoffModalWinnerPreview();
+}
+
+function onPlayoffScoreInputChanged() {
+  if (!currentPlayoffScoreContext) return;
+  const inpA = document.getElementById('playoffModalScoreA');
+  const inpB = document.getElementById('playoffModalScoreB');
+  const vA = parseInt(inpA?.value, 10);
+  const vB = parseInt(inpB?.value, 10);
+  currentPlayoffScoreContext.scoreA = isNaN(vA) ? 0 : Math.max(0, vA);
+  currentPlayoffScoreContext.scoreB = isNaN(vB) ? 0 : Math.max(0, vB);
+  updatePlayoffModalWinnerPreview();
+}
+
+function updatePlayoffModalWinnerPreview() {
+  const banner = document.getElementById('playoffModalWinnerBanner');
+  if (!banner || !currentPlayoffScoreContext) return;
+  const { match, scoreA, scoreB } = currentPlayoffScoreContext;
+  const tA = match.teamA || 'Team A';
+  const tB = match.teamB || 'Team B';
+
+  if (scoreA === 0 && scoreB === 0) {
+    banner.style.background = 'rgba(0,0,0,0.3)';
+    banner.style.borderColor = 'var(--border-color)';
+    banner.style.color = 'var(--text-muted)';
+    banner.innerHTML = '⚖️ Masukkan skor atau klik tombol skor cepat di atas untuk menentukan pemenang.';
+  } else if (scoreA === scoreB) {
+    banner.style.background = 'rgba(239,68,68,0.12)';
+    banner.style.borderColor = 'rgba(239,68,68,0.4)';
+    banner.style.color = '#f87171';
+    banner.innerHTML = '⚠️ <strong>Skor Imbang!</strong> Pertandingan Playoff wajib memiliki pemenang (harus ada selisih skor).';
+  } else if (scoreA > scoreB) {
+    banner.style.background = 'rgba(6,214,160,0.12)';
+    banner.style.borderColor = 'rgba(6,214,160,0.4)';
+    banner.style.color = 'var(--yokke-green)';
+    banner.innerHTML = `🏆 <strong>Pemenang:</strong> ${escapeHtml(tA)} (${scoreA} - ${scoreB}) melaju ke babak berikutnya!`;
+  } else {
+    banner.style.background = 'rgba(6,214,160,0.12)';
+    banner.style.borderColor = 'rgba(6,214,160,0.4)';
+    banner.style.color = 'var(--yokke-green)';
+    banner.innerHTML = `🏆 <strong>Pemenang:</strong> ${escapeHtml(tB)} (${scoreB} - ${scoreA}) melaju ke babak berikutnya!`;
+  }
+}
+
+function savePlayoffModalScore() {
+  if (!currentPlayoffScoreContext) return;
+  const { rIdx, mIdx, scoreA, scoreB } = currentPlayoffScoreContext;
+  if (scoreA === scoreB) {
+    showToast('⚠️ Pertandingan Playoff tidak boleh berakhir imbang! Salah satu tim harus unggul skor.', 'warning');
+    return;
+  }
+  const ok = setPlayoffMatchScore(rIdx, mIdx, scoreA, scoreB);
+  if (ok) {
+    closePlayoffScoreModal();
+  }
+}
+
+function resetPlayoffModalScore() {
+  if (!currentPlayoffScoreContext) return;
+  const { rIdx, mIdx } = currentPlayoffScoreContext;
+  if (!confirm('🗑️ Reset skor pertandingan ini?\nStatus pemenang akan dihapus dari bagan.')) return;
+  resetPlayoffMatchScore(rIdx, mIdx);
+  closePlayoffScoreModal();
+}
+
+function setPlayoffMatchScore(rIdx, mIdx, scoreA, scoreB) {
+  if (!isAdmin) {
+    showToast('Akses ditolak: Hanya panitia yang dapat mencatat skor playoff.', 'error');
+    return false;
+  }
+  const match = groupPlayoffMatches[rIdx]?.[mIdx];
+  if (!match) {
+    showToast('Pertandingan playoff tidak ditemukan.', 'error');
+    return false;
+  }
+  if (isPlayoffPlaceholderTeam(match.teamA) || isPlayoffPlaceholderTeam(match.teamB)) {
+    showToast('⚠️ Pertandingan ini belum dapat diinput skor karena kedua tim belum ditentukan dari babak sebelumnya.', 'warning');
+    return false;
+  }
+
+  scoreA = parseInt(scoreA, 10);
+  scoreB = parseInt(scoreB, 10);
+  if (isNaN(scoreA) || isNaN(scoreB) || scoreA < 0 || scoreB < 0) {
+    showToast('Skor tidak valid. Masukkan angka non-negatif.', 'error');
+    return false;
+  }
+  if (scoreA === scoreB) {
+    showToast('Pertandingan playoff tidak boleh imbang.', 'warning');
+    return false;
+  }
+
+  match.scoreA = scoreA;
+  match.scoreB = scoreB;
+  const winnerTeam = (scoreA > scoreB) ? match.teamA : match.teamB;
+
+  // Jalankan penetapan pemenang & otomatis alirkan ke babak selanjutnya
+  pickGroupPlayoffWinner(rIdx, mIdx, winnerTeam);
+
+  // Sync baris pertandingan ke Google Sheets jika konfigurasi aktif
+  const matchKey = match.matchLabel || `PLAYOFF_${rIdx}_${mIdx}`;
+  syncSingleMatchRowToGSheet(matchKey).catch(e => console.warn('Sync playoff to GSheet:', e));
+
+  showToast(`✅ Skor berhasil dicatat: ${escapeHtml(match.teamA)} (${scoreA}) vs (${scoreB}) ${escapeHtml(match.teamB)} ➔ Pemenang: ${escapeHtml(winnerTeam)}`, 'success');
+  return true;
+}
+
+function resetPlayoffMatchScore(rIdx, mIdx) {
+  if (!isAdmin) return;
+  const match = groupPlayoffMatches[rIdx]?.[mIdx];
+  if (!match) return;
+
+  match.scoreA = null;
+  match.scoreB = null;
+  match.winner = null;
+
+  saveState();
+  renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+  saveTournamentStateOnly(true);
+
+  const matchKey = match.matchLabel || `PLAYOFF_${rIdx}_${mIdx}`;
+  syncSingleMatchRowToGSheet(matchKey).catch(e => console.warn('Sync reset to GSheet:', e));
+  showToast(`Skor pertandingan ${match.matchLabel || ''} telah direset.`, 'info');
+}
+
+function onPlayoffTeamClicked(rIdx, mIdx, teamName) {
+  if (!isAdmin) return;
+  const m = groupPlayoffMatches[rIdx]?.[mIdx];
+  if (!m || isPlayoffPlaceholderTeam(m.teamA) || isPlayoffPlaceholderTeam(m.teamB)) {
+    showToast('⚠️ Pertandingan ini belum dapat diisi skor karena tim lawan belum siap tanding.', 'warning');
+    return;
+  }
+  openPlayoffScoreModal(rIdx, mIdx, teamName);
+}
+
+function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey = '', isIncoming = false, isLower = false) {
+  if (!m) return '';
+  const isGrandFinal = (rIdx === groupPlayoffMatches.length - 1);
+  const bracketBadge = m.bracket === 'UPPER' 
+    ? '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); font-weight:700;">UPPER</span>'
+    : (m.bracket === 'LOWER' 
+        ? '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(255,183,3,0.18); color:var(--yokke-gold); font-weight:700;">LOWER</span>'
+        : '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(6,214,160,0.18); color:var(--yokke-green); font-weight:700;">BO5</span>');
+
+  const safeA = (m.teamA || '').replace(/'/g, "\\'");
+  const safeB = (m.teamB || '').replace(/'/g, "\\'");
+  const hasScore = (m.scoreA !== null && m.scoreA !== undefined && m.scoreB !== null && m.scoreB !== undefined);
+  const isReady = !isPlayoffPlaceholderTeam(m.teamA) && !isPlayoffPlaceholderTeam(m.teamB);
+
+  return `
+    <div class="bracket-match-node ${isLower ? 'is-lower' : ''}" style="position:relative; margin-bottom:0.75rem;">
+      <div class="bracket-node-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.72rem; font-weight:700;">${m.matchLabel || m.phaseName || ('Match #' + (mIdx + 1))}</span>
+        <div style="display:flex; align-items:center; gap:0.25rem;">
+          ${bracketBadge}
+          ${isAdmin && isReady ? `
+            <button type="button" class="btn-playoff-score" onclick="event.stopPropagation(); openPlayoffScoreModal(${rIdx}, ${mIdx})" style="background:rgba(0,210,255,0.18); border:1px solid rgba(0,210,255,0.4); color:var(--yokke-cyan); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Input / Edit Skor Pertandingan">
+              ${hasScore ? `⚡ ${m.scoreA}-${m.scoreB}` : '✏️ Skor'}
+            </button>
+          ` : ''}
+        </div>
+      </div>
+      <div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeA}')">
+        <span class="team-label" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'};">
+          ${escapeHtml(m.teamA || '-')}
+        </span>
+        <span class="team-score" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreA !== null && m.scoreA !== undefined) ? `${m.scoreA} ${m.winner === m.teamA ? '🏆' : ''}` : (m.winner === m.teamA ? 'WIN 🏆' : '-')}
+        </span>
+      </div>
+      <div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeB}')">
+        <span class="team-label" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'};">
+          ${escapeHtml(m.teamB || '-')}
+        </span>
+        <span class="team-score" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === m.teamB ? '🏆' : ''}` : (m.winner === m.teamB ? 'WIN 🏆' : '-')}
+        </span>
+      </div>
+    </div>
+  `;
 }
 
 function findTeamGroupAndRank(teamName) {
@@ -3997,6 +4357,7 @@ function testMLBBPlayoffWithCurrentStandings() {
   // 1. Eksekusi pengundian playoff berdasarkan posisi klasemen terkini
   window._isSimulatingPlayoff = true;
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
+  tournamentStageState.mlbb.isPlayoffLocked = false;
   initGroupPlayoff(true);
   saveStageStateLocal();
   saveState();
@@ -5632,10 +5993,20 @@ function initGroupPlayoff(doShuffle = false) {
   }
 }
 
+function isPlayoffPlaceholderTeam(teamName) {
+  if (!teamName || typeof teamName !== 'string') return true;
+  const t = teamName.trim();
+  if (t === '' || t === '-' || t.includes('(TBD)')) return true;
+  if (/^Pemenang\s+/i.test(t) || /^Gugur\s+/i.test(t)) return true;
+  if (/^(Juara\s+[123]|Runner-up)\s+Grup\s+[A-H]/i.test(t)) return true;
+  if (t === 'Juara Upper Bracket' || t === 'Juara Lower Bracket') return true;
+  return false;
+}
+
 function pickGroupPlayoffWinner(rIdx, mIdx, winnerTeam) {
   if (!isAdmin) return;
   const match = groupPlayoffMatches[rIdx]?.[mIdx];
-  if (!match || !winnerTeam || winnerTeam.includes('Juara') || winnerTeam.includes('Runner-up') || winnerTeam.includes('Pemenang') || winnerTeam.includes('Gugur') || winnerTeam.includes('(TBD)')) return;
+  if (!match || !winnerTeam || isPlayoffPlaceholderTeam(winnerTeam)) return;
 
   match.winner = winnerTeam;
   const loserTeam = (match.teamA === winnerTeam ? match.teamB : match.teamA);
@@ -8216,6 +8587,7 @@ function renderGroupPlayoffTree() {
 
   // Tampilkan Sub-Header Panduan Khusus 5 Hari Double Elimination
   if (groupPlayoffMatches.length === 6 || groupPlayoffMatches.length === 5) {
+    const isPlayoffLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
     const banner = document.createElement('div');
     banner.style.cssText = 'width:100%; margin-bottom:1rem; padding:0.75rem 1rem; background:rgba(255,183,3,0.08); border:1px solid rgba(255,183,3,0.25); border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;';
     banner.innerHTML = `
@@ -8224,9 +8596,15 @@ function renderGroupPlayoffTree() {
       </div>
       <div style="font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
         <span>📅 Hari 3: UB 16 Besar & LB R1 | Hari 4: UB QF/SF & LB R2/R3/QF | Hari 5: UB Final, LB Final & Grand Final BO5</span>
+        <span style="font-size:0.72rem; padding:0.15rem 0.5rem; border-radius:10px; font-weight:700; ${isPlayoffLocked ? 'background:rgba(255,183,3,0.18); color:var(--yokke-gold); border:1px solid var(--yokke-gold);' : 'background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3);'}">
+          ${isPlayoffLocked ? '🔒 Undian Terkunci' : '🔓 Undian Terbuka'}
+        </span>
         ${isAdmin ? `
           <div style="display:flex; gap:0.4rem; align-items:center;">
-            <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper)">
+            <button class="btn ${isPlayoffLocked ? 'btn-gold' : 'btn-outline'}" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" onclick="toggleLockMLBBPlayoff()" title="${isPlayoffLocked ? 'Buka kunci undian bagan playoff' : 'Kunci susunan bagan playoff'}">
+              ${isPlayoffLocked ? '🔓 Buka Kunci' : '🔒 Kunci Undian'}
+            </button>
+            <button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700; ${isPlayoffLocked ? 'opacity:0.6; cursor:not-allowed;' : ''}" onclick="${isPlayoffLocked ? "showToast('🔒 Undian Playoff sedang dikunci. Buka kunci untuk mengacak ulang.', 'warning')" : "shuffleMLBBPlayoffBracket()"}" title="${isPlayoffLocked ? 'Undian sedang dikunci' : 'Acak ulang undian bagan playoff'}">
               🎲 Undi / Acak Bagan Playoff
             </button>
             <button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.65rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan); font-weight:700;" onclick="testMLBBPlayoffWithCurrentStandings()" title="Undi ulang bagan playoff langsung dari posisi klasemen terkini">
@@ -10329,8 +10707,10 @@ function togglePlayoffBracketCollapse() {
 
 function goToNextMLBBPlayoffPhase() {
   currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
+  tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
+  const isLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
   if (typeof initGroupPlayoff === 'function') {
-    initGroupPlayoff(true);
+    initGroupPlayoff(!isLocked);
   }
   saveStageStateLocal();
   saveState();
@@ -10338,7 +10718,7 @@ function goToNextMLBBPlayoffPhase() {
   if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
   if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
   if (typeof showToast === 'function') {
-    showToast('🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');
+    showToast(isLocked ? '🏆 Masuk ke Babak Playoff (Undian Terkunci).' : '🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');
   }
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const detailEl = document.querySelector('.flow-detail-panel');
@@ -10394,6 +10774,9 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
     ? `onclick="if(event.target.closest('.bracket-node-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
     : '';
 
+  const isReady = !isPlayoffPlaceholderTeam(m.teamA) && !isPlayoffPlaceholderTeam(m.teamB);
+  const hasScore = (m.scoreA !== null && m.scoreA !== undefined && m.scoreB !== null && m.scoreB !== undefined);
+
   return `
     <div class="bracket-match-node ${isLower ? 'is-lower' : ''} ${isMatchActive ? 'is-active-matchup' : ''}" style="top:${topPx}px;" ${clickHandler} title="${matchNodeKey ? 'Klik untuk melihat detail babak ini di bawah' : ''}">
       <div class="bracket-node-header">
@@ -10401,22 +10784,27 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
         <div style="display:flex; align-items:center; gap:0.25rem;">
           ${isMatchActive ? '<span style="color:var(--yokke-cyan); font-size:0.58rem; font-weight:800;">[DIPILIH]</span>' : ''}
           ${bracketBadge}
+          ${isAdmin && isReady ? `
+            <button type="button" class="btn-playoff-score" onclick="event.stopPropagation(); openPlayoffScoreModal(${rIdx}, ${mIdx})" style="background:rgba(0,210,255,0.18); border:1px solid rgba(0,210,255,0.4); color:var(--yokke-cyan); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Input / Edit Skor Pertandingan">
+              ${hasScore ? `⚡ ${m.scoreA}-${m.scoreB}` : '✏️ Skor'}
+            </button>
+          ` : ''}
         </div>
       </div>
-      <div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeA}')">
+      <div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeA}')">
         <span class="team-label" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'};">
           ${escapeHtml(m.teamA || '-')}
         </span>
-        <span class="team-score" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'};">
-          ${m.winner === m.teamA ? 'WIN 🏆' : '-'}
+        <span class="team-score" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreA !== null && m.scoreA !== undefined) ? `${m.scoreA} ${m.winner === m.teamA ? '🏆' : ''}` : (m.winner === m.teamA ? 'WIN 🏆' : '-')}
         </span>
       </div>
-      <div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin ? 'admin-interactive' : ''}" onclick="pickGroupPlayoffWinner(${rIdx}, ${mIdx}, '${safeB}')">
+      <div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeB}')">
         <span class="team-label" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'};">
           ${escapeHtml(m.teamB || '-')}
         </span>
-        <span class="team-score" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'};">
-          ${m.winner === m.teamB ? 'WIN 🏆' : '-'}
+        <span class="team-score" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === m.teamB ? '🏆' : ''}` : (m.winner === m.teamB ? 'WIN 🏆' : '-')}
         </span>
       </div>
     </div>
@@ -10607,6 +10995,8 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4;
   }
 
+  const isPlayoffLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
+
   return `
     <div class="flow-playoff-full-bracket-card ${_isPlayoffFullscreen ? 'is-fullscreen' : ''}" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(0, 210, 255, 0.28); border-radius: 10px; padding: 1.1rem; margin-bottom: 1.5rem; box-shadow: 0 4px 22px rgba(0,0,0,0.45);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.6rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
@@ -10615,8 +11005,8 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
             <h4 style="margin:0; font-size:1.15rem; color:var(--yokke-cyan); font-weight:800; display:flex; align-items:center; gap:0.4rem;">
               <span>🏆</span> <span>Bagan Playoff Keseluruhan (Double Elimination)</span>
             </h4>
-            <span style="font-size:0.72rem; padding:0.18rem 0.6rem; border-radius:12px; font-weight:700; background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3);">
-              Bagan Pohon Presisi • Garis Vektor SVG
+            <span style="font-size:0.72rem; padding:0.18rem 0.6rem; border-radius:12px; font-weight:700; ${isPlayoffLocked ? 'background:rgba(255,183,3,0.18); color:var(--yokke-gold); border:1px solid var(--yokke-gold);' : 'background:rgba(0,210,255,0.15); color:var(--yokke-cyan); border:1px solid rgba(0,210,255,0.3);'}">
+              ${isPlayoffLocked ? '🔒 Undian Terkunci (Siap Tanding)' : '🔓 Terbuka untuk Diacak'}
             </span>
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">
@@ -10627,7 +11017,10 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
         <!-- ACTION CONTROLS: UNDI, UJI UNDIAN & TOGGLE FULLSCREEN -->
         <div style="display:flex; gap:0.45rem; align-items:center; flex-wrap:wrap;">
           ${isAdmin ? `
-            <button type="button" class="btn btn-gold" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem; box-shadow:0 2px 10px rgba(255,183,3,0.3);" onclick="shuffleMLBBPlayoffBracket()" title="Acak ulang undian bagan playoff secara otomatis dengan aturan Anti-Same Group">
+            <button type="button" class="btn ${isPlayoffLocked ? 'btn-gold' : 'btn-outline'}" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem;" onclick="toggleLockMLBBPlayoff()" title="${isPlayoffLocked ? 'Buka kunci undian bagan playoff' : 'Kunci susunan bagan playoff'}">
+              <span>${isPlayoffLocked ? '🔓' : '🔒'}</span> <span>${isPlayoffLocked ? 'Buka Kunci' : 'Kunci Undian'}</span>
+            </button>
+            <button type="button" class="btn btn-gold" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem; box-shadow:0 2px 10px rgba(255,183,3,0.3); ${isPlayoffLocked ? 'opacity:0.6; cursor:not-allowed;' : ''}" onclick="${isPlayoffLocked ? "showToast('🔒 Undian Playoff sedang dikunci. Buka kunci untuk mengacak ulang.', 'warning')" : "shuffleMLBBPlayoffBracket()"}" title="${isPlayoffLocked ? 'Undian sedang dikunci' : 'Acak ulang undian bagan playoff'}">
               <span>🎲</span> <span>Undi Bagan Playoff</span>
             </button>
             <button type="button" class="btn btn-outline" style="font-size:0.8rem; padding:0.4rem 0.85rem; border-color:var(--yokke-cyan); color:var(--yokke-cyan); font-weight:700; display:inline-flex; align-items:center; gap:0.35rem;" onclick="testMLBBPlayoffWithCurrentStandings()" title="Simulasi undi bagan playoff menggunakan posisi klasemen saat ini">
@@ -10635,7 +11028,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
             </button>
           ` : `
             <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">
-              (Undian diatur oleh Panitia)
+              ${isPlayoffLocked ? '🔒 Undian Terkunci oleh Panitia' : '(Undian diatur oleh Panitia)'}
             </span>
           `}
           <button type="button" class="btn btn-outline" style="font-size:0.75rem; padding:0.38rem 0.7rem; border-color:rgba(0,210,255,0.4); color:var(--yokke-cyan); font-weight:700;" onclick="togglePlayoffFullscreen()">
@@ -11178,6 +11571,13 @@ function renderMLBBDetailPanelContent(nodeKey) {
       <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,210,255,0.2);border-radius:8px;padding:1rem;margin-bottom:1rem;">
         <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Skema Pairing Pertandingan</h4>
         ${livePairHtml}
+        ${isAdmin && actualMatch && !actualMatch.teamA.includes('Juara 1 Grup') ? `
+          <div style="margin: 0.6rem 0;">
+            <button type="button" class="btn btn-primary" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; background:linear-gradient(135deg, var(--yokke-green), #0077b6); display:inline-flex; align-items:center; gap:0.35rem;" onclick="openPlayoffScoreModal(0, ${mIdx})">
+              <span>✏️</span> <span>${(actualMatch.scoreA !== null && actualMatch.scoreB !== null) ? `Edit Skor (${actualMatch.scoreA} - ${actualMatch.scoreB})` : 'Input Skor & Tentukan Pemenang'}</span>
+            </button>
+          </div>
+        ` : ''}
         <p style="font-size:0.85rem;color:#fff;margin:0 0 0.5rem;font-weight:700;">${info.pair}</p>
         <ul style="font-size:0.8rem;color:var(--text-muted);margin:0;padding-left:1.2rem;line-height:1.6;">
           <li><strong>Pemenang:</strong> Melaju ke babak <strong>${info.qf} (Day 3)</strong>.</li>
@@ -11263,13 +11663,25 @@ function renderMLBBDetailPanelContent(nodeKey) {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.5rem;">
           <div style="background:rgba(0,0,0,0.4);padding:0.75rem;border-radius:6px;border-left:3px solid var(--yokke-cyan);">
             <div style="font-size:0.75rem;color:var(--text-muted);">Slot Finalis 1:</div>
-            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-cyan);">Juara Upper Bracket</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-cyan);">${escapeHtml((groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.teamA) || 'Juara Upper Bracket')}</div>
           </div>
           <div style="background:rgba(0,0,0,0.4);padding:0.75rem;border-radius:6px;border-left:3px solid var(--yokke-gold);">
             <div style="font-size:0.75rem;color:var(--text-muted);">Slot Finalis 2:</div>
-            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-gold);">Juara Lower Bracket</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--yokke-gold);">${escapeHtml((groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.teamB) || 'Juara Lower Bracket')}</div>
           </div>
         </div>
+        ${(groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.winner) ? `
+          <div style="margin-top:0.75rem; padding:0.6rem 0.85rem; background:rgba(6,214,160,0.15); border:1px solid var(--yokke-green); border-radius:6px; font-weight:800; color:var(--yokke-green); text-align:center;">
+            👑 JUARA 1 YOKKE SQUAD 2026: ${escapeHtml(groupPlayoffMatches[5][0].winner)} (${groupPlayoffMatches[5][0].scoreA || 0} - ${groupPlayoffMatches[5][0].scoreB || 0})
+          </div>
+        ` : ''}
+        ${isAdmin && (groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.teamA && !groupPlayoffMatches[5][0].teamA.includes('Juara')) ? `
+          <div style="margin-top:0.75rem; text-align:center;">
+            <button type="button" class="btn btn-gold" style="font-size:0.85rem; padding:0.45rem 1rem; font-weight:800; display:inline-flex; align-items:center; gap:0.4rem; box-shadow:0 2px 12px rgba(255,183,3,0.35);" onclick="openPlayoffScoreModal(5, 0)">
+              <span>⚔️</span> <span>Input Skor Grand Final (BO5)</span>
+            </button>
+          </div>
+        ` : ''}
       </div>
     `;
   }
