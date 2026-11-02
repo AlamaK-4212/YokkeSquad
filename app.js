@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzmodAuYmQOsrYQIVwJW_3jBIDFTdpqwmkg5njJKNaTCZsEfUJn9g1XCzHgV1WfsKl0CA/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbydYRIt_AGkhglpHCqKVWj9f3lwGAheSXmmvkZCdW6NhmpzbZn2GJvKEZQ3NzPosjA1LA/exec";
 
 /**
  * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
