@@ -1769,6 +1769,56 @@ async function saveAllChangesToGoogleSheet() {
 }
 
 // ========================================================
+// SINKRONISASI KONFIGURASI TURNAMEN & BAGAN KE GOOGLE SHEETS
+// ========================================================
+async function syncTournamentConfigToGSheet(options = {}) {
+  const { showSuccessToast = false, showLoadingToast = false, context = '' } = options;
+  if (typeof window !== 'undefined' && window._isSimulatingPlayoff) {
+    return { success: true, simulated: true };
+  }
+
+  if (showLoadingToast && typeof showToast === 'function') {
+    showToast('Menyinkronkan data turnamen ke Google Sheets... ⏳', 'info', 2500);
+  }
+
+  saveState();
+  saveStageStateLocal();
+
+  try {
+    const payload = {
+      action: 'SAVE_CONFIG',
+      adminPin: currentAdminPin,
+      adminPassword: currentAdminPin,
+      customRules: customRules,
+      tournamentFormat: tournamentFormat,
+      groupStageData: groupStageData,
+      groupMatchResults: groupMatchResults,
+      groupPlayoffMatches: groupPlayoffMatches,
+      invitedTeams: (participants || []).filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
+      mcggLobbies: mcggLobbies,
+      mcggDrawState: mcggDrawState,
+      tournamentStageState: tournamentStageState,
+      isRegistrationClosed: isRegistrationClosed
+    };
+
+    const res = await postToGoogleAppsScript(payload, 35000);
+    const result = await res.json();
+    if (result && (result.status === 'success' || result.success === true)) {
+      if (showSuccessToast && typeof showToast === 'function') {
+        showToast('✅ Bagan & data turnamen berhasil disinkronkan ke Google Sheets!', 'success', 4000);
+      }
+      return { success: true, result };
+    } else {
+      console.warn('Gagal sync config ke Google Sheets:', result);
+      return { success: false, error: result?.message || result?.error || 'Gagal menyimpan ke server' };
+    }
+  } catch (err) {
+    console.warn('Gagal sync config ke Google Sheets:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+// ========================================================
 // SYNC KHUSUS BUAT / PERBARUI 3 SHEET TURNAMEN DI GSHEET
 // ========================================================
 async function syncTournamentSheetsToGSheet() {
@@ -1784,11 +1834,15 @@ async function syncTournamentSheetsToGSheet() {
     const res = await postToGoogleAppsScript({
       action: 'CREATE_TOURNAMENT_SHEETS',
       groupStageData: groupStageData,
+      groupMatchResults: groupMatchResults,
+      groupPlayoffMatches: groupPlayoffMatches,
       mcggLobbies: mcggLobbies,
       customRules: customRules,
       tournamentFormat: tournamentFormat,
+      tournamentStageState: tournamentStageState,
+      adminPin: currentAdminPin,
       adminPassword: currentAdminPin
-    }, 30000);
+    }, 35000);
     const result = await res.json();
     if (result && result.status === 'success') {
       alert('✅ ' + (result.message || '3 Sheet Baru (List Bagan, List Point, List Point & Commander MCGG) berhasil dibuat dan diperbarui di Google Sheets!'));
@@ -3850,6 +3904,11 @@ function shuffleAndGenerateTournament() {
   saveTournamentStateOnly(true);
   showToast('🎲 Undian tim dan bagan berhasil diacak dan diperbarui!', 'success');
   refreshAndScrollToGroupOrBracket();
+  syncTournamentConfigToGSheet({ showSuccessToast: false, context: 'GROUP_SHUFFLE' }).then(res => {
+    if (res && res.success) {
+      showToast('✅ Susunan grup berhasil disinkronkan ke Google Sheets!', 'success', 3000);
+    }
+  }).catch(err => console.warn('Gagal sync grup ke GSheet:', err));
 }
 
 // ========================================================
@@ -3961,6 +4020,9 @@ function proceedToMLBBStage2() {
   saveTournamentStateOnly(true);
   alert("🏆 Tahap 2 (Bagan Playoff) berhasil dibuka! Bagan pertandingan otomatis diundi (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper).");
   refreshAndScrollToPlayoffBracket();
+  syncTournamentConfigToGSheet({ showSuccessToast: true, context: 'STAGE_2_ENTER' }).catch(err => {
+    console.warn('Gagal sync stage 2 ke GSheet:', err);
+  });
 }
 
 function refreshAndScrollToPlayoffBracket() {
@@ -4059,6 +4121,18 @@ function shuffleMLBBPlayoffBracket() {
   saveTournamentStateOnly(true);
   showToast('🎲 Undian bagan playoff berhasil diacak dan diperbarui!', 'success');
   refreshAndScrollToPlayoffBracket();
+
+  // Otomatis sinkronkan bagan playoff baru ke Google Sheets (MLBB - Bagan & MVP + Pengaturan Turnamen)
+  syncTournamentConfigToGSheet({ showSuccessToast: false, context: 'PLAYOFF_SHUFFLE' }).then(res => {
+    if (res && res.success) {
+      showToast('✅ Bagan playoff berhasil disinkronkan & diperbarui di Google Sheets!', 'success', 4000);
+    } else {
+      console.warn('Gagal sinkron playoff ke GSheet:', res?.error);
+      showToast('⚠️ Bagan playoff tersimpan di browser. Gagal sinkron ke GSheet: ' + (res?.error || 'Koneksi terputus') + '. Silakan klik tombol "Simpan Bagan ke GSheet".', 'warning', 6000);
+    }
+  }).catch(err => {
+    console.warn('Gagal sinkron playoff ke GSheet:', err);
+  });
 }
 
 function toggleLockMLBBPlayoff() {
@@ -4090,6 +4164,9 @@ function toggleLockMLBBPlayoff() {
   renderGroupPlayoffTree();
   if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
   saveTournamentStateOnly(true);
+  syncTournamentConfigToGSheet({ showSuccessToast: false, context: 'PLAYOFF_LOCK' }).catch(err => {
+    console.warn('Gagal sync status kunci playoff ke GSheet:', err);
+  });
 }
 
 // ========================================================
@@ -4981,10 +5058,9 @@ async function syncSingleMatchRowToGSheet(canonId) {
   }
 }
 
-// Handler tombol Simpan: HANYA update ke GSheet saat tombol simpan diklik / set MVP,
-// dan melakukan lookup terlebih dahulu agar jika data sama, tidak perlu kirim request
+// Handler tombol Simpan: Sinkronkan seluruh konfigurasi turnamen, bagan playoff, dan skor ke GSheet
 async function saveTournamentStateOnly(isSilent = false) {
-  if (window._isSimulatingPlayoff) {
+  if (typeof window !== 'undefined' && window._isSimulatingPlayoff) {
     console.log('Simulasi aktif: skip saveTournamentStateOnly');
     return;
   }
@@ -4994,64 +5070,72 @@ async function saveTournamentStateOnly(isSilent = false) {
   saveStageStateLocal();
 
   // 2. Jika dipanggil di latar belakang / otomatis (isSilent = true), CUKUP simpan lokal saja
-  //    (Update ke GSheet HANYA saat tombol Simpan diklik atau saat Set MVP)
   if (isSilent) {
     return;
   }
 
-  // 3. User menekan tombol Simpan manual: lakukan lookup cache vs data GSheet
+  // 3. User menekan tombol Simpan manual: lakukan sinkronisasi bagan turnamen ke GSheet
   const btnMLBB = document.getElementById('btnSaveBracketGSheet');
   const btnMCGG = document.getElementById('btnSaveMCGGPointsGSheet');
   const origTextMLBB = btnMLBB ? btnMLBB.innerText : '';
   const origTextMCGG = btnMCGG ? btnMCGG.innerText : '';
 
-  const unsynced = getUnsyncedMatches();
-
-  // KASUS A: Data sama persis dengan yang di Google Sheets (Tidak ada perubahan baru)
-  if (unsynced.length === 0) {
-    if (btnMLBB) {
-      btnMLBB.innerText = '✅ Data Sudah Sinkron';
-      setTimeout(() => { if (btnMLBB) btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }, 2500);
-    }
-    if (btnMCGG) {
-      btnMCGG.innerText = '✅ Data Sudah Sinkron';
-      setTimeout(() => { if (btnMCGG) btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }, 2500);
-    }
-    showToast('✅ Seluruh data pertandingan sudah sinkron dengan Google Sheets. Tidak ada perubahan baru.', 'info');
-    return;
-  }
-
-  // KASUS B: Ada data yang berubah: lakukan update progresif tiap baris pertandingan (3 baris per match)
-  if (btnMLBB) btnMLBB.disabled = true;
-  if (btnMCGG) btnMCGG.disabled = true;
-
-  let successCount = 0;
-  for (let i = 0; i < unsynced.length; i++) {
-    const m = unsynced[i];
-    const progressLabel = `Menyimpan ${i + 1}/${unsynced.length}: ${m.teamA} vs ${m.teamB} (3 baris)... ⏳`;
-    if (btnMLBB) btnMLBB.innerText = progressLabel;
-    if (btnMCGG) btnMCGG.innerText = progressLabel;
-
-    try {
-      await syncSingleMatchRowToGSheet(m.canonId);
-      successCount++;
-    } catch (err) {
-      console.warn(`Gagal menyimpan match ${m.canonId}:`, err);
-    }
-  }
-
   if (btnMLBB) {
-    btnMLBB.disabled = false;
-    btnMLBB.innerText = `✅ Tersimpan (${successCount * 3} Baris)`;
-    setTimeout(() => { if (btnMLBB) btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }, 3000);
+    btnMLBB.disabled = true;
+    btnMLBB.innerText = 'Menyimpan Bagan ke GSheet... ⏳';
   }
   if (btnMCGG) {
-    btnMCGG.disabled = false;
-    btnMCGG.innerText = `✅ Tersimpan`;
-    setTimeout(() => { if (btnMCGG) btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }, 3000);
+    btnMCGG.disabled = true;
+    btnMCGG.innerText = 'Menyimpan ke GSheet... ⏳';
   }
 
-  showToast(`✅ Berhasil menyinkronkan ${successCount} pertandingan (${successCount * 3} baris data) ke Google Sheets!`, 'success');
+  try {
+    // A. Selalu sinkronkan seluruh konfigurasi, bagan playoff, dan grup via SAVE_CONFIG
+    const configResult = await syncTournamentConfigToGSheet({ showSuccessToast: false });
+
+    // B. Sinkronkan pula setiap baris match yang belum tersinkron
+    const unsynced = typeof getUnsyncedMatches === 'function' ? getUnsyncedMatches() : [];
+    let successCount = 0;
+    for (let i = 0; i < unsynced.length; i++) {
+      const m = unsynced[i];
+      const progressLabel = `Menyimpan ${i + 1}/${unsynced.length}: ${m.teamA} vs ${m.teamB}... ⏳`;
+      if (btnMLBB) btnMLBB.innerText = progressLabel;
+      if (btnMCGG) btnMCGG.innerText = progressLabel;
+
+      try {
+        await syncSingleMatchRowToGSheet(m.canonId);
+        successCount++;
+      } catch (err) {
+        console.warn(`Gagal menyimpan match ${m.canonId}:`, err);
+      }
+    }
+
+    if (configResult && configResult.success) {
+      if (btnMLBB) btnMLBB.innerText = '✅ Bagan Tersimpan di GSheet';
+      if (btnMCGG) btnMCGG.innerText = '✅ Tersimpan di GSheet';
+      showToast('✅ Seluruh bagan turnamen (Grup & Playoff) berhasil disimpan & diperbarui di Google Sheets!', 'success', 4000);
+    } else {
+      if (btnMLBB) btnMLBB.innerText = '⚠️ Gagal Sinkron';
+      if (btnMCGG) btnMCGG.innerText = '⚠️ Gagal Sinkron';
+      showToast('⚠️ Gagal menyinkronkan bagan ke Google Sheets: ' + (configResult.error || 'Periksa koneksi'), 'warning', 5000);
+    }
+  } catch (err) {
+    console.warn('Gagal menyimpan perubahan ke Google Sheets:', err);
+    if (btnMLBB) btnMLBB.innerText = '⚠️ Gagal Sinkron';
+    if (btnMCGG) btnMCGG.innerText = '⚠️ Gagal Sinkron';
+    showToast('⚠️ Gagal menyimpan ke Google Sheets: ' + err.message, 'error', 5000);
+  } finally {
+    setTimeout(() => {
+      if (btnMLBB) {
+        btnMLBB.disabled = false;
+        btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet';
+      }
+      if (btnMCGG) {
+        btnMCGG.disabled = false;
+        btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet';
+      }
+    }, 3000);
+  }
 }
 
 // --- KNOCKOUT BRACKET ---
@@ -10795,6 +10879,9 @@ function goToNextMLBBPlayoffPhase() {
     showToast(isLocked ? '🏆 Masuk ke Babak Playoff (Undian Terkunci).' : '🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');
   }
   refreshAndScrollToPlayoffBracket();
+  syncTournamentConfigToGSheet({ showSuccessToast: !isLocked, context: 'STAGE_2_ENTER' }).catch(err => {
+    console.warn('Gagal sync stage 2 ke GSheet:', err);
+  });
 }
 
 let currentPlayoffBracketFilter = 'UPPER'; // 'UPPER' | 'LOWER' | 'ALL'
