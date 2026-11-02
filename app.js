@@ -3839,11 +3839,17 @@ function shuffleAndGenerateTournament() {
     alert("🔒 Grup MLBB sedang dikunci (Lock TM). Silakan buka kunci grup terlebih dahulu jika ingin mengacak ulang.");
     return;
   }
+  if (!confirm("🎲 Acak dan undi pembagian grup & bagan turnamen MLBB sekarang?\n\n• Tim Invited / Powerhouse disebar merata 1 per grup\n• Tim dengan divisi/kantor sama dipisahkan beda grup\n• Seluruh bagan dan jadwal akan otomatis di-refresh\n\nKlik OK untuk mengundi:")) {
+    return;
+  }
   if (tournamentFormat === 'KNOCKOUT') {
     generateBracket(true);
   } else {
     generateGroupStage(true);
   }
+  saveTournamentStateOnly(true);
+  showToast('🎲 Undian tim dan bagan berhasil diacak dan diperbarui!', 'success');
+  refreshAndScrollToGroupOrBracket();
 }
 
 // ========================================================
@@ -3943,13 +3949,73 @@ function proceedToMLBBStage2() {
 
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
   tournamentStageState.mlbb.isPlayoffLocked = false;
+  currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
+  _isPlayoffBracketCollapsed = false;
   initGroupPlayoff(true);
   saveStageStateLocal();
   saveState();
   updateAuthUI();
   renderCurrentMLBBFormat();
+  renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
   saveTournamentStateOnly(true);
   alert("🏆 Tahap 2 (Bagan Playoff) berhasil dibuka! Bagan pertandingan otomatis diundi (Juara 1 Home UB, Juara 2 Away UB, Juara 3 Away LB vs Kalah Upper).");
+  refreshAndScrollToPlayoffBracket();
+}
+
+function refreshAndScrollToPlayoffBracket() {
+  _isPlayoffBracketCollapsed = false;
+  const wrapper = document.getElementById('flowPlayoffBracketWrapper');
+  const label = document.getElementById('toggleBracketLabel');
+  if (wrapper) wrapper.style.display = 'block';
+  if (label) label.innerText = 'Sembunyikan';
+
+  if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    setTimeout(() => {
+      const target = document.querySelector('.flow-playoff-full-bracket-card') || document.getElementById('groupPlayoffTree') || document.querySelector('.flow-detail-panel');
+      if (target) {
+        if (typeof target.scrollIntoView === 'function') {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        target.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+        target.style.boxShadow = '0 0 35px rgba(0, 210, 255, 0.75)';
+        target.style.borderColor = 'var(--yokke-cyan)';
+        setTimeout(() => {
+          target.style.boxShadow = '';
+          target.style.borderColor = '';
+        }, 1200);
+      }
+    }, 80);
+  }
+}
+
+function refreshAndScrollToGroupOrBracket() {
+  if (typeof renderGroupStageUI === 'function') renderGroupStageUI();
+  if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
+  if (typeof renderBracket === 'function') renderBracket();
+  if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+  if (typeof renderCurrentMLBBFormat === 'function') renderCurrentMLBBFormat();
+
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    setTimeout(() => {
+      const target = document.querySelector('.flow-detail-panel') || document.getElementById('groupStageContainer') || document.getElementById('knockoutContainer');
+      if (target) {
+        if (typeof target.scrollIntoView === 'function') {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        target.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+        target.style.boxShadow = '0 0 30px rgba(0, 210, 255, 0.7)';
+        target.style.borderColor = 'var(--yokke-cyan)';
+        setTimeout(() => {
+          target.style.boxShadow = '';
+          target.style.borderColor = '';
+        }, 1200);
+      }
+    }, 80);
+  }
 }
 
 function shuffleMLBBPlayoffBracket() {
@@ -3980,14 +4046,19 @@ function shuffleMLBBPlayoffBracket() {
     }
   }
 
+  currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
+  _isPlayoffBracketCollapsed = false;
+
   initGroupPlayoff(true);
   saveStageStateLocal();
   saveState();
   updateAuthUI();
+  renderCurrentMLBBFormat();
   renderGroupPlayoffTree();
   if (typeof renderMLBBInteractiveHubUI === "function") renderMLBBInteractiveHubUI();
   saveTournamentStateOnly(true);
-  showToast('🎲 Undian bagan playoff berhasil diacak dan disimpan!', 'success');
+  showToast('🎲 Undian bagan playoff berhasil diacak dan diperbarui!', 'success');
+  refreshAndScrollToPlayoffBracket();
 }
 
 function toggleLockMLBBPlayoff() {
@@ -10707,6 +10778,7 @@ function togglePlayoffBracketCollapse() {
 
 function goToNextMLBBPlayoffPhase() {
   currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
+  _isPlayoffBracketCollapsed = false;
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
   const isLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
   if (typeof initGroupPlayoff === 'function') {
@@ -10715,17 +10787,14 @@ function goToNextMLBBPlayoffPhase() {
   saveStageStateLocal();
   saveState();
   updateAuthUI();
+  renderCurrentMLBBFormat();
   if (typeof renderGroupPlayoffTree === 'function') renderGroupPlayoffTree();
   if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
+  saveTournamentStateOnly(true);
   if (typeof showToast === 'function') {
     showToast(isLocked ? '🏆 Masuk ke Babak Playoff (Undian Terkunci).' : '🎲 Berhasil masuk ke Babak Playoff & mengundi bagan!', 'success');
   }
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const detailEl = document.querySelector('.flow-detail-panel');
-    if (detailEl && typeof detailEl.scrollIntoView === 'function') {
-      detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
+  refreshAndScrollToPlayoffBracket();
 }
 
 let currentPlayoffBracketFilter = 'UPPER'; // 'UPPER' | 'LOWER' | 'ALL'
