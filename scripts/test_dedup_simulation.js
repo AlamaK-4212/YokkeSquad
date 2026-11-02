@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwoThOWtWRE0EfH_BmxbjIHlJTL-fT8hHfXTUZO5upHNQmUIldBIMKNHbjowqPnnsIAXg/exec';
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzmodAuYmQOsrYQIVwJW_3jBIDFTdpqwmkg5njJKNaTCZsEfUJn9g1XCzHgV1WfsKl0CA/exec';
 
 function getCanonicalMatchId(gName, teamA, teamB) {
   const cleanG = (gName || '').trim();

@@ -77,7 +77,7 @@ function toggleMCGGLayoutMode() {
 
 let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbziPAn-PMX_WPYMxqRFkavjDXlKujATzhVgO0_ONxanLk1Ye5xWnn9geM1wQH6_TvLwlA/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzmodAuYmQOsrYQIVwJW_3jBIDFTdpqwmkg5njJKNaTCZsEfUJn9g1XCzHgV1WfsKl0CA/exec";
 
 /**
  * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
@@ -85,7 +85,7 @@ const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbziPAn
  * - Mengaktifkan mode: 'cors' dan redirect: 'follow' untuk menangani 302 redirect ke script.googleusercontent.com secara andal.
  * - Dilengkapi AbortController timeout agar antarmuka tidak hang saat koneksi lambat.
  */
-async function postToGoogleAppsScript(payload, timeoutMs = 25000) {
+async function postToGoogleAppsScript(payload, timeoutMs = 45000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -1420,6 +1420,9 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           if (typeof deduplicateGroupMatchResults === 'function') deduplicateGroupMatchResults();
           if (typeof recalculateGroupStandingsFromFixtures === 'function') recalculateGroupStandingsFromFixtures();
           localStorage.setItem('yokke_group_match_results', JSON.stringify(groupMatchResults));
+          if (typeof setLastSyncedMatches === 'function') {
+            setLastSyncedMatches(groupMatchResults);
+          }
         }
         if (data.config.groupPlayoffMatches !== undefined && Array.isArray(data.config.groupPlayoffMatches)) {
           groupPlayoffMatches = data.config.groupPlayoffMatches;
@@ -4387,102 +4390,227 @@ function validateMCGGDuplicateCommander(lobbyKey, playerIdx) {
 // ========================================================
 // 4. SIMPAN CEPAT KHUSUS STATE BAGAN & POIN (DENGAN DEBOUNCE & ANTRIAN PINTAR)
 // ========================================================
-let _saveTournamentStateTimeout = null;
-let _isSavingTournamentStateRunning = false;
-let _hasPendingTournamentStateSave = false;
+// ========================================================
+// 4. SISTEM SYNC TERARAH (TARGETED 3-BARIS & LOOKUP CACHE)
+// ========================================================
+let _lastSyncedMatches = null;
 
+function getLastSyncedMatches() {
+  if (!_lastSyncedMatches) {
+    try {
+      _lastSyncedMatches = JSON.parse(localStorage.getItem('yokke_last_synced_matches') || 'null');
+    } catch (e) {
+      _lastSyncedMatches = null;
+    }
+  }
+  return _lastSyncedMatches;
+}
+
+function setLastSyncedMatches(obj) {
+  _lastSyncedMatches = JSON.parse(JSON.stringify(obj || {}));
+  try {
+    localStorage.setItem('yokke_last_synced_matches', JSON.stringify(_lastSyncedMatches));
+  } catch (e) {}
+}
+
+// Lookup perbedaan antara cache lokal dengan data terakhir yang tersinkronisasi di Google Sheets
+function getUnsyncedMatches() {
+  const synced = getLastSyncedMatches();
+  if (!synced) {
+    // Jika belum ada riwayat sinkronisasi, hanya match yang sudah dimainkan / diinput yang perlu disinkronkan
+    const toSync = [];
+    for (const id in groupMatchResults || {}) {
+      const m = groupMatchResults[id];
+      if (m && (m.winner || (m.scoreA !== null && m.scoreB !== null && (Number(m.scoreA) > 0 || Number(m.scoreB) > 0)) || m.mvpPlayer)) {
+        toSync.push({ canonId: id, ...m });
+      }
+    }
+    return toSync;
+  }
+
+  const unsynced = [];
+  for (const id in groupMatchResults || {}) {
+    const cur = groupMatchResults[id];
+    const prev = synced[id];
+    if (!cur) continue;
+    if (!prev) {
+      if (cur.winner || (cur.scoreA !== null && cur.scoreB !== null && (Number(cur.scoreA) > 0 || Number(cur.scoreB) > 0)) || cur.mvpPlayer) {
+        unsynced.push({ canonId: id, ...cur });
+      }
+    } else {
+      const isScoreDiff = (cur.scoreA !== prev.scoreA || cur.scoreB !== prev.scoreB);
+      const isWinnerDiff = (cur.winner !== prev.winner);
+      const isMvpDiff = (cur.mvpPlayer !== prev.mvpPlayer || cur.mvpHero !== prev.mvpHero || cur.mvpTeam !== prev.mvpTeam || JSON.stringify(cur.gameMvps || []) !== JSON.stringify(prev.gameMvps || []));
+      if (isScoreDiff || isWinnerDiff || isMvpDiff) {
+        unsynced.push({ canonId: id, ...cur });
+      }
+    }
+  }
+  return unsynced;
+}
+
+// Fungsi utama sinkronisasi 1 pertandingan: mengupdate HANYA 3 baris di Google Sheets
+// (1 baris di sheet MLBB - Bagan & MVP + 2 baris tim di sheet MLBB - Klasemen & Point)
+async function syncSingleMatchRowToGSheet(canonId) {
+  let m = groupMatchResults[canonId];
+  if (!m) {
+    // Cari di playoff matches jika berupa playoff
+    if (Array.isArray(groupPlayoffMatches)) {
+      groupPlayoffMatches.forEach((round, rIdx) => {
+        (round || []).forEach((pm, mIdx) => {
+          if (pm && (pm.matchLabel === canonId || `PLAYOFF_${rIdx}_${mIdx}` === canonId)) {
+            m = { ...pm, matchId: canonId, isPlayoff: true, format: pm.format || 'BO3' };
+          }
+        });
+      });
+    }
+  }
+  if (!m) return { status: 'skipped', message: 'Match tidak ditemukan' };
+
+  const gName = m.gName || '';
+  const groupTeams = (groupStageData && groupStageData[gName]) || [];
+  const sorted = typeof getSortedGroupTeams === 'function' ? getSortedGroupTeams(gName) : groupTeams;
+  const isGroupAllDone = typeof isGroupMatchesCompleted === 'function' ? isGroupMatchesCompleted(gName) : false;
+
+  const standingsUpdate = [];
+  [m.teamA, m.teamB].forEach(tName => {
+    if (!tName) return;
+    const teamObj = groupTeams.find(t => isSameTeamName(t.name, tName)) || { name: tName };
+    const rankIdx = sorted.findIndex(t => isSameTeamName(t.name, tName));
+    const rankStr = rankIdx >= 0 ? `#${rankIdx + 1}` : '-';
+
+    const diffVal = (teamObj.diff !== undefined) ? teamObj.diff : ((teamObj.gameWon || 0) - (teamObj.gameLost || 0));
+    const diffStr = diffVal > 0 ? `+${diffVal}` : `${diffVal}`;
+    const mp = teamObj.matchCount !== undefined ? teamObj.matchCount : ((teamObj.win || 0) + (teamObj.lose || 0) + (teamObj.draw || 0));
+
+    let status = 'Menunggu Seluruh Match';
+    if (isGroupAllDone) {
+      status = (rankIdx < 2) ? 'Lolos Upper Bracket' : (rankIdx === 2 ? 'Lolos Lower Bracket' : 'Gugur');
+    }
+
+    standingsUpdate.push({
+      gName: gName,
+      rank: rankStr,
+      teamName: teamObj.name || tName,
+      matchCount: mp,
+      win: teamObj.win || 0,
+      lose: teamObj.lose || 0,
+      diffStr: diffStr,
+      pts: teamObj.pts || 0,
+      status: status,
+      mvpCount: teamObj.mvpCount || 0
+    });
+  });
+
+  const payload = {
+    action: 'UPDATE_MATCH_ROW',
+    adminPin: currentAdminPin,
+    match: {
+      matchId: canonId,
+      gName: gName,
+      teamA: m.teamA,
+      teamB: m.teamB,
+      scoreA: m.scoreA,
+      scoreB: m.scoreB,
+      winner: m.winner,
+      mvpPlayer: m.mvpPlayer,
+      mvpHero: m.mvpHero,
+      mvpTeam: m.mvpTeam,
+      gameMvps: m.gameMvps,
+      isPlayoff: !!m.isPlayoff,
+      phaseName: m.phaseName,
+      format: m.format || 'BO3'
+    },
+    standingsUpdate: standingsUpdate,
+    groupStageData: groupStageData
+  };
+
+  try {
+    const res = await postToGoogleAppsScript(payload, 35000);
+    const result = await res.json();
+    if (result && result.status === 'success') {
+      const synced = getLastSyncedMatches() || {};
+      synced[canonId] = JSON.parse(JSON.stringify(m));
+      setLastSyncedMatches(synced);
+    }
+    return result;
+  } catch (err) {
+    console.warn('Gagal sinkronisasi baris match ke Google Sheets:', err);
+    throw err;
+  }
+}
+
+// Handler tombol Simpan: HANYA update ke GSheet saat tombol simpan diklik / set MVP,
+// dan melakukan lookup terlebih dahulu agar jika data sama, tidak perlu kirim request
 async function saveTournamentStateOnly(isSilent = false) {
   if (window._isSimulatingPlayoff) {
-    console.log('Simulasi aktif: skip saveTournamentStateOnly ke GSheet');
+    console.log('Simulasi aktif: skip saveTournamentStateOnly');
     return;
   }
 
-  // 1. Amankan data lokal detik itu juga tanpa jeda (Ground Truth lokal aman)
+  // 1. Simpan ke cache lokal (Ground Truth lokal aman seketika tanpa network overhead)
   saveState();
   saveStageStateLocal();
 
-  // 2. Jika panggilan otomatis / latar belakang (isSilent = true, e.g. input skor/MVP beruntun),
-  //    gunakan debounce 2500ms agar request tidak menumpuk atau membentur script lock di GSheet
+  // 2. Jika dipanggil di latar belakang / otomatis (isSilent = true), CUKUP simpan lokal saja
+  //    (Update ke GSheet HANYA saat tombol Simpan diklik atau saat Set MVP)
   if (isSilent) {
-    if (_saveTournamentStateTimeout) {
-      clearTimeout(_saveTournamentStateTimeout);
-    }
-    _saveTournamentStateTimeout = setTimeout(() => {
-      _saveTournamentStateTimeout = null;
-      _executeSaveTournamentState(true);
-    }, 2500);
     return;
   }
 
-  // 3. Jika user menekan tombol manual (isSilent = false), batalkan debounce dan kirim langsung
-  if (_saveTournamentStateTimeout) {
-    clearTimeout(_saveTournamentStateTimeout);
-    _saveTournamentStateTimeout = null;
-  }
-  return await _executeSaveTournamentState(false);
-}
-
-async function _executeSaveTournamentState(isSilent = false) {
-  if (_isSavingTournamentStateRunning) {
-    _hasPendingTournamentStateSave = true;
-    console.log('Antrean simpan state aktif: request sedang berjalan, akan disinkronkan setelahnya.');
-    return;
-  }
-
-  _isSavingTournamentStateRunning = true;
-
+  // 3. User menekan tombol Simpan manual: lakukan lookup cache vs data GSheet
   const btnMLBB = document.getElementById('btnSaveBracketGSheet');
   const btnMCGG = document.getElementById('btnSaveMCGGPointsGSheet');
   const origTextMLBB = btnMLBB ? btnMLBB.innerText : '';
   const origTextMCGG = btnMCGG ? btnMCGG.innerText : '';
 
-  if (!isSilent) {
-    if (btnMLBB) { btnMLBB.disabled = true; btnMLBB.innerText = 'Menyimpan... ⏳'; }
-    if (btnMCGG) { btnMCGG.disabled = true; btnMCGG.innerText = 'Menyimpan... ⏳'; }
+  const unsynced = getUnsyncedMatches();
+
+  // KASUS A: Data sama persis dengan yang di Google Sheets (Tidak ada perubahan baru)
+  if (unsynced.length === 0) {
+    if (btnMLBB) {
+      btnMLBB.innerText = '✅ Data Sudah Sinkron';
+      setTimeout(() => { if (btnMLBB) btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }, 2500);
+    }
+    if (btnMCGG) {
+      btnMCGG.innerText = '✅ Data Sudah Sinkron';
+      setTimeout(() => { if (btnMCGG) btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }, 2500);
+    }
+    showToast('✅ Seluruh data pertandingan sudah sinkron dengan Google Sheets. Tidak ada perubahan baru.', 'info');
+    return;
   }
 
-  try {
-    const payload = {
-      action: 'SAVE_CONFIG',
-      adminPin: currentAdminPin,
-      tournamentFormat: tournamentFormat,
-      groupStageData: groupStageData,
-      groupMatchResults: groupMatchResults,
-      groupPlayoffMatches: groupPlayoffMatches,
-      invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
-      mcggLobbies: mcggLobbies,
-      mcggDrawState: mcggDrawState,
-      tournamentStageState: tournamentStageState,
-      isRegistrationClosed: isRegistrationClosed
-    };
+  // KASUS B: Ada data yang berubah: lakukan update progresif tiap baris pertandingan (3 baris per match)
+  if (btnMLBB) btnMLBB.disabled = true;
+  if (btnMCGG) btnMCGG.disabled = true;
 
-    const res = await postToGoogleAppsScript(payload, 25000);
-    const result = await res.json();
-    if (!isSilent) {
-      if (result && result.status === 'success') {
-        alert('✅ Skor, Klasemen, dan State Bagan berhasil disimpan ke Google Sheets!');
-      } else {
-        alert('⚠️ Peringatan Server: ' + (result?.message || 'Gagal menyimpan state.'));
-      }
-    }
-  } catch (err) {
-    console.warn('Sinkronisasi state ke Google Sheets tertunda/gagal:', err);
-    if (!isSilent) {
-      alert('⚠️ Data berhasil tersimpan di browser Anda (Lokal).\n\nSinkronisasi ke Google Sheets mengalami batas waktu jaringan (Timeout/CORS). Data pertandingan tetap aman di perangkat Anda.');
-    }
-  } finally {
-    _isSavingTournamentStateRunning = false;
-    if (!isSilent) {
-      if (btnMLBB) { btnMLBB.disabled = false; btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }
-      if (btnMCGG) { btnMCGG.disabled = false; btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }
-    }
+  let successCount = 0;
+  for (let i = 0; i < unsynced.length; i++) {
+    const m = unsynced[i];
+    const progressLabel = `Menyimpan ${i + 1}/${unsynced.length}: ${m.teamA} vs ${m.teamB} (3 baris)... ⏳`;
+    if (btnMLBB) btnMLBB.innerText = progressLabel;
+    if (btnMCGG) btnMCGG.innerText = progressLabel;
 
-    // Jika selama proses simpan ada perubahan baru yang masuk ke antrean, kirimkan pembaruan terakhir
-    if (_hasPendingTournamentStateSave) {
-      _hasPendingTournamentStateSave = false;
-      setTimeout(() => _executeSaveTournamentState(true), 1000);
+    try {
+      await syncSingleMatchRowToGSheet(m.canonId);
+      successCount++;
+    } catch (err) {
+      console.warn(`Gagal menyimpan match ${m.canonId}:`, err);
     }
   }
+
+  if (btnMLBB) {
+    btnMLBB.disabled = false;
+    btnMLBB.innerText = `✅ Tersimpan (${successCount * 3} Baris)`;
+    setTimeout(() => { if (btnMLBB) btnMLBB.innerText = origTextMLBB || '💾 Simpan Bagan ke GSheet'; }, 3000);
+  }
+  if (btnMCGG) {
+    btnMCGG.disabled = false;
+    btnMCGG.innerText = `✅ Tersimpan`;
+    setTimeout(() => { if (btnMCGG) btnMCGG.innerText = origTextMCGG || '💾 Simpan Poin ke GSheet'; }, 3000);
+  }
+
+  showToast(`✅ Berhasil menyinkronkan ${successCount} pertandingan (${successCount * 3} baris data) ke Google Sheets!`, 'success');
 }
 
 // --- KNOCKOUT BRACKET ---
@@ -5544,6 +5672,7 @@ function renderGroupStageUI() {
     });
 
     const sorted = getSortedGroupTeams(gName);
+    const isGroupAllDone = isGroupMatchesCompleted(gName);
 
     html += `
       <div class="group-box">
@@ -5567,7 +5696,7 @@ function renderGroupStageUI() {
             </thead>
             <tbody>
               ${sorted.map((t, idx) => {
-                const isQ = idx < numToQualify && t.pts > 0;
+                const isQ = isGroupAllDone && (idx < numToQualify);
                 const origIdx = groupStageData[gName].indexOf(t);
 
                 const winCtrl = isAdmin ? `
@@ -5601,12 +5730,12 @@ function renderGroupStageUI() {
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:700;">${t.mvpCount || 0}</td>
                     <td>${
-                      t.pts > 0 ? (
+                      isGroupAllDone ? (
                         gKeys.length === 8 ? (
                           idx < 2 ? '<span style="color:var(--yokke-cyan);font-weight:700;">Upper</span>' :
                           (idx === 2 ? '<span style="color:var(--yokke-gold);font-weight:700;">Lower</span>' : '<span style="color:var(--text-muted);">Gugur</span>')
                         ) : (isQ ? '<span style="color:var(--yokke-green)">Lolos</span>' : '<span style="color:var(--text-muted);">Gugur</span>')
-                      ) : '-'
+                      ) : '<span style="color:var(--text-muted);font-size:0.75rem;font-style:italic;" title="Status kelolosan ditutup hingga seluruh match selesai">🔒 Ditutup</span>'
                     }</td>
                   </tr>
                 `;
@@ -6007,15 +6136,41 @@ function getGroupFixtures(gName, dayFilter = null) {
         // Pertandingan belum dimainkan (bukan hasil WO ganda / draw resmi)
         scoreA = null;
         scoreB = null;
-      } else if (saved.teamA === p.teamA) {
+      } else if (isSameTeamName(saved.teamA, p.teamA)) {
         scoreA = saved.scoreA;
         scoreB = saved.scoreB;
-      } else if (saved.teamA === p.teamB) {
+      } else if (isSameTeamName(saved.teamA, p.teamB)) {
         scoreA = saved.scoreB;
         scoreB = saved.scoreA;
       } else {
         scoreA = saved.scoreA;
         scoreB = saved.scoreB;
+      }
+    }
+
+    // Auto-heal jika skor terbalik dibanding pemenang match
+    if (saved.winner && scoreA !== null && scoreB !== null) {
+      const wLower = (saved.winner || '').toLowerCase().trim();
+      if (!wLower.includes('wo') && !wLower.includes('imbang') && !wLower.includes('seri')) {
+        if (isSameTeamName(saved.winner, p.teamA) && Number(scoreA) < Number(scoreB)) {
+          const tmp = scoreA; scoreA = scoreB; scoreB = tmp;
+          if (saved.matchId) {
+            if (isSameTeamName(saved.teamA, p.teamA)) {
+              saved.scoreA = scoreA; saved.scoreB = scoreB;
+            } else {
+              saved.scoreA = scoreB; saved.scoreB = scoreA;
+            }
+          }
+        } else if (isSameTeamName(saved.winner, p.teamB) && Number(scoreB) < Number(scoreA)) {
+          const tmp = scoreA; scoreA = scoreB; scoreB = tmp;
+          if (saved.matchId) {
+            if (isSameTeamName(saved.teamA, p.teamB)) {
+              saved.scoreA = scoreB; saved.scoreB = scoreA;
+            } else {
+              saved.scoreA = scoreA; saved.scoreB = scoreB;
+            }
+          }
+        }
       }
     }
 
@@ -6054,6 +6209,24 @@ function getCanonicalGroupMatchId(gName, teamA, teamB) {
   return `${cleanG}_${sorted[0]}_vs_${sorted[1]}`.replace(/\s+/g, '_');
 }
 
+// Helper untuk memeriksa apakah seluruh pertandingan dalam suatu grup telah selesai diinput
+function isGroupMatchesCompleted(gName) {
+  const fixtures = (typeof getGroupFixtures === 'function') ? getGroupFixtures(gName) : [];
+  if (fixtures && fixtures.length > 0) {
+    return fixtures.every(f => {
+      const hasWinner = f.winner !== null && f.winner !== undefined && String(f.winner).trim() !== '';
+      const hasScore = f.scoreA !== null && f.scoreB !== null && (Number(f.scoreA) > 0 || Number(f.scoreB) > 0);
+      return hasWinner || hasScore;
+    });
+  }
+  const teams = (groupStageData && groupStageData[gName]) || [];
+  if (teams.length < 2) return false;
+  return teams.every(t => {
+    const played = t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0));
+    return played >= (teams.length - 1);
+  });
+}
+
 // Pembersihan & Deduplikasi Otomatis groupMatchResults agar tidak ada entri terbalik / ganda
 function deduplicateGroupMatchResults() {
   if (!groupMatchResults || typeof groupMatchResults !== 'object') return;
@@ -6064,24 +6237,82 @@ function deduplicateGroupMatchResults() {
       cleanMr[mId] = m;
       continue;
     }
-    const canonId = getCanonicalGroupMatchId(m.gName, m.teamA, m.teamB);
+    const cleanG = (m.gName || '').trim();
+    const cleanA = (m.teamA || '').trim();
+    const cleanB = (m.teamB || '').trim();
+    const sorted = [cleanA, cleanB].sort((a, b) => a.localeCompare(b));
+    const canonId = `${cleanG}_${sorted[0]}_vs_${sorted[1]}`.replace(/\s+/g, '_');
+    const canonTeamA = sorted[0];
+    const canonTeamB = sorted[1];
+
+    // Selaraskan skor sesuai tim jika m tersimpan dengan urutan tim terbalik
+    let normScA = m.scoreA;
+    let normScB = m.scoreB;
+    if (isSameTeamName(m.teamA, canonTeamB) && isSameTeamName(m.teamB, canonTeamA)) {
+      normScA = m.scoreB;
+      normScB = m.scoreA;
+    }
+
+    // Auto-heal jika skor terbalik dibanding pemenang match
+    let normWinner = m.winner || null;
+    if (normWinner && normScA !== null && normScA !== undefined && normScB !== null && normScB !== undefined) {
+      const wLower = normWinner.toLowerCase().trim();
+      if (!wLower.includes('wo') && !wLower.includes('imbang') && !wLower.includes('seri')) {
+        const sA = Number(normScA);
+        const sB = Number(normScB);
+        if (isSameTeamName(normWinner, canonTeamA) && sA < sB) {
+          const tmp = normScA; normScA = normScB; normScB = tmp;
+        } else if (isSameTeamName(normWinner, canonTeamB) && sB < sA) {
+          const tmp = normScA; normScA = normScB; normScB = tmp;
+        }
+      }
+    }
+
+    const normItem = {
+      ...m,
+      matchId: canonId,
+      gName: cleanG,
+      teamA: canonTeamA,
+      teamB: canonTeamB,
+      scoreA: normScA,
+      scoreB: normScB,
+      winner: normWinner
+    };
+
     const existing = cleanMr[canonId];
     if (!existing) {
-      cleanMr[canonId] = { ...m, matchId: canonId };
+      cleanMr[canonId] = normItem;
     } else {
       // Prioritaskan entri yang memiliki skor dan pemenang valid
-      const preferNew = (m.winner && !existing.winner) || (m.scoreA !== null && existing.scoreA === null);
+      const preferNew = (normItem.winner && !existing.winner) || (normItem.scoreA !== null && existing.scoreA === null);
+      let mergedScA = preferNew ? normItem.scoreA : (existing.scoreA !== null ? existing.scoreA : normItem.scoreA);
+      let mergedScB = preferNew ? normItem.scoreB : (existing.scoreB !== null ? existing.scoreB : normItem.scoreB);
+      let mergedWinner = normItem.winner || existing.winner;
+
+      if (mergedWinner && mergedScA !== null && mergedScA !== undefined && mergedScB !== null && mergedScB !== undefined) {
+        const wLower = mergedWinner.toLowerCase().trim();
+        if (!wLower.includes('wo') && !wLower.includes('imbang') && !wLower.includes('seri')) {
+          const sA = Number(mergedScA);
+          const sB = Number(mergedScB);
+          if (isSameTeamName(mergedWinner, canonTeamA) && sA < sB) {
+            const tmp = mergedScA; mergedScA = mergedScB; mergedScB = tmp;
+          } else if (isSameTeamName(mergedWinner, canonTeamB) && sB < sA) {
+            const tmp = mergedScA; mergedScA = mergedScB; mergedScB = tmp;
+          }
+        }
+      }
+
       cleanMr[canonId] = {
         ...existing,
-        teamA: existing.teamA || m.teamA,
-        teamB: existing.teamB || m.teamB,
-        scoreA: preferNew ? m.scoreA : (existing.scoreA !== null ? existing.scoreA : m.scoreA),
-        scoreB: preferNew ? m.scoreB : (existing.scoreB !== null ? existing.scoreB : m.scoreB),
-        winner: m.winner || existing.winner,
-        mvpPlayer: m.mvpPlayer || existing.mvpPlayer,
-        mvpHero: m.mvpHero || existing.mvpHero,
-        mvpTeam: m.mvpTeam || existing.mvpTeam,
-        gameMvps: preferNew ? (m.gameMvps || existing.gameMvps) : (existing.gameMvps || m.gameMvps)
+        teamA: canonTeamA,
+        teamB: canonTeamB,
+        scoreA: mergedScA,
+        scoreB: mergedScB,
+        winner: mergedWinner,
+        mvpPlayer: normItem.mvpPlayer || existing.mvpPlayer,
+        mvpHero: normItem.mvpHero || existing.mvpHero,
+        mvpTeam: normItem.mvpTeam || existing.mvpTeam,
+        gameMvps: preferNew ? (normItem.gameMvps || existing.gameMvps) : (existing.gameMvps || normItem.gameMvps)
       };
     }
   }
@@ -6145,6 +6376,18 @@ function setGroupMatchScore(matchId, gName, teamA, teamB, scoreA, scoreB, explic
         winner = `Imbang (${scoreA}-${scoreB})`;
       } else {
         winner = explicitWinner;
+      }
+    }
+  }
+
+  // Auto-heal jika skor terbalik dibanding pemenang resmi
+  if (winner && scoreA !== null && scoreB !== null) {
+    const wLow = winner.toLowerCase().trim();
+    if (!wLow.includes('wo') && !wLow.includes('imbang') && !wLow.includes('seri')) {
+      if (isSameTeamName(winner, teamA) && Number(scoreA) < Number(scoreB)) {
+        const tmp = scoreA; scoreA = scoreB; scoreB = tmp;
+      } else if (isSameTeamName(winner, teamB) && Number(scoreB) < Number(scoreA)) {
+        const tmp = scoreA; scoreA = scoreB; scoreB = tmp;
       }
     }
   }
@@ -6783,13 +7026,13 @@ function saveSelectedMvp() {
       m.mvpTeam = summaryTeam;
       saveState();
       renderGroupPlayoffTree();
-      saveTournamentStateOnly(true);
-      showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Playoff (${ctx.format || 'BO3'})`, 'success');
+      syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || `PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffMIdx}`).catch(e => console.warn(e));
+      showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Playoff (${ctx.format || 'BO3'}) & disinkronkan ke GSheet`, 'success');
     }
   } else {
     setGroupMatchMVP(ctx.canonId, summaryPlayer, summaryHero, summaryTeam, validGames);
-    saveTournamentStateOnly(true);
-    showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Match (${ctx.format || 'BO3'})`, 'success');
+    syncSingleMatchRowToGSheet(ctx.canonId).catch(e => console.warn(e));
+    showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Match (${ctx.format || 'BO3'}) & disinkronkan ke GSheet (3 baris)`, 'success');
   }
 
   closeMLBBGroupMvpModal();
@@ -6835,13 +7078,13 @@ function deleteCurrentMvp() {
       m.mvpTeam = null;
       saveState();
       renderGroupPlayoffTree();
-      saveTournamentStateOnly(true);
-      showToast('Data MVP Playoff telah dihapus.', 'info');
+      syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || `PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffMIdx}`).catch(e => console.warn(e));
+      showToast('Data MVP Playoff telah dihapus & disinkronkan ke GSheet.', 'info');
     }
   } else {
     setGroupMatchMVP(ctx.canonId, null, null, null, []);
-    saveTournamentStateOnly(true);
-    showToast('Data MVP match telah dihapus.', 'info');
+    syncSingleMatchRowToGSheet(ctx.canonId).catch(e => console.warn(e));
+    showToast('Data MVP match telah dihapus & disinkronkan ke GSheet (3 baris).', 'info');
   }
 
   closeMLBBGroupMvpModal();
@@ -7328,8 +7571,14 @@ function recalculateGroupStandingsFromFixtures() {
           // Tim pemenang (termasuk menang WO karena lawan WO)
           winCount++;
           if (hasValidGameScores && (Number(scThis) > 0 || Number(scOpp) > 0)) {
-            gameWonCount += Number(scThis) || 0;
-            gameLostCount += Number(scOpp) || 0;
+            // SAFEGUARD: Tim pemenang selalu menerima skor menang (lebih tinggi)
+            let wScore = Number(scThis) || 0;
+            let lScore = Number(scOpp) || 0;
+            if (wScore < lScore) {
+              const tmp = wScore; wScore = lScore; lScore = tmp;
+            }
+            gameWonCount += wScore;
+            gameLostCount += lScore;
           } else {
             // Default kemenangan BO3
             gameWonCount += 2;
@@ -7339,8 +7588,14 @@ function recalculateGroupStandingsFromFixtures() {
           // Tim lawan (atau tim yang WO sendiri): DIANGGAP KALAH
           loseCount++;
           if (hasValidGameScores && (Number(scThis) > 0 || Number(scOpp) > 0)) {
-            gameWonCount += Number(scThis) || 0;
-            gameLostCount += Number(scOpp) || 0;
+            // SAFEGUARD: Tim kalah selalu menerima skor kalah (lebih rendah)
+            let lScore = Number(scThis) || 0;
+            let wScore = Number(scOpp) || 0;
+            if (lScore > wScore) {
+              const tmp = lScore; lScore = wScore; wScore = tmp;
+            }
+            gameWonCount += lScore;
+            gameLostCount += wScore;
           } else {
             // Default kekalahan BO3
             gameWonCount += 0;
@@ -10042,6 +10297,8 @@ function renderMLBBDetailPanelContent(nodeKey) {
     const teams = groupStageData[gName] || [];
 
     const sorted = getSortedGroupTeams(gName);
+    const fixtures = getGroupFixtures(gName);
+    const isGroupAllDone = isGroupMatchesCompleted(gName);
 
     content += `
       <div class="detail-panel-header">
@@ -10063,7 +10320,16 @@ function renderMLBBDetailPanelContent(nodeKey) {
 
       <!-- TABEL KLASEMEN GRUP -->
       <div style="margin-bottom:1.25rem;">
-        <h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">📊 Klasemen Sementara ${escapeHtml(gName)}</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;">
+          <h4 style="margin:0;font-size:0.92rem;color:var(--yokke-gold);">📊 Klasemen ${isGroupAllDone ? 'Akhir' : 'Sementara'} ${escapeHtml(gName)}</h4>
+          <span style="font-size:0.75rem;padding:0.18rem 0.6rem;border-radius:12px;font-weight:600;${
+            isGroupAllDone
+              ? 'background:rgba(6,214,160,0.12);color:var(--yokke-green);border:1px solid var(--yokke-green);'
+              : 'background:rgba(255,255,255,0.06);color:var(--text-muted);border:1px solid rgba(255,255,255,0.1);'
+          }">
+            ${isGroupAllDone ? '✅ Klasemen Final (Kelolosan Terbuka)' : '🔒 Kelolosan Ditutup (Match Berlangsung)'}
+          </span>
+        </div>
         <div class="table-container" style="margin:0;">
           <table>
             <thead>
@@ -10094,8 +10360,17 @@ function renderMLBBDetailPanelContent(nodeKey) {
                 const diffColor = diffVal > 0 ? 'var(--yokke-green)' : (diffVal < 0 ? '#f87171' : 'var(--text-muted)');
                 const gameDetail = `${t.gameWon || 0}-${t.gameLost || 0}`;
 
+                const rowBg = isGroupAllDone
+                  ? (idx < 2 ? 'background:rgba(0,210,255,0.08);' : (idx === 2 ? 'background:rgba(255,183,3,0.06);' : ''))
+                  : '';
+
+                const kelolosanBadge = isGroupAllDone ? (
+                  idx < 2 ? '<span style="color:var(--yokke-cyan);font-weight:700;">Upper Bracket (Day 2)</span>' :
+                  (idx === 2 ? '<span style="color:var(--yokke-gold);font-weight:700;">Lower Bracket (Day 3)</span>' : '<span style="color:var(--text-muted);">Gugur</span>')
+                ) : '<span style="color:var(--text-muted);font-style:italic;font-size:0.75rem;" title="Status kelolosan akan otomatis terbuka setelah seluruh pertandingan di ' + escapeHtml(gName) + ' selesai diinput">🔒 Ditutup (Match Berlangsung)</span>';
+
                 return `
-                  <tr style="${idx < 2 ? 'background:rgba(0,210,255,0.08);' : (idx === 2 ? 'background:rgba(255,183,3,0.06);' : '')}">
+                  <tr style="${rowBg}">
                     <td style="font-weight:700;color:var(--text-muted);">${idx + 1}</td>
                     <td style="font-weight:700;color:#fff;">${escapeHtml(t.name)}</td>
                     <td style="text-align:center;font-weight:700;color:#cbd5e1;">${t.matchCount !== undefined ? t.matchCount : ((t.win || 0) + (t.lose || 0) + (t.draw || 0))}</td>
@@ -10107,10 +10382,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
                     </td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:800;">${t.pts}</td>
                     <td style="text-align:center;color:var(--yokke-gold);font-weight:700;">${t.mvpCount || 0}</td>
-                    <td>${
-                      idx < 2 ? '<span style="color:var(--yokke-cyan);font-weight:700;">Upper Bracket (Day 2)</span>' :
-                      (idx === 2 ? '<span style="color:var(--yokke-gold);font-weight:700;">Lower Bracket (Day 3)</span>' : '<span style="color:var(--text-muted);">Gugur</span>')
-                    }</td>
+                    <td>${kelolosanBadge}</td>
                   </tr>
                 `;
               }).join('')}
@@ -10123,8 +10395,6 @@ function renderMLBBDetailPanelContent(nodeKey) {
       <div>
         <h4 style="margin:0 0 0.5rem;font-size:0.92rem;color:var(--yokke-gold);">⚔️ Jadwal & Hasil Match BO3 (${escapeHtml(gName)})</h4>
     `;
-
-    const fixtures = getGroupFixtures(gName);
     if (fixtures.length === 0) {
       content += '<p style="font-size:0.8rem;color:var(--text-muted);">Belum ada jadwal pertandingan dalam grup ini.</p>';
     } else {

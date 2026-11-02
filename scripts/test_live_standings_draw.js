@@ -1,7 +1,7 @@
 const fs = require('fs');
 const appCode = fs.readFileSync('app.js', 'utf8');
 
-const url = 'https://script.google.com/macros/s/AKfycbziPAn-PMX_WPYMxqRFkavjDXlKujATzhVgO0_ONxanLk1Ye5xWnn9geM1wQH6_TvLwlA/exec';
+const url = 'https://script.google.com/macros/s/AKfycbzmodAuYmQOsrYQIVwJW_3jBIDFTdpqwmkg5njJKNaTCZsEfUJn9g1XCzHgV1WfsKl0CA/exec';
 
 async function test() {
   console.log('Mengambil data live dari GSheet...');
