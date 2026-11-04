@@ -658,9 +658,9 @@ function getMcggListing(ss) {
 // ========================================================
 // 1. GET HANDLER: FETCH SEMUA PESERTA KE WEBSITE
 // ========================================================
-function doGet(e) {
+function getInitialData(ss) {
+  if (!ss) ss = getTargetSpreadsheet();
   try {
-    var ss = getTargetSpreadsheet();
 
     var result = {
       status: "online",
@@ -833,8 +833,7 @@ function doGet(e) {
       tournamentFormat: null,
       groupStageData: null,
       mcggLobbies: null,
-      adminPassword: null,
-      invitedTeams: null,
+            invitedTeams: null,
       isRegistrationClosed: false
     };
 
@@ -869,9 +868,7 @@ function doGet(e) {
             if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
             appConfig.tournamentStageState.mlbb.isGroupLocked = gLockVal;
           }
-          if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
-            appConfig.adminPassword = val.toString().trim();
-          }
+          // adminPassword deliberately omitted from public GET response to prevent client cache exposure
         } catch(e) {
           if (key === "tournamentFormat") appConfig.tournamentFormat = val;
           if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
@@ -889,9 +886,7 @@ function doGet(e) {
             if (!appConfig.tournamentStageState.mlbb) appConfig.tournamentStageState.mlbb = {};
             appConfig.tournamentStageState.mlbb.isGroupLocked = gLockVal;
           }
-          if (key.toLowerCase() === "adminpassword" || key.toLowerCase() === "admin_password" || key === "ADMIN_PIN" || key === "adminPassword") {
-            appConfig.adminPassword = val.toString().trim();
-          }
+          // adminPassword deliberately omitted from public GET response to prevent client cache exposure
         }
       }
     }
@@ -1004,64 +999,185 @@ function doGet(e) {
       }
     }
 
-    // C.3. BACA SHEET KHUSUS "MLBB - Bagan & MVP" (Ground Truth Jadwal, Skor & MVP MLBB)
+    // C.3. BACA SHEET KHUSUS "MLBB - Bagan & MVP" (Ground Truth Jadwal, Skor, MVP & Playoff 6 Ronde)
     var sheetMLBBBagan = ss.getSheetByName("MLBB - Bagan & MVP");
     if (sheetMLBBBagan && sheetMLBBBagan.getLastRow() > 1) {
       var bData = sheetMLBBBagan.getDataRange().getValues();
       var sheetMatchResults = {};
+      var reconstructedPlayoff = [[], [], [], [], [], []]; // 6 ronde
+      var hasPlayoffRows = false;
+
       for (var br = 1; br < bData.length; br++) {
         var bRow = bData[br];
-        if (!bRow || bRow.length < 8) continue;
+        if (!bRow || bRow.length < 4) continue;
         var mId = bRow[0] ? bRow[0].toString().trim() : "";
         var phase = bRow[1] ? bRow[1].toString().trim() : "";
         var teamA = bRow[3] ? bRow[3].toString().trim() : "";
         var teamB = bRow[6] ? bRow[6].toString().trim() : "";
-        if (!mId || !teamA || !teamB || teamA === "-" || teamB === "-") continue;
+        if (!mId || (!teamA && !teamB)) continue;
 
-        var sA = (bRow[4] !== "-" && bRow[4] !== "" && !isNaN(parseInt(bRow[4], 10))) ? parseInt(bRow[4], 10) : null;
-        var sB = (bRow[5] !== "-" && bRow[5] !== "" && !isNaN(parseInt(bRow[5], 10))) ? parseInt(bRow[5], 10) : null;
+        var sA = (bRow[4] !== "-" && bRow[4] !== "" && bRow[4] !== undefined && !isNaN(parseInt(bRow[4], 10))) ? parseInt(bRow[4], 10) : null;
+        var sB = (bRow[5] !== "-" && bRow[5] !== "" && bRow[5] !== undefined && !isNaN(parseInt(bRow[5], 10))) ? parseInt(bRow[5], 10) : null;
         var winner = (bRow[7] && bRow[7] !== "TBD" && bRow[7] !== "-") ? bRow[7].toString().trim() : null;
         var mvpPlayer = (bRow[8] && bRow[8] !== "-") ? bRow[8].toString().trim() : "";
         var mvpHero = (bRow[9] && bRow[9] !== "-") ? bRow[9].toString().trim() : "";
+        var status = bRow[10] ? bRow[10].toString().trim() : ((winner && winner !== "TBD") ? "FINISHED" : "SCHEDULED");
+
+        var rawRIdx = bRow[11] !== undefined ? bRow[11].toString().trim() : "";
+        var rawMIdx = bRow[12] !== undefined ? bRow[12].toString().trim() : "";
+        var bracket = bRow[13] ? bRow[13].toString().trim() : "";
+        var day = bRow[14] ? bRow[14].toString().trim() : "-";
+        var time = bRow[15] ? bRow[15].toString().trim() : "-";
+        var g1 = bRow[16] ? bRow[16].toString().trim() : "-";
+        var g2 = bRow[17] ? bRow[17].toString().trim() : "-";
+        var g3 = bRow[18] ? bRow[18].toString().trim() : "-";
+        var g4 = bRow[19] ? bRow[19].toString().trim() : "-";
+        var g5 = bRow[20] ? bRow[20].toString().trim() : "-";
 
         // Auto-heal jika skor terbalik terhadap pemenang match
-        if (winner && sA !== null && sB !== null) {
+        if (winner && sA !== null && sB !== null && teamA && teamB) {
           var wLower = winner.toLowerCase();
           if (wLower.indexOf("wo") === -1 && wLower.indexOf("imbang") === -1 && wLower.indexOf("seri") === -1) {
             var tALower = teamA.toLowerCase();
             var tBLower = teamB.toLowerCase();
             if (wLower === tALower && sA < sB) {
-              var tmpSc = sA; sA = sB; sB = tmpSc;
+              var tmp = sA; sA = sB; sB = tmp;
             } else if (wLower === tBLower && sB < sA) {
-              var tmpSc = sA; sA = sB; sB = tmpSc;
+              var tmp = sA; sA = sB; sB = tmp;
             }
           }
         }
 
-        var gNameParsed = phase.replace("Fase Grup - ", "").trim();
-        var matchObj = {
-          matchId: mId,
-          gName: gNameParsed,
-          teamA: teamA,
-          teamB: teamB,
-          scoreA: sA,
-          scoreB: sB,
-          winner: winner,
-          mvpPlayer: mvpPlayer,
-          mvpHero: mvpHero
-        };
+        var isGroup = (rawRIdx === "GRP" || phase.indexOf("Fase Grup") === 0 || mId.indexOf("GRP_") === 0 || (!rawRIdx && mId.indexOf("_vs_") !== -1));
 
-        sheetMatchResults[mId] = matchObj;
+        if (isGroup) {
+          var gNameParsed = phase.replace("Fase Grup - ", "").trim();
+          var matchObj = {
+            matchId: mId,
+            gName: gNameParsed,
+            teamA: teamA,
+            teamB: teamB,
+            scoreA: sA,
+            scoreB: sB,
+            winner: winner,
+            mvpPlayer: mvpPlayer,
+            mvpHero: mvpHero,
+            status: status,
+            day: day,
+            time: time,
+            format: bRow[2] || "BO3"
+          };
 
-        // Simpan juga dengan canonical key agar sinkron sempurna dengan getCanonicalGroupMatchId di app.js
-        if (gNameParsed) {
-          var sortedTeams = [teamA.trim(), teamB.trim()].sort();
-          var canonKey = (gNameParsed + "_" + sortedTeams[0] + "_vs_" + sortedTeams[1]).replace(/\s+/g, "_");
-          sheetMatchResults[canonKey] = matchObj;
+          sheetMatchResults[mId] = matchObj;
+
+          if (gNameParsed && teamA && teamB) {
+            var sortedTeams = [teamA.trim(), teamB.trim()].sort();
+            var canonKey = (gNameParsed + "_" + sortedTeams[0] + "_vs_" + sortedTeams[1]).replace(/\s+/g, "_");
+            sheetMatchResults[canonKey] = matchObj;
+          }
+        } else {
+          var rIdx = parseInt(rawRIdx, 10);
+          var mIdx = parseInt(rawMIdx, 10);
+
+          if (isNaN(rIdx) || isNaN(mIdx)) {
+            if (mId.indexOf("UB_R1_") === 0) {
+              rIdx = 0;
+              mIdx = parseInt(mId.replace("UB_R1_", ""), 10) - 1;
+              if (!bracket) bracket = "UPPER";
+            } else if (mId.indexOf("UB_QF_") === 0) {
+              rIdx = 1;
+              mIdx = parseInt(mId.replace("UB_QF_", ""), 10) - 1;
+              if (!bracket) bracket = "UPPER";
+            } else if (mId.indexOf("LB_R1_") === 0) {
+              rIdx = 1;
+              mIdx = 4 + parseInt(mId.replace("LB_R1_", ""), 10) - 1;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId.indexOf("UB_SF_") === 0) {
+              rIdx = 2;
+              mIdx = parseInt(mId.replace("UB_SF_", ""), 10) - 1;
+              if (!bracket) bracket = "UPPER";
+            } else if (mId.indexOf("LB_R2_") === 0) {
+              rIdx = 2;
+              mIdx = 2 + parseInt(mId.replace("LB_R2_", ""), 10) - 1;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId.indexOf("LB_R3_") === 0) {
+              rIdx = 2;
+              mIdx = 6 + parseInt(mId.replace("LB_R3_", ""), 10) - 1;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId.indexOf("LB_QF_") === 0) {
+              rIdx = 3;
+              mIdx = parseInt(mId.replace("LB_QF_", ""), 10) - 1;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId === "UB_FINAL") {
+              rIdx = 4;
+              mIdx = 0;
+              if (!bracket) bracket = "UPPER";
+            } else if (mId.indexOf("LB_SF_") === 0) {
+              rIdx = 4;
+              mIdx = 1 + parseInt(mId.replace("LB_SF_", ""), 10) - 1;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId === "LB_PRELIM") {
+              rIdx = 4;
+              mIdx = 3;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId === "LB_FINAL") {
+              rIdx = 4;
+              mIdx = 4;
+              if (!bracket) bracket = "LOWER";
+            } else if (mId === "GRAND_FINAL") {
+              rIdx = 5;
+              mIdx = 0;
+              if (!bracket) bracket = "GRAND_FINAL";
+            } else {
+              var poMatch = mId.match(/^PO_R(\d+)_M(\d+)$/);
+              if (poMatch) {
+                rIdx = parseInt(poMatch[1], 10) - 1;
+                mIdx = parseInt(poMatch[2], 10) - 1;
+              }
+            }
+          }
+
+          if (!bracket) {
+            bracket = (mId.indexOf("UB") === 0) ? "UPPER" : ((mId.indexOf("LB") === 0) ? "LOWER" : (mId.indexOf("GRAND_FINAL") === 0 ? "GRAND_FINAL" : "UPPER"));
+          }
+
+          var playoffObj = {
+            matchId: mId,
+            matchLabel: mId,
+            phaseName: phase || (rIdx === 5 ? "Grand Final BO5 (Hari 5)" : ("Playoff Ronde " + (rIdx + 1))),
+            format: bRow[2] || (phase.indexOf("Grand Final") !== -1 ? "BO5" : "BO3"),
+            teamA: teamA,
+            teamB: teamB,
+            scoreA: sA,
+            scoreB: sB,
+            winner: winner,
+            mvpPlayer: mvpPlayer,
+            mvpHero: mvpHero,
+            status: status,
+            bracket: bracket,
+            day: day,
+            time: time,
+            game1: g1,
+            game2: g2,
+            game3: g3,
+            game4: g4,
+            game5: g5
+          };
+
+          if (!isNaN(rIdx) && rIdx >= 0 && rIdx < 6 && !isNaN(mIdx) && mIdx >= 0) {
+            reconstructedPlayoff[rIdx][mIdx] = playoffObj;
+            hasPlayoffRows = true;
+          }
         }
       }
+
       if (Object.keys(sheetMatchResults).length > 0) {
         appConfig.groupMatchResults = sheetMatchResults;
+      }
+      if (hasPlayoffRows) {
+        appConfig.groupPlayoffMatches = reconstructedPlayoff.map(function(round) {
+          return round.filter(Boolean);
+        });
       }
     }
 
@@ -1117,10 +1233,28 @@ function doGet(e) {
       }
     }
     result.mcggCommanderSetup = mcggCommanderSetup;
+    return result;
 
+  } catch (err) {
+    Logger.log("getInitialData Error: " + err.toString());
+    return {
+      status: "error",
+      error: err.toString(),
+      participants: [],
+      config: {}
+    };
+  }
+}
+
+/**
+ * 1. GET HANDLER: FETCH SEMUA PESERTA & KONFIGURASI KE WEBSITE
+ */
+function doGet(e) {
+  try {
+    var ss = getTargetSpreadsheet();
+    var result = getInitialData(ss);
     return ContentService.createTextOutput(JSON.stringify(result))
       .setMimeType(ContentService.MimeType.JSON);
-
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", error: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -1130,6 +1264,28 @@ function doGet(e) {
 // ========================================================
 // 2. POST HANDLER: SIMPAN PENDAFTARAN & UPLOAD FOTO KE DRIVE
 // ========================================================
+function getValidAdminPins(ss) {
+  var validPins = ["YOKKE2026_", "YOKKE2026"];
+  try {
+    var cfgSheetCheck = ss.getSheetByName("Pengaturan Turnamen");
+    if (cfgSheetCheck && cfgSheetCheck.getLastRow() >= 2) {
+      var cData = cfgSheetCheck.getDataRange().getValues();
+      for (var c = 1; c < cData.length; c++) {
+        var kName = cData[c][0] ? cData[c][0].toString().trim().toLowerCase() : "";
+        if (kName === "adminpassword" || kName === "admin_password" || kName === "admin_pin") {
+          if (cData[c][1]) {
+            var customVal = cData[c][1].toString().trim();
+            if (customVal && validPins.indexOf(customVal) === -1) {
+              validPins.push(customVal);
+            }
+          }
+        }
+      }
+    }
+  } catch(e) {}
+  return validPins;
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   var hasLock = false;
@@ -1154,23 +1310,31 @@ function doPost(e) {
     var sheets = ensureRelationalSheetsExist(ss);
     var now = new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
 
+    // Action: Verifikasi Login Panitia (Server-Side Authentication)
+    if (data.action === "VERIFY_ADMIN_PIN" || data.action === "LOGIN_PANITIA" || data.action === "LOGIN_ADMIN") {
+      var reqPin = (data.adminPin || data.adminPassword || data.pin || "").toString().trim();
+      var validPins = getValidAdminPins(ss);
+      if (reqPin && validPins.indexOf(reqPin) !== -1) {
+        return ContentService.createTextOutput(JSON.stringify({
+          success: true,
+          status: "success",
+          message: "PIN Panitia valid. Akses login panitia diberikan.",
+          isAdmin: true
+        })).setMimeType(ContentService.MimeType.JSON);
+      } else {
+        return ContentService.createTextOutput(JSON.stringify({
+          success: false,
+          status: "error",
+          message: "PIN Panitia salah! Akses ditolak."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
     // Validasi Keamanan Server: Setiap request perubahan administratif wajib menyertakan adminPin yang valid
     if (data.action === "SAVE_CONFIG" || data.action === "DELETE" || data.action === "BATCH_UPDATE_PARTICIPANTS" || data.action === "BATCH_UPDATE_ALL" || data.action === "UPDATE_MATCH_ROW") {
       var reqPin = (data.adminPin || data.adminPassword || "").toString().trim();
-      var validPins = ["YOKKE2026_", "YOKKE2026"];
+      var validPins = getValidAdminPins(ss);
       
-      // Ambil PIN kustom dari sheet Pengaturan Turnamen jika ada
-      var cfgSheetCheck = ss.getSheetByName("Pengaturan Turnamen");
-      if (cfgSheetCheck && cfgSheetCheck.getLastRow() >= 2) {
-        var cData = cfgSheetCheck.getDataRange().getValues();
-        for (var c = 1; c < cData.length; c++) {
-          var kName = cData[c][0] ? cData[c][0].toString().trim().toLowerCase() : "";
-          if (kName === "adminpassword" || kName === "admin_password" || kName === "admin_pin") {
-            if (cData[c][1]) validPins.push(cData[c][1].toString().trim());
-          }
-        }
-      }
-
       if (!validPins.includes(reqPin)) {
         return ContentService.createTextOutput(JSON.stringify({
           success: false,
@@ -1204,7 +1368,7 @@ function doPost(e) {
       var cfgSheet = ss.getSheetByName("Pengaturan Turnamen");
       if (!cfgSheet) {
         cfgSheet = ss.insertSheet("Pengaturan Turnamen");
-        cfgSheet.appendRow(["Kunci Konfigurasi", "Isi JSON / Nilai", "Terakhir Diperbarui"]);
+        cfgSheet.appendRow(["Kunci Konfigurasi", "Isi Nilai", "Terakhir Diperbarui"]);
         cfgSheet.getRange(1, 1, 1, 3).setFontWeight("bold").setBackground("#1e293b").setFontColor("#ffffff");
       }
 
@@ -1215,23 +1379,46 @@ function doPost(e) {
         if (kName) keyRowIdx[kName] = k;
       }
 
+      var stageMLBB = (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.stage) || 
+                      (data.tournamentStage) || "STAGE_2_PLAYOFF";
+      var isPlayoffLockedVal = data.isPlayoffLocked !== undefined ? (data.isPlayoffLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isPlayoffLocked !== undefined ? (data.tournamentStageState.mlbb.isPlayoffLocked ? "true" : "false") : null);
+      var isGroupLockedVal = data.isGroupLocked !== undefined ? (data.isGroupLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isGroupLocked !== undefined ? (data.tournamentStageState.mlbb.isGroupLocked ? "true" : "false") : null);
+      var isRegClosedVal = data.isRegistrationClosed !== undefined ? (data.isRegistrationClosed ? "true" : "false") : null;
+
+      var customRulesMLBB = null;
+      var customRulesMCGG = null;
+      if (data.customRules) {
+        if (typeof data.customRules === "string") {
+          customRulesMLBB = data.customRules;
+        } else if (typeof data.customRules === "object") {
+          if (data.customRules.mlbb) customRulesMLBB = String(data.customRules.mlbb);
+          if (data.customRules.mcgg) customRulesMCGG = String(data.customRules.mcgg);
+        }
+      }
+
+      // Tuliskan HANYA nilai skalar pendek (Bebas JSON blob raksasa!)
       var itemsToSave = [
-        { key: "customRules", val: data.customRules ? JSON.stringify(data.customRules) : null },
-        { key: "tournamentFormat", val: data.tournamentFormat || null },
-        { key: "groupStageData", val: data.groupStageData ? JSON.stringify(data.groupStageData) : null },
-        { key: "groupMatchResults", val: data.groupMatchResults ? JSON.stringify(data.groupMatchResults) : null },
-        { key: "groupPlayoffMatches", val: data.groupPlayoffMatches ? JSON.stringify(data.groupPlayoffMatches) : null },
-        { key: "mcggLobbies", val: data.mcggLobbies ? JSON.stringify(data.mcggLobbies) : null },
-        { key: "mcggDrawState", val: data.mcggDrawState ? JSON.stringify(data.mcggDrawState) : null },
-        { key: "tournamentStageState", val: data.tournamentStageState ? JSON.stringify(data.tournamentStageState) : null },
-        { key: "isPlayoffLocked", val: data.isPlayoffLocked !== undefined ? (data.isPlayoffLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isPlayoffLocked !== undefined ? (data.tournamentStageState.mlbb.isPlayoffLocked ? "true" : "false") : null) },
-        { key: "isGroupLocked", val: data.isGroupLocked !== undefined ? (data.isGroupLocked ? "true" : "false") : (data.tournamentStageState && data.tournamentStageState.mlbb && data.tournamentStageState.mlbb.isGroupLocked !== undefined ? (data.tournamentStageState.mlbb.isGroupLocked ? "true" : "false") : null) },
-        { key: "isRegistrationClosed", val: data.isRegistrationClosed !== undefined ? (data.isRegistrationClosed ? "true" : "false") : null },
-        { key: "adminpassword", val: data.adminPassword || null }
+        { key: "tournamentFormat", val: data.tournamentFormat || "16_TEAM_GROUP_PLAYOFF" },
+        { key: "isRegistrationClosed", val: isRegClosedVal },
+        { key: "isPlayoffLocked", val: isPlayoffLockedVal },
+        { key: "isGroupLocked", val: isGroupLockedVal },
+        { key: "tournamentStage", val: stageMLBB },
+        { key: "adminpassword", val: data.adminPassword || data.adminPin || null },
+        { key: "customRules_mlbb", val: customRulesMLBB },
+        { key: "customRules_mcgg", val: customRulesMCGG },
+        // Timpa dan bersihkan kunci-kunci lama yang sebelumnya menyimpan JSON raksasa
+        { key: "groupPlayoffMatches", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "groupMatchResults", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "groupStageData", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "mcggLobbies", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "tournamentStageState", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "customRules", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "mcggDrawState", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "invitedTeams", val: "MIGRATED_TO_RELATIONAL_SHEETS" }
       ];
 
       itemsToSave.forEach(function(item) {
-        if (item.val !== null) {
+        if (item.val !== null && item.val !== undefined) {
           if (keyRowIdx[item.key] !== undefined) {
             rows[keyRowIdx[item.key]][1] = item.val;
             rows[keyRowIdx[item.key]][2] = now;
@@ -1246,54 +1433,50 @@ function doPost(e) {
         cfgSheet.getRange(1, 1, rows.length, 3).setValues(rows);
       }
 
-      // Otomatis sinkronkan 3 Sheet Turnamen Terpisah (Tabel Murni + MVP)
-      try {
-        var payloadForSync = data.config || data;
-        syncDedicatedTournamentSheets(ss, payloadForSync);
-      } catch(sheetErr) {
-        Logger.log("Peringatan sinkronisasi sheet turnamen: " + sheetErr.toString());
+      // Otomatis sinkronkan 3 Sheet Turnamen Terpisah (Tabel Murni Relasional + MVP)
+      var payloadForSync = data.config || data;
+      var syncMetrics = syncDedicatedTournamentSheets(ss, payloadForSync);
+      if (syncMetrics && syncMetrics.config) {
+        syncMetrics.config.rows = rows.length;
       }
 
       return ContentService.createTextOutput(JSON.stringify({ 
         status: "success", 
-        message: "Pengaturan turnamen serta Sheet MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP berhasil diperbarui!" 
+        message: "Data turnamen berhasil disimpan murni per-baris & per-kolom tanpa limit sel!",
+        metrics: syncMetrics
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // case 'UPDATE_MATCH_ROW': Sinkronisasi per pertandingan (1 baris di data match + 2 baris tim di klasemen = 3 baris data)
     if (data.action === "UPDATE_MATCH_ROW") {
       var match = data.match || {};
-      var standings = data.standingsUpdate || [];
-      var gName = (match.gName || "").trim();
-      var canonId = (match.matchId || "").trim();
-      var teamA = (match.teamA || "").trim();
-      var teamB = (match.teamB || "").trim();
-      var scoreA = match.scoreA !== null && match.scoreA !== undefined ? match.scoreA : "-";
-      var scoreB = match.scoreB !== null && match.scoreB !== undefined ? match.scoreB : "-";
-      var winner = match.winner || "TBD";
+      var standings = data.standings || [];
+      var gName = match.gName || "Grup A";
+      var canonId = match.matchId;
+      var teamA = match.teamA || "";
+      var teamB = match.teamB || "";
+      var scoreA = match.scoreA !== null ? match.scoreA : "-";
+      var scoreB = match.scoreB !== null ? match.scoreB : "-";
+      var winner = match.winner || "";
       var mvpPlayer = match.mvpPlayer || "-";
       var mvpHero = match.mvpHero || "-";
       var statusMatch = (winner && winner !== "TBD") ? "FINISHED" : "SCHEDULED";
       var updatedRowCount = 0;
 
-      // 1. UPDATE DI SHEET "MLBB - Bagan & MVP" (1 Baris Data Match)
+      // 1. UPDATE DI SHEET "MLBB - Bagan & MVP" (1 Baris Data Match - 21 Kolom)
       var sheetBagan = ss.getSheetByName("MLBB - Bagan & MVP");
       if (!sheetBagan) {
         var payloadForSync = data.config || data;
         syncDedicatedTournamentSheets(ss, payloadForSync);
         sheetBagan = ss.getSheetByName("MLBB - Bagan & MVP");
       }
+
       if (sheetBagan && sheetBagan.getLastRow() >= 1) {
         var baganVals = sheetBagan.getDataRange().getValues();
         var matchRowIdx = -1;
         for (var b = 1; b < baganVals.length; b++) {
-          var rowId = (baganVals[b][0] || "").toString().trim();
-          var rowTeamA = (baganVals[b][3] || "").toString().trim().toLowerCase();
-          var rowTeamB = (baganVals[b][6] || "").toString().trim().toLowerCase();
-          if (rowId === canonId || 
-              (rowTeamA === teamA.toLowerCase() && rowTeamB === teamB.toLowerCase()) ||
-              (rowTeamA === teamB.toLowerCase() && rowTeamB === teamA.toLowerCase())) {
-            matchRowIdx = b + 1; // 1-indexed
+          if (baganVals[b][0] && baganVals[b][0].toString().trim() === canonId) {
+            matchRowIdx = b + 1;
             break;
           }
         }
@@ -1308,7 +1491,17 @@ function doPost(e) {
           winner,
           mvpPlayer,
           mvpHero,
-          statusMatch
+          statusMatch,
+          match.isPlayoff ? (match.rIdx !== undefined ? match.rIdx : 0) : "GRP",
+          match.mIdx !== undefined ? match.mIdx : 0,
+          match.isPlayoff ? (match.bracket || "UPPER") : "GROUP",
+          match.day ? (String(match.day).indexOf("Hari") !== -1 ? String(match.day) : ("Hari " + match.day)) : (match.isPlayoff ? "-" : "Hari 1"),
+          match.time || "-",
+          match.game1 || "-",
+          match.game2 || "-",
+          match.game3 || "-",
+          match.game4 || "-",
+          match.game5 || "-"
         ];
         if (matchRowIdx > 0) {
           sheetBagan.getRange(matchRowIdx, 1, 1, newMatchRow.length).setValues([newMatchRow]);
@@ -1319,7 +1512,7 @@ function doPost(e) {
         }
       }
 
-      // 2. UPDATE DI SHEET "MLBB - Klasemen & Point" (2 Baris Tim)
+      // 2. UPDATE DI SHEET "MLBB - Klasemen & Point" (2 Baris Tim - 10 Kolom)
       var sheetPoint = ss.getSheetByName("MLBB - Klasemen & Point");
       if (sheetPoint && sheetPoint.getLastRow() >= 1 && standings.length > 0) {
         var pointVals = sheetPoint.getDataRange().getValues();
@@ -1354,34 +1547,21 @@ function doPost(e) {
         });
       }
 
-      // 3. UPDATE DI SHEET "Pengaturan Turnamen" (Simpan objek config match & stage)
-      var cfgSheet = ss.getSheetByName("Pengaturan Turnamen");
-      if (cfgSheet && cfgSheet.getLastRow() >= 1) {
-        var cfgRows = cfgSheet.getDataRange().getValues();
-        for (var c = 1; c < cfgRows.length; c++) {
-          var k = (cfgRows[c][0] || "").toString().trim();
-          if (k === "groupMatchResults") {
-            try {
-              var curResults = JSON.parse(cfgRows[c][1] || "{}");
-              curResults[canonId] = match;
-              cfgRows[c][1] = JSON.stringify(curResults);
-              cfgRows[c][2] = now;
-            } catch(e) {}
-          } else if (k === "groupStageData" && data.groupStageData) {
-            try {
-              cfgRows[c][1] = JSON.stringify(data.groupStageData);
-              cfgRows[c][2] = now;
-            } catch(e) {}
-          }
-        }
-        cfgSheet.getRange(1, 1, cfgRows.length, 3).setValues(cfgRows);
-      }
+      // CATATAN: TIDAK ADA PENYIMPANAN STRING JSON KE SHEET "Pengaturan Turnamen" AGAR BEBAS LIMIT 50.000 CHAR!
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
+        rowsUpdated: updatedRowCount,
         updatedRows: updatedRowCount,
+        updatedRowCount: updatedRowCount,
+        colsUpdated: 21,
         matchId: canonId,
-        message: "Berhasil memperbarui " + updatedRowCount + " baris data (1 baris match + " + standings.length + " baris klasemen) untuk match " + canonId
+        message: "Berhasil memperbarui " + updatedRowCount + " baris data (1 baris match + " + standings.length + " baris klasemen) untuk match " + canonId,
+        metrics: {
+          rowsUpdated: updatedRowCount,
+          colsUpdated: 21,
+          colsAdded: 0
+        }
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -1934,93 +2114,80 @@ function safeBatchResizeColumns(sheet, numCols) {
  * Dipanggil otomatis saat action === 'SAVE_CONFIG' atau 'CREATE_TOURNAMENT_SHEETS'
  */
 function syncDedicatedTournamentSheets(ss, payload) {
-  if (!ss) ss = getTargetSpreadsheet();
   payload = payload || {};
   const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
+
+  var metrics = {
+    mlbbPoint: { rows: 0, cols: 10, colsAdded: 0 },
+    mlbbBagan: { rows: 0, cols: 21, colsAdded: 10 },
+    mcggPoint: { rows: 0, cols: 16, colsAdded: 0 },
+    config: { rows: 0, cols: 3, colsAdded: 0 },
+    totalRows: 0,
+    totalCols: 21,
+    rowsUpdated: 0,
+    colsUpdated: 21,
+    colsAdded: 10
+  };
 
   // =========================================================
   // 1. SHEET: "MLBB - Klasemen & Point"
   // =========================================================
   let sheetMLBBPoint = ss.getSheetByName('MLBB - Klasemen & Point');
   if (!sheetMLBBPoint) sheetMLBBPoint = ss.insertSheet('MLBB - Klasemen & Point');
-  sheetMLBBPoint.clearContents();
+  sheetMLBBPoint.clear();
 
   const mlbbPointHeaders = [
-    'Grup', 'Peringkat', 'Nama Tim', 'Match Dimainkan', 
-    'Menang (W)', 'Kalah (L)', 'Agregat Skor (Diff)', 'Total Poin', 'Status Kelolosan', 'Total MVP Tim'
+    'Grup', 'Peringkat', 'Nama Tim', 'Match', 'Menang', 
+    'Kalah', 'Agregat Game (Diff)', 'Poin Klasemen', 'Status Kelolosan', 'Total MVP Team'
   ];
   const mlbbPointRows = [mlbbPointHeaders];
 
   const groupData = payload.groupStageData || {};
   const matchResults = payload.groupMatchResults || {};
 
-  // Hitung frekuensi MVP per tim dari hasil match
+  // Hitung akumulasi MVP per tim
   const teamMvpCount = {};
-  Object.keys(matchResults).forEach(mId => {
-    const m = matchResults[mId];
-    if (m.mvpTeam) {
-      teamMvpCount[m.mvpTeam] = (teamMvpCount[m.mvpTeam] || 0) + 1;
-    } else if (m.mvpPlayer && m.winner) {
+  Object.values(matchResults).forEach(m => {
+    if (!m) return;
+    if (Array.isArray(m.gameMvps) && m.gameMvps.length > 0) {
+      m.gameMvps.forEach(gm => {
+        if (gm && gm.team) {
+          teamMvpCount[gm.team] = (teamMvpCount[gm.team] || 0) + 1;
+        }
+      });
+    } else if (m.winner && m.mvpPlayer && m.mvpPlayer !== '-') {
       teamMvpCount[m.winner] = (teamMvpCount[m.winner] || 0) + 1;
     }
   });
 
   Object.keys(groupData).forEach(gName => {
-    const sorted = (groupData[gName] || []).slice().sort((a, b) => {
-      const ptsA = parseInt(a.pts, 10) || 0;
-      const ptsB = parseInt(b.pts, 10) || 0;
-      if (ptsB !== ptsA) return ptsB - ptsA;
-
-      const diffA = (a.diff !== undefined) ? parseInt(a.diff, 10) : ((parseInt(a.gameWon, 10) || 0) - (parseInt(a.gameLost, 10) || 0));
-      const diffB = (b.diff !== undefined) ? parseInt(b.diff, 10) : ((parseInt(b.gameWon, 10) || 0) - (parseInt(b.gameLost, 10) || 0));
-      if (diffB !== diffA) return diffB - diffA;
-
-      // Head-to-Head (H2H) direct match
-      let h2h = 0;
-      for (var k in matchResults) {
-        var m = matchResults[k];
-        if (!m || !m.teamA || !m.teamB) continue;
-        if ((m.teamA === a.name && m.teamB === b.name) || (m.teamA === b.name && m.teamB === a.name)) {
-          var w = m.winner || '';
-          if (w.indexOf(a.name) !== -1) h2h = -1;
-          else if (w.indexOf(b.name) !== -1) h2h = 1;
-          break;
-        }
-      }
-      if (h2h !== 0) return h2h;
-
-      const winA = parseInt(a.win, 10) || 0;
-      const winB = parseInt(b.win, 10) || 0;
-      if (winB !== winA) return winB - winA;
-
-      const loseA = parseInt(a.lose, 10) || 0;
-      const loseB = parseInt(b.lose, 10) || 0;
-      if (loseA !== loseB) return loseA - loseB;
-
-      const mvpA = parseInt(teamMvpCount[a.name] || a.mvpCount, 10) || 0;
-      const mvpB = parseInt(teamMvpCount[b.name] || b.mvpCount, 10) || 0;
-      if (mvpB !== mvpA) return mvpB - mvpA;
-
-      return (a.name || '').localeCompare(b.name || '');
+    const teams = groupData[gName] || [];
+    const sorted = [...teams].sort((a, b) => {
+      if ((b.pts || 0) !== (a.pts || 0)) return (b.pts || 0) - (a.pts || 0);
+      if ((b.win || 0) !== (a.win || 0)) return (b.win || 0) - (a.win || 0);
+      if ((a.lose || 0) !== (b.lose || 0)) return (a.lose || 0) - (b.lose || 0);
+      const bMvp = teamMvpCount[b.name] || b.mvpCount || 0;
+      const aMvp = teamMvpCount[a.name] || a.mvpCount || 0;
+      return bMvp - aMvp;
     });
-    // Cek apakah seluruh match untuk grup ini sudah selesai diinput
+
+    // Validasi apakah seluruh match dalam grup sudah tuntas
+    let isGroupAllDone = false;
     const groupTeams = groupData[gName] || [];
     const n = groupTeams.length;
-    let isGroupAllDone = false;
-    if (n > 1) {
-      // 1. Cek dari matchResults: total match round robin = n * (n - 1) / 2
-      let totalPairs = (n * (n - 1)) / 2;
+    if (n >= 2) {
+      const totalPairs = (n * (n - 1)) / 2;
       let finishedPairs = 0;
       for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
           const tA = groupTeams[i].name;
           const tB = groupTeams[j].name;
           let pairDone = false;
-          for (const k in matchResults) {
-            const m = matchResults[k];
-            if (!m || !m.teamA || !m.teamB) continue;
-            if ((m.teamA === tA && m.teamB === tB) || (m.teamA === tB && m.teamB === tA)) {
-              if (m.winner || (m.scoreA !== null && m.scoreB !== null && (Number(m.scoreA) > 0 || Number(m.scoreB) > 0))) {
+          for (const mId in matchResults) {
+            const m = matchResults[mId];
+            if (m && m.gName === gName) {
+              const matchWinner = m.winner ? m.winner.trim() : '';
+              if (((m.teamA === tA && m.teamB === tB) || (m.teamA === tB && m.teamB === tA)) && matchWinner && matchWinner !== 'TBD') {
                 pairDone = true;
                 break;
               }
@@ -2073,119 +2240,153 @@ function syncDedicatedTournamentSheets(ss, payload) {
       .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
     sheetMLBBPoint.setRowHeight(1, 32);
     safeBatchResizeColumns(sheetMLBBPoint, mlbbPointHeaders.length);
+    metrics.mlbbPoint.rows = mlbbPointRows.length;
   }
 
   // =========================================================
-  // 2. SHEET: "MLBB - Bagan & MVP"
+  // 2. SHEET: "MLBB - Bagan & MVP" (21 Kolom Lengkap)
   // =========================================================
   let sheetMLBBBagan = ss.getSheetByName('MLBB - Bagan & MVP');
   if (!sheetMLBBBagan) sheetMLBBBagan = ss.insertSheet('MLBB - Bagan & MVP');
-  sheetMLBBBagan.clearContents();
+  sheetMLBBBagan.clear();
 
   const mlbbBaganHeaders = [
     'ID Match', 'Tahap / Fase', 'Format', 'Tim A', 'Skor A', 
-    'Skor B', 'Tim B', 'Pemenang Match', 'MVP Match (IGN / Nama)', 'Hero MVP', 'Status Match'
+    'Skor B', 'Tim B', 'Pemenang Match', 'MVP Match (IGN / Nama)', 'Hero MVP', 
+    'Status Match', 'Ronde Index', 'Match Index', 'Cabang Bracket', 'Jadwal Hari', 
+    'Jam Tanding', 'Game 1 - Hasil', 'Game 2 - Hasil', 'Game 3 - Hasil', 'Game 4 - Hasil', 'Game 5 - Hasil'
   ];
   const mlbbBaganRows = [mlbbBaganHeaders];
 
-  // A. Masukkan Jadwal & Hasil Fase Grup (Deduplikasi canonical agar tidak dobel baris)
-  var seenPairs = {};
-  var cleanMatchList = [];
-  Object.keys(matchResults).forEach(function(mId) {
-    var m = matchResults[mId];
-    if (!m || !m.teamA || !m.teamB) return;
-    var tA = (m.teamA || "").trim();
-    var tB = (m.teamB || "").trim();
-    var pairKey = (m.gName || "") + "__" + [tA, tB].sort().join("__");
-    if (!seenPairs[pairKey]) {
-      seenPairs[pairKey] = true;
-      cleanMatchList.push(m);
-    } else {
-      for (var k = 0; k < cleanMatchList.length; k++) {
-        var prevM = cleanMatchList[k];
-        var prevPair = (prevM.gName || "") + "__" + [(prevM.teamA || "").trim(), (prevM.teamB || "").trim()].sort().join("__");
-        if (prevPair === pairKey) {
-          if (m.winner && !prevM.winner) {
-            cleanMatchList[k] = m;
-          }
-          break;
+  // A. Masukkan Pertandingan Fase Grup
+  Object.keys(groupData).forEach(gName => {
+    const teams = groupData[gName] || [];
+    const n = teams.length;
+    let matchIdx = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        matchIdx++;
+        const tA = teams[i].name;
+        const tB = teams[j].name;
+        const matchId = `${gName}_${tA}_vs_${tB}`.replace(/\s+/g, '_');
+        
+        // Cari hasil match (dukung varian kanonikal terbalik)
+        let saved = matchResults[matchId];
+        if (!saved) {
+          const revId = `${gName}_${tB}_vs_${tA}`.replace(/\s+/g, '_');
+          saved = matchResults[revId];
         }
+
+        let sA = '-', sB = '-', w = 'TBD', mvp = '-', hero = '-';
+        let status = 'SCHEDULED';
+        if (saved) {
+          sA = saved.teamA === tA ? (saved.scoreA !== null ? saved.scoreA : '-') : (saved.scoreB !== null ? saved.scoreB : '-');
+          sB = saved.teamA === tA ? (saved.scoreB !== null ? saved.scoreB : '-') : (saved.scoreA !== null ? saved.scoreA : '-');
+          w = saved.winner || 'TBD';
+          mvp = saved.mvpPlayer || '-';
+          hero = saved.mvpHero || '-';
+          if (w && w !== 'TBD') status = 'FINISHED';
+        }
+
+        mlbbBaganRows.push([
+          matchId,
+          `Fase Grup - ${gName}`,
+          'BO3',
+          tA,
+          sA,
+          sB,
+          tB,
+          w,
+          mvp,
+          hero,
+          status,
+          'GRP',
+          matchIdx,
+          'GROUP',
+          (saved && saved.day) || 'Hari 1',
+          (saved && saved.time) || '-',
+          (saved && saved.game1) || '-',
+          (saved && saved.game2) || '-',
+          (saved && saved.game3) || '-',
+          (saved && saved.game4) || '-',
+          (saved && saved.game5) || '-'
+        ]);
       }
     }
   });
 
-  cleanMatchList.forEach(function(m, i) {
-    var g = (m.gName || '').trim();
-    var sorted = [(m.teamA || '').trim(), (m.teamB || '').trim()].sort();
-    var canonId = (g && sorted[0] && sorted[1]) 
-      ? (g + '_' + sorted[0] + '_vs_' + sorted[1]).replace(/\s+/g, '_')
-      : (m.matchId || `GRP_${i + 1}`);
+  // Masukkan Match Tie-Breaker MLBB jika ada
+  const stageState = payload.tournamentStageState || {};
+  const mlbbStage = stageState.mlbb || {};
+  if (mlbbStage.tieBreaker && Array.isArray(mlbbStage.tieBreaker.matches)) {
+    mlbbStage.tieBreaker.matches.forEach((m, i) => {
+      let sA = m.scoreA !== null && m.scoreA !== undefined ? m.scoreA : '-';
+      let sB = m.scoreB !== null && m.scoreB !== undefined ? m.scoreB : '-';
+      let w = m.winner || 'TBD';
+      mlbbBaganRows.push([
+        m.matchId || `TB_${m.group}_${i+1}`,
+        `Tie-Breaker - ${m.group}`,
+        'BO1',
+        m.teamA || '-',
+        sA,
+        sB,
+        m.teamB || '-',
+        w,
+        m.mvpPlayer || '-',
+        m.mvpHero || '-',
+        (m.winner && m.winner !== 'TBD') ? 'FINISHED' : 'SCHEDULED',
+        'GRP',
+        i,
+        'GROUP',
+        m.day || 'Hari 1',
+        m.time || '-',
+        m.game1 || '-',
+        m.game2 || '-',
+        m.game3 || '-',
+        m.game4 || '-',
+        m.game5 || '-'
+      ]);
+    });
+  }
 
-    var scA = m.scoreA !== null && m.scoreA !== undefined ? m.scoreA : '-';
-    var scB = m.scoreB !== null && m.scoreB !== undefined ? m.scoreB : '-';
-    var w = m.winner || 'TBD';
-
-    // Auto-heal sebelum menulis ke sheet jika skor terbalik dibanding pemenang
-    if (w && w !== 'TBD' && scA !== '-' && scB !== '-') {
-      var numA = parseInt(scA, 10);
-      var numB = parseInt(scB, 10);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        var wLow = w.toLowerCase().trim();
-        if (wLow.indexOf('wo') === -1 && wLow.indexOf('imbang') === -1 && wLow.indexOf('seri') === -1) {
-          if (wLow === (m.teamA || '').toLowerCase().trim() && numA < numB) {
-            scA = numB;
-            scB = numA;
-          } else if (wLow === (m.teamB || '').toLowerCase().trim() && numB < numA) {
-            scA = numB;
-            scB = numA;
-          }
-        }
-      }
-    }
-
-    mlbbBaganRows.push([
-      canonId,
-      `Fase Grup - ${g}`,
-      'BO3',
-      m.teamA || '-',
-      scA,
-      scB,
-      m.teamB || '-',
-      w,
-      m.mvpPlayer || '-',
-      m.mvpHero || '-',
-      m.winner ? 'FINISHED' : 'SCHEDULED'
-    ]);
-  });
-
-  // B. Masukkan Bagan Playoff (Semifinal & Grand Final)
+  // B. Masukkan Bagan Playoff (6 Ronde)
   const playoffRounds = payload.groupPlayoffMatches || [];
   const roundNames = playoffRounds.length === 6
     ? ['Upper 16 Besar (Hari 3)', 'Upper QF & Lower R1 (Hari 3-4)', 'Upper SF & Lower R2/R3 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower SF/Final (Hari 5)', 'Grand Final (Hari 5)']
-    : (playoffRounds.length === 5
-    ? ['Upper QF & Lower R1 (Hari 3)', 'Upper SF & Lower R2 (Hari 4)', 'Lower QF (Hari 4)', 'Upper Final & Lower SF/Final (Hari 5)', 'Grand Final (Hari 5)']
-    : (playoffRounds.length === 3 
-        ? ['Perempat Final (8 Besar)', 'Semifinal (4 Besar)', 'Grand Final'] 
-        : ['Semifinal (4 Besar)', 'Grand Final']));
+    : ['Perempat Final (QF)', 'Semifinal (SF)', 'Grand Final'];
 
   playoffRounds.forEach((round, rIdx) => {
     const defaultPhase = roundNames[rIdx] || `Playoff Ronde ${rIdx + 1}`;
     (round || []).forEach((m, mIdx) => {
+      if (!m) return;
       const matchLabel = m.matchLabel || `PO_R${rIdx + 1}_M${mIdx + 1}`;
       const phaseName = m.phaseName || defaultPhase;
       const formatStr = phaseName.includes('Grand Final') ? 'BO5' : 'BO3';
+      const bracket = m.bracket || (matchLabel.indexOf('UB') === 0 ? 'UPPER' : (matchLabel.indexOf('LB') === 0 ? 'LOWER' : 'GRAND_FINAL'));
+      const dayVal = m.day ? (String(m.day).indexOf('Hari') !== -1 ? String(m.day) : ('Hari ' + m.day)) : '-';
+
       mlbbBaganRows.push([
         matchLabel,
         phaseName,
         formatStr,
         m.teamA || 'TBD',
-        (m.scoreA !== null && m.scoreA !== undefined) ? m.scoreA : '-',
-        (m.scoreB !== null && m.scoreB !== undefined) ? m.scoreB : '-',
+        m.scoreA !== null && m.scoreA !== undefined ? m.scoreA : '-',
+        m.scoreB !== null && m.scoreB !== undefined ? m.scoreB : '-',
         m.teamB || 'TBD',
         m.winner || 'TBD',
         m.mvpPlayer || '-',
         m.mvpHero || '-',
-        m.winner ? 'FINISHED' : 'SCHEDULED'
+        (m.winner && m.winner !== 'TBD') ? 'FINISHED' : 'SCHEDULED',
+        rIdx,
+        mIdx,
+        bracket,
+        dayVal,
+        m.time || '-',
+        m.game1 || '-',
+        m.game2 || '-',
+        m.game3 || '-',
+        m.game4 || '-',
+        m.game5 || '-'
       ]);
     });
   });
@@ -2196,6 +2397,7 @@ function syncDedicatedTournamentSheets(ss, payload) {
       .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
     sheetMLBBBagan.setRowHeight(1, 32);
     safeBatchResizeColumns(sheetMLBBBagan, mlbbBaganHeaders.length);
+    metrics.mlbbBagan.rows = mlbbBaganRows.length;
   }
 
   // =========================================================
@@ -2203,107 +2405,48 @@ function syncDedicatedTournamentSheets(ss, payload) {
   // =========================================================
   let sheetMCGG = ss.getSheetByName('MCGG - Point, Commander & MVP');
   if (!sheetMCGG) sheetMCGG = ss.insertSheet('MCGG - Point, Commander & MVP');
-  sheetMCGG.clearContents();
+  sheetMCGG.clear();
 
   const mcggHeaders = [
-    'Tahap Lobi', 'Peringkat Lobi', 'Nama Lengkap Pemain', 'Nickname (IGN)', 'Game ID',
-    'Ronde 1 - Commander', 'Ronde 1 - Rank & Poin',
-    'Ronde 2 - Commander', 'Ronde 2 - Rank & Poin',
-    'Ronde 3 - Commander', 'Ronde 3 - Rank & Poin',
-    'Poin Sanksi / Penalti', 'Total Poin Akhir',
-    'Jumlah Top 4', 'Jumlah Juara 1 (MVP Ronde)', 'Status / Gelar'
+    'Lobi', 'Peringkat', 'Nama Pemain', 'Departemen / Divisi',
+    'R1 - Rank', 'R1 - Point', 'R1 - Commander',
+    'R2 - Rank', 'R2 - Point', 'R2 - Commander',
+    'R3 - Rank', 'R3 - Point', 'R3 - Commander',
+    'Total Poin', 'Total MVP (Rank 1)', 'Status Kelolosan'
   ];
   const mcggRows = [mcggHeaders];
 
   const lobbies = payload.mcggLobbies || {};
-  const lobbyKeysOrder = Object.keys(lobbies).length > 0 
-    ? Object.keys(lobbies) 
-    : ['LOBBY_A', 'LOBBY_B', 'LOBBY_C', 'LOBBY_D', 'LOBBY_E', 'SEMI_A', 'SEMI_B', 'GRAND_FINAL'];
+  Object.keys(lobbies).forEach(lobbyKey => {
+    const pList = lobbies[lobbyKey] || [];
+    const isQual = lobbyKey === 'LOBBY_A' || lobbyKey === 'LOBBY_B';
+    const qualDone = pList.every(p => p.r1 && p.r2 && p.r3);
 
-  lobbyKeysOrder.forEach(lobbyKey => {
-    const list = (lobbies[lobbyKey] || []).slice();
-    if (list.length === 0) return;
-
-    // Sort sesuai aturan Tie-Breaker resmi MCGG:
-    // Total Poin (desc) -> Juara 1 / MVP Ronde (desc) -> Top 4 (desc) -> Pengurangan Poin / Penalti (makin sedikit kena pengurangan di atas: deductA - deductB) -> Breakdown Posisi Finish 1-8 -> Nama (A-Z)
-    list.sort((a, b) => {
-      const totA = Number(a.total) || 0;
-      const totB = Number(b.total) || 0;
-      if (totB !== totA) return totB - totA;
-
-      const aRank1 = [a.r1, a.r2, a.r3].filter(r => parseInt(r, 10) === 1).length;
-      const bRank1 = [b.r1, b.r2, b.r3].filter(r => parseInt(r, 10) === 1).length;
-      if (bRank1 !== aRank1) return bRank1 - aRank1;
-
-      const aTop4 = [a.r1, a.r2, a.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
-      const bTop4 = [b.r1, b.r2, b.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
-      if (bTop4 !== aTop4) return bTop4 - aTop4;
-
-      const deductA = Math.abs(Number(a.penalty) || 0);
-      const deductB = Math.abs(Number(b.penalty) || 0);
-      if (deductA !== deductB) return deductA - deductB;
-
-      for (let r = 1; r <= 8; r++) {
-        const aRCount = [a.r1, a.r2, a.r3].filter(rank => parseInt(rank, 10) === r).length;
-        const bRCount = [b.r1, b.r2, b.r3].filter(rank => parseInt(rank, 10) === r).length;
-        if (bRCount !== aRCount) return bRCount - aRCount;
-      }
-
-      return (a.name || '').localeCompare(b.name || '');
-    });
-
-    list.forEach((p, idx) => {
-      const fmtRank = (r) => {
-        const rk = parseInt(r) || 0;
-        if (!rk) return '-';
-        const pt = POINT_MAP[rk] || 0;
-        return `Rank ${rk} (${pt > 0 ? '+' + pt : pt} pt)`;
-      };
-
-      const top4Count = [p.r1, p.r2, p.r3].filter(r => r >= 1 && r <= 4).length;
-      const rank1MvpCount = [p.r1, p.r2, p.r3].filter(r => r === 1).length;
-      const allRoundsPlayed = (p.r1 > 0 && p.r2 > 0 && p.r3 > 0);
-
-      let statusLabel = 'TBD';
+    pList.forEach((p, idx) => {
+      let status = 'Babak Kualifikasi';
       if (lobbyKey === 'GRAND_FINAL') {
-        if (allRoundsPlayed) {
-          if (idx === 0) statusLabel = '🏆 JUARA 1 + ⭐ MVP MCGG';
-          else if (idx === 1) statusLabel = '🥈 JUARA 2';
-          else if (idx === 2) statusLabel = '🥉 JUARA 3';
-          else statusLabel = `Finalis (#${idx + 1})`;
-        }
-      } else if (lobbyKey.indexOf('SEMI_') === 0) {
-        if (allRoundsPlayed) {
-          statusLabel = idx < 4 ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
-        }
-      } else {
-        if (allRoundsPlayed) {
-          const hasSemis = !!lobbies.SEMI_A;
-          if (hasSemis) {
-            statusLabel = idx < 3 ? 'LOLOS KE SEMIFINAL' : (idx === 3 ? 'KANDIDAT BEST 4TH' : ('GUGUR (Peringkat ' + (idx + 1) + ')'));
-          } else {
-            statusLabel = idx < 4 ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
-          }
-        }
+        status = 'Grand Finalist';
+      } else if (isQual && qualDone) {
+        status = (idx < 4) ? 'Lolos Grand Final' : 'Gugur';
       }
 
       mcggRows.push([
         lobbyKey,
         `#${idx + 1}`,
-        p.name || 'TBD',
-        p.nickname || '-',
-        p.gameId || '-',
-        p.c1 ? p.c1.toUpperCase() : '-',
-        fmtRank(p.r1),
-        p.c2 ? p.c2.toUpperCase() : '-',
-        fmtRank(p.r2),
-        p.c3 ? p.c3.toUpperCase() : '-',
-        fmtRank(p.r3),
-        p.penalty || 0,
+        p.name || '-',
+        p.dept || '-',
+        p.r1 ? `Rank ${p.r1}` : '-',
+        p.r1 ? (POINT_MAP[p.r1] || 0) : 0,
+        p.cmd1 || '-',
+        p.r2 ? `Rank ${p.r2}` : '-',
+        p.r2 ? (POINT_MAP[p.r2] || 0) : 0,
+        p.cmd2 || '-',
+        p.r3 ? `Rank ${p.r3}` : '-',
+        p.r3 ? (POINT_MAP[p.r3] || 0) : 0,
+        p.cmd3 || '-',
         p.total || 0,
-        top4Count,
-        rank1MvpCount,
-        statusLabel
+        p.mvpCount || 0,
+        status
       ]);
     });
   });
@@ -2314,6 +2457,107 @@ function syncDedicatedTournamentSheets(ss, payload) {
       .setFontWeight('bold').setBackground('#0f172a').setFontColor('#38bdf8').setHorizontalAlignment('center');
     sheetMCGG.setRowHeight(1, 32);
     safeBatchResizeColumns(sheetMCGG, mcggHeaders.length);
+    metrics.mcggPoint.rows = mcggRows.length;
+  }
+
+  metrics.totalRows = metrics.mlbbPoint.rows + metrics.mlbbBagan.rows + metrics.mcggPoint.rows;
+  metrics.rowsUpdated = metrics.totalRows;
+
+  try {
+    if (typeof PropertiesService !== "undefined") {
+      var props = PropertiesService.getScriptProperties();
+      if (props) {
+        var vBagan = parseInt(props.getProperty("ver_mlbb_bagan") || "1", 10) + 1;
+        var vPoint = parseInt(props.getProperty("ver_mlbb_point") || "1", 10) + 1;
+        var vMcgg = parseInt(props.getProperty("ver_mcgg_point") || "1", 10) + 1;
+        var vCfg = parseInt(props.getProperty("ver_config") || "1", 10) + 1;
+        props.setProperty("ver_mlbb_bagan", vBagan.toString());
+        props.setProperty("ver_mlbb_point", vPoint.toString());
+        props.setProperty("ver_mcgg_point", vMcgg.toString());
+        props.setProperty("ver_config", vCfg.toString());
+        props.setProperty("last_synced_at", new Date().toISOString());
+        syncVersionsToVercel(props);
+      }
+    }
+  } catch(e) {}
+
+  return metrics;
+}
+
+/**
+ * Trigger Otomatis saat sel diedit langsung di Spreadsheet
+ */
+function onEdit(e) {
+  if (!e || !e.range) return;
+  try {
+    var sheet = e.range.getSheet();
+    var sheetName = sheet.getName();
+    var trackedSheets = {
+      "MLBB - Bagan & MVP": "mlbb_bagan",
+      "MLBB - Klasemen & Point": "mlbb_point",
+      "MCGG - Point, Commander & MVP": "mcgg_point",
+      "Pengaturan Turnamen": "config",
+      "MLBB - Tim": "participants",
+      "MLBB - Peserta": "participants",
+      "Pendaftaran MCGG": "participants"
+    };
+
+    if (trackedSheets[sheetName]) {
+      var sheetKey = trackedSheets[sheetName];
+      if (typeof PropertiesService !== "undefined") {
+        var props = PropertiesService.getScriptProperties();
+        if (props) {
+          var curVer = parseInt(props.getProperty("ver_" + sheetKey) || "1", 10) + 1;
+          props.setProperty("ver_" + sheetKey, curVer.toString());
+          props.setProperty("last_synced_at", new Date().toISOString());
+          syncVersionsToVercel(props);
+        }
+      }
+    }
+  } catch(err) {
+    Logger.log("onEdit Error: " + err.toString());
+  }
+}
+
+/**
+ * Helper pengiriman versi ke Vercel Edge Config REST API
+ */
+function syncVersionsToVercel(props) {
+  if (!props && typeof PropertiesService !== "undefined") {
+    props = PropertiesService.getScriptProperties();
+  }
+  if (!props) return;
+  var token = props.getProperty("VERCEL_API_TOKEN");
+  if (!token) return; // Lewati jika token belum dipasang panitia
+
+  var edgeConfigId = "ecfg_oqmxozqwbyhphbiuxs2gry4gn0fc";
+  var url = "https://api.vercel.com/v1/edge-config/" + edgeConfigId + "/items";
+
+  var versionsPayload = {
+    mlbb_bagan: parseInt(props.getProperty("ver_mlbb_bagan") || "1", 10),
+    mlbb_point: parseInt(props.getProperty("ver_mlbb_point") || "1", 10),
+    mcgg_point: parseInt(props.getProperty("ver_mcgg_point") || "1", 10),
+    config: parseInt(props.getProperty("ver_config") || "1", 10),
+    participants: parseInt(props.getProperty("ver_participants") || "1", 10),
+    last_synced_at: props.getProperty("last_synced_at") || new Date().toISOString()
+  };
+
+  var options = {
+    method: "patch",
+    contentType: "application/json",
+    headers: { Authorization: "Bearer " + token },
+    payload: JSON.stringify({
+      items: [{ operation: "upsert", key: "sheet_versions", value: versionsPayload }]
+    }),
+    muteHttpExceptions: true
+  };
+
+  try {
+    if (typeof UrlFetchApp !== "undefined") {
+      UrlFetchApp.fetch(url, options);
+    }
+  } catch(e) {
+    Logger.log("Gagal sync ke Vercel: " + e.toString());
   }
 }
 

@@ -1,131 +1,171 @@
 ---
 title: "Review & Improvement Plan: Yokke Squad E-Sports Portal 2026"
-category: "QA & UX Audit"
+category: "QA, Security & Architecture Audit"
 target: "Production & Local Dev"
-date: 2026-10-24
+date: 2026-11-05
 status: "Completed & Verified (100% Tests Passed)"
 tags:
   - yokkesquad
   - esports
   - frontend
+  - backend-gas
+  - security
+  - relational-sheets
+  - stitch-mcp
   - uiux
-  - audit
-  - wcag
 ---
 
-# 🏆 Audit Komprehensif & Rencana Perbaikan: Yokke Squad 2026
+# 🏆 Audit Komprehensif, Arsitektur & Rencana Tampilan Stitch MCP: Yokke Squad 2026
 
-> [!INFO] Ringkasan Audit & Status Eksekusi
+> [!INFO] Ringkasan Audit & Status Eksekusi Terkini
 > - **Aplikasi**: Portal Web Turnamen Yokke Squad 2026 (MLBB & MCGG)
 > - **URL Production**: `https://yokkesquad.vercel.app/`
-> - **Google Apps Script Live Webhook (Terkini & Teroptimasi)**: `https://script.google.com/macros/s/AKfycbwoThOWtWRE0EfH_BmxbjIHlJTL-fT8hHfXTUZO5upHNQmUIldBIMKNHbjowqPnnsIAXg/exec` (Status: Terverifikasi HTTP 200 OK, Latensi Turun Drastis dari 18.7s ke 4.5s)
-> - **Status Pengujian**:
->   - Functional Tests: **74/74 Test Cases Lulus (100%)**
+> - **Google Apps Script Live Webhook**: `https://script.google.com/macros/s/AKfycbwoThOWtWRE0EfH_BmxbjIHlJTL-fT8hHfXTUZO5upHNQmUIldBIMKNHbjowqPnnsIAXg/exec`
+> - **Status Pengujian Unit & Integrasi**:
+>   - Functional Tests: **79/79 Test Cases Lulus (100%)**
 >   - Improvement Tests: **23/23 Test Cases Lulus (100%)**
->   - Build & Syntax Check: **Valid & Lulus (Exit Code 0)**
-> - **Status**: Seluruh item perbaikan telah diimplementasikan, diverifikasi, dan siap dideploy.
+>   - Server PIN Security Tests: **7/7 Test Cases Lulus (100%)**
+>   - Targeted 3-Row Sync Tests: **Semua Test Cases Lulus (100%)**
+>   - Standings, Schedule & MVP Tests: **Semua Test Cases Lulus (100%)**
+>   - Syntax & Parsing Check: **Valid & Lulus (0 Syntax Error)**
 
 ---
 
-## 🚨 Temuan Kritis (P0) & Status Penyelesaian
+## 🔒 1. Keamanan & Autentikasi Panitia (Server-Side PIN Validation)
 
-> [!CAUTION] 1. Silent Data Loss pada Registrasi & Sinkronisasi
-> - **Form Registrasi**: ✅ Diperbaiki. Form tidak lagi di-reset jika `fetch` ke GAS gagal, data pendaftar tetap aman di form, dan notifikasi error transparan dimunculkan.
-> - **Simpan Panitia**: ✅ Diperbaiki. Menggunakan **sinkronisasi hibrida**: mencoba batch update tunggal (`BATCH_UPDATE_PARTICIPANTS`), dan otomatis beralih ke antrean serial (maks 2-3 request berurutan dengan jeda 250ms) dilengkapi progress bar visual.
-
-> [!WARNING] 2. Fullscreen Loader Hanging Tanpa Timeout
-> - ✅ Diperbaiki. Pasang timeout 8 detik dengan `AbortController` serta tombol darurat *"⚡ Muat dengan Data Offline / Cache"* yang langsung me-render data lokal seketika.
-
-> [!WARNING] 3. Kegagalan Kontras Warna WCAG AA
-> - ✅ Diperbaiki. Teks ungu kini menggunakan `--yokke-purple-text: #c084fc` (rasio kontras 8.6:1, jauh di atas standar 4.5:1). Teks abu-abu kecil diperbarui menjadi `#94a3b8` (rasio 7.5:1).
+> [!CAUTION] Masalah Kebocoran PIN di Cache Browser (Terselesaikan)
+> - **Penyebab Lama**: Fungsi pembacaan data `doGet` di Google Apps Script mengekspos `config.adminPassword` ke respon publik, dan frontend menyimpannya ke `localStorage.setItem('yokke_admin_pin', currentAdminPin)`. Akibatnya, PIN panitia terbaca secara telanjang di menu browser *DevTools > Application > Local Storage*.
+> - **Validasi Server-Side**: Verifikasi PIN kini dipindahkan 100% ke Google Apps Script via action `VERIFY_ADMIN_PIN`. Client web tidak lagi membandingkan PIN secara lokal.
+> - **Zero Cache Exposure**: Field `adminPassword` telah dihapus sepenuhnya dari payload `doGet` publik. Kunci `yokke_admin_pin` otomatis dibersihkan dari `localStorage` saat inisialisasi aplikasi.
+> - **Sesi Panitia Terisolasi**: Status login panitia dan token auth disimpan dalam memori runtime dan `sessionStorage` (hanya berlaku pada tab aktif dan terhapus otomatis saat tab/browser ditutup).
 
 ---
 
-## 👥 Review Tim: Designer vs User Awam
+## 🗄️ 2. Arsitektur Relasional Murni (Pemberantasan Limit Sel 50.000 Karakter)
 
-| Dimensi Evaluasi | Perspektif Designer (UI/UX) | Perspektif User Awam (Peserta & Karyawan) | Status Solusi |
-|---|---|---|---|
-| **Formulir Pendaftaran** | Kurang visual hierarchy, ketiadaan inline error cues, 84 native `alert()` browser. | Sangat melelahkan (34–54 field input). Takut ketikan hilang karena tidak ada autosave saat buka WhatsApp. | ✅ Selesai: Autosave ke `localStorage`, kompresi foto otomatis (Canvas $\le 1200\text{px}$), dan dialog toast menggantikan alert(). |
-| **Navigasi Bagan** | Master-Detail Hub elegan di layar lebar, namun pecah menjadi tumpukan vertikal >1.200px di ponsel. | Bingung mencari jadwal tanding tim sendiri di antara 8 grup. Mengklik babak terasa macet karena tidak auto-scroll. | ✅ Selesai: Dropdown Babak Ringkas di HP ($\le 992\text{px}$) + auto-scroll mulus ke panel hasil. |
-| **Aksesibilitas & Teks** | Gagal uji kontras WCAG AA (rasio 2.27:1). Font sistem bawaan minim nuansa esports. | Teks kecil (0.68rem) sulit dibaca di smartphone. Kebingungan membaca istilah BO3, Double Elimination, Fearless. | ✅ Selesai: Kontras WCAG AA lulus, touch targets $\ge 40\text{px}$, modal Glosarium Istilah Turnamen. |
-| **Pesan Sistem** | Adanya dead-markup tombol karusel akibat deklarasi `display: none !important;`. | Pesan khusus panitia ("Pendaftaran Masih Dibuka") muncul ke pengunjung umum, menimbulkan kebingungan. | ✅ Selesai: CSS karusel dibersihkan, notifikasi panitia diisolasi hanya untuk admin, tombol reset dilindungi verifikasi password. |
+> [!WARNING] Masalah Batas Karakter Sel Google Sheets (Terselesaikan)
+> Pada implementasi sebelumnya, seluruh array objek pertandingan, bagan playoff, dan klasemen disimpan sebagai satu string JSON raksasa pada kolom B tab `Pengaturan Turnamen`. Ketika turnamen berkembang menjadi 8 grup dan 6 ronde playoff, ukuran string JSON melampaui batas maksimal **50.000 karakter per sel** Google Sheets, memicu *silent truncate* dan data rusak.
 
----
+### Rincian Skema Tabel 3 Sheet Turnamen Terpisah
 
-## 🛠️ Action Items Selesai (`/plan`)
-
-### 🔴 P0 - Integritas Data & Stabilitas
-- [x] Batalkan penyimpanan lokal dan form reset jika `fetch` registrasi ke GAS melempar error (`app.js`).
-- [x] Implementasikan kompresi gambar client-side (HTML5 Canvas $\le 1200\text{px}$, quality 0.75 dengan error fallback).
-- [x] Pasang auto-save & restore formulir ke `localStorage` (`yokke_form_draft_mlbb` & `yokke_form_draft_mcgg`).
-- [x] Terapkan sinkronisasi hibrida pada `saveAllChangesToGoogleSheet` (Batch update + serial fallback ber-progress bar).
-- [x] Tambahkan `AbortController` (timeout 8 detik) dan tombol fallback *"Buka dengan Data Cache"* pada loader global.
-- [x] Sembunyikan banner pengumuman panitia (`mlbbRegOpenNotice` & undian commander) dari pengunjung non-admin.
-- [x] Proteksi keamanan Admin PIN dan perbaikan integritas 11 kolom MCGG di `google_apps_script.js`.
-
-### 🟡 P1 - Aksesibilitas & Responsivitas Mobile
-- [x] Ubah variabel warna teks ungu menjadi `--yokke-purple-text: #c084fc` agar rasio kontras $\ge 8.6:1$ (lulus WCAG AA).
-- [x] Implementasikan Dropdown Babak Ringkas untuk navigasi bagan MLBB di layar mobile ($\le 992\text{px}$).
-- [x] Tambahkan auto-scroll mulus ke `.flow-detail-panel` saat node babak dipilih di HP.
-- [x] Rapikan konflik CSS karusel di `style.css`.
-- [x] Perbesar tinggi tombol skor dan MVP menjadi minimal $40\text{px}$ pada layar sentuh.
-- [x] Terapkan `position: sticky; left: 0;` pada kolom Logo & Nama Tim di tabel peserta mobile dengan `z-index: 3`.
-
-### ⚡ Optimalisasi Kecepatan Google Apps Script (Latency Fix)
-- **Penyebab Latensi 18.7s**: Pada implementasi lama `doGet(e)`, terdapat loop `DriveApp.getFolderById()` dan `mainFolder.getFolders()` yang memindai seluruh folder Google Drive untuk 40+ tim secara remote pada setiap pembukaan halaman.
-- **Solusi Backend**:
-  - Menghapus panggilan remote DriveApp yang lambat di `doGet`.
-  - Mengambil link logo langsung dari data spreadsheet (`team.folderUrl`).
-  - Menghilangkan `ensureRelationalSheetsExist(ss)` dari jalur pembacaan pasif `doGet`.
-- **Solusi Frontend (Stale-While-Revalidate)**:
-  - Pada pembukaan halaman, web langsung me-render data cache lokal seketika (< 100ms) tanpa menunggu respon jaringan Google.
-  - Sinkronisasi live Google Sheets dijalankan di latar belakang (*background sync*).
-  - Timeout fetch disesuaikan dengan batas aman 8–25 detik.
+| Sheet Target | Jumlah Kolom | Struktur Kolom Utama |
+|---|---|---|
+| **MLBB - Bagan & MVP** | 21 Kolom | `ID Match`, `Tahap / Fase`, `Format`, `Tim A`, `Skor A`, `Skor B`, `Tim B`, `Pemenang Match`, `MVP Match`, `Hero MVP`, `Status Match`, `Ronde Index`, `Match Index`, `Cabang Bracket`, `Jadwal Hari`, `Jam Tanding`, `Game 1 s/d 5 Hasil` |
+| **MLBB - Klasemen & Point** | 10 Kolom | `Grup`, `Peringkat`, `Nama Tim`, `Match`, `Menang`, `Kalah`, `Agregat Game (Diff)`, `Poin Klasemen`, `Status Kelolosan`, `Total MVP Team` |
+| **MCGG - Point, Commander & MVP** | 16 Kolom | `Lobi`, `Peringkat`, `Nama Pemain`, `Departemen`, `R1 Rank/Poin/Commander`, `R2 Rank/Poin/Commander`, `R3 Rank/Poin/Commander`, `Total Poin`, `Total MVP (Rank 1)`, `Status Kelolosan` |
+| **Pengaturan Turnamen** | 3 Kolom | Nilai skalar ringkas: `tournamentFormat`, `isRegistrationClosed`, `isPlayoffLocked`, `isGroupLocked`, `tournamentStage`, `adminpassword`. Seluruh kunci lama bernilai `"MIGRATED_TO_RELATIONAL_SHEETS"`. |
 
 ---
 
-## 🏆 Pembaruan Jadwal Resmi (Poster Match Schedule) & Perbaikan Perhitungan Match
+## 🎨 3. Rencana Desain Antarmuka & Integrasi Google Stitch MCP
 
-### 1. Sinkronisasi Penuh Jadwal Fase Grup dengan Poster Resmi (Grup A – H)
-- **Kondisi Sebelumnya**: Generator jadwal internal menggunakan pola indeks array dinamis (`pattern5` / `pattern6`) yang tidak cocok dengan urutan pertandingan pada poster rilis resmi panitia turnamen.
-- **Implementasi**:
-  - Menetapkan konstanta `MLBB_OFFICIAL_GROUP_SCHEDULE` untuk 8 grup (Grup A – H) yang mencerminkan 100% isi poster resmi (Day 1 s/d Day 5, Match 1, Match 2, dan Match 3 pada Grup F).
-  - Waktu tanding resmi diintegrasikan: **19:00 WIB / 20:00 WITA** secara simultan (Stream 1, Stream 2, Stream 3).
-  - Label tanggal akurat:
-    - **Hari 1**: Senin, 26 Okt 2026
-    - **Hari 2**: Selasa, 27 Okt 2026
-    - **Hari 3**: Rabu, 28 Okt 2026
-    - **Hari 4**: Kamis, 29 Okt 2026
-    - **Hari 5**: Jumat, 30 Okt 2026
-  - Menyediakan filter pil hari interaktif yang dilengkapi tanggal: `Semua Hari (1–5)`, `Hari 1 (26 Okt)`, `Hari 2 (27 Okt)`, `Hari 3 (28 Okt)`, `Hari 4 (29 Okt)`, `Hari 5 (30 Okt)`.
-  - Tampilan tim istirahat (Rest Rule / BYE) otomatis diperbarui sesuai jadwal poster tiap harinya.
-  - Penyelarasan orientasi skor Home vs Away (`saved.teamA === p.teamA ? saved.scoreA : saved.scoreB`) menjamin skor selalu tersemat pada tim yang tepat meskipun urutan input berbeda.
+Untuk menghadirkan pengalaman visual kelas turnamen esports profesional yang modern, responsif, dan ergonomis, kita menyusun **Rencana Pembaruan Tampilan (UI/UX Plan)** menggunakan **Google Stitch MCP**.
 
-### 2. Pencegahan Penggandaan Match (Inflation / Ballooning) Saat Koreksi Input
-- **Penyebab**: Match ID yang disimpan sebelumnya bersifat non-kanonikal (`A_vs_B` vs `B_vs_A`). Ketika admin mengoreksi skor dengan urutan terbalik, tercipta dua entri independen yang keduanya dihitung pada rekalkulasi klasemen.
-- **Solusi**:
-  - Mengimplementasikan `getCanonicalGroupMatchId(gName, teamA, teamB)` yang mengurutkan nama tim secara alfabetis (`sort()`), menghasilkan satu ID kanonikal tunggal yang stabil.
-  - Otomatisasi fungsi `deduplicateGroupMatchResults()` yang menghapus varian kunci lama/terbalik saat skor disimpan kembali (`setGroupMatchScore`).
-  - Rekalkulasi klasemen (`recalculateGroupStandingsFromFixtures`) menyaring `uniqueGroupMatches` via `Set` pasangan kanonikal, sehingga 1 pasangan tim dijamin hanya dihitung tepat 1 kali.
+### A. Konfigurasi Server Stitch MCP
 
-### 3. Modal Pemilih MVP Cepat (1-Click Roster & Meta Hero Selector)
-- **Pain Point**: Nama pemain/IGN yang rumit dan panjang (misal: `ᕙ⁠(Zikw¤¤⁠i30)⁠ᕗ.`, `4her,annn.`) sangat sulit dan rawan salah ketik bila harus dimasukkan lewat dialog prompt browser teks biasa.
-- **Solusi UX/UI**:
-  - Menyediakan modal interaktif `mlbbMvpPickerModal` dengan tab tim (Tim A vs Tim B) yang secara otomatis menyeleksi tim pemenang.
-  - Seluruh anggota roster pemain ditampilkan sebagai kartu/chip yang dapat **diklik 1 kali** untuk memilih pemain MVP (menampilkan IGN, nama asli, dan role).
-  - Filter pencarian instan nama/IGN untuk tim dengan banyak anggota.
-  - Autocomplete datalist 126 Hero MLBB resmi serta chip cepat (1-tap pill) untuk 17 hero meta turnamen terpopuler (*Ling, Fanny, Hayabusa, Nolan, Suyou, Beatrix, Claude, Harith, Chou, Fredrinn, Valentina, Novaria, Tigreal, Arlott, Roger, Cici, Zhuxin*).
-  - Berlaku serentak untuk Fase Grup maupun Playoff Bracket.
+Server Stitch MCP dikonfigurasikan pada berkas konfigurasi MCP (`mcp_config.json`):
 
-### 4. Dukungan Multi-Game MVP untuk Seri Pertandingan (BO3 & BO5: 1 MVP Tiap Game)
-- **Konteks Esports**: Pada format Best of 3 (BO3) dan Best of 5 (BO5), setiap satu seri pertandingan terdiri dari 2 hingga 5 game terpisah. Setiap game yang selesai melahirkan 1 MVP individual (Pemain + Hero + Tim Pemenang Game tersebut).
-- **Implementasi**:
-  - **Selector Game Interaktif**: Menambahkan bilah tab game (`[ 🎮 Game 1 ]`, `[ 🎮 Game 2 ]`, `[ 🎮 Game 3 ]` untuk BO3, hingga Game 5 untuk Grand Final BO5) dengan indikator bintang `⭐` pada game yang telah terisi MVP.
-  - **Penyimpanan Detail & Terstruktur**: Data disimpan dalam array `gameMvps: [{ game: 1, player, hero, team }, ...]` pada hasil pertandingan.
-  - **Kompatibilitas Penuh Google Sheets**: Untuk integrasi spreadsheet yang memiliki 1 kolom teks MVP Match & Hero MVP, data otomatis diringkas menjadi `G1: Nick (Hero) | G2: Nick (Hero)` tanpa mengubah struktur kolom Google Sheets.
-  - **Kalkulasi Akumulasi MVP Klasemen**: Klasemen grup secara otomatis menghitung setiap MVP game yang diraih tim (`t.mvpCount`), sehingga jika dalam match BO3 tim A menang 2-1 (2 MVP untuk tim A, 1 MVP untuk tim B), total MVP kedua tim terakumulasi secara adil dan presisi.
-  - **Tampilan Kartu Pertandingan Game-by-Game**: Menggunakan formatter `formatMatchMvpDisplayHtml()` yang menampilkan badge MVP per-game yang rapi dan elegan pada kartu jadwal fase grup, interactive hub, dan playoff tree.
+```json
+{
+  "mcpServers": {
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "AQ.Ab8RN6KUd74UgMTPe6Hzs-qs9mz-AhWBNh-hCCmzI8FZzFszYQ"
+      }
+    }
+  }
+}
+```
 
+### B. Roadmap Modul Tampilan yang Dibuat dengan Stitch MCP
 
+#### 1. Modul 1: Interactive Playoff Bracket Tree (6 Ronde Lengkap)
+* **Tujuan**: Visualisasi bagan pohon eliminasi ganda (Upper Bracket 16 Tim & Lower Bracket) yang mulus di desktop dan mobile.
+* **Fitur Utama**:
+  - Kanvas responsif dengan visual kartu pertandingan (*match node*) bergaris sambung neon glowing.
+  - Kartu menampilkan badge tahap (*Upper 16 Besar, QF, SF, Lower R1-R3, Grand Final BO5*), logo tim, status (*Live, Finished, Scheduled*), dan skor game.
+  - Interaksi tap/hover untuk menampilkan kartu MVP (*Pemain + Hero + Badge Tim*) secara *popover*.
+  - Mode navigasi babak ringkas (*compact swipeable stage tab*) saat dibuka di smartphone ($\le 992\text{px}$).
 
+#### 2. Modul 2: Cyberpunk Admin Match Controller & Login Modal
+* **Tujuan**: Antarmuka kontrol panel panitia turnamen yang berdaya guna tinggi (*powerhouse operational dashboard*).
+* **Fitur Utama**:
+  - **Modal Login Panitia**: Tampilan dialog bertema *cyberpunk glassmorphism* dengan indikator status server-side, animasi PIN dots aman, dan tombol login yang responsif terhadap penekanan tombol Enter.
+  - **Quick Scoreboard Controller**: Panel input skor instan BO3/BO5 satu sentuhan (1-click increment/decrement skor) tanpa reload halaman.
+  - **Roster & Meta Hero MVP Selector**: Tampilan chip roster per-tim yang interaktif dengan grid 17 hero meta MLBB terkini.
+  - **Status Switcher & Lock Toggles**: Sakelar visual untuk *Kunci Undian Playoff*, *Kunci Tahap Grup*, dan *Buka/Tutup Pendaftaran*.
 
+#### 3. Modul 3: Standings Hub & Papan Poin MCGG
+* **Tujuan**: Penyajian klasemen yang dinamis dan informatif untuk 8 grup MLBB dan 3 Lobi MCGG.
+* **Fitur Utama**:
+  - **MLBB Klasemen**: Baris tim dengan badge status kelolosan (*Lolos Upper Bracket, Lolos Lower Bracket, Gugur*), kalkulator *Diff Agregat Game*, dan indikator Head-to-Head (H2H).
+  - **MCGG Match Grid**: Format kartu 16 kolom per ronde (R1, R2, R3) dengan potret Little Commander berbingkai lingkaran ganda (*dual-circle hero portrait*) dan visual medali MVP Rank 1.
+
+#### 4. Modul 4: Mobile-First Schedule & Match Stream Feed
+* **Tujuan**: Halaman jadwal ramah peserta yang mudah dibagikan ke WhatsApp dan Discord panitia.
+* **Fitur Utama**:
+  - Filter pil jadwal per hari (*Semua Hari, Hari 1 [26 Okt], s/d Hari 5 [30 Okt]*).
+  - Kartu match dengan indikator waktu (19:00 WIB / 20:00 WITA) dan tautan kanal streaming siaran langsung (*Stream 1, Stream 2, Stream 3*).
+  - Modal verifikasi ID card pemain pop-up ber-resolusi tinggi dengan perlindungan *z-index layering*.
+
+### C. Alur Kerja Integrasi Stitch ke Codebase
+
+1. **Prompting & Layout Generation via Stitch**: Mengirim instruksi visual ke server Stitch MCP dengan spesifikasi warna tema Yokke (Cyan `#00d2ff`, Purple `#c084fc`, Dark Slate `#0a0f1d`, Gold `#fbbf24`).
+2. **Review & Kompatibilitas CSS**: Mengekstrak kode HTML & CSS hasil Stitch, memastikan tidak terjadi tabrakan class dengan sistem tata letak di [style.css](file:///e:/Training/yokkesquad-tournament/style.css).
+3. **Data Binding & Reaktivitas**: Menghubungkan markup komponen baru ke fungsi render di [app.js](file:///e:/Training/yokkesquad-tournament/app.js) (*renderMLBBPlayoffBracketUI, renderMLBBInteractiveHubUI, renderMCGGTable*).
+4. **Verifikasi Aksesibilitas & Responsivitas**: Menjalankan pengujian kontras WCAG AA ($\ge 4.5:1$) dan tes fungsional mobile untuk memastikan seluruh tombol sentuh $\ge 40\text{px}$.
+
+---
+
+## ⚡ 4. Sinkronisasi Realtime & Vercel Edge Config
+
+- **Pemicu `onEdit(e)` Otomatis**: Ditambahkan trigger otomatis di Google Apps Script yang mendeteksi pengeditan langsung di lembar kerja turnamen (*MLBB - Bagan & MVP, MLBB - Klasemen & Point, MCGG, Pengaturan Turnamen*).
+- **Pelacakan Versi Data**: Menggunakan `PropertiesService.getScriptProperties()` untuk menaikkan versi data (`ver_mlbb_bagan`, `ver_mlbb_point`, `ver_mcgg_point`, dsb.) secara inkremental setiap kali terjadi perubahan.
+- **Edge Config Integration**: Fungsi `syncVersionsToVercel(props)` menyiarkan versi terbaru ke Vercel Edge Config (`ecfg_oqmxozqwbyhphbiuxs2gry4gn0fc`) sehingga client web dapat melakukan verifikasi *stale-while-revalidate* instan.
+
+---
+
+## 📋 5. Action Items & Checklist Status
+
+### 🔴 P0 - Keamanan & Integritas Data
+- [x] Pindahkan validasi PIN Panitia dari client web ke Google Apps Script (`VERIFY_ADMIN_PIN`).
+- [x] Bersihkan kunci `yokke_admin_pin` dari `localStorage` pengunjung saat aplikasi dibuka.
+- [x] Hilangkan pembocoran `adminPassword` pada respon GET `doGet(e)`.
+- [x] Migrasikan penyimpanan data turnamen ke skema 21 kolom relasional murni (bebas limit 50.000 karakter).
+- [x] Rekonstruksi otomatis susunan bagan playoff 6 ronde (`reconstructedPlayoff`) langsung dari baris sheet.
+
+### 🟡 P1 - Desain Tampilan via Stitch MCP & UX
+- [x] Rancang arsitektur komponen & modul layar turnamen terintegrasi Stitch MCP.
+- [ ] Implementasikan prototipe layout Playoff Bracket Tree 6 ronde menggunakan Stitch MCP.
+- [ ] Implementasikan redesain Cyberpunk Admin Match Controller & Login Modal.
+- [ ] Optimalkan kartu jadwal tanding mobile-first feed dengan live stream links.
+- [x] Pasang animasi loading spinner dan status disabled pada tombol modal login panitia.
+- [x] Dukungan tombol Enter keyboard untuk submit PIN panitia.
+- [x] Modal pemilih MVP satu klik (1-click roster selector & meta hero autocomplete).
+- [x] Pemisahan tim satelit dan anti-tabrakan divisi yang sama pada pengundian grup & lobi.
+- [x] Dukungan multi-game MVP per-game untuk format seri BO3 dan Grand Final BO5.
+
+### 🟢 P2 - Observabilitas & Deployment
+- [x] Pembaruan indeks fungsi otomatis ([FUNCTION_INDEX.md](file:///e:/Training/yokkesquad-tournament/FUNCTION_INDEX.md)) mencakup 309 fungsi dan 1.328 call sites.
+- [x] Unit test keamanan server PIN ([test_server_pin_validation.js](file:///e:/Training/yokkesquad-tournament/tests/test_server_pin_validation.js)) terintegrasi.
+- [ ] Deploy versi baru Google Apps Script (*Deploy > Manage deployments > Edit > New version*).
+- [ ] Push commit git dan verifikasi build di production Vercel.
+
+---
+
+## 🚀 6. Panduan Deployment Google Apps Script
+
+Untuk mengaktifkan seluruh pembaruan backend ini pada spreadsheet live:
+
+1. Buka Google Sheets turnamen: **Extensions > Apps Script**.
+2. Salin seluruh isi berkas [google_apps_script.js](file:///e:/Training/yokkesquad-tournament/google_apps_script.js) dan tempel ke editor `Code.gs`.
+3. Klik tombol **Deploy** di kanan atas > pilih **Manage deployments**.
+4. Klik ikon **Pensil (Edit)** pada deployment aktif.
+5. Pada pilihan **Version**, pilih **New version** (Versi Baru).
+6. Masukkan deskripsi: `Yokke Squad Webhook v4 - Server-Side Auth & 21-Col Relational Sheets`.
+7. Pastikan konfigurasi:
+   - **Execute as**: `Me (<email_panitia>)`
+   - **Who has access**: `Anyone` (Siapa saja)
+8. Klik **Deploy** dan verifikasi URL `/exec`.

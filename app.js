@@ -75,7 +75,12 @@ function toggleMCGGLayoutMode() {
   renderMCGGTable();
 }
 
-let currentAdminPin = localStorage.getItem('yokke_admin_pin') || "YOKKE2026_";
+// Bersihkan PIN dari localStorage agar tidak tersimpan di cache/storage publik
+try {
+  localStorage.removeItem('yokke_admin_pin');
+} catch (e) {}
+
+let currentAdminPin = sessionStorage.getItem('yokke_admin_session_auth') || "";
 const ADMIN_PIN = "YOKKE2026_";
 const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbydYRIt_AGkhglpHCqKVWj9f3lwGAheSXmmvkZCdW6NhmpzbZn2GJvKEZQ3NzPosjA1LA/exec";
 
@@ -859,12 +864,49 @@ function closeResetBaganModal() {
   if (modal) modal.style.display = 'none';
 }
 
-function confirmResetBaganWithPin() {
+async function confirmResetBaganWithPin() {
   const input = document.getElementById('resetBaganPinInput');
   const enteredPin = input ? input.value.trim() : '';
   const err = document.getElementById('resetBaganError');
+  const confirmBtn = document.querySelector('#resetBaganModal .btn-danger');
 
-  if (enteredPin !== currentAdminPin && enteredPin !== 'YOKKE2026_' && enteredPin !== 'YOKKE2026') {
+  if (!enteredPin) {
+    if (err) {
+      err.innerText = 'Harap masukkan PIN Panitia!';
+      err.style.display = 'block';
+    }
+    return;
+  }
+
+  let isValid = (currentAdminPin && enteredPin === currentAdminPin);
+  if (!isValid) {
+    const origText = confirmBtn ? confirmBtn.innerText : 'Reset Bagan';
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:5px;vertical-align:middle;"></span> Memvalidasi...';
+    }
+    try {
+      const res = await postToGoogleAppsScript({
+        action: 'VERIFY_ADMIN_PIN',
+        adminPin: enteredPin
+      }, 10000);
+      const result = await res.json();
+      if (result && result.success) {
+        isValid = true;
+        currentAdminPin = enteredPin;
+        sessionStorage.setItem('yokke_admin_session_auth', enteredPin);
+      }
+    } catch (e) {
+      console.warn('Gagal verifikasi PIN reset ke server:', e);
+    } finally {
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = origText;
+      }
+    }
+  }
+
+  if (!isValid) {
     if (err) {
       err.innerText = 'PIN Panitia salah! Reset bagan dibatalkan.';
       err.style.display = 'block';
@@ -1409,10 +1451,10 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
 
       // Sinkronkan juga Pengaturan Turnamen, Peraturan, & Skor Bagan dari Google Sheets jika tersedia
       if (data.config) {
-        if (data.config.adminPassword) {
-          currentAdminPin = data.config.adminPassword;
-          localStorage.setItem('yokke_admin_pin', currentAdminPin);
-        }
+        // Keamanan: Jangan pernah simpan PIN/Password panitia ke localStorage atau cache publik
+        try {
+          localStorage.removeItem('yokke_admin_pin');
+        } catch (e) {}
         if (data.config.customRules) {
           customRules = data.config.customRules;
           localStorage.setItem('yokke_custom_rules', JSON.stringify(customRules));
@@ -2237,38 +2279,119 @@ function toggleCategoryForm() {
 // Auth functions
 function openLoginModal() {
   document.getElementById('loginModal').classList.add('active');
-  document.getElementById('adminPinInput').value = '';
-  document.getElementById('loginError').style.display = 'none';
-  document.getElementById('adminPinInput').focus();
+  const pinInput = document.getElementById('adminPinInput');
+  if (pinInput) {
+    pinInput.value = '';
+    pinInput.disabled = false;
+    pinInput.focus();
+  }
+  const loginError = document.getElementById('loginError');
+  if (loginError) loginError.style.display = 'none';
 }
 
 function closeLoginModal() {
   document.getElementById('loginModal').classList.remove('active');
+  const pinInput = document.getElementById('adminPinInput');
+  if (pinInput) pinInput.value = '';
+  const loginError = document.getElementById('loginError');
+  if (loginError) loginError.style.display = 'none';
 }
 
-function verifyAdminPin() {
-  const pin = document.getElementById('adminPinInput').value.trim();
-  const expectedPin = (currentAdminPin || localStorage.getItem('yokke_admin_pin') || ADMIN_PIN).trim();
-  if (pin === expectedPin) {
-    isAdmin = true;
-    sessionStorage.setItem('yokke_is_admin', 'true');
-    closeLoginModal();
-    updateAuthUI();
-    renderParticipants();
-    renderCurrentMLBBFormat();
-    renderMCGGTable();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
+async function verifyAdminPin() {
+  const pinInput = document.getElementById('adminPinInput');
+  const pin = pinInput ? pinInput.value.trim() : '';
+  const loginError = document.getElementById('loginError');
+  const submitBtn = document.getElementById('btnLoginSubmit') || document.querySelector('#loginModal .btn-primary');
+
+  if (!pin) {
+    if (loginError) {
+      loginError.innerText = 'Harap masukkan PIN Panitia!';
+      loginError.style.display = 'block';
+    }
+    if (pinInput) pinInput.focus();
+    return;
+  }
+
+  const originalBtnText = submitBtn ? submitBtn.innerText : 'Masuk';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></span>Memvalidasi...';
+  }
+  if (pinInput) pinInput.disabled = true;
+  if (loginError) loginError.style.display = 'none';
+
+  try {
+    // Validasi dilakukan langsung di Google Apps Script (Server-Side), tidak tersimpan di cache web
+    const res = await postToGoogleAppsScript({
+      action: 'VERIFY_ADMIN_PIN',
+      adminPin: pin
+    }, 15000);
+
+    const result = await res.json();
+    if (result && result.success) {
+      isAdmin = true;
+      currentAdminPin = pin;
+      sessionStorage.setItem('yokke_is_admin', 'true');
+      sessionStorage.setItem('yokke_admin_session_auth', pin);
+      try {
+        localStorage.removeItem('yokke_admin_pin');
+      } catch (e) {}
+
+      closeLoginModal();
+      updateAuthUI();
+      renderParticipants();
+      renderCurrentMLBBFormat();
+      renderMCGGTable();
+      if (typeof showToast === 'function') {
+        showToast('✅ Berhasil login sebagai Panitia Turnamen!', 'success');
+      }
+    } else {
+      if (loginError) {
+        loginError.innerText = (result && result.message) ? result.message : 'PIN Panitia salah!';
+        loginError.style.display = 'block';
+      }
+      if (typeof showToast === 'function') {
+        showToast('❌ PIN Panitia salah! Akses ditolak.', 'error');
+      }
+      if (pinInput) {
+        pinInput.disabled = false;
+        pinInput.value = '';
+        pinInput.focus();
+      }
+    }
+  } catch (err) {
+    console.error('Error verifikasi PIN ke Google Apps Script:', err);
+    if (loginError) {
+      loginError.innerText = 'Gagal menghubungi server Google. Pastikan internet aktif.';
+      loginError.style.display = 'block';
+    }
+    if (typeof showToast === 'function') {
+      showToast('Gagal menghubungi server Google Apps Script.', 'error');
+    }
+    if (pinInput) pinInput.disabled = false;
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+    }
   }
 }
 
 function logoutAdmin() {
   isAdmin = false;
+  currentAdminPin = '';
   sessionStorage.removeItem('yokke_is_admin');
+  sessionStorage.removeItem('yokke_admin_session_auth');
+  try {
+    localStorage.removeItem('yokke_admin_pin');
+  } catch (e) {}
   updateAuthUI();
   renderParticipants();
   renderCurrentMLBBFormat();
   renderMCGGTable();
+  if (typeof showToast === 'function') {
+    showToast('Telah keluar dari mode Panitia.', 'info');
+  }
 }
 
 function renderRegistrationUI() {
