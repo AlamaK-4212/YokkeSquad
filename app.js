@@ -370,6 +370,66 @@ const DEFAULT_MLBB_GROUPS = {
   ]
 };
 
+// 38 Pertandingan Resmi Babak Playoff Double Elimination MLBB Turnamen Yokke Squad 2026 (Ground Truth Hasil Undian Resmi)
+const DEFAULT_MLBB_PLAYOFF_MATCHES = [
+  // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
+  [
+    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
+    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Native', teamB: 'BOLO CLUB', winner: null },
+    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
+    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'WINGSKANAN ESPORT 1', teamB: 'TY BEKASI', winner: null },
+    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Miskin Mekanik', teamB: '666', winner: null },
+    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
+    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
+    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'AANG ALPHA', teamB: 'YOKKE LAMPUNG', winner: null }
+  ],
+  // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
+  [
+    { matchLabel: 'UB_QF_1', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 1', teamB: 'Pemenang UB R1 2', winner: null },
+    { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
+    { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
+    { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
+    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: 'My Palembang', winner: null },
+    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'Colorbook', winner: null },
+    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'Yokke Batam', winner: null },
+    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'DEADLINE SLAYER', winner: null },
+    { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: 'Red Razor', winner: null },
+    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'LOLO', winner: null },
+    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Yokke Batam Squad (YBS)', winner: null },
+    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'MiracleXStars', winner: null }
+  ],
+  // Ronde 2 (Hari 4): Upper Bracket Semifinal (2 Match) & Lower Bracket Ronde 2 (4 Match) & Lower Bracket Ronde 3 (4 Match)
+  [
+    { matchLabel: 'UB_SF_1', phaseName: 'Upper Bracket Semifinal (Hari 4)', bracket: 'UPPER', day: 4, teamA: 'Pemenang UB QF 1', teamB: 'Pemenang UB QF 2', winner: null },
+    { matchLabel: 'UB_SF_2', phaseName: 'Upper Bracket Semifinal (Hari 4)', bracket: 'UPPER', day: 4, teamA: 'Pemenang UB QF 3', teamB: 'Pemenang UB QF 4', winner: null },
+    { matchLabel: 'LB_R2_1', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 1', teamB: 'Pemenang LB R1 2', winner: null },
+    { matchLabel: 'LB_R2_2', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 3', teamB: 'Pemenang LB R1 4', winner: null },
+    { matchLabel: 'LB_R2_3', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 5', teamB: 'Pemenang LB R1 6', winner: null },
+    { matchLabel: 'LB_R2_4', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 7', teamB: 'Pemenang LB R1 8', winner: null },
+    { matchLabel: 'LB_R3_1', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 1', teamB: 'Gugur UB QF 1', winner: null },
+    { matchLabel: 'LB_R3_2', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 2', teamB: 'Gugur UB QF 2', winner: null },
+    { matchLabel: 'LB_R3_3', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 3', teamB: 'Gugur UB QF 3', winner: null },
+    { matchLabel: 'LB_R3_4', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 4', teamB: 'Gugur UB QF 4', winner: null }
+  ],
+  // Ronde 3 (Hari 4): Lower Bracket Perempat Final (2 Match)
+  [
+    { matchLabel: 'LB_QF_1', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R3 1', teamB: 'Pemenang LB R3 2', winner: null },
+    { matchLabel: 'LB_QF_2', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R3 3', teamB: 'Pemenang LB R3 4', winner: null }
+  ],
+  // Ronde 4 (Hari 5): Upper Final & Lower Semifinal / Final (5 Match)
+  [
+    { matchLabel: 'UB_FINAL', phaseName: 'Upper Bracket Final (Hari 5)', bracket: 'UPPER', day: 5, teamA: 'Pemenang UB SF 1', teamB: 'Pemenang UB SF 2', winner: null },
+    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB QF 1', teamB: 'Gugur UB SF 1', winner: null },
+    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB QF 2', teamB: 'Gugur UB SF 2', winner: null },
+    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB SF 1', teamB: 'Pemenang LB SF 2', winner: null },
+    { matchLabel: 'LB_FINAL', phaseName: 'Lower Bracket Final Penentu (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB Prelim', teamB: 'Gugur UB Final', winner: null }
+  ],
+  // Ronde 5 (Hari 5): Grand Final BO5 (1 Match)
+  [
+    { matchLabel: 'GRAND_FINAL', phaseName: 'Grand Final BO5 (Hari 5)', bracket: 'GRAND_FINAL', day: 5, teamA: 'Juara Upper Bracket', teamB: 'Juara Lower Bracket', winner: null }
+  ]
+];
+
 let savedGroupData = null;
 try {
   savedGroupData = JSON.parse(localStorage.getItem('yokke_group_data'));
@@ -379,7 +439,15 @@ let groupStageData = (savedGroupData && Object.keys(savedGroupData).length >= 8)
   ? savedGroupData
   : JSON.parse(JSON.stringify(DEFAULT_MLBB_GROUPS));
 let groupMatchResults = JSON.parse(localStorage.getItem('yokke_group_match_results') || '{}');
-let groupPlayoffMatches = JSON.parse(localStorage.getItem('yokke_group_playoff_matches') || '[]');
+
+let savedPlayoffData = null;
+try {
+  savedPlayoffData = JSON.parse(localStorage.getItem('yokke_group_playoff_matches'));
+} catch (e) {}
+
+let groupPlayoffMatches = (Array.isArray(savedPlayoffData) && savedPlayoffData.length === 6 && savedPlayoffData[0] && savedPlayoffData[0].length === 8)
+  ? savedPlayoffData
+  : JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
 
 // MCGG Multi-Lobby State
 let currentMCGGLobby = 'LOBBY_A';
@@ -470,58 +538,68 @@ function saveStageStateLocal() {
 
 const POINT_TABLE = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
 
-// Master Data Little Commanders MCGG Sesuai Tab "MCGG Match Set Up" di Google Sheets
+// Master Data 40 Official Little Commanders MCGG (Local Assets Pipeline)
 const MCGG_COMMANDERS = [
-  // --- TIER HIGH (5 Commander) ---
-  { id: 'chou', name: 'Chou', hero: 'Chou', alterName: '', displayName: 'Chou', tier: 'High', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/67e9ff1a8a411ac869eb41366227f7d3.png', alterImage: '', aliases: ['chou'] },
-  { id: 'fanny', name: 'Fanny', hero: 'Fanny', alterName: '', displayName: 'Fanny', tier: 'High', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/5dad2943301667ba768e0f8083ae42a0.png', alterImage: '', aliases: ['fanny'] },
-  { id: 'kagura', name: 'Kagura', hero: 'Kagura', alterName: 'Saki', displayName: 'Kagura [Saki]', tier: 'High', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/23d9b031d10b0c4554fc852e0de0288b.png', alterImage: 'assets/commanders/saki.png', aliases: ['saki', 'kagura'] },
-  { id: 'lukas', name: 'Lukas', hero: 'Lukas', alterName: '', displayName: 'Lukas', tier: 'High', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/f102b4d35fd526450f8181c721bb62c0.png', alterImage: '', aliases: ['lukas'] },
-  { id: 'vale', name: 'Vale', hero: 'Vale', alterName: '', displayName: 'Vale', tier: 'High', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/7c8c4df88dc34a9b958ddeb78972eb63.png', alterImage: '', aliases: ['vale'] },
+  // --- TIER HIGH (3 Commander) ---
+  { id: 'chou', name: 'Chou', hero: 'Chou', alterName: '', displayName: 'Chou', tier: 'High', heroImage: 'assets/commanders/chou.png', alterImage: '', aliases: ['chou'] },
+  { id: 'fanny', name: 'Fanny', hero: 'Fanny', alterName: '', displayName: 'Fanny', tier: 'High', heroImage: 'assets/commanders/fanny.png', alterImage: '', aliases: ['fanny'] },
+  { id: 'vale', name: 'Vale', hero: 'Vale', alterName: '', displayName: 'Vale', tier: 'High', heroImage: 'assets/commanders/vale.png', alterImage: '', aliases: ['vale'] },
 
-  // --- TIER MID (11 Commander) ---
-  { id: 'alice', name: 'Alice', hero: 'Alice', alterName: 'Mavis', displayName: 'Alice [Mavis]', tier: 'Mid', heroImage: 'assets/commanders/alice.png', alterImage: 'assets/commanders/mavis.png', aliases: ['mavis', 'alice'] },
-  { id: 'alucard', name: 'Alucard', hero: 'Alucard', alterName: 'Harper', displayName: 'Alucard [Harper]', tier: 'Mid', heroImage: 'assets/commanders/alucard.png', alterImage: 'assets/commanders/harper.png', aliases: ['harper', 'alucard'] },
-  { id: 'angela', name: 'Angela', hero: 'Angela', alterName: '', displayName: 'Angela', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/6cc77388afff605f0718891c7cb26dc2.png', alterImage: '', aliases: ['angela'] },
-  { id: 'dyrroth', name: 'Dyrroth', hero: 'Dyrroth', alterName: '', displayName: 'Dyrroth', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/912f81a2def4b8bf1f5b2076a8faa11c.png', alterImage: '', aliases: ['dyrroth'] },
-  { id: 'gusion', name: 'Gusion', hero: 'Gusion', alterName: 'Gujun', displayName: 'Gusion [Gujun]', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/d33bdf25cc7a15787b4dc992cb0939fd.png', alterImage: 'assets/commanders/gujun.png', aliases: ['gujun', 'gusion'] },
-  { id: 'kalea', name: 'Kalea', hero: 'Kalea', alterName: 'Dubi', displayName: 'Kalea [Dubi]', tier: 'Mid', heroImage: 'assets/commanders/kalea.png', alterImage: 'assets/commanders/dubi.png', aliases: ['dubi', 'kalea'] },
-  { id: 'lancelot', name: 'Lancelot', hero: 'Lancelot', alterName: 'Remy', displayName: 'Lancelot [Remy]', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/0ccebb8186e65072d7063a82f2f2ce25.png', alterImage: 'assets/commanders/remy.png', aliases: ['remy', 'lancelot'] },
-  { id: 'layla', name: 'Layla', hero: 'Layla', alterName: '', displayName: 'Layla', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/c40e4924941dc61d268919c118bd50f0.png', alterImage: '', aliases: ['layla'] },
-  { id: 'moskov', name: 'Moskov', hero: 'Moskov', alterName: '', displayName: 'Moskov', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/bc174d35a7a22704b0a149bbc4e89bca.png', alterImage: '', aliases: ['moskov'] },
-  { id: 'nana', name: 'Nana', hero: 'Nana', alterName: '', displayName: 'Nana', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/8748f39b488b5449542c965ed6093c16.png', alterImage: '', aliases: ['nana'] },
-  { id: 'valir', name: 'Valir', hero: 'Valir', alterName: '', displayName: 'Valir', tier: 'Mid', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/cbc847cd360f3e8a00509aa07aa686ff.png', alterImage: '', aliases: ['valir'] },
+  // --- TIER MID (6 Commander) ---
+  { id: 'alice', name: 'Alice', hero: 'Alice', alterName: 'Mavis', displayName: 'Alice [Mavis]', tier: 'Mid', heroImage: 'assets/commanders/alice.png', alterImage: 'assets/commanders/mavis.png', aliases: ['alice'] },
+  { id: 'alucard', name: 'Alucard', hero: 'Alucard', alterName: 'Harper', displayName: 'Alucard [Harper]', tier: 'Mid', heroImage: 'assets/commanders/alucard.png', alterImage: 'assets/commanders/harper.png', aliases: ['alucard'] },
+  { id: 'kalea', name: 'Kalea', hero: 'Kalea', alterName: 'Dubi', displayName: 'Kalea [Dubi]', tier: 'Mid', heroImage: 'assets/commanders/kalea.png', alterImage: 'assets/commanders/dubi.png', aliases: ['kalea'] },
+  { id: 'lancelot', name: 'Lancelot', hero: 'Lancelot', alterName: 'Remy', displayName: 'Lancelot [Remy]', tier: 'Mid', heroImage: 'assets/commanders/lancelot.png', alterImage: 'assets/commanders/remy.png', aliases: ['lancelot'] },
+  { id: 'layla', name: 'Layla', hero: 'Layla', alterName: '', displayName: 'Layla', tier: 'Mid', heroImage: 'assets/commanders/layla.png', alterImage: '', aliases: ['layla'] },
+  { id: 'moskov', name: 'Moskov', hero: 'Moskov', alterName: '', displayName: 'Moskov', tier: 'Mid', heroImage: 'assets/commanders/moskov.png', alterImage: '', aliases: ['moskov'] },
 
-  // --- TIER LAINNYA SESUAI TAB MATCH SET UP ---
-  { id: 'popol', name: 'Popol', hero: 'Popol', alterName: 'Benny', displayName: 'Popol [Benny]', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/2292dab1521e76515f05772413760608.png', alterImage: 'assets/commanders/benny.png', aliases: ['benny', 'popol'] },
-  { id: 'aamon', name: 'Aamon', hero: 'Aamon', alterName: 'Austus', displayName: 'Aamon [Austus]', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/eb3ebce6dfa063ba8db31c52fd7d92d6.png', alterImage: 'assets/commanders/austus.png', aliases: ['austus', 'aamon'] },
+  // --- TIER META (8 Commander) ---
+  { id: 'austus', name: 'Austus', hero: 'Austus', alterName: '', displayName: 'Austus', tier: 'Meta', heroImage: 'assets/commanders/austus.png', alterImage: '', aliases: ['austus', 'aamon'] },
   { id: 'brody', name: 'Brody', hero: 'Brody', alterName: '', displayName: 'Brody', tier: 'Meta', heroImage: 'assets/commanders/brody.png', alterImage: '', aliases: ['brody'] },
-  { id: 'franco', name: 'Franco', hero: 'Franco', alterName: 'Ragnar', displayName: 'Franco [Ragnar]', tier: 'Meta', heroImage: 'assets/commanders/franco.png', alterImage: 'assets/commanders/ragnar.png', aliases: ['ragnar', 'franco'] },
-  { id: 'guinevere', name: 'Guinevere', hero: 'Guinevere', alterName: '', displayName: 'Guinevere', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/3086b1bd539e5f115e51e63e612bd589.png', alterImage: '', aliases: ['guinevere'] },
-  { id: 'ling', name: 'Ling', hero: 'Ling', alterName: '', displayName: 'Ling', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/38486f457993b735c84caf210e74901e.png', alterImage: '', aliases: ['ling'] },
-  { id: 'lunox', name: 'Lunox', hero: 'Lunox', alterName: 'Rya', displayName: 'Lunox [Rya]', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/e88c0d1ee346b55f2807f5764660cdea.png', alterImage: 'assets/commanders/rya.png', aliases: ['rya', 'lunox'] },
-  { id: 'luoyi', name: 'Luo Yi', hero: 'Luo Yi', alterName: 'Yuki', displayName: 'Luo Yi [Yuki]', tier: 'Meta', heroImage: 'assets/commanders/luoyi.png', alterImage: 'assets/commanders/yuki.png', aliases: ['yuki', 'luo yi'] },
-  { id: 'lylia', name: 'Lylia', hero: 'Lylia', alterName: 'Tharz', displayName: 'Lylia [Tharz]', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/5b564ab2da9dbdf91ee94135f6d1de24.png', alterImage: 'assets/commanders/tharz.png', aliases: ['tharz', 'lylia'] },
-  { id: 'wanwan', name: 'Wanwan', hero: 'Wanwan', alterName: '', displayName: 'Wanwan', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/4529797ef7c48949a560c86fefb7ffb4.png', alterImage: '', aliases: ['wanwan'] },
-  { id: 'zilong', name: 'Zilong', hero: 'Zilong', alterName: '', displayName: 'Zilong', tier: 'Meta', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/187cebb25a8a0bca4bc6a34188b393dc.png', alterImage: '', aliases: ['zilong'] },
-  { id: 'aurora', name: 'Aurora', hero: 'Aurora', alterName: '', displayName: 'Aurora', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/50dcf75e872d196245a9d359dc55b067.png', alterImage: '', aliases: ['aurora'] },
-  { id: 'cyclops', name: 'Cyclops', hero: 'Cyclops', alterName: 'Asta', displayName: 'Cyclops [Asta]', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/4f50b223b87f1d572f1aa4fc99748c01.png', alterImage: '', aliases: ['asta', 'cyclops'] },
-  { id: 'johnson', name: 'Johnson', hero: 'Johnson', alterName: 'Kaboom', displayName: 'Johnson [Kaboom]', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/4e58548c53cff04bab4a8eb849b21272.png', alterImage: 'assets/commanders/kaboom.png', aliases: ['kaboom', 'johnson'] },
-  { id: 'karina', name: 'Karina', hero: 'Karina', alterName: '', displayName: 'Karina', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/8660f1041eaf35f1da59146ae55b781d.png', alterImage: '', aliases: ['karina'] },
-  { id: 'miya', name: 'Miya', hero: 'Miya', alterName: '', displayName: 'Miya', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/43b963b49c006a010429bae5869ca726.png', alterImage: '', aliases: ['miya'] },
-  { id: 'yuzhong', name: 'Yu Zhong', hero: 'Yu Zhong', alterName: 'Pao', displayName: 'Yu Zhong [Pao]', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/5056acc9c78ce666ccf66f4c150c1957.png', alterImage: 'assets/commanders/pao.png', aliases: ['pao', 'yu zhong'] },
-  { id: 'paquito', name: 'Paquito', hero: 'Paquito', alterName: '', displayName: 'Paquito', tier: '', heroImage: 'https://akmweb.youngjoygame.com/web/gms/image/cfd50a3955fee45148c4787337d4370f.png', alterImage: '', aliases: ['paquito'] },
-  { id: 'diggie', name: 'Diggie', hero: 'Diggie', alterName: 'Eggie', displayName: 'Diggie [Eggie]', tier: '', heroImage: 'assets/commanders/diggie.png', alterImage: 'assets/commanders/eggie.png', aliases: ['eggie', 'diggie'] },
-  { id: 'floryn', name: 'Floryn', hero: 'Floryn', alterName: 'Dubi', displayName: 'Floryn [Dubi]', tier: '', heroImage: 'assets/commanders/floryn.png', alterImage: 'assets/commanders/dubi.png', aliases: ['floryn'] },
-  { id: 'harley', name: 'Harley', hero: 'Harley', alterName: 'Buss', displayName: 'Harley [Buss]', tier: '', heroImage: 'assets/commanders/harley.png', alterImage: 'assets/commanders/buss.png', aliases: ['buss', 'harley'] },
-  { id: 'minotaur', name: 'Minotaur', hero: 'Minotaur', alterName: 'Brown', displayName: 'Minotaur [Brown]', tier: '', heroImage: 'assets/commanders/minotaur.png', alterImage: 'assets/commanders/brown.png', aliases: ['brown', 'minotaur'] },
-  { id: 'ruby', name: 'Ruby', hero: 'Ruby', alterName: 'Bersi', displayName: 'Ruby [Bersi]', tier: '', heroImage: 'assets/commanders/ruby.png', alterImage: '', aliases: ['bersi', 'ruby'] },
-  { id: 'vexana', name: 'Vexana', hero: 'Vexana', alterName: 'Connie', displayName: 'Vexana [Connie]', tier: '', heroImage: 'assets/commanders/vexana.png', alterImage: 'assets/commanders/connie.png', aliases: ['connie', 'vexana'] }
+  { id: 'franco', name: 'Franco', hero: 'Franco', alterName: 'Ragnar', displayName: 'Franco [Ragnar]', tier: 'Meta', heroImage: 'assets/commanders/franco.png', alterImage: 'assets/commanders/ragnar.png', aliases: ['franco'] },
+  { id: 'ling', name: 'Ling', hero: 'Ling', alterName: '', displayName: 'Ling', tier: 'Meta', heroImage: 'assets/commanders/ling.png', alterImage: '', aliases: ['ling'] },
+  { id: 'luoyi', name: 'Luo Yi', hero: 'Luo Yi', alterName: 'Yuki', displayName: 'Luo Yi [Yuki]', tier: 'Meta', heroImage: 'assets/commanders/luoyi.png', alterImage: 'assets/commanders/yuki.png', aliases: ['luo yi', 'luoyi'] },
+  { id: 'tharz', name: 'Tharz', hero: 'Tharz', alterName: '', displayName: 'Tharz', tier: 'Meta', heroImage: 'assets/commanders/tharz.png', alterImage: '', aliases: ['tharz', 'lylia'] },
+  { id: 'wanwan', name: 'Wanwan', hero: 'Wanwan', alterName: '', displayName: 'Wanwan', tier: 'Meta', heroImage: 'assets/commanders/wanwan.png', alterImage: '', aliases: ['wanwan'] },
+  { id: 'yuki', name: 'Yuki', hero: 'Yuki', alterName: 'Luo Yi', displayName: 'Yuki [Luo Yi]', tier: 'Meta', heroImage: 'assets/commanders/yuki.png', alterImage: 'assets/commanders/luoyi.png', aliases: ['yuki'] },
+
+  // --- TIER NORMAL (23 Commander) ---
+  { id: 'abe', name: 'Abe', hero: 'Abe', alterName: '', displayName: 'Abe', tier: 'Normal', heroImage: 'assets/commanders/abe.png', alterImage: '', aliases: ['abe'] },
+  { id: 'benny', name: 'Benny', hero: 'Benny', alterName: 'Popol', displayName: 'Benny [Popol]', tier: 'Normal', heroImage: 'assets/commanders/benny.png', alterImage: 'assets/commanders/popol.png', aliases: ['benny'] },
+  { id: 'brown', name: 'Brown', hero: 'Brown', alterName: 'Minotaur', displayName: 'Brown [Minotaur]', tier: 'Normal', heroImage: 'assets/commanders/brown.png', alterImage: 'assets/commanders/minotaur.png', aliases: ['brown'] },
+  { id: 'buss', name: 'Buss', hero: 'Buss', alterName: 'Harley', displayName: 'Buss [Harley]', tier: 'Normal', heroImage: 'assets/commanders/buss.png', alterImage: 'assets/commanders/harley.png', aliases: ['buss'] },
+  { id: 'connie', name: 'Connie', hero: 'Connie', alterName: 'Vexana', displayName: 'Connie [Vexana]', tier: 'Normal', heroImage: 'assets/commanders/connie.png', alterImage: 'assets/commanders/vexana.png', aliases: ['connie'] },
+  { id: 'diggie', name: 'Diggie', hero: 'Diggie', alterName: 'Eggie', displayName: 'Diggie [Eggie]', tier: 'Normal', heroImage: 'assets/commanders/diggie.png', alterImage: 'assets/commanders/eggie.png', aliases: ['diggie'] },
+  { id: 'dubi', name: 'Dubi', hero: 'Dubi', alterName: 'Kalea', displayName: 'Dubi [Kalea]', tier: 'Normal', heroImage: 'assets/commanders/dubi.png', alterImage: 'assets/commanders/kalea.png', aliases: ['dubi'] },
+  { id: 'eggie', name: 'Eggie', hero: 'Eggie', alterName: 'Diggie', displayName: 'Eggie [Diggie]', tier: 'Normal', heroImage: 'assets/commanders/eggie.png', alterImage: 'assets/commanders/diggie.png', aliases: ['eggie'] },
+  { id: 'eva', name: 'Eva', hero: 'Eva', alterName: '', displayName: 'Eva', tier: 'Normal', heroImage: 'assets/commanders/eva.png', alterImage: '', aliases: ['eva'] },
+  { id: 'floryn', name: 'Floryn', hero: 'Floryn', alterName: '', displayName: 'Floryn', tier: 'Normal', heroImage: 'assets/commanders/floryn.png', alterImage: '', aliases: ['floryn'] },
+  { id: 'gord', name: 'Gord', hero: 'Gord', alterName: '', displayName: 'Gord', tier: 'Normal', heroImage: 'assets/commanders/gord.png', alterImage: '', aliases: ['gord'] },
+  { id: 'harley', name: 'Harley', hero: 'Harley', alterName: 'Buss', displayName: 'Harley [Buss]', tier: 'Normal', heroImage: 'assets/commanders/harley.png', alterImage: 'assets/commanders/buss.png', aliases: ['harley'] },
+  { id: 'harper', name: 'Harper', hero: 'Harper', alterName: 'Alucard', displayName: 'Harper [Alucard]', tier: 'Normal', heroImage: 'assets/commanders/harper.png', alterImage: 'assets/commanders/alucard.png', aliases: ['harper'] },
+  { id: 'kaboom', name: 'Kaboom', hero: 'Kaboom', alterName: '', displayName: 'Kaboom', tier: 'Normal', heroImage: 'assets/commanders/kaboom.png', alterImage: '', aliases: ['kaboom', 'johnson'] },
+  { id: 'mavis', name: 'Mavis', hero: 'Mavis', alterName: 'Alice', displayName: 'Mavis [Alice]', tier: 'Normal', heroImage: 'assets/commanders/mavis.png', alterImage: 'assets/commanders/alice.png', aliases: ['mavis'] },
+  { id: 'minotaur', name: 'Minotaur', hero: 'Minotaur', alterName: 'Brown', displayName: 'Minotaur [Brown]', tier: 'Normal', heroImage: 'assets/commanders/minotaur.png', alterImage: 'assets/commanders/brown.png', aliases: ['minotaur'] },
+  { id: 'pao', name: 'Pao', hero: 'Pao', alterName: '', displayName: 'Pao', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['pao', 'yu zhong', 'yuzhong'] },
+  { id: 'popol', name: 'Popol', hero: 'Popol', alterName: 'Benny', displayName: 'Popol [Benny]', tier: 'Normal', heroImage: 'assets/commanders/popol.png', alterImage: 'assets/commanders/benny.png', aliases: ['popol'] },
+  { id: 'ragnar', name: 'Ragnar', hero: 'Ragnar', alterName: 'Franco', displayName: 'Ragnar [Franco]', tier: 'Normal', heroImage: 'assets/commanders/ragnar.png', alterImage: 'assets/commanders/franco.png', aliases: ['ragnar'] },
+  { id: 'remy', name: 'Remy', hero: 'Remy', alterName: 'Lancelot', displayName: 'Remy [Lancelot]', tier: 'Normal', heroImage: 'assets/commanders/remy.png', alterImage: 'assets/commanders/lancelot.png', aliases: ['remy'] },
+  { id: 'ruby', name: 'Ruby', hero: 'Ruby', alterName: '', displayName: 'Ruby', tier: 'Normal', heroImage: 'assets/commanders/ruby.png', alterImage: '', aliases: ['ruby', 'bersi'] },
+  { id: 'rya', name: 'Rya', hero: 'Rya', alterName: '', displayName: 'Rya', tier: 'Normal', heroImage: 'assets/commanders/rya.png', alterImage: '', aliases: ['rya', 'lunox'] },
+  { id: 'vexana', name: 'Vexana', hero: 'Vexana', alterName: 'Connie', displayName: 'Vexana [Connie]', tier: 'Normal', heroImage: 'assets/commanders/vexana.png', alterImage: 'assets/commanders/connie.png', aliases: ['vexana'] }
 ];
 
 // Helper Format Nama Commander: Hero [Alter] jika alter ada, atau Hero jika tidak ada
 function getCommanderFormattedName(cmd) {
   if (!cmd) return '';
+  if (typeof cmd === 'string') {
+    const found = getCommanderById(cmd);
+    if (found) {
+      cmd = found;
+    } else {
+      return cmd;
+    }
+  }
   const hero = (cmd.hero || cmd.name || '').trim();
   const alter = (cmd.alterName || '').trim();
   if (hero && alter && hero.toLowerCase() !== alter.toLowerCase()) {
@@ -533,12 +611,15 @@ function getCommanderFormattedName(cmd) {
 // Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Tabel Klasemen
 function renderCommanderCirclesHtml(cmd, size) {
   if (!cmd) return '';
+  if (typeof cmd === 'string') {
+    cmd = getCommanderById(cmd) || { name: cmd };
+  }
   const s = size || 26;
   const hero = (cmd.hero || cmd.name || '').trim();
   const alter = (cmd.alterName || '').trim();
   const hasAlter = alter && hero.toLowerCase() !== alter.toLowerCase();
 
-  const heroSlug = hero.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const heroSlug = (cmd.id || hero).toLowerCase().replace(/[^a-z0-9]/g, '');
   const alterSlug = alter.toLowerCase().replace(/[^a-z0-9]/g, '');
   const heroImg = cmd.heroImage || `assets/commanders/${heroSlug}.png`;
   const alterImg = cmd.alterImage || (hasAlter ? `assets/commanders/${alterSlug}.png` : '');
@@ -562,11 +643,14 @@ function renderCommanderCirclesHtml(cmd, size) {
 // Helper Dua Lingkaran (1 Hero, 1 Alter) untuk Kartu Hasil Undian
 function renderCommanderCardVisualHtml(cmd) {
   if (!cmd) return '';
+  if (typeof cmd === 'string') {
+    cmd = getCommanderById(cmd) || { name: cmd };
+  }
   const hero = (cmd.hero || cmd.name || '').trim();
   const alter = (cmd.alterName || '').trim();
   const hasAlter = alter && hero.toLowerCase() !== alter.toLowerCase();
 
-  const heroSlug = hero.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const heroSlug = (cmd.id || hero).toLowerCase().replace(/[^a-z0-9]/g, '');
   const alterSlug = alter.toLowerCase().replace(/[^a-z0-9]/g, '');
   const heroImg = cmd.heroImage || `assets/commanders/${heroSlug}.png`;
   const alterImg = cmd.alterImage || (hasAlter ? `assets/commanders/${alterSlug}.png` : '');
@@ -1480,7 +1564,11 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           }
         }
         if (data.config.groupPlayoffMatches !== undefined && Array.isArray(data.config.groupPlayoffMatches)) {
-          groupPlayoffMatches = data.config.groupPlayoffMatches;
+          if (data.config.groupPlayoffMatches.length === 6) {
+            groupPlayoffMatches = data.config.groupPlayoffMatches;
+          } else if (data.config.groupPlayoffMatches.length === 0) {
+            groupPlayoffMatches = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
+          }
         }
         if (data.config.tournamentStageState && typeof data.config.tournamentStageState === 'object') {
           tournamentStageState = data.config.tournamentStageState;
@@ -2404,6 +2492,7 @@ function renderRegistrationUI() {
   const submitBtn = document.getElementById('submitBtn');
   const mlbbNotice = document.getElementById('mlbbRegOpenNotice');
   const mcggNotice = document.getElementById('mcggRegOpenNotice');
+  const navBtnDaftar = document.getElementById('navBtnDaftar');
 
   const toggleButtons = [btnToggle, btnTogglePeserta, btnToggleMLBB, btnToggleMCGG];
 
@@ -2432,6 +2521,15 @@ function renderRegistrationUI() {
     }
     if (mlbbNotice) mlbbNotice.style.display = 'none';
     if (mcggNotice) mcggNotice.style.display = 'none';
+
+    // 1. Sembunyikan tombol tab pendaftaran pada nav
+    if (navBtnDaftar) navBtnDaftar.style.display = 'none';
+
+    // 2. Jika pengunjung berada di tab-daftar atau belum ada tab aktif, alihkan ke tab-hub
+    const activeTab = document.querySelector('.tab-content.active');
+    if (!activeTab || activeTab.id === 'tab-daftar') {
+      switchTab('hub');
+    }
   } else {
     if (badge) {
       badge.innerHTML = '🟢 Pendaftaran Dibuka';
@@ -2457,6 +2555,13 @@ function renderRegistrationUI() {
     }
     if (mlbbNotice) mlbbNotice.style.display = (!isRegistrationClosed && isAdmin) ? 'block' : 'none';
     if (mcggNotice) mcggNotice.style.display = (!isRegistrationClosed && isAdmin) ? 'block' : 'none';
+
+    // Tab pendaftaran tampil kembali dan dapat diakses
+    if (navBtnDaftar) navBtnDaftar.style.display = '';
+  }
+
+  if (typeof updateHubDynamicStats === 'function') {
+    updateHubDynamicStats();
   }
 }
 
@@ -2716,12 +2821,54 @@ function updateAuthUI() {
 }
 
 // Navigation Tabs
-function switchTab(tabId) {
+function switchTab(tabId, updateHistory = true) {
+  // Ketika pendaftaran ditutup, akses ke tab-daftar otomatis dialihkan ke tab-hub
+  if (tabId === 'daftar' && isRegistrationClosed) {
+    tabId = 'hub';
+  }
+
+  let targetTab = document.getElementById('tab-' + tabId);
+  if (!targetTab) {
+    // Robust fallback: jika tab yang diminta tidak ditemukan, fallback ke hub (saat ditutup) atau daftar
+    const fallbackId = isRegistrationClosed ? 'hub' : 'daftar';
+    const fallbackTab = document.getElementById('tab-' + fallbackId);
+    if (fallbackTab) {
+      tabId = fallbackId;
+      targetTab = fallbackTab;
+    } else {
+      targetTab = document.querySelector('.tab-content');
+      if (targetTab) {
+        tabId = targetTab.id.replace('tab-', '');
+      }
+    }
+  }
+
+  if (!targetTab) return;
+
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
-  document.getElementById('tab-' + tabId).classList.add('active');
-  event.target.classList.add('active');
+  targetTab.classList.add('active');
+
+  let activeNavBtn = document.querySelector(`.nav-btn[onclick*="'${tabId}'"]`);
+  if (!activeNavBtn && typeof event !== 'undefined' && event?.target) {
+    activeNavBtn = event.target.closest ? event.target.closest('.nav-btn') : event.target;
+  }
+  if (activeNavBtn) {
+    activeNavBtn.classList.add('active');
+  }
+
+  // Sinkronisasi browser URL Hash & History (Dukungan Back/Forward)
+  if (updateHistory && typeof window !== 'undefined' && window.location) {
+    const targetHash = '#tab-' + tabId;
+    if (window.location.hash !== targetHash) {
+      if (window.history && window.history.pushState) {
+        window.history.pushState(null, '', targetHash);
+      } else {
+        window.location.hash = targetHash;
+      }
+    }
+  }
 
   if (tabId === 'bagan-mlbb') {
     setMLBBViewMode('HUB');
@@ -2730,7 +2877,52 @@ function switchTab(tabId) {
   } else if (tabId === 'rules') {
     renderRules();
     fetchRulesFromGoogleDoc(true);
+  } else if (tabId === 'hub') {
+    if (typeof updateHubDynamicStats === 'function') {
+      updateHubDynamicStats();
+    }
   }
+}
+
+function updateHubDynamicStats() {
+  const statTotal = document.getElementById('hubStatTotalParticipants');
+  const statMlbb = document.getElementById('hubStatMlbbTeams');
+  const statMcgg = document.getElementById('hubStatMcggPlayers');
+  if (!statTotal) return;
+
+  const mlbbCount = (participants || []).filter(p => p.game === 'MLBB').length || 41;
+  const mcggCount = (participants || []).filter(p => p.game === 'MCGG').length || 37;
+  const total = mlbbCount + mcggCount;
+
+  statTotal.innerText = total;
+  if (statMlbb) statMlbb.innerText = `${mlbbCount} Tim MLBB`;
+  if (statMcgg) statMcgg.innerText = `${mcggCount} Solo MCGG`;
+}
+
+function handleHashNavigation() {
+  const rawHash = (typeof window !== 'undefined' && window.location && window.location.hash)
+    ? window.location.hash.replace('#tab-', '').replace('#', '')
+    : '';
+  if (rawHash) {
+    if (rawHash === 'daftar' && isRegistrationClosed) {
+      switchTab('hub', false);
+      if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', '#tab-hub');
+      }
+    } else {
+      switchTab(rawHash, false);
+    }
+  } else if (isRegistrationClosed) {
+    switchTab('hub', false);
+    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#tab-hub');
+    }
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('hashchange', handleHashNavigation);
+  window.addEventListener('popstate', handleHashNavigation);
 }
 
 // Lightbox for Viewing Full ID Card
@@ -6041,6 +6233,13 @@ function drawMLBBPlayoffLowerBracket(j3List, branchJ1, branchJ2) {
 }
 
 function initGroupPlayoff(doShuffle = false) {
+  if (!doShuffle) {
+    if (typeof DEFAULT_MLBB_PLAYOFF_MATCHES !== 'undefined' && Array.isArray(DEFAULT_MLBB_PLAYOFF_MATCHES) && DEFAULT_MLBB_PLAYOFF_MATCHES.length > 0) {
+      groupPlayoffMatches = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
+      return groupPlayoffMatches;
+    }
+  }
+
   const gKeys = Object.keys(groupStageData);
   const numGroups = gKeys.length;
 
@@ -6049,6 +6248,7 @@ function initGroupPlayoff(doShuffle = false) {
     // Sesuai aturan: Juara 1 & 2 masuk UPPER BRACKET (16 Tim). Juara 3 masuk LOWER BRACKET (8 Tim).
     // Juara 1 = Home Upper (teamA), Juara 2 = Away Upper (teamB, beda grup).
     // Kalah Upper = Home Lower (teamA), Juara 3 = Away Lower (teamB, beda grup dari Juara 1 & Juara 2 cabang tersebut).
+
     const groupNames = ['Grup A', 'Grup B', 'Grup C', 'Grup D', 'Grup E', 'Grup F', 'Grup G', 'Grup H'];
 
     const j1List = [];
@@ -8957,14 +9157,26 @@ function changeMCGGLobby() {
 function getCommanderById(id) {
   if (!id) return null;
   const clean = id.toString().trim().toLowerCase();
-  return MCGG_COMMANDERS.find(c => 
+
+  // 1. Direct exact match by ID, Hero name, or Name first
+  let match = MCGG_COMMANDERS.find(c => 
     (c.id && c.id.toLowerCase() === clean) || 
-    (c.name && c.name.toLowerCase() === clean) ||
-    (c.alterName && c.alterName.toLowerCase() === clean) ||
     (c.hero && c.hero.toLowerCase() === clean) ||
-    (c.displayName && c.displayName.toLowerCase() === clean) ||
-    (c.aliases && c.aliases.map(a => a.toLowerCase()).includes(clean))
+    (c.name && c.name.toLowerCase() === clean)
   );
+  if (match) return match;
+
+  // 2. Fallback to aliases (e.g. legacy names: aamon, johnson, yuzhong, lunox, lylia, bersi)
+  match = MCGG_COMMANDERS.find(c => 
+    c.aliases && c.aliases.map(a => a.toLowerCase()).includes(clean)
+  );
+  if (match) return match;
+
+  // 3. Fallback to alterName or displayName
+  return MCGG_COMMANDERS.find(c => 
+    (c.alterName && c.alterName.toLowerCase() === clean) ||
+    (c.displayName && c.displayName.toLowerCase() === clean)
+  ) || null;
 }
 
 function updateCommanderPoolFromSetup(setupList) {
@@ -8978,14 +9190,20 @@ function updateCommanderPoolFromSetup(setupList) {
     if (!targetName) return;
 
     let existing = MCGG_COMMANDERS.find(c => 
+      (c.id && (c.id.toLowerCase() === (rawHero || targetName).toLowerCase())) ||
       (c.hero && rawHero && c.hero.toLowerCase() === rawHero.toLowerCase()) ||
-      (c.alterName && rawAlter && c.alterName.toLowerCase() === rawAlter.toLowerCase()) ||
-      (c.name && c.name.toLowerCase() === targetName.toLowerCase()) ||
-      (c.aliases && (
-        (rawHero && c.aliases.map(a => a.toLowerCase()).includes(rawHero.toLowerCase())) ||
-        (rawAlter && c.aliases.map(a => a.toLowerCase()).includes(rawAlter.toLowerCase()))
-      ))
+      (c.name && c.name.toLowerCase() === targetName.toLowerCase())
     );
+
+    if (!existing) {
+      existing = MCGG_COMMANDERS.find(c => 
+        (c.aliases && (
+          (rawHero && c.aliases.map(a => a.toLowerCase()).includes(rawHero.toLowerCase())) ||
+          (rawAlter && c.aliases.map(a => a.toLowerCase()).includes(rawAlter.toLowerCase()))
+        )) ||
+        (c.alterName && rawAlter && c.alterName.toLowerCase() === rawAlter.toLowerCase())
+      );
+    }
 
     let dispName = rawHero;
     if (rawHero && rawAlter && rawHero.toLowerCase() !== rawAlter.toLowerCase()) {
@@ -10854,6 +11072,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   renderCurrentMLBBFormat();
   renderMCGGTable();
   updateCounts();
+  if (typeof updateHubDynamicStats === 'function') updateHubDynamicStats();
+  if (typeof handleHashNavigation === 'function') handleHashNavigation();
 
   // Pasang autosave draft event listener pada form
   const regFormEl = document.getElementById('regForm');
@@ -11043,6 +11263,7 @@ function togglePlayoffFullscreen() {
 }
 
 function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower = false) {
+  if (!m) return '';
   let matchNodeKey = '';
   if (groupPlayoffMatches.length === 6) {
     if (rIdx === 0) matchNodeKey = 'UB_16_M' + (mIdx + 1);
@@ -11135,7 +11356,7 @@ function renderSvgConnectorColumn(pairs, strokeColor = '#00d2ff', width = 50, he
 }
 
 function renderFullPlayoffBracketHtml(activeNodeKey = '') {
-  if (!Array.isArray(groupPlayoffMatches) || groupPlayoffMatches.length === 0) {
+  if (!Array.isArray(groupPlayoffMatches) || groupPlayoffMatches.length !== 6) {
     if (typeof initGroupPlayoff === 'function') initGroupPlayoff(false);
   }
 
@@ -11156,7 +11377,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     // Col 0: Lower R1 (8 Match)
     let col0 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R1 (Hari 3-4)</div>';
     for (let i = 0; i < 8; i++) {
-      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][4 + i], 1, 4 + i, c8[i] - 38, activeNodeKey, true);
+      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[1]?.[4 + i], 1, 4 + i, c8[i] - 38, activeNodeKey, true);
     }
     col0 += '</div>';
 
@@ -11172,7 +11393,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     // Col 1: Lower R2 (4 Match)
     let col1 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R2 (Hari 4)</div>';
     for (let i = 0; i < 4; i++) {
-      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][2 + i], 2, 2 + i, c4[i] - 38, activeNodeKey, true);
+      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[2]?.[2 + i], 2, 2 + i, c4[i] - 38, activeNodeKey, true);
     }
     col1 += '</div>';
 
@@ -11188,7 +11409,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     // Col 2: Lower R3 (4 Match)
     let col2 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower R3 (Hari 4)</div>';
     for (let i = 0; i < 4; i++) {
-      col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][6 + i], 2, 6 + i, c4[i] - 38, activeNodeKey, true);
+      col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2]?.[6 + i], 2, 6 + i, c4[i] - 38, activeNodeKey, true);
     }
     col2 += '</div>';
 
@@ -11201,8 +11422,8 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 3: Lower QF (2 Match)
     let col3 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower QF (Hari 4)</div>';
-    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][0], 3, 0, c2[0] - 38, activeNodeKey, true);
-    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3][1], 3, 1, c2[1] - 38, activeNodeKey, true);
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3]?.[0], 3, 0, c2[0] - 38, activeNodeKey, true);
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3]?.[1], 3, 1, c2[1] - 38, activeNodeKey, true);
     col3 += '</div>';
 
     // SVG Connector 3 -> 4
@@ -11211,7 +11432,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 4: Lower Final Penentu
     let col4 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Final (Hari 5)</div>';
-    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][4], 4, 4, c1[0] - 38, activeNodeKey, true);
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[4], 4, 4, c1[0] - 38, activeNodeKey, true);
     col4 += '</div>';
 
     // SVG Connector 4 -> 5
@@ -11220,7 +11441,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 5: Grand Final BO5
     let col5 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
-    col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[5]?.[0], 5, 0, c1[0] - 38, activeNodeKey, false);
     col5 += '</div>';
 
     canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4 + svg4 + col5;
@@ -11232,7 +11453,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     // Col 0: Upper 16 Besar (8 Match)
     let col0 = '<div class="bracket-col"><div class="bracket-col-header">Upper 16 Besar (Hari 2-3)</div>';
     for (let i = 0; i < 8; i++) {
-      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[0][i], 0, i, c8[i] - 38, activeNodeKey, false);
+      col0 += renderSingleMatchNodeHtml(groupPlayoffMatches[0]?.[i], 0, i, c8[i] - 38, activeNodeKey, false);
     }
     col0 += '</div>';
 
@@ -11248,7 +11469,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     // Col 1: Upper Quarter Final (4 Match)
     let col1 = '<div class="bracket-col"><div class="bracket-col-header">Upper QF (Hari 3)</div>';
     for (let i = 0; i < 4; i++) {
-      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[1][i], 1, i, c4[i] - 38, activeNodeKey, false);
+      col1 += renderSingleMatchNodeHtml(groupPlayoffMatches[1]?.[i], 1, i, c4[i] - 38, activeNodeKey, false);
     }
     col1 += '</div>';
 
@@ -11261,8 +11482,8 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 2: Upper Semifinal (2 Match)
     let col2 = '<div class="bracket-col"><div class="bracket-col-header">Upper SF (Hari 4)</div>';
-    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][0], 2, 0, c2[0] - 38, activeNodeKey, false);
-    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2][1], 2, 1, c2[1] - 38, activeNodeKey, false);
+    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2]?.[0], 2, 0, c2[0] - 38, activeNodeKey, false);
+    col2 += renderSingleMatchNodeHtml(groupPlayoffMatches[2]?.[1], 2, 1, c2[1] - 38, activeNodeKey, false);
     col2 += '</div>';
 
     // SVG Connector 2 -> 3
@@ -11271,7 +11492,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 3: Upper Final (1 Match)
     let col3 = '<div class="bracket-col"><div class="bracket-col-header">Upper Final (Hari 5)</div>';
-    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[4][0], 4, 0, c1[0] - 38, activeNodeKey, false);
+    col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[0], 4, 0, c1[0] - 38, activeNodeKey, false);
     col3 += '</div>';
 
     // SVG Connector 3 -> 4
@@ -11280,7 +11501,7 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
 
     // Col 4: Super Grand Final (BO5)
     let col4 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
-    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[5][0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[5]?.[0], 5, 0, c1[0] - 38, activeNodeKey, false);
     col4 += '</div>';
 
     canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4;

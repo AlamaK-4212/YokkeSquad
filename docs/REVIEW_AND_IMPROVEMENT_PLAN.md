@@ -89,6 +89,64 @@ Server Stitch MCP dikonfigurasikan pada berkas konfigurasi MCP (`mcp_config.json
   - Interaksi tap/hover untuk menampilkan kartu MVP (*Pemain + Hero + Badge Tim*) secara *popover*.
   - Mode navigasi babak ringkas (*compact swipeable stage tab*) saat dibuka di smartphone ($\le 992\text{px}$).
 
+##### Hasil Undian Resmi Babak Playoff Double Elimination MLBB 2026 (Ground Truth 38 Matches)
+Berikut merupakan bagan 38 pertandingan babak playoff eliminasi ganda (5 hari turnamen) hasil undian resmi panitia yang didefinisikan dalam `DEFAULT_MLBB_PLAYOFF_MATCHES`:
+
+* **Ronde 0: Upper Bracket 16 Besar (Hari 3) - 8 Match BO3**
+  1. `UB_R1_1`: TABRAK AJALAH vs Anti Climax
+  2. `UB_R1_2`: Native vs BOLO CLUB
+  3. `UB_R1_3`: ATMO vs IOS
+  4. `UB_R1_4`: WINGSKANAN ESPORT 1 vs TY BEKASI
+  5. `UB_R1_5`: Miskin Mekanik vs 666
+  6. `UB_R1_6`: 7 SINS vs APPA LINUX
+  7. `UB_R1_7`: VALKYRIE vs Yokke.Syindicate
+  8. `UB_R1_8`: AANG ALPHA vs YOKKE LAMPUNG
+
+* **Ronde 1: Upper Bracket Perempat Final & Lower Bracket Ronde 1 (Hari 3-4) - 12 Match BO3**
+  - **Upper Bracket QF (4 Match):**
+    1. `UB_QF_1`: Pemenang UB R1 1 vs Pemenang UB R1 2
+    2. `UB_QF_2`: Pemenang UB R1 3 vs Pemenang UB R1 4
+    3. `UB_QF_3`: Pemenang UB R1 5 vs Pemenang UB R1 6
+    4. `UB_QF_4`: Pemenang UB R1 7 vs Pemenang UB R1 8
+  - **Lower Bracket Ronde 1 (8 Match - Home: Gugur UB R1 vs Away: Juara 3 Grup):**
+    1. `LB_R1_1`: Gugur UB R1 1 vs My Palembang
+    2. `LB_R1_2`: Gugur UB R1 2 vs Colorbook
+    3. `LB_R1_3`: Gugur UB R1 3 vs Yokke Batam
+    4. `LB_R1_4`: Gugur UB R1 4 vs DEADLINE SLAYER
+    5. `LB_R1_5`: Gugur UB R1 5 vs Red Razor
+    6. `LB_R1_6`: Gugur UB R1 6 vs LOLO
+    7. `LB_R1_7`: Gugur UB R1 7 vs Yokke Batam Squad (YBS)
+    8. `LB_R1_8`: Gugur UB R1 8 vs MiracleXStars
+
+* **Ronde 2: Upper Bracket Semifinal, Lower Bracket Ronde 2 & Ronde 3 (Hari 4) - 10 Match BO3**
+  - **Upper Bracket Semifinal (2 Match):**
+    1. `UB_SF_1`: Pemenang UB QF 1 vs Pemenang UB QF 2
+    2. `UB_SF_2`: Pemenang UB QF 3 vs Pemenang UB QF 4
+  - **Lower Bracket Ronde 2 (4 Match):**
+    1. `LB_R2_1`: Pemenang LB R1 1 vs Pemenang LB R1 2
+    2. `LB_R2_2`: Pemenang LB R1 3 vs Pemenang LB R1 4
+    3. `LB_R2_3`: Pemenang LB R1 5 vs Pemenang LB R1 6
+    4. `LB_R2_4`: Pemenang LB R1 7 vs Pemenang LB R1 8
+  - **Lower Bracket Ronde 3 (4 Match - Pemenang LB R2 vs Gugur UB QF):**
+    1. `LB_R3_1`: Pemenang LB R2 1 vs Gugur UB QF 1
+    2. `LB_R3_2`: Pemenang LB R2 2 vs Gugur UB QF 2
+    3. `LB_R3_3`: Pemenang LB R2 3 vs Gugur UB QF 3
+    4. `LB_R3_4`: Pemenang LB R2 4 vs Gugur UB QF 4
+
+* **Ronde 3: Lower Bracket Perempat Final (Hari 4) - 2 Match BO3**
+  1. `LB_QF_1`: Pemenang LB R3 1 vs Pemenang LB R3 2
+  2. `LB_QF_2`: Pemenang LB R3 3 vs Pemenang LB R3 4
+
+* **Ronde 4: Upper Final & Lower Semifinal / Final Penantang & Penentu (Hari 5) - 5 Match BO3**
+  1. `UB_FINAL`: Pemenang UB SF 1 vs Pemenang UB SF 2
+  2. `LB_SF_1`: Pemenang LB QF 1 vs Gugur UB SF 1
+  3. `LB_SF_2`: Pemenang LB QF 2 vs Gugur UB SF 2
+  4. `LB_PRELIM`: Pemenang LB SF 1 vs Pemenang LB SF 2 (Final Penantang)
+  5. `LB_FINAL`: Pemenang LB Prelim vs Gugur UB Final (Final Penentu Tiket Grand Final)
+
+* **Ronde 5: Grand Final BO5 (Hari 5) - 1 Match BO5**
+  1. `GRAND_FINAL`: Juara Upper Bracket vs Juara Lower Bracket
+
 #### 2. Modul 2: Cyberpunk Admin Match Controller & Login Modal
 * **Tujuan**: Antarmuka kontrol panel panitia turnamen yang berdaya guna tinggi (*powerhouse operational dashboard*).
 * **Fitur Utama**:
