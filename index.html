@@ -64,6 +64,7 @@
     <button id="navBtnRules" class="nav-btn" onclick="switchTab('rules')">📜 Peraturan (Rules)</button>
     <button id="navBtnBaganMlbb" class="nav-btn" onclick="switchTab('bagan-mlbb')">⚔️ Bagan MLBB</button>
     <button id="navBtnPointsMcgg" class="nav-btn" onclick="switchTab('points-mcgg')">♟️ Poin & Klasemen MCGG</button>
+    <button id="navBtnCommanders" class="nav-btn" onclick="switchTab('commanders')">🎖️ Galeri 40 Komandan MCGG</button>
   </nav>
 
   <script>
@@ -1559,6 +1560,112 @@
         </div>
       </div>
     </section>
+
+    <!-- TAB 6: GALERI & ASSET ROSTER 40 KOMANDAN MCGG PATCH TERBARU (STITCH SCREEN_44) -->
+    <section id="tab-commanders" class="tab-content">
+      <div class="card commander-gallery-wrapper">
+        <!-- Telemetry Breadcrumb Bar -->
+        <div class="commander-telemetry-header">
+          <div class="telemetry-tag-group">
+            <span class="telemetry-brand">MCGG.SYS // 2026</span>
+            <span class="telemetry-separator">/</span>
+            <span class="telemetry-path">ROSTER_INDEX</span>
+            <span class="telemetry-separator">/</span>
+            <span class="telemetry-active-patch">PATCH_26.4_VETO_READY</span>
+          </div>
+          <div class="telemetry-status-pill">
+            <span class="telemetry-pulse-dot"></span>
+            <span class="telemetry-status-text">DATABASE RESMI TOURNAMENT ENGINE // 40 KOMANDAN AKTIF</span>
+          </div>
+        </div>
+
+        <!-- Main Title & Protocol Banner -->
+        <div class="commander-hero-banner">
+          <div class="commander-hero-left">
+            <div class="badge-accent-clip">YOKKE ESPORTS ARCHITECTURE // ASSET & TELEMETRY</div>
+            <h2 class="commander-main-title">KATALOG RESMI KOMANDAN & ASSET MCGG 2026</h2>
+            <p class="commander-main-desc">
+              Repositori parameter kompetitif 40 Little Commander Magic Chess: Go Go (MCGG) musim Yokke Squad Championship 2026. 
+              Mencakup protokol draft veto Match 1 (Non-Meta), klasifikasi tier stabilitas meta, deskripsi tri-skill mekanik, 
+              serta potret aset visual resmi.
+            </p>
+          </div>
+          <div class="commander-hero-right">
+            <button type="button" class="btn btn-outline" style="border-color: var(--yokke-cyan); color: var(--yokke-cyan); display: inline-flex; align-items: center; gap: 0.5rem;" onclick="openCommanderVetoRulesModal()">
+              <span>⚖️ Aturan Veto & Penalti (-2)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Telemetry Cards -->
+        <div class="commander-kpi-grid">
+          <div class="commander-kpi-card">
+            <span class="kpi-label">TOTAL ROSTER POOL</span>
+            <div class="kpi-value-row">
+              <span class="kpi-number text-cyan">40</span>
+              <span class="kpi-unit">COMM</span>
+            </div>
+            <span class="kpi-caption">100% Patch Sync</span>
+          </div>
+
+          <div class="commander-kpi-card kpi-card-danger">
+            <span class="kpi-label text-red">TIER S+ (VETO M1)</span>
+            <div class="kpi-value-row">
+              <span class="kpi-number text-red">09</span>
+              <span class="kpi-unit text-red">BLACKLIST</span>
+            </div>
+            <span class="kpi-caption">Dibuka Match 2 & 3</span>
+          </div>
+
+          <div class="commander-kpi-card">
+            <span class="kpi-label">POOL NON-META (M1)</span>
+            <div class="kpi-value-row">
+              <span class="kpi-number text-gold">31</span>
+              <span class="kpi-unit">LEGAL</span>
+            </div>
+            <span class="kpi-caption">Acak 2 Tahap Pool</span>
+          </div>
+
+          <div class="commander-kpi-card">
+            <span class="kpi-label">GRAND FINAL RULE</span>
+            <div class="kpi-value-row">
+              <span class="kpi-number text-purple">5 M</span>
+              <span class="kpi-unit">EXHAUST</span>
+            </div>
+            <span class="kpi-caption">Penalti -2 Duplikasi</span>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="commander-toolbar">
+          <div class="commander-search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="commanderSearchInput" class="commander-search-input" placeholder="Cari nama komandan, hero, atau keahlian skill..." oninput="handleCommanderSearchInput(this.value)">
+            <button type="button" id="btnClearCommanderSearch" class="btn-clear-search" onclick="clearCommanderSearch()" style="display: none;">✕</button>
+          </div>
+
+          <div class="commander-filter-pills" id="commanderFilterPills">
+            <button type="button" class="cmd-filter-pill active" data-filter="all" onclick="filterCommanderGalleryByTier('all')">Semua (40)</button>
+            <button type="button" class="cmd-filter-pill is-veto" data-filter="veto_m1" onclick="filterCommanderGalleryByTier('veto_m1')">🚫 Veto M1 (9)</button>
+            <button type="button" class="cmd-filter-pill" data-filter="non_meta" onclick="filterCommanderGalleryByTier('non_meta')">🎲 Non-Meta Pool (31)</button>
+            <button type="button" class="cmd-filter-pill" data-filter="High" onclick="filterCommanderGalleryByTier('High')">Tier High (3)</button>
+            <button type="button" class="cmd-filter-pill" data-filter="Meta" onclick="filterCommanderGalleryByTier('Meta')">Tier Meta (8)</button>
+            <button type="button" class="cmd-filter-pill" data-filter="Mid" onclick="filterCommanderGalleryByTier('Mid')">Tier Mid (6)</button>
+            <button type="button" class="cmd-filter-pill" data-filter="Normal" onclick="filterCommanderGalleryByTier('Normal')">Tier Normal (23)</button>
+          </div>
+        </div>
+
+        <!-- Active Result Counter -->
+        <div class="commander-result-meta">
+          <span id="commanderResultCountText" style="color: var(--text-muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">Menampilkan 40 dari 40 komandan aktif</span>
+        </div>
+
+        <!-- 40 Commanders Cards Grid -->
+        <div id="commanderCardsGrid" class="commander-cards-grid">
+          <!-- Di-render dinamis oleh app.js (renderMCGGCommanderGalleryUI) -->
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- MODAL EDIT DATA PESERTA & VERIFIKASI ID CARD (KHUSUS PANITIA) -->
@@ -2166,6 +2273,72 @@
     <option value="Zhuxin"></option>
     <option value="Zilong"></option>
   </datalist>
+
+  <!-- MODAL ATURAN VETO & DRAFT MCGG -->
+  <div id="commanderVetoModal" class="modal-overlay">
+    <div class="modal-box modal-box-large">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <h3 style="margin: 0; color: var(--yokke-cyan); display: flex; align-items: center; gap: 0.5rem;">
+          <span>⚖️ Aturan Veto, Draft Komandan & Penalti Duplikasi MCGG</span>
+        </h3>
+        <button type="button" class="btn btn-outline" style="padding: 0.2rem 0.5rem;" onclick="closeCommanderVetoRulesModal()">✕</button>
+      </div>
+
+      <div class="modal-body" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-color);">
+        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--yokke-red); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong style="color: #f87171;">🚫 Match 1 (Non-Meta Match):</strong>
+          <p style="margin: 0.25rem 0 0 0; color: #fca5a5;">
+            9 Komandan Tier S+ (Chou, Fanny, Vale, Austus, Brody, Franco, Ling, Tharz, Wanwan) <strong>DIBLACKLIST</strong> secara sistem. 
+            Hanya 31 komandan dari pool reguler/non-meta yang diundi menggunakan sistem acak 2 tahap.
+          </p>
+        </div>
+
+        <div style="background: rgba(0, 210, 255, 0.08); border-left: 4px solid var(--yokke-cyan); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong style="color: var(--yokke-cyan);">🎲 Match 2 (All-Pool Match):</strong>
+          <p style="margin: 0.25rem 0 0 0; color: #a5f3fc;">
+            Seluruh 40 komandan resmi (termasuk 9 komandan Tier S+) dibuka penuh. Sistem melakukan pengacakan acak murni 8 komandan untuk masing-masing lobi/pool.
+          </p>
+        </div>
+
+        <div style="background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--yokke-gold); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong style="color: var(--yokke-gold);">⚔️ Match 3 (Free Draft / Ban-Pick Room):</strong>
+          <p style="margin: 0.25rem 0 0 0; color: #fde68a;">
+            Setiap room/lobi melakukan 1 Ban komandan. Kontender bebas memilih komandan yang tidak di-ban sesuai strategi tim/personal.
+          </p>
+        </div>
+
+        <div style="background: rgba(192, 132, 252, 0.1); border-left: 4px solid var(--yokke-purple); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <strong style="color: var(--yokke-purple-text);">🏆 Match 4 & 5 Grand Final (Exhaustion Rule & Penalti -2):</strong>
+          <p style="margin: 0.25rem 0 0 0; color: #e9d5ff;">
+            Kontender <strong>DILARANG</strong> menggunakan kembali komandan yang sudah mereka mainkan di Match 1, 2, atau 3. 
+            Jika pemain melanggar atau menggunakan komandan yang berbeda dari hasil undian resmi, sistem secara otomatis menerapkan <strong>Penalti -2 Poin</strong> pada total skor akumulasi.
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+        <button type="button" class="btn btn-primary" onclick="closeCommanderVetoRulesModal()">Saya Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL & PRATINJAU KOMANDAN MCGG -->
+  <div id="commanderDetailModal" class="modal-overlay">
+    <div class="modal-box modal-box-large">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <h3 id="cmdDetailModalTitle" style="margin: 0; color: var(--yokke-cyan); display: flex; align-items: center; gap: 0.5rem;">
+          <span>🎖️ Detail Komandan MCGG</span>
+        </h3>
+        <button type="button" class="btn btn-outline" style="padding: 0.2rem 0.5rem;" onclick="closeCommanderDetailModal()">✕</button>
+      </div>
+      <div id="cmdDetailModalBody" class="modal-body">
+        <!-- Render dinamis dari app.js -->
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closeCommanderDetailModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     Yokke Squad E-Sports Championship 2026 — Dibuat untuk turnamen internal komunitas Yokke.

@@ -2532,3 +2532,535 @@ footer {
   }
 }
 
+/* ========================================================
+   MCGG 40 COMMANDERS GALLERY & TELEMETRY ROSTER (STITCH SCREEN_44)
+   ======================================================== */
+.commander-gallery-wrapper {
+  background: var(--bg-card);
+  border-radius: var(--yokke-radius-lg, 8px);
+  border: 1px solid var(--border-color);
+  padding: 1.75rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.commander-telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.telemetry-tag-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.telemetry-brand {
+  color: var(--yokke-cyan);
+  font-weight: 700;
+}
+
+.telemetry-separator {
+  color: #475569;
+}
+
+.telemetry-path {
+  color: var(--text-muted);
+}
+
+.telemetry-active-patch {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.telemetry-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(14, 21, 37, 0.8);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 9999px;
+  padding: 0.25rem 0.85rem;
+}
+
+.telemetry-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--yokke-cyan);
+  box-shadow: 0 0 8px var(--yokke-cyan);
+  animation: pulseCyan 2s infinite ease-in-out;
+}
+
+.telemetry-status-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--yokke-cyan);
+}
+
+@keyframes pulseCyan {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.commander-hero-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.commander-hero-left {
+  max-width: 820px;
+}
+
+.badge-accent-clip {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--yokke-gold);
+  margin-bottom: 0.45rem;
+}
+
+.commander-main-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.25;
+}
+
+.commander-main-desc {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* KPI Telemetry Grid */
+.commander-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.commander-kpi-card {
+  background: var(--yokke-surface-low, #161b2a);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--yokke-radius-lg, 8px);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-col: column;
+  gap: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.commander-kpi-card.kpi-card-danger {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.kpi-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.kpi-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.kpi-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kpi-number.text-cyan { color: var(--yokke-cyan); }
+.kpi-number.text-red { color: #f87171; }
+.kpi-number.text-gold { color: var(--yokke-gold); }
+.kpi-number.text-purple { color: var(--yokke-purple-text); }
+
+.kpi-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.kpi-caption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Toolbar & Filters */
+.commander-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  background: var(--yokke-surface-default, #1a1f2e);
+  padding: 1.15rem;
+  border-radius: var(--yokke-radius-lg, 8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.commander-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.commander-search-box .search-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1rem;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.commander-search-input {
+  width: 100%;
+  background: var(--yokke-surface-ground, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--yokke-radius-sm, 4px);
+  color: #f8fafc;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.85rem;
+  transition: all 0.2s ease;
+}
+
+.commander-search-input:focus {
+  outline: none;
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.25);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem;
+}
+
+.btn-clear-search:hover {
+  color: #f8fafc;
+}
+
+.commander-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cmd-filter-pill {
+  background: var(--yokke-surface-ground, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--yokke-radius-sm, 4px);
+  color: var(--text-muted);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cmd-filter-pill:hover {
+  border-color: var(--yokke-cyan);
+  color: #f8fafc;
+  background: rgba(0, 210, 255, 0.05);
+}
+
+.cmd-filter-pill.active {
+  background: var(--yokke-cyan);
+  border-color: var(--yokke-cyan);
+  color: #0a0f1d;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.35);
+}
+
+.cmd-filter-pill.is-veto.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+.commander-result-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding: 0 0.25rem;
+}
+
+/* Commander Cards Grid */
+.commander-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.commander-card {
+  background: var(--yokke-surface-low, #161b2a);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--yokke-radius-lg, 8px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.commander-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--yokke-cyan);
+  box-shadow: 0 8px 24px rgba(0, 210, 255, 0.15);
+}
+
+.commander-card.is-veto-card {
+  border-top: 3px solid #ef4444;
+}
+
+.commander-card.is-meta-card {
+  border-top: 3px solid var(--yokke-cyan);
+}
+
+.commander-card.is-normal-card {
+  border-top: 3px solid #64748b;
+}
+
+.cmd-card-header {
+  padding: 1.15rem 1.15rem 0.75rem 1.15rem;
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cmd-portrait-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--yokke-radius-sm, 4px);
+  overflow: hidden;
+  background: #090e1c;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cmd-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cmd-info-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.cmd-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-specialization {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmd-tags-row {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.cmd-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.cmd-badge.badge-veto {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.cmd-badge.badge-allpool {
+  background: rgba(0, 210, 255, 0.12);
+  color: var(--yokke-cyan);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+}
+
+.cmd-badge.badge-nonmeta {
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--yokke-gold);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.cmd-card-body {
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-grow: 1;
+}
+
+.cmd-skill-block {
+  background: rgba(10, 15, 29, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--yokke-radius-sm, 4px);
+  padding: 0.65rem 0.75rem;
+}
+
+.cmd-skill-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--yokke-cyan);
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cmd-skill-desc {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.cmd-synergy-note {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  border-left: 2px solid var(--yokke-purple);
+  padding-left: 0.5rem;
+  margin: 0;
+}
+
+.cmd-card-footer {
+  padding: 0.75rem 1.15rem;
+  background: rgba(10, 15, 29, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cmd-view-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  color: var(--yokke-cyan);
+  border-radius: var(--yokke-radius-sm, 4px);
+  padding: 0.45rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.cmd-view-btn:hover {
+  background: var(--yokke-cyan);
+  color: #0a0f1d;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+}
+
+/* Responsive Breakpoints for Commander Gallery */
+@media (max-width: 1280px) {
+  .commander-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .commander-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .commander-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .commander-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .commander-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .commander-main-title {
+    font-size: 1.45rem;
+  }
+  .commander-gallery-wrapper {
+    padding: 1rem;
+  }
+}
+
+

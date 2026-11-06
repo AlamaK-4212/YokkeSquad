@@ -1007,6 +1007,15 @@ function getInitialData(ss) {
       var reconstructedPlayoff = [[], [], [], [], [], []]; // 6 ronde
       var hasPlayoffRows = false;
 
+      var round0Count = 0;
+      var ubQfCount = 0;
+      var lbR1Count = 0;
+      var ubSfCount = 0;
+      var lbR2Count = 0;
+      var lbR3Count = 0;
+      var lbQfCount = 0;
+      var lbSfCount = 0;
+
       for (var br = 1; br < bData.length; br++) {
         var bRow = bData[br];
         if (!bRow || bRow.length < 4) continue;
@@ -1048,7 +1057,18 @@ function getInitialData(ss) {
           }
         }
 
-        var isGroup = (rawRIdx === "GRP" || phase.indexOf("Fase Grup") === 0 || mId.indexOf("GRP_") === 0 || (!rawRIdx && mId.indexOf("_vs_") !== -1));
+        // Klasifikasi presisi: Playoff vs Fase Grup
+        var isPlayoffMatch = (
+          rawRIdx === "0" || rawRIdx === "1" || rawRIdx === "2" || rawRIdx === "3" || rawRIdx === "4" || rawRIdx === "5" ||
+          (rawRIdx !== "" && !isNaN(parseInt(rawRIdx, 10)) && parseInt(rawRIdx, 10) >= 0 && parseInt(rawRIdx, 10) <= 5) ||
+          bracket === "UPPER" || bracket === "LOWER" || bracket === "GRAND_FINAL" ||
+          mId.indexOf("UB_") === 0 || mId.indexOf("LB_") === 0 || mId.indexOf("GRAND_FINAL") === 0 || mId.indexOf("PO_") === 0 ||
+          mId.indexOf("Upper_Bracket") !== -1 || mId.indexOf("Lower_Bracket") !== -1 || mId.indexOf("Grand_Final") !== -1 ||
+          phase.indexOf("Upper Bracket") !== -1 || phase.indexOf("Lower Bracket") !== -1 || phase.indexOf("Grand Final") !== -1 ||
+          phase.indexOf("Upper 16 Besar") !== -1 || phase.indexOf("Perempat Final") !== -1 || phase.indexOf("Semifinal") !== -1
+        );
+
+        var isGroup = !isPlayoffMatch && (rawRIdx === "GRP" || phase.indexOf("Fase Grup") === 0 || mId.indexOf("GRP_") === 0 || (!rawRIdx && mId.indexOf("_vs_") !== -1));
 
         if (isGroup) {
           var gNameParsed = phase.replace("Fase Grup - ", "").trim();
@@ -1078,72 +1098,135 @@ function getInitialData(ss) {
         } else {
           var rIdx = parseInt(rawRIdx, 10);
           var mIdx = parseInt(rawMIdx, 10);
+          var canonMatchLabel = mId;
 
           if (isNaN(rIdx) || isNaN(mIdx)) {
-            if (mId.indexOf("UB_R1_") === 0) {
+            var ubR1Match = mId.match(/^UB_R1_(\d+)$/i) || mId.match(/^Upper_Bracket_16_Besar_Match_(\d+)$/i);
+            var ubQfMatch = mId.match(/^UB_QF_(\d+)$/i) || mId.match(/^Upper_Bracket_Perempat_Final_Match_(\d+)$/i);
+            var lbR1Match = mId.match(/^LB_R1_(\d+)$/i) || mId.match(/^Lower_Bracket_Ronde_1_Match_(\d+)$/i);
+            var ubSfMatch = mId.match(/^UB_SF_(\d+)$/i) || mId.match(/^Upper_Bracket_Semifinal_Match_(\d+)$/i);
+            var lbR2Match = mId.match(/^LB_R2_(\d+)$/i) || mId.match(/^Lower_Bracket_Ronde_2_Match_(\d+)$/i);
+            var lbR3Match = mId.match(/^LB_R3_(\d+)$/i) || mId.match(/^Lower_Bracket_Ronde_3_Match_(\d+)$/i);
+            var lbQfMatch = mId.match(/^LB_QF_(\d+)$/i) || mId.match(/^Lower_Bracket_Perempat_Final_Match_(\d+)$/i);
+            var lbSfMatch = mId.match(/^LB_SF_(\d+)$/i) || mId.match(/^Lower_Bracket_Semifinal_Match_(\d+)$/i);
+
+            if (ubR1Match) {
               rIdx = 0;
-              mIdx = parseInt(mId.replace("UB_R1_", ""), 10) - 1;
-              if (!bracket) bracket = "UPPER";
-            } else if (mId.indexOf("UB_QF_") === 0) {
+              mIdx = parseInt(ubR1Match[1], 10) - 1;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_R1_" + (mIdx + 1);
+            } else if (mId.indexOf("Upper_Bracket_16_Besar") === 0 || phase.indexOf("Upper Bracket 16 Besar") !== -1 || phase.indexOf("Upper 16 Besar") !== -1) {
+              rIdx = 0;
+              mIdx = round0Count++;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_R1_" + (mIdx + 1);
+            } else if (ubQfMatch) {
               rIdx = 1;
-              mIdx = parseInt(mId.replace("UB_QF_", ""), 10) - 1;
-              if (!bracket) bracket = "UPPER";
-            } else if (mId.indexOf("LB_R1_") === 0) {
+              mIdx = parseInt(ubQfMatch[1], 10) - 1;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_QF_" + (mIdx + 1);
+            } else if (mId.indexOf("Upper_Bracket_Perempat_Final") === 0 || phase.indexOf("Upper Bracket Perempat Final") !== -1 || phase.indexOf("Upper QF") !== -1) {
               rIdx = 1;
-              mIdx = 4 + parseInt(mId.replace("LB_R1_", ""), 10) - 1;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId.indexOf("UB_SF_") === 0) {
+              mIdx = ubQfCount++;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_QF_" + (mIdx + 1);
+            } else if (lbR1Match) {
+              rIdx = 1;
+              mIdx = 4 + parseInt(lbR1Match[1], 10) - 1;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R1_" + (mIdx - 4 + 1);
+            } else if (mId.indexOf("Lower_Bracket_Ronde_1") === 0 || phase.indexOf("Lower Bracket Ronde 1") !== -1 || phase.indexOf("Lower R1") !== -1) {
+              rIdx = 1;
+              mIdx = 4 + lbR1Count++;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R1_" + (lbR1Count);
+            } else if (ubSfMatch) {
               rIdx = 2;
-              mIdx = parseInt(mId.replace("UB_SF_", ""), 10) - 1;
-              if (!bracket) bracket = "UPPER";
-            } else if (mId.indexOf("LB_R2_") === 0) {
+              mIdx = parseInt(ubSfMatch[1], 10) - 1;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_SF_" + (mIdx + 1);
+            } else if (mId.indexOf("Upper_Bracket_Semifinal") === 0 || phase.indexOf("Upper Bracket Semifinal") !== -1 || phase.indexOf("Upper SF") !== -1) {
               rIdx = 2;
-              mIdx = 2 + parseInt(mId.replace("LB_R2_", ""), 10) - 1;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId.indexOf("LB_R3_") === 0) {
+              mIdx = ubSfCount++;
+              bracket = "UPPER";
+              canonMatchLabel = "UB_SF_" + (mIdx + 1);
+            } else if (lbR2Match) {
               rIdx = 2;
-              mIdx = 6 + parseInt(mId.replace("LB_R3_", ""), 10) - 1;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId.indexOf("LB_QF_") === 0) {
+              mIdx = 2 + parseInt(lbR2Match[1], 10) - 1;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R2_" + (mIdx - 2 + 1);
+            } else if (mId.indexOf("Lower_Bracket_Ronde_2") === 0 || phase.indexOf("Lower Bracket Ronde 2") !== -1 || phase.indexOf("Lower R2") !== -1) {
+              rIdx = 2;
+              mIdx = 2 + lbR2Count++;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R2_" + (lbR2Count);
+            } else if (lbR3Match) {
+              rIdx = 2;
+              mIdx = 6 + parseInt(lbR3Match[1], 10) - 1;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R3_" + (mIdx - 6 + 1);
+            } else if (mId.indexOf("Lower_Bracket_Ronde_3") === 0 || phase.indexOf("Lower Bracket Ronde 3") !== -1 || phase.indexOf("Lower R3") !== -1) {
+              rIdx = 2;
+              mIdx = 6 + lbR3Count++;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_R3_" + (lbR3Count);
+            } else if (lbQfMatch) {
               rIdx = 3;
-              mIdx = parseInt(mId.replace("LB_QF_", ""), 10) - 1;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId === "UB_FINAL") {
+              mIdx = parseInt(lbQfMatch[1], 10) - 1;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_QF_" + (mIdx + 1);
+            } else if (mId.indexOf("Lower_Bracket_Perempat_Final") === 0 || phase.indexOf("Lower Bracket Perempat Final") !== -1 || phase.indexOf("Lower QF") !== -1) {
+              rIdx = 3;
+              mIdx = lbQfCount++;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_QF_" + (mIdx + 1);
+            } else if (mId === "UB_FINAL" || mId.indexOf("Upper_Bracket_Final") === 0 || phase.indexOf("Upper Bracket Final") !== -1) {
               rIdx = 4;
               mIdx = 0;
-              if (!bracket) bracket = "UPPER";
-            } else if (mId.indexOf("LB_SF_") === 0) {
+              bracket = "UPPER";
+              canonMatchLabel = "UB_FINAL";
+            } else if (lbSfMatch) {
               rIdx = 4;
-              mIdx = 1 + parseInt(mId.replace("LB_SF_", ""), 10) - 1;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId === "LB_PRELIM") {
+              mIdx = parseInt(lbSfMatch[1], 10);
+              bracket = "LOWER";
+              canonMatchLabel = "LB_SF_" + mIdx;
+            } else if (mId.indexOf("Lower_Bracket_Semifinal") === 0 || phase.indexOf("Lower Bracket Semifinal") !== -1) {
+              rIdx = 4;
+              mIdx = 1 + lbSfCount++;
+              bracket = "LOWER";
+              canonMatchLabel = "LB_SF_" + (mIdx);
+            } else if (mId === "LB_PRELIM" || mId.indexOf("Lower_Bracket_Final_Penantang") === 0 || phase.indexOf("Lower Bracket Final Penantang") !== -1) {
               rIdx = 4;
               mIdx = 3;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId === "LB_FINAL") {
+              bracket = "LOWER";
+              canonMatchLabel = "LB_PRELIM";
+            } else if (mId === "LB_FINAL" || mId.indexOf("Lower_Bracket_Final_Penentu") === 0 || phase.indexOf("Lower Bracket Final Penentu") !== -1 || phase.indexOf("Lower Bracket Final") !== -1) {
               rIdx = 4;
               mIdx = 4;
-              if (!bracket) bracket = "LOWER";
-            } else if (mId === "GRAND_FINAL") {
+              bracket = "LOWER";
+              canonMatchLabel = "LB_FINAL";
+            } else if (mId === "GRAND_FINAL" || mId.indexOf("Grand_Final") === 0 || phase.indexOf("Grand Final") !== -1) {
               rIdx = 5;
               mIdx = 0;
-              if (!bracket) bracket = "GRAND_FINAL";
+              bracket = "GRAND_FINAL";
+              canonMatchLabel = "GRAND_FINAL";
             } else {
-              var poMatch = mId.match(/^PO_R(\d+)_M(\d+)$/);
+              var poMatch = mId.match(/^PO_R(\d+)_M(\d+)$/i);
               if (poMatch) {
                 rIdx = parseInt(poMatch[1], 10) - 1;
                 mIdx = parseInt(poMatch[2], 10) - 1;
+                canonMatchLabel = mId;
               }
             }
           }
 
           if (!bracket) {
-            bracket = (mId.indexOf("UB") === 0) ? "UPPER" : ((mId.indexOf("LB") === 0) ? "LOWER" : (mId.indexOf("GRAND_FINAL") === 0 ? "GRAND_FINAL" : "UPPER"));
+            bracket = (mId.indexOf("UB") === 0 || canonMatchLabel.indexOf("UB") === 0) ? "UPPER" : (((mId.indexOf("LB") === 0 || canonMatchLabel.indexOf("LB") === 0)) ? "LOWER" : ((mId.indexOf("GRAND_FINAL") === 0 || canonMatchLabel === "GRAND_FINAL") ? "GRAND_FINAL" : "UPPER"));
           }
 
           var playoffObj = {
             matchId: mId,
-            matchLabel: mId,
+            matchLabel: canonMatchLabel || mId,
             phaseName: phase || (rIdx === 5 ? "Grand Final BO5 (Hari 5)" : ("Playoff Ronde " + (rIdx + 1))),
             format: bRow[2] || (phase.indexOf("Grand Final") !== -1 ? "BO5" : "BO3"),
             teamA: teamA,
@@ -1175,8 +1258,9 @@ function getInitialData(ss) {
         appConfig.groupMatchResults = sheetMatchResults;
       }
       if (hasPlayoffRows) {
-        appConfig.groupPlayoffMatches = reconstructedPlayoff.map(function(round) {
-          return round.filter(Boolean);
+        var roundCaps = [8, 12, 10, 2, 5, 1];
+        appConfig.groupPlayoffMatches = reconstructedPlayoff.map(function(round, rIdx) {
+          return round.filter(Boolean).slice(0, roundCaps[rIdx] || 8);
         });
       }
     }
@@ -2113,14 +2197,14 @@ function safeBatchResizeColumns(sheet, numCols) {
 const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
   [
-    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
-    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Native', teamB: 'BOLO CLUB', winner: null },
-    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
-    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'WINGSKANAN ESPORT 1', teamB: 'TY BEKASI', winner: null },
-    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Miskin Mekanik', teamB: '666', winner: null },
-    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
-    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
-    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'AANG ALPHA', teamB: 'YOKKE LAMPUNG', winner: null }
+    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Anti Climax', teamB: 'Miskin Mekanik', winner: null },
+    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
+    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
+    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'BOLO CLUB', teamB: 'Native', winner: null },
+    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
+    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TY BEKASI', teamB: 'WINGSKANAN ESPORT 1', winner: null },
+    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '666', teamB: 'AANG ALPHA', winner: null },
+    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'YOKKE LAMPUNG', winner: null }
   ],
   // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
   [
@@ -2128,14 +2212,14 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
     { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
     { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
     { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: 'My Palembang', winner: null },
-    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'Colorbook', winner: null },
-    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'Yokke Batam', winner: null },
-    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'DEADLINE SLAYER', winner: null },
+    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'DEADLINE SLAYER', teamB: 'Gugur UB R1 1', winner: null },
+    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'MiracleXStars', winner: null },
+    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'LOLO', winner: null },
+    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'Yokke Batam Squad (YBS)', winner: null },
     { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: 'Red Razor', winner: null },
-    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'LOLO', winner: null },
-    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Yokke Batam Squad (YBS)', winner: null },
-    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'MiracleXStars', winner: null }
+    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'My Palembang', winner: null },
+    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Colorbook', winner: null },
+    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'Yokke Batam', winner: null }
   ],
   // Ronde 2 (Hari 4): Upper Bracket Semifinal (2 Match) & Lower Bracket Ronde 2 (4 Match) & Lower Bracket Ronde 3 (4 Match)
   [

@@ -82,7 +82,7 @@ try {
 
 let currentAdminPin = sessionStorage.getItem('yokke_admin_session_auth') || "";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbydYRIt_AGkhglpHCqKVWj9f3lwGAheSXmmvkZCdW6NhmpzbZn2GJvKEZQ3NzPosjA1LA/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwb_TTZOowfQ-5ifNel5MURjaPIBqMC4XBEI-Lm9RoaOANM2qNYLohvkfKU6Re5I1LgOg/exec";
 
 /**
  * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
@@ -374,14 +374,14 @@ const DEFAULT_MLBB_GROUPS = {
 const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
   [
-    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
-    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Native', teamB: 'BOLO CLUB', winner: null },
-    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
-    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'WINGSKANAN ESPORT 1', teamB: 'TY BEKASI', winner: null },
-    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Miskin Mekanik', teamB: '666', winner: null },
-    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
-    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
-    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'AANG ALPHA', teamB: 'YOKKE LAMPUNG', winner: null }
+    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Anti Climax', teamB: 'Miskin Mekanik', winner: null },
+    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
+    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
+    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'BOLO CLUB', teamB: 'Native', winner: null },
+    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
+    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TY BEKASI', teamB: 'WINGSKANAN ESPORT 1', winner: null },
+    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '666', teamB: 'AANG ALPHA', winner: null },
+    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'YOKKE LAMPUNG', winner: null }
   ],
   // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
   [
@@ -389,14 +389,14 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
     { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
     { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
     { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: 'My Palembang', winner: null },
-    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'Colorbook', winner: null },
-    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'Yokke Batam', winner: null },
-    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'DEADLINE SLAYER', winner: null },
+    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'DEADLINE SLAYER', teamB: 'Gugur UB R1 1', winner: null },
+    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'MiracleXStars', winner: null },
+    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'LOLO', winner: null },
+    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'Yokke Batam Squad (YBS)', winner: null },
     { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: 'Red Razor', winner: null },
-    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'LOLO', winner: null },
-    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Yokke Batam Squad (YBS)', winner: null },
-    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'MiracleXStars', winner: null }
+    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'My Palembang', winner: null },
+    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Colorbook', winner: null },
+    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'Yokke Batam', winner: null }
   ],
   // Ronde 2 (Hari 4): Upper Bracket Semifinal (2 Match) & Lower Bracket Ronde 2 (4 Match) & Lower Bracket Ronde 3 (4 Match)
   [
@@ -1565,9 +1565,16 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
         }
         if (data.config.groupPlayoffMatches !== undefined && Array.isArray(data.config.groupPlayoffMatches)) {
           if (data.config.groupPlayoffMatches.length === 6) {
-            groupPlayoffMatches = data.config.groupPlayoffMatches;
+            const rawPO = data.config.groupPlayoffMatches;
+            const roundCaps = [8, 12, 10, 2, 5, 1];
+            groupPlayoffMatches = rawPO.map((rnd, rIdx) => {
+              if (!Array.isArray(rnd)) return [];
+              return rnd.filter(Boolean).slice(0, roundCaps[rIdx] || 8);
+            });
+            localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
           } else if (data.config.groupPlayoffMatches.length === 0) {
             groupPlayoffMatches = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
+            localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
           }
         }
         if (data.config.tournamentStageState && typeof data.config.tournamentStageState === 'object') {
@@ -2880,6 +2887,10 @@ function switchTab(tabId, updateHistory = true) {
   } else if (tabId === 'hub') {
     if (typeof updateHubDynamicStats === 'function') {
       updateHubDynamicStats();
+    }
+  } else if (tabId === 'commanders') {
+    if (typeof renderMCGGCommanderGalleryUI === 'function') {
+      renderMCGGCommanderGalleryUI();
     }
   }
 }
@@ -6514,9 +6525,14 @@ function pickGroupPlayoffWinner(rIdx, mIdx, winnerTeam) {
       else if (mIdx === 6) groupPlayoffMatches[1][3].teamA = winnerTeam;
       else if (mIdx === 7) groupPlayoffMatches[1][3].teamB = winnerTeam;
 
-      // Tim kalah dari Upper 16 Besar langsung turun ke Lower Bracket Ronde 1 posisi Home (teamA) melawan Juara 3 (teamB)!
+      // Tim kalah dari Upper 16 Besar langsung turun ke Lower Bracket Ronde 1 mengisi slot placeholder Gugur UB R1
       if (groupPlayoffMatches[1][4 + mIdx]) {
-        groupPlayoffMatches[1][4 + mIdx].teamA = loserTeam;
+        const lbMatch = groupPlayoffMatches[1][4 + mIdx];
+        if (lbMatch.teamB && (lbMatch.teamB.indexOf('Gugur UB R1') !== -1 || isPlayoffPlaceholderTeam(lbMatch.teamB))) {
+          lbMatch.teamB = loserTeam;
+        } else {
+          lbMatch.teamA = loserTeam;
+        }
       }
     } else if (rIdx === 1) {
       // Ronde 1 (Hari 3-4): UB QF (mIdx 0..3) & LB R1 (mIdx 4..11)
@@ -11705,22 +11721,27 @@ function renderMLBBInteractiveHubUI() {
   `;
 
   const ubMatchPairs = [
-    { key: 'UB_16_M1', label: 'Match 1: Juara 1A vs 2B', desc: 'Pemenang ➔ Upper QF 1' },
-    { key: 'UB_16_M2', label: 'Match 2: Juara 1C vs 2D', desc: 'Pemenang ➔ Upper QF 1' },
-    { key: 'UB_16_M3', label: 'Match 3: Juara 1E vs 2F', desc: 'Pemenang ➔ Upper QF 2' },
-    { key: 'UB_16_M4', label: 'Match 4: Juara 1G vs 2H', desc: 'Pemenang ➔ Upper QF 2' },
-    { key: 'UB_16_M5', label: 'Match 5: Juara 1B vs 2A', desc: 'Pemenang ➔ Upper QF 3' },
-    { key: 'UB_16_M6', label: 'Match 6: Juara 1D vs 2C', desc: 'Pemenang ➔ Upper QF 3' },
-    { key: 'UB_16_M7', label: 'Match 7: Juara 1F vs 2E', desc: 'Pemenang ➔ Upper QF 4' },
-    { key: 'UB_16_M8', label: 'Match 8: Juara 1H vs 2G', desc: 'Pemenang ➔ Upper QF 4' }
+    { key: 'UB_16_M1', idx: 0, desc: 'Pemenang ➔ Upper QF 1' },
+    { key: 'UB_16_M2', idx: 1, desc: 'Pemenang ➔ Upper QF 1' },
+    { key: 'UB_16_M3', idx: 2, desc: 'Pemenang ➔ Upper QF 2' },
+    { key: 'UB_16_M4', idx: 3, desc: 'Pemenang ➔ Upper QF 2' },
+    { key: 'UB_16_M5', idx: 4, desc: 'Pemenang ➔ Upper QF 3' },
+    { key: 'UB_16_M6', idx: 5, desc: 'Pemenang ➔ Upper QF 3' },
+    { key: 'UB_16_M7', idx: 6, desc: 'Pemenang ➔ Upper QF 4' },
+    { key: 'UB_16_M8', idx: 7, desc: 'Pemenang ➔ Upper QF 4' }
   ];
 
-  ubMatchPairs.forEach(m => {
+  ubMatchPairs.forEach((m, idx) => {
     const isActive = activeNode === m.key;
+    const pMatch = groupPlayoffMatches[0]?.[idx];
+    const matchTitle = (pMatch && pMatch.teamA && pMatch.teamB && !isPlayoffPlaceholderTeam(pMatch.teamA))
+      ? `Match ${idx + 1}: ${pMatch.teamA} vs ${pMatch.teamB}`
+      : `Match ${idx + 1}: Silang Grup`;
+
     leftHtml += `
       <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMLBBStageNode('${m.key}')">
         <div class="flow-node-name">
-          <span>⚡</span> <span style="font-size:0.78rem;">${m.label}</span>
+          <span>⚡</span> <span style="font-size:0.78rem;">${escapeHtml(matchTitle)}</span>
         </div>
         <div class="flow-node-desc">${m.desc}</div>
       </button>
@@ -12553,3 +12574,564 @@ function shuffleMCGG32Besar() {
   saveState();
   renderMCGGInteractiveHubUI();
 }
+
+// ========================================================
+// 40 OFFICIAL MCGG COMMANDERS GALLERY & TELEMETRY ROSTER (STITCH SCREEN_44)
+// ========================================================
+
+const MCGG_COMMANDER_METADATA = {
+  abe: {
+    spec: 'Physical Brawler & HP Shield',
+    skill: 'Brutal Strike',
+    desc: 'Memberikan damage tambahan dan perisai absorb ketika HP komandan di bawah 40%.',
+    synergy: 'Sinergi Weapon Master & Guardian',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  alice: {
+    spec: 'Blood Demon & Vampire Lifesteal',
+    skill: 'Blood Ancestry',
+    desc: 'Menyerap darah musuh di sekitarnya dan memulihkan HP seluruh unit Mage satu tim.',
+    synergy: 'Sinergi Mage & Blood Demon',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  alucard: {
+    spec: 'Slayer Pursuit & Lifesteal Burst',
+    skill: 'Fusion Blade',
+    desc: 'Meningkatkan Physical Lifesteal dan damage kritikal saat menghadapi hero garis depan.',
+    synergy: 'Sinergi Weapon Master & Abyss',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  austus: {
+    spec: 'Totem Shard & Economy Accelerator',
+    skill: 'Shard of Blessing',
+    desc: 'Mengumpulkan serpihan totem kemenangan beruntun untuk menghasilkan bonus gold dan item.',
+    synergy: 'Sinergi Gunner & Archer',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  benny: {
+    spec: 'Stealth Trap & Clone Disruption',
+    skill: 'Freezing Trap',
+    desc: 'Menempatkan jebakan es di arena yang membekukan hero lawan selama 3 detik pada kickoff.',
+    synergy: 'Sinergi Assassin & Marksman',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  brody: {
+    spec: 'Abyss Marksman & Long-Range Burst',
+    skill: 'Abyss Corrosion',
+    desc: 'Menumpuk tanda korosi pada musuh terjauh yang meledak saat skill aktif mencapai batas penuh.',
+    synergy: 'Sinergi Gunner & Los Pecados',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  brown: {
+    spec: 'Equipment Anvil & Blacksmith Boost',
+    skill: 'Reinforce Equipment',
+    desc: 'Meningkatkan efisiensi item fisik dan armor pada hero terkuat di formasi pertempuran.',
+    synergy: 'Sinergi Guardian & Wrestler',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  buss: {
+    spec: 'Discount Merchant & Shop Reroll',
+    skill: 'Boon of Economy',
+    desc: 'Memberikan diskon harga hero toko dan kesempatan free refresh pada setiap ronde netral.',
+    synergy: 'Sinergi Los Pecados & Support',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  chou: {
+    spec: 'Martial Knockup & Tactical Isolation',
+    skill: 'Jeet Kune Do & Way of Dragon',
+    desc: 'Menendang hero carry lawan keluar dari formasi perlindungan dan melumpuhkan target.',
+    synergy: 'Sinergi Wrestler & Assassin',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  connie: {
+    spec: 'Mirror Mimic & Star Duplication',
+    skill: 'Let\'s Play & Mirror Call',
+    desc: 'Memanggil salinan hero bintang satu secara acak saat fase persiapan dimulai.',
+    synergy: 'Sinergi Mage & Elementalist',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  diggie: {
+    spec: 'Time Control & Debuff Shield',
+    skill: 'Time Journey Bomb',
+    desc: 'Menciptakan zona anti-crowd control yang membebaskan seluruh hero dari efek stun awal.',
+    synergy: 'Sinergi Support & Eruditio',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  dubi: {
+    spec: 'Fluff Trap & Attack Speed Debuff',
+    skill: 'Fluffy Barrier',
+    desc: 'Menyebarkan karpet bulu yang mengurangi attack speed lawan sebesar 35% di awal ronde.',
+    synergy: 'Sinergi Nature Spirit & Mage',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  eggie: {
+    spec: 'Fast Hatch & EXP Level Booster',
+    skill: 'Exhilaration Hatching',
+    desc: 'Mendapatkan tambahan exp komandan lebih cepat saat mempertahankan win-streak 3 ronde.',
+    synergy: 'Sinergi Gunner & Mecha Era',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  eva: {
+    spec: 'Synergy Blessing & Global Aura',
+    skill: 'Coordinated Surge',
+    desc: 'Memicu bonus Attack Damage dan Magic Power saat mengaktifkan 4 atau lebih sinergi berbeda.',
+    synergy: 'Sinergi Multiverse & Support',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  fanny: {
+    spec: 'Cable Agility & Backline Execution',
+    skill: 'Steel Cable Strike',
+    desc: 'Meluncur ke sudut belakang musuh dan memberikan burst damage area pada unit bertipis.',
+    synergy: 'Sinergi Assassin & Empire',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  floryn: {
+    spec: 'Global Heal & Blossom Protection',
+    skill: 'Dew Bloom Lantern',
+    desc: 'Menyediakan item khusus bunga lantern yang memberikan efek heal dan regenerasi masif.',
+    synergy: 'Sinergi Nature Spirit & Support',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  franco: {
+    spec: 'Iron Hook & Suppression Pull',
+    skill: 'Hook Disruptor',
+    desc: 'Menarik hero lawan di pojok belakang tepat ke barisan depan untuk dieksekusi seketika.',
+    synergy: 'Sinergi Northern Vale & Guardian',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  gord: {
+    spec: 'Mystic Shred & Magic Amplification',
+    skill: 'Mystic Projectile',
+    desc: 'Mengurangi magic defense musuh hingga 40% dan melepaskan proyektil magic beruntun.',
+    synergy: 'Sinergi Mage & Elementalist',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  harley: {
+    spec: 'Magic Trick & Card Teleportation',
+    skill: 'Magic Hat Trap',
+    desc: 'Mengacak posisi hero terkuat musuh dan memasukkannya ke dalam topi sihir selama 4 detik.',
+    synergy: 'Sinergi Mage & Eruditio',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  harper: {
+    spec: 'Shield Defense & Tactical Barrier',
+    skill: 'Block Defense',
+    desc: 'Memberikan barrier pelindung yang menyerap damage fatal pertama di setiap putaran.',
+    synergy: 'Sinergi Guardian & Weapon Master',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  kaboom: {
+    spec: 'Mech Bombardment & Area Stun',
+    skill: 'Robo Cannonade',
+    desc: 'Menempatkan robot pelontar rudal mini di papan yang meledak dan menghentikan pergerakan musuh.',
+    synergy: 'Sinergi Mecha Era & Gunner',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  kalea: {
+    spec: 'Tidal Shield & Aquatic Support',
+    skill: 'Tidal Wave Surge',
+    desc: 'Menghadirkan gelombang laut penyembuh yang memberikan shield setara 20% max HP tim.',
+    synergy: 'Sinergi Nature Spirit & Support',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  lancelot: {
+    spec: 'Fencing Duelist & Untargetable Burst',
+    skill: 'Thorned Rose Duel',
+    desc: 'Menjadi untargetable selama 1.5 detik sambil menusuk 3 titik kunci formasi musuh.',
+    synergy: 'Sinergi Assassin & Empire',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  layla: {
+    spec: 'Long-Range Cannon & Malefic Scaling',
+    skill: 'Destruction Beam',
+    desc: 'Menembakkan laser lurus mematikan yang kekuatannya meningkat seiring jarak tembak.',
+    synergy: 'Sinergi Gunner & Cadet',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  ling: {
+    spec: 'Finch Poise & Tempest of Blades',
+    skill: 'Tempest Platform',
+    desc: 'Menciptakan panggung angin pedang di tengah papan yang memberikan kekebalan dan burst.',
+    synergy: 'Sinergi Assassin & Dragon Altar',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  luoyi: {
+    spec: 'Yin Yang Duality & Warp Teleport',
+    skill: 'Duality Warp Field',
+    desc: 'Menghubungkan dua titik arena dan memindahkan dua hero ke posisi strategis di awal laga.',
+    synergy: 'Sinergi Elementalist & Cadia',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  mavis: {
+    spec: 'Vampire Feast & Sustain Comeback',
+    skill: 'Mylets Clor',
+    desc: 'Setiap kali hero lawan tereliminasi, komandan meregenerasi 4 HP dan menambah kekuatan hero.',
+    synergy: 'Sinergi Blood Demon & Assassin',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  minotaur: {
+    spec: 'Minoan Rage & Earthquake Stun',
+    skill: 'Despair Stomp',
+    desc: 'Menghentakkan tanah dan memberikan stun selama 2.5 detik pada 4 petak terdekat.',
+    synergy: 'Sinergi Guardian & Wrestler',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  moskov: {
+    spec: 'Spear Penetration & Attack Cascade',
+    skill: 'Abyss Spear Strike',
+    desc: 'Tombak menembus barisan formasi lawan dan memicu efek knockback pada garis lurus.',
+    synergy: 'Sinergi Marksman & Abyss',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  pao: {
+    spec: 'Dragon Shield & Damage Mitigation',
+    skill: 'Shield of Dragon',
+    desc: 'Meningkatkan Physical dan Magic Defense sebesar 60 poin untuk hero yang berada di baris pertama.',
+    synergy: 'Sinergi Dragon Altar & Guardian',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  popol: {
+    spec: 'Kupa Companion & Double Frontline',
+    skill: 'Bite em Kupa',
+    desc: 'Menghadirkan serigala Kupa sebagai unit tambahan mandiri di arena pertarungan.',
+    synergy: 'Sinergi Marksman & Nature',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  ragnar: {
+    spec: 'Low-HP Recovery & Berserk Resilience',
+    skill: 'Regenerate HP',
+    desc: 'Memulihkan HP komandan secara instan saat darah berada di bawah ambang batas 20 HP.',
+    synergy: 'Sinergi Northern Vale & Weapon Master',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  remy: {
+    spec: 'Gold Windfall & Compound Interest',
+    skill: 'Money Grubber',
+    desc: 'Memberikan bunga simpanan ekstra dan peluang mendapatkan gold tambahan setiap ronde.',
+    synergy: 'Sinergi Los Pecados & Empire',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  ruby: {
+    spec: 'Scythe Hook & Mass Lifesteal',
+    skill: 'Dont Run Wolf King',
+    desc: 'Menarik seluruh musuh dalam jangkauan 2 petak dan memulihkan HP hero terdekat.',
+    synergy: 'Sinergi Weapon Master & Wrestler',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  rya: {
+    spec: 'Lotus Secret Synergy & Camouflage',
+    skill: 'Lotus Blessing',
+    desc: 'Memberikan satu sinergi acak secara permanen kepada hero pilihan di awal pertandingan.',
+    synergy: 'Sinergi Elementalist & Nature',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  tharz: {
+    spec: 'Gluttony Feast & Star Duplicator',
+    skill: 'Gluttony Feast',
+    desc: 'Memakan hero toko untuk memunculkan hero bintang tiga secara instan di ronde late-game.',
+    synergy: 'Sinergi Mage & Mecha Era',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  vale: {
+    spec: 'Wind Tempest & High Magic Burst',
+    skill: 'Windstorm Cascade',
+    desc: 'Melepaskan pusaran angin topan yang menerbangkan unit lawan ke udara dan membakar magic resistance.',
+    synergy: 'Sinergi Elementalist & Mage',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  vexana: {
+    spec: 'Necromancy Puppet & Dark Curse',
+    skill: 'Cursed Clone',
+    desc: 'Menciptakan boneka tiruan dari hero musuh pertama yang tumbang di papan catur.',
+    synergy: 'Sinergi Necrokeep & Mage',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  wanwan: {
+    spec: 'Crossbow Cascade & Tiger Agility',
+    skill: 'Crossbow of Tang',
+    desc: 'Menembakkan panah bertubi-tubi yang secara otomatis beralih ke musuh terlemah saat target gugur.',
+    synergy: 'Sinergi Marksman & Cadia',
+    isVetoM1: true,
+    pool: 'All-Pool (Veto M1)'
+  },
+  yuki: {
+    spec: 'Blood Pact & Core Empowerment',
+    skill: 'Empowerment Sacrifice',
+    desc: 'Mengorbankan dua hero di samping untuk melipatgandakan damage dan shield hero inti carry.',
+    synergy: 'Sinergi Assassin & Blood Demon',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  }
+};
+
+let currentCommanderGalleryTierFilter = 'all';
+let currentCommanderGallerySearchQuery = '';
+
+function renderMCGGCommanderGalleryUI(filter = null, searchQuery = null) {
+  const container = document.getElementById('commanderCardsGrid');
+  if (!container) return;
+
+  if (filter !== null) currentCommanderGalleryTierFilter = filter;
+  if (searchQuery !== null) currentCommanderGallerySearchQuery = searchQuery.trim().toLowerCase();
+
+  const query = currentCommanderGallerySearchQuery;
+  const currentTier = currentCommanderGalleryTierFilter;
+
+  // Filter 40 komandan
+  const filteredList = MCGG_COMMANDERS.filter(cmd => {
+    const meta = MCGG_COMMANDER_METADATA[cmd.id] || {};
+    
+    // Filter tier
+    if (currentTier === 'veto_m1') {
+      if (!meta.isVetoM1) return false;
+    } else if (currentTier === 'non_meta') {
+      if (meta.isVetoM1) return false;
+    } else if (currentTier !== 'all') {
+      if (cmd.tier !== currentTier) return false;
+    }
+
+    // Filter search query
+    if (query) {
+      const matchName = (cmd.name || '').toLowerCase().includes(query);
+      const matchHero = (cmd.hero || '').toLowerCase().includes(query);
+      const matchAlter = (cmd.alterName || '').toLowerCase().includes(query);
+      const matchSpec = (meta.spec || '').toLowerCase().includes(query);
+      const matchSkill = (meta.skill || '').toLowerCase().includes(query);
+      const matchSynergy = (meta.synergy || '').toLowerCase().includes(query);
+      if (!matchName && !matchHero && !matchAlter && !matchSpec && !matchSkill && !matchSynergy) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Perbarui counter
+  const counterEl = document.getElementById('commanderResultCountText');
+  if (counterEl) {
+    counterEl.innerText = `Menampilkan ${filteredList.length} dari ${MCGG_COMMANDERS.length} komandan aktif`;
+  }
+
+  // Jika hasil kosong
+  if (filteredList.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 3rem 1rem; text-align: center; background: rgba(14, 21, 37, 0.6); border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.1);">
+        <p style="font-size: 1.1rem; color: #f8fafc; font-weight: 600; margin-bottom: 0.5rem;">Tidak ada komandan yang cocok dengan kriteria pencarian.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Coba reset filter atau gunakan kata kunci lain seperti nama hero, peran, atau sinergi.</p>
+        <button type="button" class="btn btn-outline" style="border-color: var(--yokke-cyan); color: var(--yokke-cyan);" onclick="clearCommanderSearch(); filterCommanderGalleryByTier('all');">Reset Filter</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Render cards
+  let html = '';
+  filteredList.forEach(cmd => {
+    const meta = MCGG_COMMANDER_METADATA[cmd.id] || {
+      spec: 'Tactical MCGG Specialist',
+      skill: 'Tactical Surge',
+      desc: 'Meningkatkan stabilitas formasi ronde kualifikasi.',
+      synergy: 'Sinergi All-Rounder',
+      isVetoM1: false,
+      pool: 'All-Pool'
+    };
+
+    const cardClass = meta.isVetoM1 ? 'is-veto-card' : (cmd.tier === 'Meta' ? 'is-meta-card' : 'is-normal-card');
+    const vetoBadge = meta.isVetoM1 
+      ? '<span class="cmd-badge badge-veto">🚫 Veto M1</span>' 
+      : '<span class="cmd-badge badge-nonmeta">🎲 Non-Meta M1</span>';
+    const poolBadge = `<span class="cmd-badge badge-allpool">${cmd.tier.toUpperCase()}</span>`;
+
+    html += `
+      <div class="commander-card ${cardClass}" id="card-cmd-${cmd.id}">
+        <div class="cmd-card-header">
+          <div class="cmd-portrait-wrapper">
+            <img src="${cmd.heroImage}" alt="${cmd.name}" class="cmd-portrait-img" loading="lazy" onerror="this.src='assets/commanders/yuki.png'">
+          </div>
+          <div class="cmd-info-header">
+            <div class="cmd-name" title="${cmd.displayName}">${cmd.name}</div>
+            <div class="cmd-specialization">${meta.spec}</div>
+            <div class="cmd-tags-row">
+              ${vetoBadge}
+              ${poolBadge}
+            </div>
+          </div>
+        </div>
+
+        <div class="cmd-card-body">
+          <div class="cmd-skill-block">
+            <div class="cmd-skill-title">
+              <span>⚡</span>
+              <span>${meta.skill}</span>
+            </div>
+            <p class="cmd-skill-desc">${meta.desc}</p>
+          </div>
+          <p class="cmd-synergy-note">
+            <strong>Rekomendasi:</strong> ${meta.synergy}
+          </p>
+        </div>
+
+        <div class="cmd-card-footer">
+          <button type="button" class="cmd-view-btn" onclick="openCommanderDetailModal('${cmd.id}')">
+            <span>🔍 Detail Mekanik & Skin</span>
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function filterCommanderGalleryByTier(tier) {
+  currentCommanderGalleryTierFilter = tier;
+  
+  // Update styling pill aktif
+  const pills = document.querySelectorAll('#commanderFilterPills .cmd-filter-pill');
+  pills.forEach(pill => {
+    if (pill.getAttribute('data-filter') === tier) {
+      pill.classList.add('active');
+    } else {
+      pill.classList.remove('active');
+    }
+  });
+
+  renderMCGGCommanderGalleryUI();
+}
+
+function handleCommanderSearchInput(val) {
+  currentCommanderGallerySearchQuery = (val || '').trim();
+  const clearBtn = document.getElementById('btnClearCommanderSearch');
+  if (clearBtn) {
+    clearBtn.style.display = currentCommanderGallerySearchQuery ? 'block' : 'none';
+  }
+  renderMCGGCommanderGalleryUI();
+}
+
+function clearCommanderSearch() {
+  const input = document.getElementById('commanderSearchInput');
+  if (input) input.value = '';
+  currentCommanderGallerySearchQuery = '';
+  const clearBtn = document.getElementById('btnClearCommanderSearch');
+  if (clearBtn) clearBtn.style.display = 'none';
+  renderMCGGCommanderGalleryUI();
+}
+
+function openCommanderVetoRulesModal() {
+  const modal = document.getElementById('commanderVetoModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeCommanderVetoRulesModal() {
+  const modal = document.getElementById('commanderVetoModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function openCommanderDetailModal(cmdId) {
+  const cmd = getCommanderById(cmdId);
+  if (!cmd) return;
+
+  const meta = MCGG_COMMANDER_METADATA[cmd.id] || {
+    spec: 'Tactical MCGG Specialist',
+    skill: 'Tactical Surge',
+    desc: 'Meningkatkan stabilitas formasi ronde kualifikasi.',
+    synergy: 'Sinergi All-Rounder',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  };
+
+  const titleEl = document.getElementById('cmdDetailModalTitle');
+  if (titleEl) {
+    titleEl.innerHTML = `<span>🎖️ ${cmd.name} — Parameter Resmi Patch 2026</span>`;
+  }
+
+  const bodyEl = document.getElementById('cmdDetailModalBody');
+  if (bodyEl) {
+    const vetoNotice = meta.isVetoM1 
+      ? '<div style="background: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444; padding: 0.65rem 0.85rem; border-radius: 4px; color: #fca5a5; font-size: 0.85rem; margin-bottom: 1rem;"><strong>🚫 Status Blacklist M1:</strong> Komandan ini termasuk dalam 9 komandan Tier S+ yang <strong>DILARANG</strong> pada Match 1 (Non-Meta Match). Komandan ini baru dapat diundi pada Match 2 dan dipilih bebas di Match 3.</div>'
+      : '<div style="background: rgba(16, 185, 129, 0.12); border-left: 4px solid #10b981; padding: 0.65rem 0.85rem; border-radius: 4px; color: #6ee7b7; font-size: 0.85rem; margin-bottom: 1rem;"><strong>✅ Status Pool Legal:</strong> Komandan ini aktif di seluruh match (Match 1 Non-Meta, Match 2 All-Pool, Match 3 Ban-Pick).</div>';
+
+    bodyEl.innerHTML = `
+      <div style="display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <div style="width: 100px; height: 100px; border-radius: 8px; overflow: hidden; background: #090e1c; border: 2px solid var(--yokke-cyan); flex-shrink: 0; box-shadow: 0 0 16px rgba(0, 210, 255, 0.3);">
+          <img src="${cmd.heroImage}" alt="${cmd.name}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <h3 style="margin: 0 0 0.25rem 0; color: #f8fafc; font-size: 1.4rem;">${cmd.displayName || cmd.name}</h3>
+          <p style="margin: 0 0 0.5rem 0; color: var(--yokke-cyan); font-size: 0.9rem; font-weight: 600;">${meta.spec}</p>
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 3px; background: rgba(255, 255, 255, 0.1); color: #f8fafc;">Tier: ${cmd.tier}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 3px; background: rgba(0, 210, 255, 0.15); color: var(--yokke-cyan);">${meta.pool}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 3px; background: rgba(251, 191, 36, 0.15); color: var(--yokke-gold);">Patch 2026 Ready</span>
+          </div>
+        </div>
+      </div>
+
+      ${vetoNotice}
+
+      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
+        <h4 style="margin: 0 0 0.4rem 0; color: var(--yokke-cyan); font-size: 0.95rem; display: flex; align-items: center; gap: 0.35rem;">
+          <span>⚡ Mekanik Tri-Skill & Pasif Utama: ${meta.skill}</span>
+        </h4>
+        <p style="margin: 0 0 0.65rem 0; color: #cbd5e1; font-size: 0.88rem; line-height: 1.5;">${meta.desc}</p>
+        <p style="margin: 0; color: var(--yokke-purple-text); font-size: 0.82rem; border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 0.5rem;">
+          <strong>Rekomendasi Komposisi Sinergi:</strong> ${meta.synergy}
+        </p>
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 0.85rem 1rem;">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 0.35rem;">ATURAN OPERASIONAL GRAND FINAL</span>
+        <p style="margin: 0; font-size: 0.82rem; color: #94a3b8; line-height: 1.5;">
+          Sesuai regulasi resmi Grand Final 5 Match, jika kontender telah menggunakan komandan ini pada Match 1, 2, atau 3, komandan ini <strong>TIDAK DAPAT DIGUNAKAN LAGI</strong> pada Match 4 dan 5 (Exhaustion Rule). Penggunaan ulang akan otomatis terkena penalti <strong>-2 Poin</strong>.
+        </p>
+      </div>
+    `;
+  }
+
+  const modal = document.getElementById('commanderDetailModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeCommanderDetailModal() {
+  const modal = document.getElementById('commanderDetailModal');
+  if (modal) modal.classList.remove('active');
+}
+
