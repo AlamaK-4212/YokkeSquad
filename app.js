@@ -1268,11 +1268,17 @@ function handleFormDraftChange() {
 function formatDriveImageUrl(url) {
   if (!url || typeof url !== 'string') return '';
   if (url.startsWith('data:image')) return url;
+  // Google Drive Folders (/folders/) are directories, not images. Never treat them as image src to prevent 403 Forbidden.
+  if (url.indexOf('/drive/folders/') !== -1 || url.indexOf('/folders/') !== -1) return '';
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
   if (match && match[1]) {
     return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
   }
-  return url;
+  // Allow direct image extensions
+  if (/\.(png|jpe?g|webp|svg|gif)($|\?)/i.test(url)) {
+    return url;
+  }
+  return '';
 }
 
 // ========================================================
@@ -3994,19 +4000,23 @@ function viewRosterDetail(id) {
   if (!team) return;
 
   const teamLogoSrc = team.logo || findLogoByTeamName(team.name);
+  const formattedTeamLogo = formatDriveImageUrl(teamLogoSrc);
   const logoBox = document.getElementById('modalTeamLogoBox');
-  if (teamLogoSrc) {
-    logoBox.innerHTML = `<img src="${formatDriveImageUrl(teamLogoSrc)}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+  if (formattedTeamLogo) {
+    logoBox.innerHTML = `<img src="${formattedTeamLogo}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
   } else {
     const initials = (team.name || 'YT').substring(0, 2).toUpperCase();
     logoBox.innerHTML = `<div style="background:linear-gradient(135deg,#00d2ff,#7209b7);width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;">${initials}</div>`;
   }
+
+  const teamFolderUrl = team.driveFolder || (typeof teamLogoSrc === 'string' && (teamLogoSrc.includes('/folders/') || teamLogoSrc.includes('/drive/folders/')) ? teamLogoSrc : '');
 
   document.getElementById('modalTeamTitle').innerText = `${team.name} (${team.category})`;
   document.getElementById('modalTeamInfo').innerHTML = `
     <strong>Divisi:</strong> ${team.dept} | 
     <strong>WhatsApp:</strong> ${team.wa} | 
     <strong>Status:</strong> ${team.status === 'VERIFIED' ? '✅ Terverifikasi' : (team.status === 'REJECTED' ? '❌ Ditolak' : '⏳ Menunggu Verifikasi')}
+    ${teamFolderUrl ? `<br><a href="${teamFolderUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="margin-top:0.4rem; font-size:0.75rem; padding:0.25rem 0.65rem; color:var(--yokke-cyan); border-color:var(--yokke-cyan); display:inline-flex; align-items:center; gap:0.35rem; text-decoration:none;"><span>📁</span> <span>Buka Folder Berkas Tim di Google Drive ↗</span></a>` : ''}
     ${team.notes ? `<br><strong style="color:var(--yokke-gold);">Catatan Panitia:</strong> ${team.notes}` : ''}
   `;
 

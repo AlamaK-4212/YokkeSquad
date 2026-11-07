@@ -739,7 +739,9 @@ function getInitialData(ss) {
       }
 
       // Ambil URL logo/folder langsung dari data tim tanpa remote Drive scan yang lambat
-      var logoUrl = (team.folderUrl && team.folderUrl.trim() !== "-") ? team.folderUrl.trim() : "";
+      var rawFolderUrl = (team.folderUrl && team.folderUrl.trim() !== "-") ? team.folderUrl.trim() : "";
+      var isFolder = rawFolderUrl.indexOf("/folders/") !== -1 || rawFolderUrl.indexOf("/drive/folders/") !== -1;
+      var logoUrl = isFolder ? "" : rawFolderUrl;
 
       var realCap = rosterList.find(function(m){ return m.isCaptain && (m.role || '').indexOf('Official') === -1; }) ||
                     rosterList.find(function(m){ return (m.role || '').indexOf('Pemain Inti 1') !== -1; }) ||
@@ -761,6 +763,7 @@ function getInitialData(ss) {
         dept: team.dept,
         wa: team.wa,
         logo: logoUrl,
+        driveFolder: rawFolderUrl,
         notes: team.notes,
         status: team.status,
         isInvited: !!team.isInvited,
