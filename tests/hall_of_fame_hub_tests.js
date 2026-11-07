@@ -96,6 +96,16 @@ runTest('3.2 Top 8 Klasemen MVP Turnamen MLBB (Ground Truth Gemini GSheet Audit)
   });
 });
 
+runTest('3.3 Spotlight Utama MVP Turnamen: Yokke.♤SuperUsagi (Gerard Dionizio - 7x MVP Terbanyak)', () => {
+  assert(htmlCode.includes('Gerard Dionizio'), 'Spotlight utama harus memuat nama Gerard Dionizio');
+  assert(htmlCode.includes('Yokke.♤SuperUsagi'), 'Spotlight utama harus memuat IGN Yokke.♤SuperUsagi');
+  assert(htmlCode.includes('7x MVP'), 'Spotlight utama harus memuat perolehan 7x MVP');
+  assert(htmlCode.includes('APPA LINUX'), 'Spotlight utama harus memuat squad APPA LINUX');
+  assert(htmlCode.includes('IT DEV'), 'Spotlight utama harus memuat divisi IT DEV');
+  assert(htmlCode.includes('TOP 1 TOURNAMENT MVP'), 'Spotlight utama harus memuat badge TOP 1 TOURNAMENT MVP');
+  assert(htmlCode.includes('Fredrinn'), 'Hero Fredrinn harus ada di signature heroes SuperUsagi');
+});
+
 // -----------------------------------------------------------------------------
 // 4. 8 BESAR PLAYOFF MLBB (2 UPPER & 6 LOWER) & MCGG STATUS TBD
 // -----------------------------------------------------------------------------
