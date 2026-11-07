@@ -470,6 +470,10 @@ function normalizeGroupPlayoffMatches(incoming) {
         if (found.day !== undefined && found.day !== null) defaultMatch.day = found.day;
         if (found.bracket !== undefined && found.bracket !== null) defaultMatch.bracket = found.bracket;
         if (found.phaseName !== undefined && found.phaseName !== null) defaultMatch.phaseName = found.phaseName;
+        if (found.mvpPlayer !== undefined && found.mvpPlayer !== null) defaultMatch.mvpPlayer = found.mvpPlayer;
+        if (found.mvpHero !== undefined && found.mvpHero !== null) defaultMatch.mvpHero = found.mvpHero;
+        if (found.mvpTeam !== undefined && found.mvpTeam !== null) defaultMatch.mvpTeam = found.mvpTeam;
+        if (found.gameMvps !== undefined && found.gameMvps !== null) defaultMatch.gameMvps = found.gameMvps;
       }
     });
   });
@@ -4652,8 +4656,26 @@ function openPlayoffScoreModal(rIdx, mIdx, preselectWinner = null) {
     `).join('');
   }
 
+  // Update status MVP pertandingan jika ada
+  const mvpLabel = document.getElementById('playoffModalMvpLabel');
+  if (mvpLabel) {
+    if (match.mvpPlayer || (Array.isArray(match.gameMvps) && match.gameMvps.length > 0)) {
+      const heroStr = match.mvpHero ? ` (${escapeHtml(match.mvpHero)})` : '';
+      mvpLabel.innerHTML = `⭐ <strong>${escapeHtml(match.mvpPlayer || match.gameMvps[0]?.player)}</strong>${heroStr}`;
+    } else {
+      mvpLabel.innerText = 'Belum ditentukan (Klik tombol untuk set)';
+    }
+  }
+
   updatePlayoffModalWinnerPreview();
   modal.classList.add('active');
+}
+
+function openPlayoffMvpFromScoreModal() {
+  if (!currentPlayoffScoreContext) return;
+  const { rIdx, mIdx } = currentPlayoffScoreContext;
+  closePlayoffScoreModal();
+  openMLBBPlayoffMvpModal(rIdx, mIdx);
 }
 
 function closePlayoffScoreModal() {
@@ -4844,6 +4866,9 @@ function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey = '', isIncomin
             <button type="button" class="btn-playoff-score" onclick="event.stopPropagation(); openPlayoffScoreModal(${rIdx}, ${mIdx})" style="background:rgba(0,210,255,0.18); border:1px solid rgba(0,210,255,0.4); color:var(--yokke-cyan); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Input / Edit Skor Pertandingan">
               ${hasScore ? `⚡ ${m.scoreA}-${m.scoreB}` : '✏️ Skor'}
             </button>
+            <button type="button" class="btn-playoff-mvp" onclick="event.stopPropagation(); openMLBBPlayoffMvpModal(${rIdx}, ${mIdx})" style="background:rgba(255,183,3,0.18); border:1px solid rgba(255,183,3,0.4); color:var(--yokke-gold); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Pilih / Set MVP Pertandingan">
+              ⭐ MVP
+            </button>
           ` : ''}
         </div>
       </div>
@@ -4863,6 +4888,16 @@ function renderPlayoffMatchCardHtml(m, rIdx, mIdx, activeNodeKey = '', isIncomin
           ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === m.teamB ? '🏆' : ''}` : (m.winner === m.teamB ? 'WIN 🏆' : '-')}
         </span>
       </div>
+      ${(m.mvpPlayer || (Array.isArray(m.gameMvps) && m.gameMvps.length > 0)) ? `
+        <div class="bracket-node-mvp" style="padding: 2px 6px; background: rgba(255,183,3,0.12); border-top: 1px dashed rgba(255,183,3,0.25); font-size: 0.62rem; color: var(--yokke-gold); display: flex; align-items: center; justify-content: space-between; gap: 4px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;">
+            ⭐ MVP: ${escapeHtml(m.mvpPlayer || m.gameMvps[0]?.player)}${m.mvpHero ? ` <span style="font-weight:400; opacity:0.85;">(${escapeHtml(m.mvpHero)})</span>` : ''}
+          </span>
+          ${isAdmin && isReady ? `
+            <button type="button" onclick="event.stopPropagation(); openMLBBPlayoffMvpModal(${rIdx}, ${mIdx})" style="background:none; border:none; color:var(--yokke-gold); cursor:pointer; font-size:0.6rem; padding:0;" title="Edit MVP">✏️</button>
+          ` : ''}
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -5368,8 +5403,8 @@ async function syncSingleMatchRowToGSheet(canonId) {
     if (Array.isArray(groupPlayoffMatches)) {
       groupPlayoffMatches.forEach((round, rIdx) => {
         (round || []).forEach((pm, mIdx) => {
-          if (pm && (pm.matchLabel === canonId || `PLAYOFF_${rIdx}_${mIdx}` === canonId)) {
-            m = { ...pm, matchId: canonId, isPlayoff: true, format: pm.format || 'BO3' };
+          if (pm && (pm.matchLabel === canonId || `PLAYOFF_${rIdx}_${mIdx}` === canonId || `PLAYOFF_R${rIdx}_M${mIdx}` === canonId)) {
+            m = { ...pm, matchId: canonId, isPlayoff: true, format: pm.format || (rIdx === 5 ? 'BO5' : 'BO3') };
           }
         });
       });
@@ -7816,8 +7851,8 @@ function openMLBBPlayoffMvpModal(rIdx, mIdx) {
   const firstMvp = initialGameMvps.find(x => x && x.game === 1) || initialGameMvps[0] || null;
 
   currentMvpModalContext = {
-    matchId: `PLAYOFF_R${rIdx}_M${mIdx}`,
-    canonId: `PLAYOFF_R${rIdx}_M${mIdx}`,
+    matchId: m.matchLabel || `PLAYOFF_R${rIdx}_M${mIdx}`,
+    canonId: m.matchLabel || `PLAYOFF_R${rIdx}_M${mIdx}`,
     gName: 'Playoff',
     teamA: m.teamA,
     teamB: m.teamB,
@@ -8215,6 +8250,7 @@ function saveSelectedMvp() {
       m.mvpTeam = summaryTeam;
       saveState();
       renderGroupPlayoffTree();
+      if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
       syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || `PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffMIdx}`).catch(e => console.warn(e));
       showToast(`⭐ Berhasil menyimpan ${validGames.length} MVP Playoff (${ctx.format || 'BO3'}) & disinkronkan ke GSheet`, 'success');
     }
@@ -8267,6 +8303,7 @@ function deleteCurrentMvp() {
       m.mvpTeam = null;
       saveState();
       renderGroupPlayoffTree();
+      if (typeof renderMLBBInteractiveHubUI === 'function') renderMLBBInteractiveHubUI();
       syncSingleMatchRowToGSheet(ctx.canonId || m.matchLabel || `PLAYOFF_${ctx.playoffRIdx}_${ctx.playoffMIdx}`).catch(e => console.warn(e));
       showToast('Data MVP Playoff telah dihapus & disinkronkan ke GSheet.', 'info');
     }
@@ -11370,6 +11407,9 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
             <button type="button" class="btn-playoff-score" onclick="event.stopPropagation(); openPlayoffScoreModal(${rIdx}, ${mIdx})" style="background:rgba(0,210,255,0.18); border:1px solid rgba(0,210,255,0.4); color:var(--yokke-cyan); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Input / Edit Skor Pertandingan">
               ${hasScore ? `⚡ ${m.scoreA}-${m.scoreB}` : '✏️ Skor'}
             </button>
+            <button type="button" class="btn-playoff-mvp" onclick="event.stopPropagation(); openMLBBPlayoffMvpModal(${rIdx}, ${mIdx})" style="background:rgba(255,183,3,0.18); border:1px solid rgba(255,183,3,0.4); color:var(--yokke-gold); border-radius:4px; font-size:0.62rem; padding:1px 5px; font-weight:700; cursor:pointer;" title="Pilih / Set MVP Pertandingan">
+              ⭐ MVP
+            </button>
           ` : ''}
         </div>
       </div>
@@ -11389,6 +11429,16 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
           ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === m.teamB ? '🏆' : ''}` : (m.winner === m.teamB ? 'WIN 🏆' : '-')}
         </span>
       </div>
+      ${(m.mvpPlayer || (Array.isArray(m.gameMvps) && m.gameMvps.length > 0)) ? `
+        <div class="bracket-node-mvp" style="padding: 2px 6px; background: rgba(255,183,3,0.12); border-top: 1px dashed rgba(255,183,3,0.25); font-size: 0.62rem; color: var(--yokke-gold); display: flex; align-items: center; justify-content: space-between; gap: 4px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;">
+            ⭐ MVP: ${escapeHtml(m.mvpPlayer || m.gameMvps[0]?.player)}${m.mvpHero ? ` <span style="font-weight:400; opacity:0.85;">(${escapeHtml(m.mvpHero)})</span>` : ''}
+          </span>
+          ${isAdmin && isReady ? `
+            <button type="button" onclick="event.stopPropagation(); openMLBBPlayoffMvpModal(${rIdx}, ${mIdx})" style="background:none; border:none; color:var(--yokke-gold); cursor:pointer; font-size:0.6rem; padding:0;" title="Edit MVP">✏️</button>
+          ` : ''}
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -12141,6 +12191,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
           ${escapeHtml(actualMatch.teamB)} <span style="color:var(--text-muted); font-size:0.78rem;">(Away)</span>
         </div>
         ${actualMatch.winner ? `<div style="font-size:0.8rem; color:var(--yokke-green); font-weight:700; margin-top:0.25rem;">🏆 Pemenang: ${escapeHtml(actualMatch.winner)}</div>` : ''}
+        ${actualMatch.mvpPlayer ? `<div style="font-size:0.8rem; color:var(--yokke-gold); font-weight:700; margin-top:0.25rem;">⭐ MVP: ${escapeHtml(actualMatch.mvpPlayer)}${actualMatch.mvpHero ? ` (${escapeHtml(actualMatch.mvpHero)})` : ''}</div>` : ''}
       </div>
     ` : '';
 
@@ -12159,9 +12210,12 @@ function renderMLBBDetailPanelContent(nodeKey) {
         <h4 style="margin:0 0 0.5rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Skema Pairing Pertandingan</h4>
         ${livePairHtml}
         ${isAdmin && actualMatch && !actualMatch.teamA.includes('Juara 1 Grup') ? `
-          <div style="margin: 0.6rem 0;">
+          <div style="margin: 0.6rem 0; display:flex; gap:0.5rem; flex-wrap:wrap;">
             <button type="button" class="btn btn-primary" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; background:linear-gradient(135deg, var(--yokke-green), #0077b6); display:inline-flex; align-items:center; gap:0.35rem;" onclick="openPlayoffScoreModal(0, ${mIdx})">
               <span>✏️</span> <span>${(actualMatch.scoreA !== null && actualMatch.scoreB !== null) ? `Edit Skor (${actualMatch.scoreA} - ${actualMatch.scoreB})` : 'Input Skor & Tentukan Pemenang'}</span>
+            </button>
+            <button type="button" class="btn btn-outline" style="font-size:0.8rem; padding:0.4rem 0.85rem; font-weight:700; border-color:var(--yokke-gold); color:var(--yokke-gold); display:inline-flex; align-items:center; gap:0.35rem;" onclick="openMLBBPlayoffMvpModal(0, ${mIdx})">
+              <span>⭐</span> <span>${actualMatch.mvpPlayer ? `MVP: ${escapeHtml(actualMatch.mvpPlayer)}` : 'Set MVP Match'}</span>
             </button>
           </div>
         ` : ''}
@@ -12262,10 +12316,18 @@ function renderMLBBDetailPanelContent(nodeKey) {
             👑 JUARA 1 YOKKE SQUAD 2026: ${escapeHtml(groupPlayoffMatches[5][0].winner)} (${groupPlayoffMatches[5][0].scoreA || 0} - ${groupPlayoffMatches[5][0].scoreB || 0})
           </div>
         ` : ''}
+        ${(groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.mvpPlayer) ? `
+          <div style="margin-top:0.5rem; padding:0.5rem 0.85rem; background:rgba(255,183,3,0.15); border:1px solid var(--yokke-gold); border-radius:6px; font-weight:800; color:var(--yokke-gold); text-align:center;">
+            ⭐ MVP GRAND FINAL: ${escapeHtml(groupPlayoffMatches[5][0].mvpPlayer)}${groupPlayoffMatches[5][0].mvpHero ? ` (${escapeHtml(groupPlayoffMatches[5][0].mvpHero)})` : ''}
+          </div>
+        ` : ''}
         ${isAdmin && (groupPlayoffMatches[5] && groupPlayoffMatches[5][0]?.teamA && !groupPlayoffMatches[5][0].teamA.includes('Juara')) ? `
-          <div style="margin-top:0.75rem; text-align:center;">
+          <div style="margin-top:0.75rem; text-align:center; display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap;">
             <button type="button" class="btn btn-gold" style="font-size:0.85rem; padding:0.45rem 1rem; font-weight:800; display:inline-flex; align-items:center; gap:0.4rem; box-shadow:0 2px 12px rgba(255,183,3,0.35);" onclick="openPlayoffScoreModal(5, 0)">
               <span>⚔️</span> <span>Input Skor Grand Final (BO5)</span>
+            </button>
+            <button type="button" class="btn btn-outline" style="font-size:0.85rem; padding:0.45rem 1rem; font-weight:800; border-color:var(--yokke-gold); color:var(--yokke-gold); display:inline-flex; align-items:center; gap:0.4rem;" onclick="openMLBBPlayoffMvpModal(5, 0)">
+              <span>⭐</span> <span>${groupPlayoffMatches[5][0]?.mvpPlayer ? 'Edit MVP GF' : 'Set MVP GF'}</span>
             </button>
           </div>
         ` : ''}
