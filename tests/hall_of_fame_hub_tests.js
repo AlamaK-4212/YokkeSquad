@@ -77,6 +77,25 @@ runTest('3.1 Spotlight MVP MLBB: Haryanto "Qanok" dan Simulasi Yokke Pass Athlet
   assert(htmlCode.includes('Kemenangan sejati adalah dedikasi tim'), 'Harus memuat kutipan signature speech');
 });
 
+runTest('3.2 Top 8 Klasemen MVP Turnamen MLBB (Ground Truth Gemini GSheet Audit)', () => {
+  const top8Players = [
+    { name: 'Yokke.♤SuperUsagi', count: '7x MVP', team: 'APPA LINUX' },
+    { name: 'Uchiha Domskuy', count: '6x MVP', team: 'ATMO' },
+    { name: 'JayyZ X Falesco.', count: '6x MVP', team: 'VALKYRIE' },
+    { name: 'Yokke.Im^Spicy™', count: '6x MVP', team: 'AANG ALPHA' },
+    { name: 'Qanok', count: '5x MVP', team: 'Miskin Mekanik' },
+    { name: 'NEOX', count: '5x MVP', team: 'TABRAK AJALAH' },
+    { name: 'EZ KATKA', count: '4x MVP', team: 'TY BEKASI' },
+    { name: 'Naff', count: '4x MVP', team: 'Colorbook' }
+  ];
+
+  top8Players.forEach(p => {
+    assert(htmlCode.includes(p.name), `Leaderboard harus memuat nama pemain: ${p.name}`);
+    assert(htmlCode.includes(p.count), `Leaderboard harus memuat jumlah MVP: ${p.count}`);
+    assert(htmlCode.includes(p.team), `Leaderboard harus memuat tim: ${p.team}`);
+  });
+});
+
 // -----------------------------------------------------------------------------
 // 4. 8 BESAR PLAYOFF MLBB (2 UPPER & 6 LOWER) & MCGG STATUS TBD
 // -----------------------------------------------------------------------------
