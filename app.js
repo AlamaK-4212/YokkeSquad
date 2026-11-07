@@ -374,14 +374,14 @@ const DEFAULT_MLBB_GROUPS = {
 const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
   [
-    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
-    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Native', teamB: 'BOLO CLUB', winner: null },
-    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
-    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'WINGSKANAN ESPORT 1', teamB: 'TY BEKASI', winner: null },
-    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Miskin Mekanik', teamB: '666', winner: null },
-    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
-    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
-    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'AANG ALPHA', teamB: 'YOKKE LAMPUNG', winner: null }
+    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Anti Climax', teamB: 'Miskin Mekanik', winner: null },
+    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
+    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
+    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'BOLO CLUB', teamB: 'Native', winner: null },
+    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
+    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TY BEKASI', teamB: 'WINGSKANAN ESPORT 1', winner: null },
+    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '666', teamB: 'AANG ALPHA', winner: null },
+    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'YOKKE LAMPUNG', winner: null }
   ],
   // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
   [
@@ -389,14 +389,14 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
     { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
     { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
     { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: 'My Palembang', winner: null },
+    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'DEADLINE SLAYER', teamB: 'Gugur UB R1 1', winner: null },
     { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'MiracleXStars', winner: null },
     { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'LOLO', winner: null },
     { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'Yokke Batam Squad (YBS)', winner: null },
     { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: 'Red Razor', winner: null },
     { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'My Palembang', winner: null },
     { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Colorbook', winner: null },
-    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 8', teamB: 'Yokke Batam', winner: null }
+    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Yokke Batam', teamB: 'Gugur UB R1 8', winner: null }
   ],
   // Ronde 2 (Hari 4): Upper Bracket Semifinal (2 Match) & Lower Bracket Ronde 2 (4 Match) & Lower Bracket Ronde 3 (4 Match)
   [
@@ -430,7 +430,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-07-v1-ground-truth-gid10004';
+const PLAYOFF_DATA_VERSION = '2026-11-07-v2-ground-truth-image1-exact';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
