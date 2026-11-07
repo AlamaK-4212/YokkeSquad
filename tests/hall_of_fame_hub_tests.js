@@ -49,11 +49,13 @@ runTest('1.2 Container tab-hub tersedia dengan class tab-content', () => {
 // -----------------------------------------------------------------------------
 // 2. KONTEN TOURNAMENT SUMMARY & REKAP KONTINGEN
 // -----------------------------------------------------------------------------
-runTest('2.1 Ringkasan statistik partisipan turnamen (78 kontingen, 41 MLBB, 37 MCGG)', () => {
+runTest('2.1 Ringkasan statistik partisipan turnamen (78 kontingen, 41 MLBB, 37 MCGG, Wisma Nugra Santana)', () => {
   assert(htmlCode.includes('78'), 'Harus menampilkan total 78 kontingen');
   assert(htmlCode.includes('41 Tim MLBB'), 'Harus menampilkan 41 Tim MLBB');
   assert(htmlCode.includes('37 Solo MCGG') || htmlCode.includes('37 Kontender MCGG'), 'Harus menampilkan 37 Kontender MCGG');
   assert(htmlCode.includes('Auditorium Lt. 5'), 'Harus menyebutkan venue Auditorium Lt. 5');
+  assert(htmlCode.includes('Nugra Santana'), 'Harus mencantumkan Gedung Wisma Nugra Santana');
+  assert(htmlCode.includes('assets/tournament_logo.jpg'), 'Harus menggunakan logo turnamen assets/tournament_logo.jpg');
   assert(htmlCode.includes('400+'), 'Harus mencantumkan 400+ Supporter / Viewers');
   assert(htmlCode.includes('100%'), 'Harus mencantumkan 100% Fair Play');
 });
@@ -76,32 +78,32 @@ runTest('3.1 Spotlight MVP MLBB: Haryanto "Qanok" dan Simulasi Yokke Pass Athlet
 });
 
 // -----------------------------------------------------------------------------
-// 4. PODIUM JUARA MLBB & MCGG
+// 4. 8 BESAR PLAYOFF MLBB (2 UPPER & 6 LOWER) & MCGG STATUS TBD
 // -----------------------------------------------------------------------------
-runTest('4.1 Podium Juara & Kontender MLBB (ATMO, AANG ALPHA, TABRAK AJALAH)', () => {
-  assert(htmlCode.includes('ATMO'), 'Harus memuat Juara 1 Contender ATMO');
+runTest('4.1 8 Besar Tim Playoff MLBB (2 Upper Bracket & 6 Lower Bracket Contenders)', () => {
+  // Belum ada juara
+  assert(htmlCode.includes('BELUM ADA JUARA') || htmlCode.includes('BELUM ADA JUARA RESMI'), 'Harus menyatakan belum ada juara resmi');
+  assert(htmlCode.includes('THE APEX AEGIS TROPHY 2026'), 'Harus memuat Trophy Apex Aegis');
+
+  // 2 Upper Bracket
+  assert(htmlCode.includes('ATMO'), 'Harus memuat Upper Finalist ATMO');
   assert(htmlCode.includes('IT - Quality Assurance'), 'Harus memuat divisi IT - Quality Assurance');
-  assert(htmlCode.includes('GOLDEN APEX AEGIS') || htmlCode.includes('THE APEX AEGIS TROPHY 2026'), 'Harus memuat Trophy Apex Aegis');
-  assert(htmlCode.includes('AANG ALPHA'), 'Harus memuat Juara 2 Contender AANG ALPHA');
+  assert(htmlCode.includes('AANG ALPHA'), 'Harus memuat Upper Finalist AANG ALPHA');
   assert(htmlCode.includes('Product OPPI QA'), 'Harus memuat divisi Product OPPI QA');
-  assert(htmlCode.includes('TABRAK AJALAH'), 'Harus memuat Juara 3 Contender TABRAK AJALAH');
-  assert(htmlCode.includes('Operation / Inventory'), 'Harus memuat divisi Operation / Inventory');
+
+  // 6 Lower Bracket
+  const lbContenders = ['TABRAK AJALAH', 'TY BEKASI', 'APPA LINUX', 'MiracleXStars', 'Anti Climax', '7 SINS'];
+  lbContenders.forEach(team => {
+    assert(htmlCode.includes(team), `Harus memuat tim Lower Bracket 8 Besar: ${team}`);
+  });
 });
 
-runTest('4.2 Podium Juara & Kontender MCGG (Agil Patriosa, Aziz Nur Maulana, Amsal Robinhot)', () => {
-  assert(htmlCode.includes('Agil Patriosa'), 'Harus memuat Juara 1 Contender Agil Patriosa');
-  assert(htmlCode.includes('Risk Management'), 'Harus memuat divisi Risk Management');
-  assert(htmlCode.includes('Yuki'), 'Harus memuat signature commander Yuki');
-  assert(htmlCode.includes('Wanwan'), 'Harus memuat signature commander Wanwan');
-  assert(htmlCode.includes('Aziz Nur Maulana'), 'Harus memuat Juara 2 Contender Aziz Nur Maulana');
-  assert(htmlCode.includes('IT Engineering'), 'Harus memuat divisi IT Engineering');
-  assert(htmlCode.includes('Amsal Robinhot'), 'Harus memuat Juara 3 Contender Amsal Robinhot');
-  assert(htmlCode.includes('Inventory Management'), 'Harus memuat divisi Inventory Management');
-  assert(htmlCode.includes('Bagus Setiawan'), 'Harus memuat Top 4 Bagus Setiawan');
-  assert(htmlCode.includes('ANDHIKA BAYU PRASETYO'), 'Harus memuat Top 5 ANDHIKA BAYU PRASETYO');
-  assert(htmlCode.includes('Cikal Yulanda'), 'Harus memuat Top 6 Cikal Yulanda');
-  assert(htmlCode.includes('Alvin Elshadai Pangaribuan'), 'Harus memuat Top 7 Alvin Elshadai Pangaribuan');
-  assert(htmlCode.includes('Dhimas Saputro'), 'Harus memuat Top 8 Dhimas Saputro');
+runTest('4.2 Divisi MCGG Berstatus TBD & Belum Ada Juara (Menunggu Fase Lobi Kualifikasi)', () => {
+  assert(htmlCode.includes('STATUS: TBD'), 'Divisi MCGG harus berstatus TBD');
+  assert(htmlCode.includes('PERTANDINGAN BELUM DIMULAI') || htmlCode.includes('Pertandingan Belum Dimulai'), 'Harus menyatakan pertandingan belum dimulai');
+  assert(htmlCode.includes('Belum Ada Juara') || htmlCode.includes('BELUM ADA JUARA'), 'Harus menyatakan belum ada juara untuk MCGG');
+  assert(htmlCode.includes('5 Lobi Kualifikasi') || htmlCode.includes('5 LOBI KUALIFIKASI'), 'Harus mencantumkan 5 Lobi Kualifikasi');
+  assert(htmlCode.includes('37 Kontender Solo'), 'Harus mencantumkan 37 Kontender Solo');
 });
 
 // -----------------------------------------------------------------------------

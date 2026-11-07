@@ -73,12 +73,21 @@ header {
 .yokke-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
   background: rgba(0, 210, 255, 0.08);
   border: 1px solid rgba(0, 210, 255, 0.3);
-  padding: 0.4rem 1.2rem;
+  padding: 0.35rem 1.1rem 0.35rem 0.45rem;
   border-radius: 999px;
   margin-bottom: 1rem;
+}
+
+.yokke-logo-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--yokke-gold);
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.45);
 }
 
 .yokke-logo-icon {
@@ -1711,6 +1720,16 @@ footer {
   justify-content: center;
   margin-bottom: 1.25rem;
 }
+.loader-logo-img {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  z-index: 2;
+  border: 2px solid var(--yokke-gold);
+  box-shadow: 0 0 20px rgba(255, 183, 3, 0.6);
+  animation: cyberIconFloat 2s ease-in-out infinite;
+}
 .loader-cyber-icon {
   font-size: 3rem;
   z-index: 2;
@@ -2043,6 +2062,31 @@ footer {
   background: radial-gradient(circle, rgba(255, 183, 3, 0.12) 0%, transparent 70%);
   pointer-events: none;
   filter: blur(50px);
+}
+
+.hub-hero-logo-wrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #ffb703, #7209b7, #00d2ff);
+  box-shadow: 0 0 25px rgba(114, 9, 183, 0.55), 0 0 15px rgba(255, 183, 3, 0.45);
+  animation: hubLogoPulse 3s ease-in-out infinite alternate;
+}
+
+.hub-hero-tournament-logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes hubLogoPulse {
+  0% { transform: scale(1); box-shadow: 0 0 20px rgba(114, 9, 183, 0.5), 0 0 12px rgba(255, 183, 3, 0.4); }
+  100% { transform: scale(1.04); box-shadow: 0 0 32px rgba(0, 210, 255, 0.65), 0 0 22px rgba(255, 183, 3, 0.65); }
 }
 
 .hub-status-pill {
