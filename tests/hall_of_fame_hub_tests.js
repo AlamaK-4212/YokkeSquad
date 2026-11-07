@@ -61,23 +61,39 @@ runTest('2.1 Ringkasan statistik partisipan turnamen (78 kontingen, 41 MLBB, 37 
 });
 
 // -----------------------------------------------------------------------------
-// 3. SPOTLIGHT MVP TOURNAMENT MLBB
+// 3. SPOTLIGHT MVP TOURNAMENT MLBB (PEMAIN DENGAN MVP TERBANYAK)
 // -----------------------------------------------------------------------------
-runTest('3.1 Spotlight MVP MLBB: Haryanto "Qanok" dan Simulasi Yokke Pass Athlete ID Card', () => {
-  assert(htmlCode.includes('Haryanto'), 'Harus menampilkan nama Haryanto');
-  assert(htmlCode.includes("'Qanok'"), 'Harus menampilkan nickname Qanok');
-  assert(htmlCode.includes('2392130769'), 'Harus mencantumkan NIP 2392130769');
-  assert(htmlCode.includes('Dir. Finance'), 'Harus mencantumkan divisi Dir. Finance');
-  assert(htmlCode.includes('Miskin Mekanik'), 'Harus mencantumkan squad Miskin Mekanik');
-  assert(htmlCode.includes('Goldlane') || htmlCode.includes('Marksman'), 'Harus mencantumkan role Goldlane / Marksman');
-  assert(htmlCode.includes('5x MVP'), 'Harus mencantumkan total 5x MVP');
-  assert(htmlCode.includes('Kimmy'), 'Hero Kimmy harus ada (Top 1 Pick 2x MVP)');
-  assert(htmlCode.includes('Lesley'), 'Hero Lesley harus ada (Top 3 Pick 1x MVP)');
-  assert(htmlCode.includes('Miya'), 'Hero Miya harus ada (Top 2 Pick 2x MVP)');
-  assert(htmlCode.includes('Kemenangan sejati adalah dedikasi tim'), 'Harus memuat kutipan signature speech');
+runTest('3.1 Spotlight Utama MVP MLBB: Gerard Dionizio "Yokke.♤SuperUsagi" (7x MVP Terbanyak)', () => {
+  assert(htmlCode.includes('Gerard Dionizio'), 'Harus menampilkan nama Gerard Dionizio');
+  assert(htmlCode.includes('Yokke.♤SuperUsagi'), 'Harus menampilkan nickname Yokke.♤SuperUsagi');
+  assert(htmlCode.includes('assets/gerard_superusagi.jpg'), 'Foto ID card atlet Gerard Dionizio harus terpasang');
+  assert(htmlCode.includes('2199130548') || htmlCode.includes('2184910283'), 'Harus mencantumkan NIP peserta Gerard Dionizio');
+  assert(htmlCode.includes('IT DEV'), 'Harus mencantumkan divisi IT DEV');
+  assert(htmlCode.includes('APPA LINUX'), 'Harus mencantumkan squad APPA LINUX');
+  assert(htmlCode.includes('Captain') || htmlCode.includes('Roamer') || htmlCode.includes('Playmaker'), 'Harus mencantumkan role Captain / Roamer / Playmaker');
+  assert(htmlCode.includes('7x MVP'), 'Harus mencantumkan total 7x MVP');
+  assert(htmlCode.includes('Badang'), 'Hero Badang harus ada (Top 1 Pick 3x MVP Yokke.♤SuperUsagi)');
+  assert(htmlCode.includes('assets/heroes/badang.png'), 'Gambar hero Badang harus terpasang');
+  assert(htmlCode.includes('Masha'), 'Hero Masha harus ada (Top 2 Pick 2x MVP Yokke.♤SuperUsagi)');
+  assert(htmlCode.includes('assets/heroes/masha.png'), 'Gambar hero Masha harus terpasang');
+  assert(htmlCode.includes('Carmilla'), 'Hero Carmilla harus ada (Top 3 Pick 1x MVP Yokke.♤SuperUsagi)');
+  assert(htmlCode.includes('assets/heroes/carmilla.png'), 'Gambar hero Carmilla harus terpasang');
+  assert(htmlCode.includes('TOP 1 TOURNAMENT MVP'), 'Harus memuat badge TOP 1 TOURNAMENT MVP');
+  assert(htmlCode.includes('Konsistensi dan ketangguhan di panggung playoff'), 'Harus memuat kutipan signature speech');
 });
 
-runTest('3.2 Top 8 Klasemen MVP Turnamen MLBB (Ground Truth Gemini GSheet Audit)', () => {
+runTest('3.2 Dedicated Box: Most MVP Heroes Turnamen (Terlepas dari Pemain)', () => {
+  assert(htmlCode.includes('MOST MVP HEROES'), 'Harus ada kotak terpisah MOST MVP HEROES');
+  assert(htmlCode.includes('Zetian'), 'Hero Zetian harus ada (Top 1 Hero 12x MVP)');
+  assert(htmlCode.includes('assets/heroes/zetian.png'), 'Gambar hero Zetian harus terpasang');
+  assert(htmlCode.includes('12x MVP'), 'Harus mencantumkan 12x MVP untuk Zetian');
+  assert(htmlCode.includes('Nolan'), 'Hero Nolan harus ada (Top 2 Hero 7x MVP)');
+  assert(htmlCode.includes('assets/heroes/nolan.png'), 'Gambar hero Nolan harus terpasang');
+  assert(htmlCode.includes('Obsidian'), 'Hero Obsidian harus ada (Top 3 Hero 7x MVP)');
+  assert(htmlCode.includes('assets/heroes/suyou.png'), 'Gambar hero Obsidian/Suyou harus terpasang');
+});
+
+runTest('3.3 Top 8 Klasemen MVP Turnamen MLBB (Ground Truth Gemini GSheet Audit)', () => {
   const top8Players = [
     { name: 'Yokke.♤SuperUsagi', count: '7x MVP', team: 'APPA LINUX' },
     { name: 'Uchiha Domskuy', count: '6x MVP', team: 'ATMO' },
@@ -94,16 +110,6 @@ runTest('3.2 Top 8 Klasemen MVP Turnamen MLBB (Ground Truth Gemini GSheet Audit)
     assert(htmlCode.includes(p.count), `Leaderboard harus memuat jumlah MVP: ${p.count}`);
     assert(htmlCode.includes(p.team), `Leaderboard harus memuat tim: ${p.team}`);
   });
-});
-
-runTest('3.3 Spotlight Utama MVP Turnamen: Yokke.♤SuperUsagi (Gerard Dionizio - 7x MVP Terbanyak)', () => {
-  assert(htmlCode.includes('Gerard Dionizio'), 'Spotlight utama harus memuat nama Gerard Dionizio');
-  assert(htmlCode.includes('Yokke.♤SuperUsagi'), 'Spotlight utama harus memuat IGN Yokke.♤SuperUsagi');
-  assert(htmlCode.includes('7x MVP'), 'Spotlight utama harus memuat perolehan 7x MVP');
-  assert(htmlCode.includes('APPA LINUX'), 'Spotlight utama harus memuat squad APPA LINUX');
-  assert(htmlCode.includes('IT DEV'), 'Spotlight utama harus memuat divisi IT DEV');
-  assert(htmlCode.includes('TOP 1 TOURNAMENT MVP'), 'Spotlight utama harus memuat badge TOP 1 TOURNAMENT MVP');
-  assert(htmlCode.includes('Fredrinn'), 'Hero Fredrinn harus ada di signature heroes SuperUsagi');
 });
 
 // -----------------------------------------------------------------------------
