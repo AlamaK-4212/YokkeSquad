@@ -6,8 +6,8 @@
 
 ## 📊 Ringkasan Eksekutif
 - **Total Fungsi Terdaftar:** 321 fungsi (283 di `app.js`, 25 di `google_apps_script.js`)
-- **Total Titik Pemanggilan (Call Sites):** 1392 titik pemanggilan teridentifikasi
-- **Terakhir Diperbarui:** 7/11/2026, 11.59.10 WIB
+- **Total Titik Pemanggilan (Call Sites):** 1393 titik pemanggilan teridentifikasi
+- **Terakhir Diperbarui:** 7/11/2026, 13.55.19 WIB
 - **Cara Memperbarui Otomatis:**
   - Sekali jalan: `node scripts/generate_function_index.js`
   - Mode Pantau (Realtime Auto-Update saat simpan kode): `node scripts/generate_function_index.js --watch`
@@ -110,7 +110,7 @@
 | 73 | [**`toggleRegistrationStatus()`**](#toggleregistrationstatus) | [app.js:2629](app.js#L2629) | 👥 Manajemen Peserta & Roster | Fungsi operasional untuk toggleRegistrationStatus | 5x |
 | 74 | [**`resetMCGGPointsAndDraw()`**](#resetmcggpointsanddraw) | [app.js:2650](app.js#L2650) | ♟️ Turnamen MCGG (Klasemen, Undian Commander & Penalti) | Fungsi operasional untuk resetMCGGPointsAndDraw | 2x |
 | 75 | [**`updateAuthUI()`**](#updateauthui) | [app.js:2693](app.js#L2693) | 🛡️ Autentikasi & Hak Akses Panitia | Memperbarui visibilitas tombol admin, kontrol undian commander, stage lock,... | 16x |
-| 76 | [**`switchTab()`**](#switchtab) | [app.js:2885](app.js#L2885) | 🔧 Helper & UI Utility | Navigation Tabs | 17x |
+| 76 | [**`switchTab()`**](#switchtab) | [app.js:2885](app.js#L2885) | 🔧 Helper & UI Utility | Navigation Tabs | 18x |
 | 77 | [**`updateHubDynamicStats()`**](#updatehubdynamicstats) | [app.js:2952](app.js#L2952) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk updateHubDynamicStats | 3x |
 | 78 | [**`handleHashNavigation()`**](#handlehashnavigation) | [app.js:2967](app.js#L2967) | 📦 Modul Aplikasi Umum | Fungsi operasional untuk handleHashNavigation | 1x |
 | 79 | [**`openIdCardLightbox()`**](#openidcardlightbox) | [app.js:2994](app.js#L2994) | 🆔 Modal Dialog & Bukti ID Card | Lightbox for Viewing Full ID Card | 3x |
@@ -391,7 +391,7 @@
 
 - **Definisi:** [`app.js:54`](app.js#L54)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1549`](index.html#L1549) — Event `onclick`
+  - [`index.html:1547`](index.html#L1547) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMCGGGroupPage()" i`
   - [`app.js:10606`](app.js#L10606) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="btn btn-outline" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
@@ -404,7 +404,7 @@
 
 - **Definisi:** [`app.js:61`](app.js#L61)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1555`](index.html#L1555) — Event `onclick`
+  - [`index.html:1553`](index.html#L1553) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-right" onclick="nextMCGGGroupPage()" `
   - [`app.js:10609`](app.js#L10609) — di dalam fungsi `renderMCGGTable()`
     `<button type="button" class="btn btn-primary" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
@@ -475,7 +475,7 @@
 
 - **Definisi:** [`app.js:2650`](app.js#L2650)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1510`](index.html#L1510) — Event `onclick`
+  - [`index.html:1508`](index.html#L1508) — Event `onclick`
     `<button id="btnResetMCGG" class="btn btn-outline" style="display: none; font-size: 0.85rem; border-c`
   - [`functional_tests.js:837`](functional_tests.js#L837) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function resetMCGGPointsAndDraw()'), 'Harus memiliki resetMCGGPointsAndDraw`
@@ -487,7 +487,7 @@
 - **Definisi:** [`app.js:3099`](app.js#L3099)
 - **Deskripsi:** Handler saat Peserta Mengetik Nama Pemain Solo MCGG di Form Pendaftaran (Fungsi Edit Dimatikan)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1181`](index.html#L1181) — Event `oninput`
+  - [`index.html:1179`](index.html#L1179) — Event `oninput`
     `<input type="text" id="mcgg_name" oninput="handleMcggNameInput(this.value)" placeholder="Masukkan na`
   - [`functional_tests.js:173`](functional_tests.js#L173) — pada skenario pengujian
     `assert(appCode.includes('function handleMcggNameInput('), 'Harus ada handler handleMcggNameInput');`
@@ -499,7 +499,7 @@
 - **Definisi:** [`app.js:5293`](app.js#L5293)
 - **Deskripsi:** Mengunci/membuka kunci pembagian lobi MCGG hasil Technical Meeting (Lock TM).
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1509`](index.html#L1509) — Event `onclick`
+  - [`index.html:1507`](index.html#L1507) — Event `onclick`
     `<button id="btnLockMCGGLobbies" class="btn btn-outline" style="display: none; font-size: 0.85rem;" o`
 - **Memanggil Fungsi Internal:** [`saveStageStateLocal()`](#savestagestatelocal), [`updateAuthUI()`](#updateauthui), [`saveTournamentStateOnly()`](#savetournamentstateonly)
 
@@ -566,7 +566,7 @@
 
 - **Definisi:** [`app.js:9362`](app.js#L9362)
 - **Titik Pemanggilan (8 lokasi):**
-  - [`index.html:1507`](index.html#L1507) — Event `onclick`
+  - [`index.html:1505`](index.html#L1505) — Event `onclick`
     `<button id="adminSyncMCGG" class="btn btn-primary" style="display: none; font-size: 0.85rem;" onclic`
   - [`app.js:1683`](app.js#L1683) — di dalam fungsi `fetchParticipantsFromGoogleSheet()`
     `syncMCGGPlayers();`
@@ -602,7 +602,7 @@
 
 - **Definisi:** [`app.js:9580`](app.js#L9580)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1508`](index.html#L1508) — Event `onclick`
+  - [`index.html:1506`](index.html#L1506) — Event `onclick`
     `<button id="adminShuffleMCGG" class="btn btn-gold" style="display: none; font-size: 0.85rem;" onclic`
   - [`functional_tests.js:651`](functional_tests.js#L651) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function shuffleMCGGPlayers()'), 'Harus ada fungsi shuffleMCGGPlayers()');`
@@ -952,9 +952,9 @@
 - **Definisi:** [`app.js:11277`](app.js#L11277)
 - **Deskripsi:** --- TAMPILAN VIEW SWITCHER MCGG ---
 - **Titik Pemanggilan (4 lokasi):**
-  - [`index.html:1532`](index.html#L1532) — Event `onclick`
+  - [`index.html:1530`](index.html#L1530) — Event `onclick`
     `<button type="button" id="btnViewMcggHub" class="btn btn-primary" style="font-size: 0.8rem; padding:`
-  - [`index.html:1535`](index.html#L1535) — Event `onclick`
+  - [`index.html:1533`](index.html#L1533) — Event `onclick`
     `<button type="button" id="btnViewMcggLobbies" class="btn btn-outline" style="font-size: 0.8rem; padd`
   - [`app.js:2937`](app.js#L2937) — di dalam fungsi `switchTab()`
     `setMCGGViewMode('HUB');`
@@ -1039,19 +1039,19 @@
 
 - **Definisi:** [`app.js:13140`](app.js#L13140)
 - **Titik Pemanggilan (8 lokasi):**
-  - [`index.html:1648`](index.html#L1648) — Event `onclick`
+  - [`index.html:1646`](index.html#L1646) — Event `onclick`
     `<button type="button" class="cmd-filter-pill active" data-filter="all" onclick="filterCommanderGalle`
-  - [`index.html:1649`](index.html#L1649) — Event `onclick`
+  - [`index.html:1647`](index.html#L1647) — Event `onclick`
     `<button type="button" class="cmd-filter-pill is-veto" data-filter="veto_m1" onclick="filterCommander`
-  - [`index.html:1650`](index.html#L1650) — Event `onclick`
+  - [`index.html:1648`](index.html#L1648) — Event `onclick`
     `<button type="button" class="cmd-filter-pill" data-filter="non_meta" onclick="filterCommanderGallery`
-  - [`index.html:1651`](index.html#L1651) — Event `onclick`
+  - [`index.html:1649`](index.html#L1649) — Event `onclick`
     `<button type="button" class="cmd-filter-pill" data-filter="High" onclick="filterCommanderGalleryByTi`
-  - [`index.html:1652`](index.html#L1652) — Event `onclick`
+  - [`index.html:1650`](index.html#L1650) — Event `onclick`
     `<button type="button" class="cmd-filter-pill" data-filter="Meta" onclick="filterCommanderGalleryByTi`
-  - [`index.html:1653`](index.html#L1653) — Event `onclick`
+  - [`index.html:1651`](index.html#L1651) — Event `onclick`
     `<button type="button" class="cmd-filter-pill" data-filter="Mid" onclick="filterCommanderGalleryByTie`
-  - [`index.html:1654`](index.html#L1654) — Event `onclick`
+  - [`index.html:1652`](index.html#L1652) — Event `onclick`
     `<button type="button" class="cmd-filter-pill" data-filter="Normal" onclick="filterCommanderGalleryBy`
   - [`app.js:13075`](app.js#L13075) — di dalam fungsi `renderMCGGCommanderGalleryUI()`
     `<button type="button" class="btn btn-outline" style="border-color: var(--yokke-cyan); color: var(--y`
@@ -1062,7 +1062,7 @@
 
 - **Definisi:** [`app.js:13156`](app.js#L13156)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1643`](index.html#L1643) — Event `oninput`
+  - [`index.html:1641`](index.html#L1641) — Event `oninput`
     `<input type="text" id="commanderSearchInput" class="commander-search-input" placeholder="Cari nama k`
 - **Memanggil Fungsi Internal:** [`renderMCGGCommanderGalleryUI()`](#rendermcggcommandergalleryui)
 
@@ -1071,7 +1071,7 @@
 
 - **Definisi:** [`app.js:13165`](app.js#L13165)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1644`](index.html#L1644) — Event `onclick`
+  - [`index.html:1642`](index.html#L1642) — Event `onclick`
     `<button type="button" id="btnClearCommanderSearch" class="btn-clear-search" onclick="clearCommanderS`
   - [`app.js:13075`](app.js#L13075) — di dalam fungsi `renderMCGGCommanderGalleryUI()`
     `<button type="button" class="btn btn-outline" style="border-color: var(--yokke-cyan); color: var(--y`
@@ -1082,7 +1082,7 @@
 
 - **Definisi:** [`app.js:13174`](app.js#L13174)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1594`](index.html#L1594) — Event `onclick`
+  - [`index.html:1592`](index.html#L1592) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="border-color: var(--yokke-cyan); color: var(--y`
 
 <a id="closecommandervetorulesmodal"></a>
@@ -1090,9 +1090,9 @@
 
 - **Definisi:** [`app.js:13179`](app.js#L13179)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:2295`](index.html#L2295) — Event `onclick`
+  - [`index.html:2293`](index.html#L2293) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.5rem;" onclick="closeCommande`
-  - [`index.html:2331`](index.html#L2331) — Event `onclick`
+  - [`index.html:2329`](index.html#L2329) — Event `onclick`
     `<button type="button" class="btn btn-primary" onclick="closeCommanderVetoRulesModal()">Saya Mengerti`
 
 <a id="opencommanderdetailmodal"></a>
@@ -1109,9 +1109,9 @@
 
 - **Definisi:** [`app.js:13249`](app.js#L13249)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:2343`](index.html#L2343) — Event `onclick`
+  - [`index.html:2341`](index.html#L2341) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.5rem;" onclick="closeCommande`
-  - [`index.html:2349`](index.html#L2349) — Event `onclick`
+  - [`index.html:2347`](index.html#L2347) — Event `onclick`
     `<button type="button" class="btn btn-outline" onclick="closeCommanderDetailModal()">Tutup</button>`
 
 ---
@@ -1123,7 +1123,7 @@
 
 - **Definisi:** [`app.js:13`](app.js#L13)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1452`](index.html#L1452) — Event `onclick`
+  - [`index.html:1450`](index.html#L1450) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-left" onclick="prevMLBBGroupPage()" i`
   - [`app.js:6828`](app.js#L6828) — di dalam fungsi `renderGroupStageUI()`
     `<button type="button" class="btn btn-outline" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
@@ -1136,7 +1136,7 @@
 
 - **Definisi:** [`app.js:20`](app.js#L20)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1458`](index.html#L1458) — Event `onclick`
+  - [`index.html:1456`](index.html#L1456) — Event `onclick`
     `<button type="button" class="carousel-arrow-btn carousel-arrow-right" onclick="nextMLBBGroupPage()" `
   - [`app.js:6831`](app.js#L6831) — di dalam fungsi `renderGroupStageUI()`
     `<button type="button" class="btn btn-primary" style="font-weight: 700; padding: 0.42rem 0.95rem; fon`
@@ -1255,7 +1255,7 @@
 - **Definisi:** [`app.js:4313`](app.js#L4313)
 - **Deskripsi:** 2. KONTROL LOCK & TRANSISI TAHAP MLBB (ALA CHALLONGE)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1399`](index.html#L1399) — Event `onclick`
+  - [`index.html:1397`](index.html#L1397) — Event `onclick`
     `<button id="btnLockMLBBGroup" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0.8`
 - **Memanggil Fungsi Internal:** [`saveStageStateLocal()`](#savestagestatelocal), [`updateAuthUI()`](#updateauthui), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`saveTournamentStateOnly()`](#savetournamentstateonly)
 
@@ -1303,7 +1303,7 @@
 - **Definisi:** [`app.js:4388`](app.js#L4388)
 - **Deskripsi:** Memvalidasi kelengkapan fase grup dan tie-breaker, lalu membuka Tahap 2 (Bagan Playoff).
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1400`](index.html#L1400) — Event `onclick`
+  - [`index.html:1398`](index.html#L1398) — Event `onclick`
     `<button id="btnProceedMLBBStage2" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem`
   - [`app.js:9151`](app.js#L9151) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem; background: var(--`
@@ -1338,7 +1338,7 @@
 
 - **Definisi:** [`app.js:4479`](app.js#L4479)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1402`](index.html#L1402) — Event `onclick`
+  - [`index.html:1400`](index.html#L1400) — Event `onclick`
     `<button id="btnShuffleMLBBPlayoff" class="btn btn-gold" style="font-size: 0.85rem; padding: 0.5rem 0`
   - [`app.js:9204`](app.js#L9204) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700; ${i`
@@ -1351,7 +1351,7 @@
 
 - **Definisi:** [`app.js:4534`](app.js#L4534)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1403`](index.html#L1403) — Event `onclick`
+  - [`index.html:1401`](index.html#L1401) — Event `onclick`
     `<button id="btnLockMLBBPlayoff" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0`
   - [`app.js:9201`](app.js#L9201) — di dalam fungsi `renderGroupPlayoffTree()`
     `<button class="btn ${isPlayoffLocked ? 'btn-gold' : 'btn-outline'}" style="font-size:0.75rem; paddin`
@@ -1381,7 +1381,7 @@
 
 - **Definisi:** [`app.js:4674`](app.js#L4674)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:2067`](index.html#L2067) — Event `onclick`
+  - [`index.html:2065`](index.html#L2065) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.76rem; padding: 0.3rem 0.7rem; bor`
 - **Memanggil Fungsi Internal:** [`closePlayoffScoreModal()`](#closeplayoffscoremodal), [`openMLBBPlayoffMvpModal()`](#openmlbbplayoffmvpmodal)
 
@@ -1390,11 +1390,11 @@
 
 - **Definisi:** [`app.js:4681`](app.js#L4681)
 - **Titik Pemanggilan (6 lokasi):**
-  - [`index.html:1999`](index.html#L1999) — Event `onclick`
+  - [`index.html:1997`](index.html#L1997) — Event `onclick`
     `<div id="playoffScoreModal" class="modal-overlay" onclick="if(event.target === this) closePlayoffSco`
-  - [`index.html:2010`](index.html#L2010) — Event `onclick`
+  - [`index.html:2008`](index.html#L2008) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.85rem;" on`
-  - [`index.html:2083`](index.html#L2083) — Event `onclick`
+  - [`index.html:2081`](index.html#L2081) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;" on`
   - [`app.js:4677`](app.js#L4677) — di dalam fungsi `openPlayoffMvpFromScoreModal()`
     `closePlayoffScoreModal();`
@@ -1408,13 +1408,13 @@
 
 - **Definisi:** [`app.js:4687`](app.js#L4687)
 - **Titik Pemanggilan (4 lokasi):**
+  - [`index.html:2026`](index.html#L2026) — Event `onclick`
+    `<button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 1rem; font-w`
   - [`index.html:2028`](index.html#L2028) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 1rem; font-w`
-  - [`index.html:2030`](index.html#L2030) — Event `onclick`
+  - [`index.html:2043`](index.html#L2043) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 1rem; font-w`
   - [`index.html:2045`](index.html#L2045) — Event `onclick`
-    `<button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 1rem; font-w`
-  - [`index.html:2047`](index.html#L2047) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 1rem; font-w`
 - **Memanggil Fungsi Internal:** [`updatePlayoffModalWinnerPreview()`](#updateplayoffmodalwinnerpreview)
 
@@ -1432,9 +1432,9 @@
 
 - **Definisi:** [`app.js:4713`](app.js#L4713)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:2029`](index.html#L2029) — Event `oninput`
+  - [`index.html:2027`](index.html#L2027) — Event `oninput`
     `<input type="number" id="playoffModalScoreA" min="0" max="5" value="0" style="width: 52px; font-size`
-  - [`index.html:2046`](index.html#L2046) — Event `oninput`
+  - [`index.html:2044`](index.html#L2044) — Event `oninput`
     `<input type="number" id="playoffModalScoreB" min="0" max="5" value="0" style="width: 52px; font-size`
 - **Memanggil Fungsi Internal:** [`updatePlayoffModalWinnerPreview()`](#updateplayoffmodalwinnerpreview)
 
@@ -1458,7 +1458,7 @@
 
 - **Definisi:** [`app.js:4754`](app.js#L4754)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:2086`](index.html#L2086) — Event `onclick`
+  - [`index.html:2084`](index.html#L2084) — Event `onclick`
     `<button type="button" id="btnSavePlayoffScore" class="btn btn-primary" style="font-size: 0.8rem; pad`
 - **Memanggil Fungsi Internal:** [`showToast()`](#showtoast), [`setPlayoffMatchScore()`](#setplayoffmatchscore), [`closePlayoffScoreModal()`](#closeplayoffscoremodal)
 
@@ -1467,7 +1467,7 @@
 
 - **Definisi:** [`app.js:4767`](app.js#L4767)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:2079`](index.html#L2079) — Event `onclick`
+  - [`index.html:2077`](index.html#L2077) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.75rem; bor`
 - **Memanggil Fungsi Internal:** [`resetPlayoffMatchScore()`](#resetplayoffmatchscore), [`closePlayoffScoreModal()`](#closeplayoffscoremodal)
 
@@ -1522,7 +1522,7 @@
 
 - **Definisi:** [`app.js:4917`](app.js#L4917)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`index.html:2146`](index.html#L2146) — Event `onclick`
+  - [`index.html:2144`](index.html#L2144) — Event `onclick`
     `<button class="btn btn-gold" style="width: 100%; font-size: 0.82rem; padding: 0.45rem 0.75rem; font-`
   - [`app.js:5072`](app.js#L5072) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `<button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;" on`
@@ -1539,7 +1539,7 @@
 
 - **Definisi:** [`app.js:5187`](app.js#L5187)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:2130`](index.html#L2130) — Event `onclick`
+  - [`index.html:2128`](index.html#L2128) — Event `onclick`
     `<button class="btn btn-outline" style="width: 100%; font-size: 0.82rem; padding: 0.45rem 0.75rem; bo`
   - [`app.js:5209`](app.js#L5209) — di dalam fungsi `testMLBBGroupAllocationDraw()`
     `<button class="btn btn-gold" style="font-size:0.75rem; padding:0.25rem 0.6rem; font-weight:700;" onc`
@@ -1551,7 +1551,7 @@
 - **Definisi:** [`app.js:5262`](app.js#L5262)
 - **Deskripsi:** Mengembalikan status turnamen ke Tahap 1 (Fase Grup) untuk merevisi skor jika diperlukan.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1401`](index.html#L1401) — Event `onclick`
+  - [`index.html:1399`](index.html#L1399) — Event `onclick`
     `<button id="btnResetMLBBStage1" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0`
   - [`functional_tests.js:754`](functional_tests.js#L754) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function resetMLBBToStage1()'), 'Harus ada fungsi resetMLBBToStage1');`
@@ -1562,7 +1562,7 @@
 
 - **Definisi:** [`app.js:5274`](app.js#L5274)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1405`](index.html#L1405) — Event `onclick`
+  - [`index.html:1403`](index.html#L1403) — Event `onclick`
     `<button id="btnResetTotalMLBBGroup" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5r`
 - **Memanggil Fungsi Internal:** [`showToast()`](#showtoast), [`openResetBaganModal()`](#openresetbaganmodal)
 
@@ -1572,7 +1572,7 @@
 - **Definisi:** [`app.js:5569`](app.js#L5569)
 - **Deskripsi:** --- KNOCKOUT BRACKET ---
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1390`](index.html#L1390) — Event `onchange`
+  - [`index.html:1388`](index.html#L1388) — Event `onchange`
     `<select id="bracketSize" onchange="generateBracket()" style="padding: 0.5rem 0.8rem; font-size: 0.85`
   - [`app.js:4246`](app.js#L4246) — di dalam fungsi `changeTournamentFormat()`
     `generateBracket(false);`
@@ -1921,9 +1921,9 @@
 
 - **Definisi:** [`app.js:8015`](app.js#L8015)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`index.html:1886`](index.html#L1886) — Event `onclick`
+  - [`index.html:1884`](index.html#L1884) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" on`
-  - [`index.html:1954`](index.html#L1954) — Event `onclick`
+  - [`index.html:1952`](index.html#L1952) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;" on`
   - [`app.js:8263`](app.js#L8263) — di dalam fungsi `saveSelectedMvp()`
     `closeMLBBGroupMvpModal();`
@@ -2019,11 +2019,11 @@
 - **Definisi:** [`app.js:11227`](app.js#L11227)
 - **Deskripsi:** --- TAMPILAN VIEW SWITCHER MLBB ---
 - **Titik Pemanggilan (6 lokasi):**
-  - [`index.html:1429`](index.html#L1429) — Event `onclick`
+  - [`index.html:1427`](index.html#L1427) — Event `onclick`
     `<button type="button" id="btnViewMlbbHub" class="btn btn-primary" style="font-size: 0.8rem; padding:`
-  - [`index.html:1432`](index.html#L1432) — Event `onclick`
+  - [`index.html:1430`](index.html#L1430) — Event `onclick`
     `<button type="button" id="btnViewMlbbGroups" class="btn btn-outline" style="font-size: 0.8rem; paddi`
-  - [`index.html:1435`](index.html#L1435) — Event `onclick`
+  - [`index.html:1433`](index.html#L1433) — Event `onclick`
     `<button type="button" id="btnViewMlbbFixtures" class="btn btn-outline" style="font-size: 0.8rem; pad`
   - [`app.js:2935`](app.js#L2935) — di dalam fungsi `switchTab()`
     `setMLBBViewMode('HUB');`
@@ -2339,7 +2339,7 @@
 
 - **Definisi:** [`app.js:1087`](app.js#L1087)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:23`](index.html#L23) — Event `onclick`
+  - [`index.html:24`](index.html#L24) — Event `onclick`
     `<button id="btnBypassLoader" type="button" class="btn btn-outline" style="margin-top: 1.25rem; font-`
 - **Memanggil Fungsi Internal:** [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderMCGGTable()`](#rendermcggtable), [`updateCounts()`](#updatecounts), [`hideGlobalLoader()`](#hidegloballoader), [`showToast()`](#showtoast)
 
@@ -2532,7 +2532,7 @@
 - **Definisi:** [`app.js:2303`](app.js#L2303)
 - **Deskripsi:** Toggle Official 2 Form
 - **Titik Pemanggilan (4 lokasi):**
-  - [`index.html:1114`](index.html#L1114) — Event `onchange`
+  - [`index.html:1112`](index.html#L1112) — Event `onchange`
     `<input type="checkbox" id="has_official_2" onchange="toggleOfficial2Form()">`
   - [`app.js:1199`](app.js#L1199) — di dalam fungsi `restoreFormDraft()`
     `toggleOfficial2Form();`
@@ -2559,7 +2559,7 @@
 - **Definisi:** [`app.js:2369`](app.js#L2369)
 - **Deskripsi:** Switch form between MLBB and MCGG cleanly
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1006`](index.html#L1006) — Event `onchange`
+  - [`index.html:1004`](index.html#L1004) — Event `onchange`
     `<select id="gameCategory" required onchange="toggleCategoryForm()" style="font-size: 1rem; font-weig`
   - [`app.js:3651`](app.js#L3651) — di dalam fungsi `handleRegister()`
     `toggleCategoryForm();`
@@ -2621,7 +2621,7 @@
 - **Definisi:** [`app.js:3066`](app.js#L3066)
 - **Deskripsi:** Handler saat Peserta Mengetik Nama Tim MLBB di Form Pendaftaran (Fungsi Edit Dimatikan)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1021`](index.html#L1021) — Event `oninput`
+  - [`index.html:1019`](index.html#L1019) — Event `oninput`
     `<input type="text" id="teamName" oninput="handleTeamNameInput(this.value)" placeholder="Masukkan nam`
   - [`functional_tests.js:172`](functional_tests.js#L172) — pada skenario pengujian
     `assert(appCode.includes('function handleTeamNameInput('), 'Harus ada handler handleTeamNameInput');`
@@ -2633,7 +2633,7 @@
 - **Definisi:** [`app.js:4283`](app.js#L4283)
 - **Deskripsi:** Mengacak undian tim ke dalam grup saat Technical Meeting jika grup belum dikunci.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1398`](index.html#L1398) — Event `onclick`
+  - [`index.html:1396`](index.html#L1396) — Event `onclick`
     `<button id="btnShuffleMLBB" class="btn btn-gold" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;`
 - **Memanggil Fungsi Internal:** [`generateBracket()`](#generatebracket), [`generateGroupStage()`](#generategroupstage), [`saveTournamentStateOnly()`](#savetournamentstateonly), [`showToast()`](#showtoast), [`refreshAndScrollToGroupOrBracket()`](#refreshandscrolltogrouporbracket), [`syncTournamentConfigToGSheet()`](#synctournamentconfigtogsheet)
 
@@ -2659,7 +2659,7 @@
 
 - **Definisi:** [`app.js:5130`](app.js#L5130)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:2107`](index.html#L2107) — Event `onclick`
+  - [`index.html:2105`](index.html#L2105) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; co`
   - [`app.js:5075`](app.js#L5075) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `<button class="btn btn-outline" style="font-size:0.75rem; padding:0.25rem 0.65rem; border-color:var(`
@@ -3194,7 +3194,7 @@
 
 - **Definisi:** [`app.js:8193`](app.js#L8193)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1957`](index.html#L1957) — Event `onclick`
+  - [`index.html:1955`](index.html#L1955) — Event `onclick`
     `<button type="button" class="btn btn-primary" style="background: var(--yokke-gold); color: #0b1120; `
   - [`app.js:8290`](app.js#L8290) — di dalam fungsi `deleteCurrentMvp()`
     `saveSelectedMvp();`
@@ -3205,7 +3205,7 @@
 
 - **Definisi:** [`app.js:8266`](app.js#L8266)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1950`](index.html#L1950) — Event `onclick`
+  - [`index.html:1948`](index.html#L1948) — Event `onclick`
     `<button type="button" id="btnDeleteMvp" class="btn btn-outline" style="color: var(--yokke-red); bord`
 - **Memanggil Fungsi Internal:** [`closeMLBBGroupMvpModal()`](#closemlbbgroupmvpmodal), [`saveSelectedMvp()`](#saveselectedmvp), [`saveState()`](#savestate), [`renderGroupPlayoffTree()`](#rendergroupplayofftree), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui), [`syncSingleMatchRowToGSheet()`](#syncsinglematchrowtogsheet), [`showToast()`](#showtoast), [`setGroupMatchMVP()`](#setgroupmatchmvp)
 
@@ -3386,7 +3386,7 @@
 - **Definisi:** [`app.js:10942`](app.js#L10942)
 - **Deskripsi:** Sample Data Roster with Nicknames (Purely Generic Dummy Data for Simulation - No Sensitive Info)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1246`](index.html#L1246) — Event `onclick`
+  - [`index.html:1244`](index.html#L1244) — Event `onclick`
     `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;" onclick="loadSamp`
 - **Memanggil Fungsi Internal:** [`autoLinkParticipantsAssets()`](#autolinkparticipantsassets), [`saveState()`](#savestate), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`syncMCGGPlayers()`](#syncmcggplayers)
 
@@ -3395,7 +3395,7 @@
 
 - **Definisi:** [`app.js:11146`](app.js#L11146)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1247`](index.html#L1247) — Event `onclick`
+  - [`index.html:1245`](index.html#L1245) — Event `onclick`
     `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;" onclick="clearAll`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderMCGGTable()`](#rendermcggtable), [`syncMCGGPlayers()`](#syncmcggplayers), [`updateCounts()`](#updatecounts)
 
@@ -3755,7 +3755,7 @@
 
 - **Definisi:** [`app.js:1102`](app.js#L1102)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1273`](index.html#L1273) — Event `oninput`
+  - [`index.html:1271`](index.html#L1271) — Event `oninput`
     `<input type="text" id="participantSearchInput" placeholder="🔍 Cari Tim / IGN / Divisi..." oninput="`
 - **Memanggil Fungsi Internal:** [`renderParticipants()`](#renderparticipants)
 
@@ -3783,7 +3783,7 @@
 - **Definisi:** [`app.js:1434`](app.js#L1434)
 - **Deskripsi:** Fetch registered participants from Google Sheets via doGet Webhook Google Sheets menjadi Single Source of Truth: data yang dihapus di sheet tidak akan dimunculkan kembali.
 - **Titik Pemanggilan (4 lokasi):**
-  - [`index.html:1259`](index.html#L1259) — Event `onclick`
+  - [`index.html:1257`](index.html#L1257) — Event `onclick`
     `<button class="btn btn-primary" id="btnSyncGSheet" style="padding: 0.45rem 0.9rem; font-size: 0.82re`
   - [`app.js:1817`](app.js#L1817) — di dalam fungsi `resetCacheAndFollowGSheet()`
     `await fetchParticipantsFromGoogleSheet(false, true);`
@@ -3798,13 +3798,13 @@
 
 - **Definisi:** [`app.js:2629`](app.js#L2629)
 - **Titik Pemanggilan (5 lokasi):**
-  - [`index.html:41`](index.html#L41) — Event `onclick`
+  - [`index.html:42`](index.html#L42) — Event `onclick`
     `<button id="btnToggleReg" class="btn btn-outline" style="display: none; padding: 0.25rem 0.65rem; fo`
-  - [`index.html:1245`](index.html#L1245) — Event `onclick`
+  - [`index.html:1243`](index.html#L1243) — Event `onclick`
     `<button id="btnToggleRegPeserta" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0`
-  - [`index.html:1397`](index.html#L1397) — Event `onclick`
+  - [`index.html:1395`](index.html#L1395) — Event `onclick`
     `<button id="btnToggleRegMLBB" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 0.8`
-  - [`index.html:1506`](index.html#L1506) — Event `onclick`
+  - [`index.html:1504`](index.html#L1504) — Event `onclick`
     `<button id="btnToggleRegMCGG" class="btn btn-outline" style="display: none; font-size: 0.85rem; padd`
   - [`functional_tests.js:825`](functional_tests.js#L825) — di dalam fungsi `runLiveIntegrationTests()`
     `assert(appCode.includes('function toggleRegistrationStatus()'), 'Harus memiliki toggleRegistrationSt`
@@ -3816,7 +3816,7 @@
 - **Definisi:** [`app.js:3132`](app.js#L3132)
 - **Deskripsi:** Registration Handler with Nickname (IGN), 2 Officials Max, Per-Player ID Card, and Automatic Update Threat
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1002`](index.html#L1002) — Event `onsubmit`
+  - [`index.html:1000`](index.html#L1000) — Event `onsubmit`
     `<form id="regForm" onsubmit="handleRegister(event)">`
 - **Memanggil Fungsi Internal:** [`findLogoByTeamName()`](#findlogobyteamname), [`findIdCardByEmpIdOrName()`](#findidcardbyempidorname), [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`showToast()`](#showtoast), [`saveState()`](#savestate), [`clearFormDraft()`](#clearformdraft), [`renderPlayersFormInputs()`](#renderplayersforminputs), [`toggleCategoryForm()`](#togglecategoryform), [`toggleOfficial2Form()`](#toggleofficial2form), [`updateRegistrationDatalists()`](#updateregistrationdatalists)
 
@@ -3847,7 +3847,7 @@
 
 - **Definisi:** [`app.js:3882`](app.js#L3882)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1749`](index.html#L1749) — Event `onclick`
+  - [`index.html:1747`](index.html#L1747) — Event `onclick`
     `<button class="btn btn-primary" onclick="saveParticipantEdit()">💾 Simpan Perubahan Data</button>`
 - **Memanggil Fungsi Internal:** [`saveLogoToMap()`](#savelogotomap), [`saveIdCardToMap()`](#saveidcardtomap), [`autoLinkParticipantsAssets()`](#autolinkparticipantsassets), [`saveState()`](#savestate), [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`syncMCGGPlayers()`](#syncmcggplayers), [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`closeEditParticipantModal()`](#closeeditparticipantmodal)
 
@@ -3928,7 +3928,7 @@
 
 - **Definisi:** [`app.js:8118`](app.js#L8118)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1914`](index.html#L1914) — Event `oninput`
+  - [`index.html:1912`](index.html#L1912) — Event `oninput`
     `<input type="text" id="mvpPlayerSearchInput" placeholder="🔍 Cari nama pemain atau IGN..." style="wi`
 - **Memanggil Fungsi Internal:** [`renderMvpRosterList()`](#rendermvprosterlist)
 
@@ -3990,7 +3990,7 @@
 - **Definisi:** [`app.js:1799`](app.js#L1799)
 - **Deskripsi:** Reset cache lokal dan ikuti 100% data aktif dari Google Sheets
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1262`](index.html#L1262) — Event `onclick`
+  - [`index.html:1260`](index.html#L1260) — Event `onclick`
     `<button class="btn btn-outline" id="btnResetCacheFollowGSheet" style="padding: 0.45rem 0.9rem; font-`
 - **Memanggil Fungsi Internal:** [`fetchParticipantsFromGoogleSheet()`](#fetchparticipantsfromgooglesheet)
 
@@ -4000,7 +4000,7 @@
 - **Definisi:** [`app.js:1832`](app.js#L1832)
 - **Deskripsi:** SIMPAN SEMUA PERUBAHAN KE GOOGLE SHEETS
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1265`](index.html#L1265) — Event `onclick`
+  - [`index.html:1263`](index.html#L1263) — Event `onclick`
     `<button class="btn btn-primary" id="btnSaveAllChanges" style="padding: 0.45rem 0.9rem; font-size: 0.`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`showToast()`](#showtoast)
 
@@ -4089,9 +4089,9 @@
 - **Definisi:** [`app.js:5489`](app.js#L5489)
 - **Deskripsi:** Handler tombol Simpan: Sinkronkan seluruh konfigurasi turnamen, bagan playoff, dan skor ke GSheet
 - **Titik Pemanggilan (18 lokasi):**
-  - [`index.html:1406`](index.html#L1406) — Event `onclick`
+  - [`index.html:1404`](index.html#L1404) — Event `onclick`
     `<button id="btnSaveBracketGSheet" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem`
-  - [`index.html:1511`](index.html#L1511) — Event `onclick`
+  - [`index.html:1509`](index.html#L1509) — Event `onclick`
     `<button id="btnSaveMCGGPointsGSheet" class="btn btn-primary" style="display: none; font-size: 0.85re`
   - [`app.js:258`](app.js#L258) — di dalam fungsi `toggleInvitedTeam()`
     `saveTournamentStateOnly(true);`
@@ -4178,7 +4178,7 @@
 - **Definisi:** [`app.js:981`](app.js#L981)
 - **Deskripsi:** Modal Glosarium Istilah Turnamen
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:36`](index.html#L36) — Event `onclick`
+  - [`index.html:37`](index.html#L37) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.75rem; bo`
 
 <a id="closeglossarymodal"></a>
@@ -4186,9 +4186,9 @@
 
 - **Definisi:** [`app.js:986`](app.js#L986)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1826`](index.html#L1826) — Event `onclick`
+  - [`index.html:1824`](index.html#L1824) — Event `onclick`
     `<button class="btn btn-outline" style="padding:0.25rem 0.6rem;" onclick="closeGlossaryModal()">✕ Tut`
-  - [`index.html:1855`](index.html#L1855) — Event `onclick`
+  - [`index.html:1853`](index.html#L1853) — Event `onclick`
     `<button class="btn btn-outline" onclick="closeGlossaryModal()">Tutup</button>`
 
 <a id="openresetbaganmodal"></a>
@@ -4205,7 +4205,7 @@
 
 - **Definisi:** [`app.js:1001`](app.js#L1001)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1870`](index.html#L1870) — Event `onclick`
+  - [`index.html:1868`](index.html#L1868) — Event `onclick`
     `<button class="btn btn-outline" onclick="closeResetBaganModal()">Batal</button>`
   - [`app.js:1057`](app.js#L1057) — di dalam fungsi `confirmResetBaganWithPin()`
     `closeResetBaganModal();`
@@ -4318,7 +4318,7 @@
 - **Definisi:** [`app.js:2250`](app.js#L2250)
 - **Deskripsi:** Handle Logo Upload and Live Preview
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1052`](index.html#L1052) — Event `onchange`
+  - [`index.html:1050`](index.html#L1050) — Event `onchange`
     `<input type="file" id="teamLogoInput" accept="image/*" onchange="handleLogoPreview(event)" style="pa`
 - **Memanggil Fungsi Internal:** [`compressImageFile()`](#compressimagefile), [`handleFormDraftChange()`](#handleformdraftchange)
 
@@ -4328,11 +4328,11 @@
 - **Definisi:** [`app.js:2265`](app.js#L2265)
 - **Deskripsi:** Handle Individual ID Card Upload for Officials and MCGG
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1098`](index.html#L1098) — Event `onchange`
+  - [`index.html:1096`](index.html#L1096) — Event `onchange`
     `<input type="file" id="off1_idcard_file" accept="image/*" onchange="handleSingleIdCardPreview(event,`
-  - [`index.html:1142`](index.html#L1142) — Event `onchange`
+  - [`index.html:1140`](index.html#L1140) — Event `onchange`
     `<input type="file" id="off2_idcard_file" accept="image/*" onchange="handleSingleIdCardPreview(event,`
-  - [`index.html:1211`](index.html#L1211) — Event `onchange`
+  - [`index.html:1209`](index.html#L1209) — Event `onchange`
     `<input type="file" id="mcgg_idcard_file" accept="image/*" onchange="handleSingleIdCardPreview(event,`
 - **Memanggil Fungsi Internal:** [`compressImageFile()`](#compressimagefile), [`handleFormDraftChange()`](#handleformdraftchange)
 
@@ -4366,9 +4366,9 @@
 - **Definisi:** [`app.js:3035`](app.js#L3035)
 - **Deskripsi:** Menutup modal pop-up lightbox preview ID Card pegawai.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1789`](index.html#L1789) — Event `onclick`
+  - [`index.html:1787`](index.html#L1787) — Event `onclick`
     `<div id="idCardLightboxModal" class="modal-overlay" style="z-index: 2500;" onclick="if(event.target `
-  - [`index.html:1793`](index.html#L1793) — Event `onclick`
+  - [`index.html:1791`](index.html#L1791) — Event `onclick`
     `<button class="btn btn-outline" style="padding:0.25rem 0.6rem;" onclick="closeIdCardLightbox()">✕ Tu`
 
 <a id="openeditparticipantmodal"></a>
@@ -4387,9 +4387,9 @@
 - **Definisi:** [`app.js:3850`](app.js#L3850)
 - **Deskripsi:** Menutup modal dialog edit peserta.
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1676`](index.html#L1676) — Event `onclick`
+  - [`index.html:1674`](index.html#L1674) — Event `onclick`
     `<button class="btn btn-outline" style="padding: 0.25rem 0.6rem;" onclick="closeEditParticipantModal(`
-  - [`index.html:1748`](index.html#L1748) — Event `onclick`
+  - [`index.html:1746`](index.html#L1746) — Event `onclick`
     `<button class="btn btn-outline" onclick="closeEditParticipantModal()">Batal</button>`
   - [`app.js:3997`](app.js#L3997) — di dalam fungsi `saveParticipantEdit()`
     `closeEditParticipantModal();`
@@ -4400,7 +4400,7 @@
 - **Definisi:** [`app.js:3855`](app.js#L3855)
 - **Deskripsi:** Handle logo upload in Admin Edit modal
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1708`](index.html#L1708) — Event `onchange`
+  - [`index.html:1706`](index.html#L1706) — Event `onchange`
     `<input type="file" id="editTeamLogoInput" accept="image/*" onchange="handleEditLogoUpload(event)" st`
 - **Memanggil Fungsi Internal:** [`compressImage()`](#compressimage)
 
@@ -4420,7 +4420,7 @@
 - **Definisi:** [`app.js:4065`](app.js#L4065)
 - **Deskripsi:** Menutup modal dialog rincian roster tim dan galeri ID Card.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1765`](index.html#L1765) — Event `onclick`
+  - [`index.html:1763`](index.html#L1763) — Event `onclick`
     `<button class="btn btn-outline" style="padding: 0.25rem 0.6rem;" onclick="closeDetailModal()">✕ Tutu`
 
 <a id="opentestdrawmodal"></a>
@@ -4428,7 +4428,7 @@
 
 - **Definisi:** [`app.js:5110`](app.js#L5110)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1404`](index.html#L1404) — Event `onclick`
+  - [`index.html:1402`](index.html#L1402) — Event `onclick`
     `<button id="btnTestPlayoffStandings" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5`
   - [`app.js:4930`](app.js#L4930) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `openTestDrawModal();`
@@ -4439,9 +4439,9 @@
 
 - **Definisi:** [`app.js:5122`](app.js#L5122)
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:2095`](index.html#L2095) — Event `onclick`
+  - [`index.html:2093`](index.html#L2093) — Event `onclick`
     `<div id="testDrawModal" class="modal-overlay" onclick="if(event.target === this) closeTestDrawModal(`
-  - [`index.html:2110`](index.html#L2110) — Event `onclick`
+  - [`index.html:2108`](index.html#L2108) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" on`
   - [`app.js:5078`](app.js#L5078) — di dalam fungsi `testMLBBPlayoffWithCurrentStandings()`
     `<button class="btn btn-primary" style="font-size:0.75rem; padding:0.25rem 0.65rem; font-weight:700;"`
@@ -4473,9 +4473,9 @@
 
 - **Definisi:** [`app.js:8489`](app.js#L8489)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1975`](index.html#L1975) — Event `onclick`
+  - [`index.html:1973`](index.html#L1973) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="padding: 0.2rem 0.55rem; font-size: 0.8rem;" on`
-  - [`index.html:1991`](index.html#L1991) — Event `onclick`
+  - [`index.html:1989`](index.html#L1989) — Event `onclick`
     `<button type="button" class="btn btn-primary" onclick="closeMatchPlayerVerifyModal()">`
 - **Memanggil Fungsi Internal:** [`saveState()`](#savestate), [`renderGroupStageUI()`](#rendergroupstageui), [`renderGroupFixturesUI()`](#rendergroupfixturesui), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
@@ -4654,32 +4654,34 @@
 
 - **Definisi:** [`app.js:2885`](app.js#L2885)
 - **Deskripsi:** Navigation Tabs
-- **Titik Pemanggilan (17 lokasi):**
-  - [`index.html:61`](index.html#L61) — Event `onclick`
-    `<button id="navBtnHub" class="nav-btn" onclick="switchTab('hub')">🏛️ Hall of Fame & Hub</button>`
+- **Titik Pemanggilan (18 lokasi):**
   - [`index.html:62`](index.html#L62) — Event `onclick`
-    `<button id="navBtnDaftar" class="nav-btn active" onclick="switchTab('daftar')">📝 Pendaftaran</butto`
+    `<button id="navBtnHub" class="nav-btn" onclick="switchTab('hub')">🏛️ Hall of Fame & Hub</button>`
   - [`index.html:63`](index.html#L63) — Event `onclick`
-    `<button id="navBtnPeserta" class="nav-btn" onclick="switchTab('peserta')">👥 Daftar Peserta & Verifi`
+    `<button id="navBtnDaftar" class="nav-btn active" onclick="switchTab('daftar')">📝 Pendaftaran</butto`
   - [`index.html:64`](index.html#L64) — Event `onclick`
-    `<button id="navBtnRules" class="nav-btn" onclick="switchTab('rules')">📜 Peraturan (Rules)</button>`
+    `<button id="navBtnPeserta" class="nav-btn" onclick="switchTab('peserta')">👥 Daftar Peserta & Verifi`
   - [`index.html:65`](index.html#L65) — Event `onclick`
-    `<button id="navBtnBaganMlbb" class="nav-btn" onclick="switchTab('bagan-mlbb')">⚔️ Bagan MLBB</button`
+    `<button id="navBtnRules" class="nav-btn" onclick="switchTab('rules')">📜 Peraturan (Rules)</button>`
   - [`index.html:66`](index.html#L66) — Event `onclick`
-    `<button id="navBtnPointsMcgg" class="nav-btn" onclick="switchTab('points-mcgg')">♟️ Poin & Klasemen `
+    `<button id="navBtnBaganMlbb" class="nav-btn" onclick="switchTab('bagan-mlbb')">⚔️ Bagan MLBB</button`
   - [`index.html:67`](index.html#L67) — Event `onclick`
+    `<button id="navBtnPointsMcgg" class="nav-btn" onclick="switchTab('points-mcgg')">♟️ Poin & Klasemen `
+  - [`index.html:68`](index.html#L68) — Event `onclick`
     `<button id="navBtnCommanders" class="nav-btn" onclick="switchTab('commanders')">🎖️ Galeri 40 Komand`
-  - [`index.html:686`](index.html#L686) — Event `onclick`
+  - [`index.html:621`](index.html#L621) — Event `onclick`
+    `<button type="button" class="btn btn-outline" style="border-color: var(--yokke-gold); color: var(--y`
+  - [`index.html:684`](index.html#L684) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; b`
-  - [`index.html:689`](index.html#L689) — Event `onclick`
+  - [`index.html:687`](index.html#L687) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; b`
-  - [`index.html:965`](index.html#L965) — Event `onclick`
+  - [`index.html:963`](index.html#L963) — Event `onclick`
     `<button type="button" class="hub-nav-quicklink-btn" onclick="switchTab('bagan-mlbb')">`
-  - [`index.html:968`](index.html#L968) — Event `onclick`
+  - [`index.html:966`](index.html#L966) — Event `onclick`
     `<button type="button" class="hub-nav-quicklink-btn" onclick="switchTab('points-mcgg')">`
-  - [`index.html:971`](index.html#L971) — Event `onclick`
+  - [`index.html:969`](index.html#L969) — Event `onclick`
     `<button type="button" class="hub-nav-quicklink-btn" onclick="switchTab('peserta')">`
-  - [`index.html:974`](index.html#L974) — Event `onclick`
+  - [`index.html:972`](index.html#L972) — Event `onclick`
     `<button type="button" class="hub-nav-quicklink-btn" onclick="switchTab('rules')">`
   - [`app.js:2592`](app.js#L2592) — di dalam fungsi `renderRegistrationUI()`
     `switchTab('hub');`
@@ -4898,11 +4900,11 @@
 - **Definisi:** [`app.js:3744`](app.js#L3744)
 - **Deskripsi:** Memfilter tabel daftar peserta berdasarkan input pencarian, kategori (MLBB/MCGG), dan status verifikasi.
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1254`](index.html#L1254) — Event `onclick`
+  - [`index.html:1252`](index.html#L1252) — Event `onclick`
     `<button class="btn btn-outline" onclick="filterList('ALL')">Semua</button>`
-  - [`index.html:1255`](index.html#L1255) — Event `onclick`
+  - [`index.html:1253`](index.html#L1253) — Event `onclick`
     `<button class="btn btn-outline" onclick="filterList('MLBB')">MLBB (<span id="countMLBB">0</span> Tim`
-  - [`index.html:1256`](index.html#L1256) — Event `onclick`
+  - [`index.html:1254`](index.html#L1254) — Event `onclick`
     `<button class="btn btn-outline" onclick="filterList('MCGG')">MCGG (<span id="countMCGG">0</span> Pem`
 - **Memanggil Fungsi Internal:** [`renderParticipants()`](#renderparticipants)
 
@@ -4912,7 +4914,7 @@
 - **Definisi:** [`app.js:4240`](app.js#L4240)
 - **Deskripsi:** Mengubah format turnamen MLBB melalui dropdown pilihan panitia (AUTO, GROUP_2, GROUP_4, KNOCKOUT).
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1380`](index.html#L1380) — Event `onchange`
+  - [`index.html:1378`](index.html#L1378) — Event `onchange`
     `<select id="bracketFormat" onchange="changeTournamentFormat()" style="padding: 0.5rem 0.8rem; font-s`
 - **Memanggil Fungsi Internal:** [`generateBracket()`](#generatebracket), [`generateGroupStage()`](#generategroupstage), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderMLBBInteractiveHubUI()`](#rendermlbbinteractivehubui)
 
@@ -4943,9 +4945,9 @@
 
 - **Definisi:** [`app.js:8020`](app.js#L8020)
 - **Titik Pemanggilan (4 lokasi):**
-  - [`index.html:1904`](index.html#L1904) — Event `onclick`
+  - [`index.html:1902`](index.html#L1902) — Event `onclick`
     `<button type="button" id="mvpTabTeamA" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; f`
-  - [`index.html:1907`](index.html#L1907) — Event `onclick`
+  - [`index.html:1905`](index.html#L1905) — Event `onclick`
     `<button type="button" id="mvpTabTeamB" class="btn btn-outline" style="flex: 1; font-size: 0.82rem; f`
   - [`app.js:7920`](app.js#L7920) — di dalam fungsi `initAndShowMvpModal()`
     `switchMvpTeamTab(ctx.activeTeam);`
@@ -5017,7 +5019,7 @@
 
 - **Definisi:** [`app.js:1006`](app.js#L1006)
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1871`](index.html#L1871) — Event `onclick`
+  - [`index.html:1869`](index.html#L1869) — Event `onclick`
     `<button class="btn btn-danger-sm" style="padding: 0.5rem 1.1rem; font-size: 0.85rem;" onclick="confi`
 - **Memanggil Fungsi Internal:** [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`showToast()`](#showtoast), [`closeResetBaganModal()`](#closeresetbaganmodal), [`saveStageStateLocal()`](#savestagestatelocal), [`saveState()`](#savestate), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`updateAuthUI()`](#updateauthui), [`saveTournamentStateOnly()`](#savetournamentstateonly)
 
@@ -5027,7 +5029,7 @@
 - **Definisi:** [`app.js:2429`](app.js#L2429)
 - **Deskripsi:** Auth functions
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:44`](index.html#L44) — Event `onclick`
+  - [`index.html:45`](index.html#L45) — Event `onclick`
     `<button id="btnLoginPanitia" class="btn btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.8`
 
 <a id="closeloginmodal"></a>
@@ -5036,7 +5038,7 @@
 - **Definisi:** [`app.js:2441`](app.js#L2441)
 - **Deskripsi:** Menutup modal dialog login PIN panitia.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1811`](index.html#L1811) — Event `onclick`
+  - [`index.html:1809`](index.html#L1809) — Event `onclick`
     `<button class="btn btn-outline" onclick="closeLoginModal()">Batal</button>`
   - [`app.js:2489`](app.js#L2489) — di dalam fungsi `verifyAdminPin()`
     `closeLoginModal();`
@@ -5047,9 +5049,9 @@
 - **Definisi:** [`app.js:2449`](app.js#L2449)
 - **Deskripsi:** Memvalidasi PIN panitia (ADMIN_PIN) untuk membuka hak akses administratif penuh.
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1808`](index.html#L1808) — Inline Script / Markup
+  - [`index.html:1806`](index.html#L1806) — Inline Script / Markup
     `<input type="password" id="adminPinInput" placeholder="Masukkan PIN Panitia" onkeydown="if(event.key`
-  - [`index.html:1812`](index.html#L1812) — Event `onclick`
+  - [`index.html:1810`](index.html#L1810) — Event `onclick`
     `<button id="btnLoginSubmit" class="btn btn-primary" onclick="verifyAdminPin()">Masuk</button>`
 - **Memanggil Fungsi Internal:** [`postToGoogleAppsScript()`](#posttogoogleappsscript), [`closeLoginModal()`](#closeloginmodal), [`updateAuthUI()`](#updateauthui), [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderMCGGTable()`](#rendermcggtable), [`showToast()`](#showtoast)
 
@@ -5059,7 +5061,7 @@
 - **Definisi:** [`app.js:2529`](app.js#L2529)
 - **Deskripsi:** Keluar dari mode panitia dan mengembalikan tampilan ke mode peserta umum (read-only).
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:45`](index.html#L45) — Event `onclick`
+  - [`index.html:46`](index.html#L46) — Event `onclick`
     `<button id="btnLogoutPanitia" class="btn btn-outline" style="display: none; padding: 0.25rem 0.75rem`
 - **Memanggil Fungsi Internal:** [`updateAuthUI()`](#updateauthui), [`renderParticipants()`](#renderparticipants), [`renderCurrentMLBBFormat()`](#rendercurrentmlbbformat), [`renderMCGGTable()`](#rendermcggtable), [`showToast()`](#showtoast)
 
@@ -5121,7 +5123,7 @@
 - **Definisi:** [`app.js:2134`](app.js#L2134)
 - **Deskripsi:** Rules System: Mengambil dan Menampilkan Peraturan dari Google Docs (MLBB: tab=t.0 & MCGG: tab=t.ji56ljhdhzkr)
 - **Titik Pemanggilan (2 lokasi):**
-  - [`index.html:1304`](index.html#L1304) — Event `onclick`
+  - [`index.html:1302`](index.html#L1302) — Event `onclick`
     `<button type="button" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; bo`
   - [`app.js:2940`](app.js#L2940) — di dalam fungsi `switchTab()`
     `fetchRulesFromGoogleDoc(true);`
@@ -5151,9 +5153,9 @@
 - **Definisi:** [`app.js:2206`](app.js#L2206)
 - **Deskripsi:** Membuka/menutup form editor peraturan turnamen khusus panitia.
 - **Titik Pemanggilan (3 lokasi):**
-  - [`index.html:1314`](index.html#L1314) — Event `onclick`
+  - [`index.html:1312`](index.html#L1312) — Event `onclick`
     `<button class="btn btn-gold" id="btnToggleEditRules" style="font-size: 0.8rem; padding: 0.4rem 0.8re`
-  - [`index.html:1348`](index.html#L1348) — Event `onclick`
+  - [`index.html:1346`](index.html#L1346) — Event `onclick`
     `<button class="btn btn-outline" onclick="toggleEditRules()">Batal</button>`
   - [`app.js:2226`](app.js#L2226) — di dalam fungsi `saveCustomRules()`
     `toggleEditRules();`
@@ -5164,7 +5166,7 @@
 - **Definisi:** [`app.js:2212`](app.js#L2212)
 - **Deskripsi:** Menyimpan peraturan turnamen yang telah disesuaikan ke localStorage dan Google Sheets.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1347`](index.html#L1347) — Event `onclick`
+  - [`index.html:1345`](index.html#L1345) — Event `onclick`
     `<button class="btn btn-primary" onclick="saveCustomRules()">💾 Simpan Peraturan</button>`
 - **Memanggil Fungsi Internal:** [`renderRules()`](#renderrules), [`toggleEditRules()`](#toggleeditrules), [`postToGoogleAppsScript()`](#posttogoogleappsscript)
 
@@ -5174,7 +5176,7 @@
 - **Definisi:** [`app.js:2240`](app.js#L2240)
 - **Deskripsi:** Mengembalikan peraturan turnamen ke regulasi default resmi Yokke Squad 2026.
 - **Titik Pemanggilan (1 lokasi):**
-  - [`index.html:1315`](index.html#L1315) — Event `onclick`
+  - [`index.html:1313`](index.html#L1313) — Event `onclick`
     `<button class="btn btn-outline" id="btnResetRules" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;`
 - **Memanggil Fungsi Internal:** [`renderRules()`](#renderrules)
 

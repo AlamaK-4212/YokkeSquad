@@ -430,7 +430,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-07-v2-ground-truth-image1-exact';
+const PLAYOFF_DATA_VERSION = '2026-11-07-v3-lower-bracket-semifinals-exact';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
@@ -474,6 +474,17 @@ function normalizeGroupPlayoffMatches(incoming) {
         if (found.mvpHero !== undefined && found.mvpHero !== null) defaultMatch.mvpHero = found.mvpHero;
         if (found.mvpTeam !== undefined && found.mvpTeam !== null) defaultMatch.mvpTeam = found.mvpTeam;
         if (found.gameMvps !== undefined && found.gameMvps !== null) defaultMatch.gameMvps = found.gameMvps;
+      }
+      // Memastikan slot lawan di Lower Semifinal adalah tim gugur Upper SF resmi: Anti Climax dan 7 SINS
+      if (defaultMatch.matchLabel === 'LB_SF_1' && (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamB))) {
+        defaultMatch.teamB = 'Anti Climax';
+      }
+      if (defaultMatch.matchLabel === 'LB_SF_2' && (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(defaultMatch.teamB))) {
+        defaultMatch.teamB = '7 SINS';
+      }
+      if (defaultMatch.matchLabel === 'UB_FINAL') {
+        if (!defaultMatch.teamA || defaultMatch.teamA === 'Pemenang UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'ATMO';
+        if (!defaultMatch.teamB || defaultMatch.teamB === 'Pemenang UB SF 2' || isPlayoffPlaceholderTeam(defaultMatch.teamB)) defaultMatch.teamB = 'AANG ALPHA';
       }
     });
   });
@@ -11380,8 +11391,20 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
   }
 
   const isMatchActive = (activeNodeKey && matchNodeKey && activeNodeKey === matchNodeKey);
-  const safeA = (m.teamA || '').replace(/'/g, "\\'");
-  const safeB = (m.teamB || '').replace(/'/g, "\\'");
+
+  let effectiveTeamA = m.teamA || '-';
+  let effectiveTeamB = m.teamB || '-';
+  if (m.matchLabel === 'LB_SF_1' && (effectiveTeamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamB))) {
+    effectiveTeamB = 'Anti Climax';
+  } else if (m.matchLabel === 'LB_SF_2' && (effectiveTeamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB))) {
+    effectiveTeamB = '7 SINS';
+  } else if (m.matchLabel === 'UB_FINAL') {
+    if (effectiveTeamA === 'Pemenang UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'ATMO';
+    if (effectiveTeamB === 'Pemenang UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = 'AANG ALPHA';
+  }
+
+  const safeA = effectiveTeamA.replace(/'/g, "\\'");
+  const safeB = effectiveTeamB.replace(/'/g, "\\'");
 
   const bracketBadge = m.bracket === 'UPPER' 
     ? '<span style="font-size:0.6rem; padding:0.1rem 0.3rem; border-radius:3px; background:rgba(0,210,255,0.18); color:var(--yokke-cyan); font-weight:700;">UPPER</span>'
@@ -11393,7 +11416,7 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
     ? `onclick="if(event.target.closest('.bracket-node-team') || event.target.closest('button')) return; selectMLBBStageNode('${matchNodeKey}')"`
     : '';
 
-  const isReady = !isPlayoffPlaceholderTeam(m.teamA) && !isPlayoffPlaceholderTeam(m.teamB);
+  const isReady = !isPlayoffPlaceholderTeam(effectiveTeamA) && !isPlayoffPlaceholderTeam(effectiveTeamB);
   const hasScore = (m.scoreA !== null && m.scoreA !== undefined && m.scoreB !== null && m.scoreB !== undefined);
 
   return `
@@ -11413,20 +11436,20 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
           ` : ''}
         </div>
       </div>
-      <div class="bracket-node-team ${m.winner === m.teamA ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeA}')">
-        <span class="team-label" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : '#cbd5e1'};">
-          ${escapeHtml(m.teamA || '-')}
+      <div class="bracket-node-team ${m.winner === effectiveTeamA ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeA}')">
+        <span class="team-label" style="color:${m.winner === effectiveTeamA ? 'var(--yokke-green)' : '#cbd5e1'};">
+          ${escapeHtml(effectiveTeamA)}
         </span>
-        <span class="team-score" style="color:${m.winner === m.teamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
-          ${(m.scoreA !== null && m.scoreA !== undefined) ? `${m.scoreA} ${m.winner === m.teamA ? '🏆' : ''}` : (m.winner === m.teamA ? 'WIN 🏆' : '-')}
+        <span class="team-score" style="color:${m.winner === effectiveTeamA ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreA !== null && m.scoreA !== undefined) ? `${m.scoreA} ${m.winner === effectiveTeamA ? '🏆' : ''}` : (m.winner === effectiveTeamA ? 'WIN 🏆' : '-')}
         </span>
       </div>
-      <div class="bracket-node-team ${m.winner === m.teamB ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeB}')">
-        <span class="team-label" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : '#cbd5e1'};">
-          ${escapeHtml(m.teamB || '-')}
+      <div class="bracket-node-team ${m.winner === effectiveTeamB ? 'is-winner' : ''} ${isAdmin && isReady ? 'admin-interactive' : ''}" onclick="onPlayoffTeamClicked(${rIdx}, ${mIdx}, '${safeB}')">
+        <span class="team-label" style="color:${m.winner === effectiveTeamB ? 'var(--yokke-green)' : '#cbd5e1'};">
+          ${escapeHtml(effectiveTeamB)}
         </span>
-        <span class="team-score" style="color:${m.winner === m.teamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
-          ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === m.teamB ? '🏆' : ''}` : (m.winner === m.teamB ? 'WIN 🏆' : '-')}
+        <span class="team-score" style="color:${m.winner === effectiveTeamB ? 'var(--yokke-green)' : 'var(--text-muted)'}; font-weight:800;">
+          ${(m.scoreB !== null && m.scoreB !== undefined) ? `${m.scoreB} ${m.winner === effectiveTeamB ? '🏆' : ''}` : (m.winner === effectiveTeamB ? 'WIN 🏆' : '-')}
         </span>
       </div>
       ${(m.mvpPlayer || (Array.isArray(m.gameMvps) && m.gameMvps.length > 0)) ? `
@@ -11546,25 +11569,47 @@ function renderFullPlayoffBracketHtml(activeNodeKey = '') {
     col3 += renderSingleMatchNodeHtml(groupPlayoffMatches[3]?.[1], 3, 1, c2[1] - 38, activeNodeKey, true);
     col3 += '</div>';
 
-    // SVG Connector 3 -> 4
-    const pairs3 = [{ y1: c2[0], y2: c2[1], targetY: c1[0] }];
+    // SVG Connector 3 -> 4 (Jembatan horizontal lurus dari Lower QF ke Lower Semifinal)
+    const pairs3 = [
+      { y1: c2[0], targetY: c2[0] },
+      { y1: c2[1], targetY: c2[1] }
+    ];
     const svg3 = renderSvgConnectorColumn(pairs3, '#ffb703');
 
-    // Col 4: Lower Final Penentu
-    let col4 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Final (Hari 5)</div>';
-    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[4], 4, 4, c1[0] - 38, activeNodeKey, true);
+    // Col 4: Lower Semifinal (2 Match: Pemenang LB QF vs Tim Gugur UB SF [Anti Climax & 7 SINS])
+    let col4 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Semifinal (Hari 5)</div>';
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[1], 4, 1, c2[0] - 38, activeNodeKey, true);
+    col4 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[2], 4, 2, c2[1] - 38, activeNodeKey, true);
     col4 += '</div>';
 
-    // SVG Connector 4 -> 5
-    const pairs4 = [{ y1: c1[0], targetY: c1[0] }];
+    // SVG Connector 4 -> 5 (Konvergensi dari 2 match Lower SF ke 1 match Lower Prelim)
+    const pairs4 = [{ y1: c2[0], y2: c2[1], targetY: c1[0] }];
     const svg4 = renderSvgConnectorColumn(pairs4, '#ffb703');
 
-    // Col 5: Grand Final BO5
-    let col5 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
-    col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[5]?.[0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    // Col 5: Lower Final Penantang / Prelim (1 Match: Pemenang LB SF 1 vs Pemenang LB SF 2)
+    let col5 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Prelim (Hari 5)</div>';
+    col5 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[3], 4, 3, c1[0] - 38, activeNodeKey, true);
     col5 += '</div>';
 
-    canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4 + svg4 + col5;
+    // SVG Connector 5 -> 6 (Jembatan horizontal lurus ke Lower Final Penentu)
+    const pairs5 = [{ y1: c1[0], targetY: c1[0] }];
+    const svg5 = renderSvgConnectorColumn(pairs5, '#ffb703');
+
+    // Col 6: Lower Final Penentu (1 Match: Pemenang LB Prelim vs Gugur UB Final)
+    let col6 = '<div class="bracket-col"><div class="bracket-col-header is-lower">Lower Final (Hari 5)</div>';
+    col6 += renderSingleMatchNodeHtml(groupPlayoffMatches[4]?.[4], 4, 4, c1[0] - 38, activeNodeKey, true);
+    col6 += '</div>';
+
+    // SVG Connector 6 -> 7 (Jembatan horizontal lurus ke Super Grand Final BO5)
+    const pairs6 = [{ y1: c1[0], targetY: c1[0] }];
+    const svg6 = renderSvgConnectorColumn(pairs6, '#ffb703');
+
+    // Col 7: Grand Final BO5 (1 Match: Juara Upper Bracket vs Juara Lower Bracket)
+    let col7 = '<div class="bracket-col"><div class="bracket-col-header is-final">🏆 Grand Final (BO5)</div>';
+    col7 += renderSingleMatchNodeHtml(groupPlayoffMatches[5]?.[0], 5, 0, c1[0] - 38, activeNodeKey, false);
+    col7 += '</div>';
+
+    canvasHtml = col0 + svg0 + col1 + svg1 + col2 + svg2 + col3 + svg3 + col4 + svg4 + col5 + svg5 + col6 + svg6 + col7;
 
   } else {
     // ========================================================
@@ -12289,7 +12334,7 @@ function renderMLBBDetailPanelContent(nodeKey) {
           <span>🏆</span> <span>Super Grand Final Offline (Best of 5)</span>
         </h3>
         <div class="detail-badge-group">
-          <span class="badge-status" style="background:rgba(255,183,3,0.18);color:var(--yokke-gold);border:1px solid var(--yokke-gold);font-weight:800;">🏢 Kantor Pusat PT PT EDI INDONESIA / YOKKE</span>
+          <span class="badge-status" style="background:rgba(255,183,3,0.18);color:var(--yokke-gold);border:1px solid var(--yokke-gold);font-weight:800;">🏢 Auditorium Lt. 5 Gedung Wisma Nugra Santana (Kantor Yokke)</span>
           <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);border:1px solid var(--yokke-green);">Format: Best of 5 (BO5)</span>
         </div>
       </div>
