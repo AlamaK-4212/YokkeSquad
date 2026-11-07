@@ -36,6 +36,28 @@ console.log('  ✅ [PASS] 4. Normalisasi data groupPlayoffMatches memelihara fie
 assert(appJs.includes('PLAYOFF_R${rIdx}_M${mIdx}'), 'syncSingleMatchRowToGSheet mendukung canonId format PLAYOFF_R{rIdx}_M{mIdx}');
 console.log('  ✅ [PASS] 5. Sinkronisasi baris tunggal GSheet mengenali format playoff matches');
 
+// 6. Verifikasi parsing MVP Kolom I per game (memastikan Qanok tepat 5x, bukan 10x)
+class MockRange { constructor(vals) { this.vals = vals; } getValues() { return this.vals; } }
+class MockSheet { constructor(vals) { this.vals = vals; } getLastRow() { return this.vals.length + 1; } getRange(r) { return new MockRange(this.vals); } }
+class MockSS { constructor(sheetMap) { this.sheetMap = sheetMap; } getSheetByName(name) { return this.sheetMap[name]; } }
+
+const mockRows = [
+  ['G1: Qanok | G2: Qanok'],   // Baris 42
+  ['G1: Qanok | G2: Qanok'],   // Baris 43
+  ['G1: Qanok | G2: topson'],  // Baris 44
+  ['-']
+];
+
+const gasPath = path.join(__dirname, '../google_apps_script.js');
+const gasCode = fs.readFileSync(gasPath, 'utf8');
+eval(gasCode.substring(gasCode.indexOf('function countMLBBPlayerMVPs'), gasCode.indexOf('return mvpCounts;\n}') + 19));
+
+const mockSS = new MockSS({ 'MLBB - Bagan & MVP': new MockSheet(mockRows) });
+const res = countMLBBPlayerMVPs(mockSS);
+assert.strictEqual(res['Qanok'], 5, 'Qanok harus terhitung tepat 5x MVP dari 3 baris match');
+assert.strictEqual(res['topson'], 1, 'topson harus terhitung tepat 1x MVP');
+console.log('  ✅ [PASS] 6. Parsing MVP Kolom I menghasilkan tepat 5x untuk Qanok (bebas double count)');
+
 console.log('====================================================');
 console.log('🎉 SELURUH PENGUJIAN PLAYOFF MVP 100% SUKSES!');
 console.log('====================================================');

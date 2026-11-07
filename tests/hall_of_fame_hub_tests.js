@@ -70,10 +70,10 @@ runTest('3.1 Spotlight MVP MLBB: Haryanto "Qanok" dan Simulasi Yokke Pass Athlet
   assert(htmlCode.includes('Dir. Finance'), 'Harus mencantumkan divisi Dir. Finance');
   assert(htmlCode.includes('Miskin Mekanik'), 'Harus mencantumkan squad Miskin Mekanik');
   assert(htmlCode.includes('Goldlane') || htmlCode.includes('Marksman'), 'Harus mencantumkan role Goldlane / Marksman');
-  assert(htmlCode.includes('10x MVP'), 'Harus mencantumkan total 10x MVP');
-  assert(htmlCode.includes('Kimmy'), 'Hero Kimmy harus ada (Top 1 Pick 4x MVP)');
-  assert(htmlCode.includes('Lesley'), 'Hero Lesley harus ada (Top 2 Pick 2x MVP)');
-  assert(htmlCode.includes('Miya'), 'Hero Miya harus ada (Top 3 Pick 2x MVP)');
+  assert(htmlCode.includes('5x MVP'), 'Harus mencantumkan total 5x MVP');
+  assert(htmlCode.includes('Kimmy'), 'Hero Kimmy harus ada (Top 1 Pick 2x MVP)');
+  assert(htmlCode.includes('Lesley'), 'Hero Lesley harus ada (Top 3 Pick 1x MVP)');
+  assert(htmlCode.includes('Miya'), 'Hero Miya harus ada (Top 2 Pick 2x MVP)');
   assert(htmlCode.includes('Kemenangan sejati adalah dedikasi tim'), 'Harus memuat kutipan signature speech');
 });
 

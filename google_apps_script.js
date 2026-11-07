@@ -1075,6 +1075,24 @@ function getInitialData(ss) {
 
         if (isGroup) {
           var gNameParsed = phase.replace("Fase Grup - ", "").trim();
+          var parsedGameMvps = [];
+          if (mvpPlayer) {
+            var gParts = mvpPlayer.split("|");
+            var hParts = mvpHero ? mvpHero.split("|") : [];
+            gParts.forEach(function(gp, gIdx) {
+              var ign = gp.replace(/G\d+:\s*/i, "").trim();
+              var heroName = hParts[gIdx] ? hParts[gIdx].replace(/G\d+:\s*/i, "").trim() : "";
+              if (ign && ign !== "-") {
+                parsedGameMvps.push({
+                  game: gIdx + 1,
+                  player: ign,
+                  hero: heroName,
+                  team: winner || ""
+                });
+              }
+            });
+          }
+
           var matchObj = {
             matchId: mId,
             gName: gNameParsed,
@@ -1085,6 +1103,7 @@ function getInitialData(ss) {
             winner: winner,
             mvpPlayer: mvpPlayer,
             mvpHero: mvpHero,
+            gameMvps: parsedGameMvps,
             status: status,
             day: day,
             time: time,
@@ -1221,6 +1240,24 @@ function getInitialData(ss) {
             bracket = (mId.indexOf("UB") === 0 || canonMatchLabel.indexOf("UB") === 0) ? "UPPER" : (((mId.indexOf("LB") === 0 || canonMatchLabel.indexOf("LB") === 0)) ? "LOWER" : ((mId.indexOf("GRAND_FINAL") === 0 || canonMatchLabel === "GRAND_FINAL") ? "GRAND_FINAL" : "UPPER"));
           }
 
+          var parsedPlayoffGameMvps = [];
+          if (mvpPlayer) {
+            var gPartsP = mvpPlayer.split("|");
+            var hPartsP = mvpHero ? mvpHero.split("|") : [];
+            gPartsP.forEach(function(gp, gIdx) {
+              var ign = gp.replace(/G\d+:\s*/i, "").trim();
+              var heroName = hPartsP[gIdx] ? hPartsP[gIdx].replace(/G\d+:\s*/i, "").trim() : "";
+              if (ign && ign !== "-") {
+                parsedPlayoffGameMvps.push({
+                  game: gIdx + 1,
+                  player: ign,
+                  hero: heroName,
+                  team: winner || ""
+                });
+              }
+            });
+          }
+
           var playoffObj = {
             matchId: mId,
             matchLabel: canonMatchLabel || mId,
@@ -1233,6 +1270,7 @@ function getInitialData(ss) {
             winner: winner,
             mvpPlayer: mvpPlayer,
             mvpHero: mvpHero,
+            gameMvps: parsedPlayoffGameMvps,
             status: status,
             bracket: bracket,
             day: day,
@@ -2745,4 +2783,43 @@ function createOrUpdateAllTournamentSheets(groupStageData, mcggLobbies) {
 
   syncDedicatedTournamentSheets(ss, payload);
   return "Berhasil membuat & memperbarui 3 Sheet: MLBB - Klasemen & Point, MLBB - Bagan & MVP, dan MCGG - Point, Commander & MVP!";
+}
+
+/**
+ * Menghitung akumulasi MVP pemain resmi dari Sheet "MLBB - Bagan & MVP" (Kolom I / index 8)
+ * Memecah string berdasarkan separator '|' per game dan membersihkan prefix 'G1:', 'G2:'
+ * Kebal dari double count kolom Hero MVP (J) maupun percampuran Total MVP Team (Klasemen)
+ */
+function countMVP() {
+  var ss = getTargetSpreadsheet();
+  return countMLBBPlayerMVPs(ss);
+}
+
+function countMLBBPlayerMVPs(ss) {
+  if (!ss) return {};
+  var sheet = ss.getSheetByName("MLBB - Bagan & MVP");
+  if (!sheet) return {};
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return {};
+
+  // Hanya membaca Kolom I (MVP Match (IGN / Nama)) baris 2 sampai lastRow
+  var values = sheet.getRange("I2:I" + lastRow).getValues();
+  var mvpCounts = {};
+
+  values.forEach(function(row) {
+    var cell = row[0];
+    if (!cell || cell === "-") return;
+
+    // Memecah berdasarkan '|' untuk setiap game
+    var games = cell.toString().split("|");
+    games.forEach(function(g) {
+      // Menghapus prefix 'G1:', 'G2:', dll serta spasi di awal/akhir
+      var ign = g.replace(/G\d+:\s*/i, "").trim();
+      if (ign && ign !== "-") {
+        mvpCounts[ign] = (mvpCounts[ign] || 0) + 1;
+      }
+    });
+  });
+
+  return mvpCounts;
 }
