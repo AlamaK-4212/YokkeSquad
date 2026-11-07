@@ -61,71 +61,71 @@ runTest('2.1 Ringkasan statistik partisipan turnamen (78 kontingen, 41 MLBB, 37 
 // -----------------------------------------------------------------------------
 // 3. SPOTLIGHT MVP TOURNAMENT MLBB
 // -----------------------------------------------------------------------------
-runTest('3.1 Spotlight MVP MLBB: Bima S. "Kinetic" dan Simulasi Yokke Pass Athlete ID Card', () => {
-  assert(htmlCode.includes('Bima S.'), 'Harus menampilkan nama Bima S.');
-  assert(htmlCode.includes("'Kinetic'"), 'Harus menampilkan nickname Kinetic');
-  assert(htmlCode.includes('YOKKE-EMP-4289'), 'Harus mencantumkan NIK YOKKE-EMP-4289');
-  assert(htmlCode.includes('Merchant Payment Gateway'), 'Harus mencantumkan divisi Merchant Payment Gateway');
-  assert(htmlCode.includes('VORTEX KINETIC'), 'Harus mencantumkan squad VORTEX KINETIC');
-  assert(htmlCode.includes('Jungler'), 'Harus mencantumkan role Jungler');
-  assert(htmlCode.includes('5x MVP'), 'Harus mencantumkan total 5x MVP');
-  assert(htmlCode.includes('Nolan'), 'Hero Nolan harus ada (Top 1 Pick 3x MVP)');
-  assert(htmlCode.includes('Ling'), 'Hero Ling harus ada (Top 2 Pick 1x MVP)');
-  assert(htmlCode.includes('Fanny'), 'Hero Fanny harus ada (Top 3 Pick 1x MVP)');
-  assert(htmlCode.includes('Kemenangan sejati adalah dedikasi tim'), 'Harus memuat kutipan signature speech Bima');
+runTest('3.1 Spotlight MVP MLBB: Haryanto "Qanok" dan Simulasi Yokke Pass Athlete ID Card', () => {
+  assert(htmlCode.includes('Haryanto'), 'Harus menampilkan nama Haryanto');
+  assert(htmlCode.includes("'Qanok'"), 'Harus menampilkan nickname Qanok');
+  assert(htmlCode.includes('2392130769'), 'Harus mencantumkan NIP 2392130769');
+  assert(htmlCode.includes('Dir. Finance'), 'Harus mencantumkan divisi Dir. Finance');
+  assert(htmlCode.includes('Miskin Mekanik'), 'Harus mencantumkan squad Miskin Mekanik');
+  assert(htmlCode.includes('Goldlane') || htmlCode.includes('Marksman'), 'Harus mencantumkan role Goldlane / Marksman');
+  assert(htmlCode.includes('10x MVP'), 'Harus mencantumkan total 10x MVP');
+  assert(htmlCode.includes('Kimmy'), 'Hero Kimmy harus ada (Top 1 Pick 4x MVP)');
+  assert(htmlCode.includes('Lesley'), 'Hero Lesley harus ada (Top 2 Pick 2x MVP)');
+  assert(htmlCode.includes('Miya'), 'Hero Miya harus ada (Top 3 Pick 2x MVP)');
+  assert(htmlCode.includes('Kemenangan sejati adalah dedikasi tim'), 'Harus memuat kutipan signature speech');
 });
 
 // -----------------------------------------------------------------------------
 // 4. PODIUM JUARA MLBB & MCGG
 // -----------------------------------------------------------------------------
-runTest('4.1 Podium Juara MLBB Top 3 (Titan Cybernetic, Vortex Kinetic, Shadow Vanguard)', () => {
-  assert(htmlCode.includes('TITAN CYBERNETIC'), 'Harus memuat Juara 1 TITAN CYBERNETIC');
-  assert(htmlCode.includes('IT Infrastructure &amp; Cloud Div') || htmlCode.includes('IT Infrastructure & Cloud Div'), 'Harus memuat divisi IT Cloud');
+runTest('4.1 Podium Juara & Kontender MLBB (ATMO, AANG ALPHA, TABRAK AJALAH)', () => {
+  assert(htmlCode.includes('ATMO'), 'Harus memuat Juara 1 Contender ATMO');
+  assert(htmlCode.includes('IT - Quality Assurance'), 'Harus memuat divisi IT - Quality Assurance');
   assert(htmlCode.includes('GOLDEN APEX AEGIS') || htmlCode.includes('THE APEX AEGIS TROPHY 2026'), 'Harus memuat Trophy Apex Aegis');
-  assert(htmlCode.includes('VORTEX KINETIC'), 'Harus memuat Juara 2 VORTEX KINETIC');
-  assert(htmlCode.includes('Silver Apex Shield'), 'Harus memuat Silver Apex Shield');
-  assert(htmlCode.includes('SHADOW VANGUARD'), 'Harus memuat Juara 3 SHADOW VANGUARD');
-  assert(htmlCode.includes('Bronze Apex Crest'), 'Harus memuat Bronze Apex Crest');
+  assert(htmlCode.includes('AANG ALPHA'), 'Harus memuat Juara 2 Contender AANG ALPHA');
+  assert(htmlCode.includes('Product OPPI QA'), 'Harus memuat divisi Product OPPI QA');
+  assert(htmlCode.includes('TABRAK AJALAH'), 'Harus memuat Juara 3 Contender TABRAK AJALAH');
+  assert(htmlCode.includes('Operation / Inventory'), 'Harus memuat divisi Operation / Inventory');
 });
 
-runTest('4.2 Podium Juara MCGG Top 3 & Top 4-8 Finalis Kehormatan', () => {
-  assert(htmlCode.includes('Siska Lestari'), 'Harus memuat Juara 1 Siska Lestari');
-  assert(htmlCode.includes('+18 TOTAL POIN'), 'Harus memuat skor Siska +18');
+runTest('4.2 Podium Juara & Kontender MCGG (Agil Patriosa, Aziz Nur Maulana, Amsal Robinhot)', () => {
+  assert(htmlCode.includes('Agil Patriosa'), 'Harus memuat Juara 1 Contender Agil Patriosa');
+  assert(htmlCode.includes('Risk Management'), 'Harus memuat divisi Risk Management');
   assert(htmlCode.includes('Yuki'), 'Harus memuat signature commander Yuki');
   assert(htmlCode.includes('Wanwan'), 'Harus memuat signature commander Wanwan');
-  assert(htmlCode.includes('Budi Santoso'), 'Harus memuat Juara 2 Budi Santoso');
-  assert(htmlCode.includes('+15 TOTAL POIN'), 'Harus memuat skor Budi +15');
-  assert(htmlCode.includes('Andre Kurnia'), 'Harus memuat Juara 3 Andre Kurnia');
-  assert(htmlCode.includes('+12 TOTAL POIN'), 'Harus memuat skor Andre +12');
-  assert(htmlCode.includes('Dian Wardana'), 'Harus memuat Top 4 Dian Wardana');
-  assert(htmlCode.includes('Maya Anggraini'), 'Harus memuat Top 5 Maya Anggraini');
-  assert(htmlCode.includes('Reza Pratama'), 'Harus memuat Top 6 Reza Pratama');
-  assert(htmlCode.includes('Hendra Wijaya'), 'Harus memuat Top 7 Hendra Wijaya');
-  assert(htmlCode.includes('Nadia Safitri'), 'Harus memuat Top 8 Nadia Safitri');
+  assert(htmlCode.includes('Aziz Nur Maulana'), 'Harus memuat Juara 2 Contender Aziz Nur Maulana');
+  assert(htmlCode.includes('IT Engineering'), 'Harus memuat divisi IT Engineering');
+  assert(htmlCode.includes('Amsal Robinhot'), 'Harus memuat Juara 3 Contender Amsal Robinhot');
+  assert(htmlCode.includes('Inventory Management'), 'Harus memuat divisi Inventory Management');
+  assert(htmlCode.includes('Bagus Setiawan'), 'Harus memuat Top 4 Bagus Setiawan');
+  assert(htmlCode.includes('ANDHIKA BAYU PRASETYO'), 'Harus memuat Top 5 ANDHIKA BAYU PRASETYO');
+  assert(htmlCode.includes('Cikal Yulanda'), 'Harus memuat Top 6 Cikal Yulanda');
+  assert(htmlCode.includes('Alvin Elshadai Pangaribuan'), 'Harus memuat Top 7 Alvin Elshadai Pangaribuan');
+  assert(htmlCode.includes('Dhimas Saputro'), 'Harus memuat Top 8 Dhimas Saputro');
 });
 
 // -----------------------------------------------------------------------------
 // 5. 16 BESAR TIAP TURNAMEN (MLBB PLAYOFF & MCGG SWEET 16)
 // -----------------------------------------------------------------------------
 runTest('5.1 16 Besar MLBB Playoff (8 Upper Bracket Seeds & 8 Lower Bracket Seeds)', () => {
-  const ubTeams = ['TABRAK AJALAH', 'Native', 'ATMO', 'WINGSKANAN ESPORT 1', 'Miskin Mekanik', '7 SINS', 'VALKYRIE', 'AANG ALPHA'];
+  const ubTeams = ['Native', '7 SINS', 'AANG ALPHA', 'ATMO', 'Miskin Mekanik', 'VALKYRIE', 'TABRAK AJALAH', 'WINGSKANAN ESPORT 1'];
   ubTeams.forEach(team => {
     assert(htmlCode.includes(team), `Harus memuat tim UB: ${team}`);
   });
 
-  const lbTeams = ['Anti Climax', 'BOLO CLUB', 'IOS', 'TY BEKASI', '666', 'APPA LINUX', 'Yokke.Syindicate', 'YOKKE LAMPUNG'];
+  const lbTeams = ['IOS', 'Anti Climax', 'TY BEKASI', '666', 'APPA LINUX', 'YOKKE LAMPUNG', 'Yokke.Syindicate', 'BOLO CLUB'];
   lbTeams.forEach(team => {
     assert(htmlCode.includes(team), `Harus memuat tim LB: ${team}`);
   });
 });
 
 runTest('5.2 16 Besar MCGG Sweet 16 (Grup X & Grup Y Octagon)', () => {
-  const groupX = ['Siska Lestari', 'Budi Santoso', 'Dian Wardana', 'Reza Pratama', 'Rizky Pratama', 'Arif Hidayat', 'Tommy Wijaya', 'Bagus Setiawan'];
+  const groupX = ['Agil Patriosa', 'Alvin Elshadai Pangaribuan', 'Amsal Robinhot', 'ANDHIKA BAYU PRASETYO', 'Arief Hidayat', 'Aziz Nur Maulana', 'Bagus Setiawan', 'Cikal Yulanda'];
   groupX.forEach(p => {
     assert(htmlCode.includes(p), `Harus memuat kontender Grup X: ${p}`);
   });
 
-  const groupY = ['Andre Kurnia', 'Maya Anggraini', 'Hendra Wijaya', 'Nadia Safitri', 'Eko Prasetyo', 'Dimas Aditya', 'Fajar Nugraha', 'Ilham Saputra'];
+  const groupY = ['Dandy Nasri', 'Daniel Reimond', 'David Iskandar', 'Dhimas Saputro', 'Eko Marwanto Putro', 'Elham Yudhistira', 'Elrizki Mardhi Hasan', 'FAJAR GILLES TIRANO'];
   groupY.forEach(p => {
     assert(htmlCode.includes(p), `Harus memuat kontender Grup Y: ${p}`);
   });
