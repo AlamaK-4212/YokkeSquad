@@ -3,21 +3,21 @@ const assert = require('assert');
 
 const originalJson = [
   [
-    {"matchLabel":"UB_R1_1","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"Anti Climax","teamB":"Miskin Mekanik","winner":null},
-    {"matchLabel":"UB_R1_2","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"ATMO","teamB":"IOS","winner":null},
-    {"matchLabel":"UB_R1_3","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"7 SINS","teamB":"APPA LINUX","winner":null},
-    {"matchLabel":"UB_R1_4","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"BOLO CLUB","teamB":"Native","winner":null},
-    {"matchLabel":"UB_R1_5","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"VALKYRIE","teamB":"Yokke.Syindicate","winner":null},
-    {"matchLabel":"UB_R1_6","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"TY BEKASI","teamB":"WINGSKANAN ESPORT 1","winner":null},
-    {"matchLabel":"UB_R1_7","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"666","teamB":"AANG ALPHA","winner":null},
-    {"matchLabel":"UB_R1_8","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"TABRAK AJALAH","teamB":"YOKKE LAMPUNG","winner":null}
+    {"matchLabel":"UB_R1_1","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"TABRAK AJALAH","teamB":"Anti Climax","winner":null},
+    {"matchLabel":"UB_R1_2","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"Native","teamB":"BOLO CLUB","winner":null},
+    {"matchLabel":"UB_R1_3","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"ATMO","teamB":"IOS","winner":null},
+    {"matchLabel":"UB_R1_4","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"WINGSKANAN ESPORT 1","teamB":"TY BEKASI","winner":null},
+    {"matchLabel":"UB_R1_5","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"Miskin Mekanik","teamB":"666","winner":null},
+    {"matchLabel":"UB_R1_6","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"7 SINS","teamB":"APPA LINUX","winner":null},
+    {"matchLabel":"UB_R1_7","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"VALKYRIE","teamB":"Yokke.Syindicate","winner":null},
+    {"matchLabel":"UB_R1_8","phaseName":"Upper Bracket 16 Besar (Hari 3)","bracket":"UPPER","day":3,"teamA":"AANG ALPHA","teamB":"YOKKE LAMPUNG","winner":null}
   ],
   [
     {"matchLabel":"UB_QF_1","phaseName":"Upper Bracket Perempat Final (Hari 3-4)","bracket":"UPPER","day":3,"teamA":"Pemenang UB R1 1","teamB":"Pemenang UB R1 2","winner":null},
     {"matchLabel":"UB_QF_2","phaseName":"Upper Bracket Perempat Final (Hari 3-4)","bracket":"UPPER","day":3,"teamA":"Pemenang UB R1 3","teamB":"Pemenang UB R1 4","winner":null},
     {"matchLabel":"UB_QF_3","phaseName":"Upper Bracket Perempat Final (Hari 3-4)","bracket":"UPPER","day":3,"teamA":"Pemenang UB R1 5","teamB":"Pemenang UB R1 6","winner":null},
     {"matchLabel":"UB_QF_4","phaseName":"Upper Bracket Perempat Final (Hari 3-4)","bracket":"UPPER","day":3,"teamA":"Pemenang UB R1 7","teamB":"Pemenang UB R1 8","winner":null},
-    {"matchLabel":"LB_R1_1","phaseName":"Lower Bracket Ronde 1 (Hari 3-4)","bracket":"LOWER","day":3,"teamA":"DEADLINE SLAYER","teamB":"Gugur UB R1 1","winner":null},
+    {"matchLabel":"LB_R1_1","phaseName":"Lower Bracket Ronde 1 (Hari 3-4)","bracket":"LOWER","day":3,"teamA":"Gugur UB R1 1","teamB":"My Palembang","winner":null},
     {"matchLabel":"LB_R1_2","phaseName":"Lower Bracket Ronde 1 (Hari 3-4)","bracket":"LOWER","day":3,"teamA":"Gugur UB R1 2","teamB":"MiracleXStars","winner":null},
     {"matchLabel":"LB_R1_3","phaseName":"Lower Bracket Ronde 1 (Hari 3-4)","bracket":"LOWER","day":3,"teamA":"Gugur UB R1 3","teamB":"LOLO","winner":null},
     {"matchLabel":"LB_R1_4","phaseName":"Lower Bracket Ronde 1 (Hari 3-4)","bracket":"LOWER","day":3,"teamA":"Gugur UB R1 4","teamB":"Yokke Batam Squad (YBS)","winner":null},
@@ -239,120 +239,120 @@ const tournamentProgressionVm = new Function(`
 const { pick, getMatches } = tournamentProgressionVm();
 
 // Round 0 (UB 16 Besar)
-pick(0, 0, 'Anti Climax');
-pick(0, 1, 'ATMO');
-pick(0, 2, '7 SINS');
-pick(0, 3, 'Native');
-pick(0, 4, 'VALKYRIE');
-pick(0, 5, 'WINGSKANAN ESPORT 1');
-pick(0, 6, 'AANG ALPHA');
-pick(0, 7, 'TABRAK AJALAH');
+pick(0, 0, 'Anti Climax');          // TABRAK AJALAH drops to LB R1 1
+pick(0, 1, 'Native');               // BOLO CLUB drops to LB R1 2
+pick(0, 2, 'ATMO');                 // IOS drops to LB R1 3
+pick(0, 3, 'WINGSKANAN ESPORT 1');  // TY BEKASI drops to LB R1 4
+pick(0, 4, '666');                  // Miskin Mekanik drops to LB R1 5
+pick(0, 5, '7 SINS');               // APPA LINUX drops to LB R1 6
+pick(0, 6, 'VALKYRIE');             // Yokke.Syindicate drops to LB R1 7
+pick(0, 7, 'AANG ALPHA');           // YOKKE LAMPUNG drops to LB R1 8
 
 const pm = getMatches();
 // Round 1 UB QF pairings
 assert.strictEqual(pm[1][0].teamA, 'Anti Climax');
-assert.strictEqual(pm[1][0].teamB, 'ATMO');
-assert.strictEqual(pm[1][1].teamA, '7 SINS');
-assert.strictEqual(pm[1][1].teamB, 'Native');
-assert.strictEqual(pm[1][2].teamA, 'VALKYRIE');
-assert.strictEqual(pm[1][2].teamB, 'WINGSKANAN ESPORT 1');
-assert.strictEqual(pm[1][3].teamA, 'AANG ALPHA');
-assert.strictEqual(pm[1][3].teamB, 'TABRAK AJALAH');
+assert.strictEqual(pm[1][0].teamB, 'Native');
+assert.strictEqual(pm[1][1].teamA, 'ATMO');
+assert.strictEqual(pm[1][1].teamB, 'WINGSKANAN ESPORT 1');
+assert.strictEqual(pm[1][2].teamA, '666');
+assert.strictEqual(pm[1][2].teamB, '7 SINS');
+assert.strictEqual(pm[1][3].teamA, 'VALKYRIE');
+assert.strictEqual(pm[1][3].teamB, 'AANG ALPHA');
 
-// Round 1 LB R1 losers from UB 16 Besar vs Juara 3 (Ground Truth from GSheet)
-assert.strictEqual(pm[1][4].teamA, 'DEADLINE SLAYER');
-assert.strictEqual(pm[1][4].teamB, 'Miskin Mekanik');
-assert.strictEqual(pm[1][5].teamA, 'IOS');
+// Round 1 LB R1 losers from UB 16 Besar vs Juara 3 (Ground Truth from GSheet gid=10004)
+assert.strictEqual(pm[1][4].teamA, 'TABRAK AJALAH');
+assert.strictEqual(pm[1][4].teamB, 'My Palembang');
+assert.strictEqual(pm[1][5].teamA, 'BOLO CLUB');
 assert.strictEqual(pm[1][5].teamB, 'MiracleXStars');
-assert.strictEqual(pm[1][6].teamA, 'APPA LINUX');
+assert.strictEqual(pm[1][6].teamA, 'IOS');
 assert.strictEqual(pm[1][6].teamB, 'LOLO');
-assert.strictEqual(pm[1][7].teamA, 'BOLO CLUB');
+assert.strictEqual(pm[1][7].teamA, 'TY BEKASI');
 assert.strictEqual(pm[1][7].teamB, 'Yokke Batam Squad (YBS)');
-assert.strictEqual(pm[1][8].teamA, 'Yokke.Syindicate');
+assert.strictEqual(pm[1][8].teamA, 'Miskin Mekanik');
 assert.strictEqual(pm[1][8].teamB, 'Red Razor');
-assert.strictEqual(pm[1][9].teamA, 'TY BEKASI');
+assert.strictEqual(pm[1][9].teamA, 'APPA LINUX');
 assert.strictEqual(pm[1][9].teamB, 'My Palembang');
-assert.strictEqual(pm[1][10].teamA, '666');
+assert.strictEqual(pm[1][10].teamA, 'Yokke.Syindicate');
 assert.strictEqual(pm[1][10].teamB, 'Colorbook');
 assert.strictEqual(pm[1][11].teamA, 'YOKKE LAMPUNG');
 assert.strictEqual(pm[1][11].teamB, 'Yokke Batam');
 
 // Round 1 matches
 // UB QF
-pick(1, 0, 'ATMO');                // Anti Climax drops to LB R3 1
-pick(1, 1, 'Native');              // 7 SINS drops to LB R3 2
-pick(1, 2, 'VALKYRIE');            // WINGSKANAN ESPORT 1 drops to LB R3 3
-pick(1, 3, 'AANG ALPHA');          // TABRAK AJALAH drops to LB R3 4
+pick(1, 0, 'Native');              // Anti Climax drops to LB R3 1
+pick(1, 1, 'ATMO');                // WINGSKANAN ESPORT 1 drops to LB R3 2
+pick(1, 2, '7 SINS');              // 666 drops to LB R3 3
+pick(1, 3, 'AANG ALPHA');          // VALKYRIE drops to LB R3 4
 
-// LB R1
-pick(1, 4, 'DEADLINE SLAYER');
+// LB R1 (TABRAK AJALAH wins 2-0 as in GSheet row 99)
+pick(1, 4, 'TABRAK AJALAH');
 pick(1, 5, 'MiracleXStars');
-pick(1, 6, 'APPA LINUX');
-pick(1, 7, 'BOLO CLUB');
+pick(1, 6, 'IOS');
+pick(1, 7, 'TY BEKASI');
 pick(1, 8, 'Red Razor');
-pick(1, 9, 'My Palembang');
+pick(1, 9, 'APPA LINUX');
 pick(1, 10, 'Colorbook');
 pick(1, 11, 'Yokke Batam');
 
 // Round 2 UB SF
-assert.strictEqual(pm[2][0].teamA, 'ATMO');
-assert.strictEqual(pm[2][0].teamB, 'Native');
-assert.strictEqual(pm[2][1].teamA, 'VALKYRIE');
+assert.strictEqual(pm[2][0].teamA, 'Native');
+assert.strictEqual(pm[2][0].teamB, 'ATMO');
+assert.strictEqual(pm[2][1].teamA, '7 SINS');
 assert.strictEqual(pm[2][1].teamB, 'AANG ALPHA');
 
 // Round 2 LB R2
-assert.strictEqual(pm[2][2].teamA, 'DEADLINE SLAYER');
+assert.strictEqual(pm[2][2].teamA, 'TABRAK AJALAH');
 assert.strictEqual(pm[2][2].teamB, 'MiracleXStars');
-assert.strictEqual(pm[2][3].teamA, 'APPA LINUX');
-assert.strictEqual(pm[2][3].teamB, 'BOLO CLUB');
+assert.strictEqual(pm[2][3].teamA, 'IOS');
+assert.strictEqual(pm[2][3].teamB, 'TY BEKASI');
 assert.strictEqual(pm[2][4].teamA, 'Red Razor');
-assert.strictEqual(pm[2][4].teamB, 'My Palembang');
+assert.strictEqual(pm[2][4].teamB, 'APPA LINUX');
 assert.strictEqual(pm[2][5].teamA, 'Colorbook');
 assert.strictEqual(pm[2][5].teamB, 'Yokke Batam');
 
 // Round 2 LB R3 teamB (dropped from UB QF)
 assert.strictEqual(pm[2][6].teamB, 'Anti Climax');
-assert.strictEqual(pm[2][7].teamB, '7 SINS');
-assert.strictEqual(pm[2][8].teamB, 'WINGSKANAN ESPORT 1');
-assert.strictEqual(pm[2][9].teamB, 'TABRAK AJALAH');
+assert.strictEqual(pm[2][7].teamB, 'WINGSKANAN ESPORT 1');
+assert.strictEqual(pm[2][8].teamB, '666');
+assert.strictEqual(pm[2][9].teamB, 'VALKYRIE');
 
 // Round 2 LB R2 matches
-pick(2, 2, 'DEADLINE SLAYER');     // -> LB R3 1 teamA
-pick(2, 3, 'APPA LINUX');          // -> LB R3 2 teamA
-pick(2, 4, 'Red Razor');           // -> LB R3 3 teamA
+pick(2, 2, 'TABRAK AJALAH');       // -> LB R3 1 teamA
+pick(2, 3, 'IOS');                 // -> LB R3 2 teamA
+pick(2, 4, 'APPA LINUX');          // -> LB R3 3 teamA
 pick(2, 5, 'Colorbook');           // -> LB R3 4 teamA
 
-assert.strictEqual(pm[2][6].teamA, 'DEADLINE SLAYER');
-assert.strictEqual(pm[2][7].teamA, 'APPA LINUX');
-assert.strictEqual(pm[2][8].teamA, 'Red Razor');
+assert.strictEqual(pm[2][6].teamA, 'TABRAK AJALAH');
+assert.strictEqual(pm[2][7].teamA, 'IOS');
+assert.strictEqual(pm[2][8].teamA, 'APPA LINUX');
 assert.strictEqual(pm[2][9].teamA, 'Colorbook');
 
 // Round 2 UB SF matches
 pick(2, 0, 'ATMO');                // Native drops to LB SF 1
-pick(2, 1, 'AANG ALPHA');          // VALKYRIE drops to LB SF 2
+pick(2, 1, 'AANG ALPHA');          // 7 SINS drops to LB SF 2
 
 // Round 2 LB R3 matches
 pick(2, 6, 'Anti Climax');         // -> LB QF 1 teamA
-pick(2, 7, 'APPA LINUX');          // -> LB QF 1 teamB
-pick(2, 8, 'Red Razor');           // -> LB QF 2 teamA
-pick(2, 9, 'TABRAK AJALAH');       // -> LB QF 2 teamB
+pick(2, 7, 'WINGSKANAN ESPORT 1'); // -> LB QF 1 teamB
+pick(2, 8, '666');                 // -> LB QF 2 teamA
+pick(2, 9, 'VALKYRIE');            // -> LB QF 2 teamB
 
 // Round 3 LB QF
 assert.strictEqual(pm[3][0].teamA, 'Anti Climax');
-assert.strictEqual(pm[3][0].teamB, 'APPA LINUX');
-assert.strictEqual(pm[3][1].teamA, 'Red Razor');
-assert.strictEqual(pm[3][1].teamB, 'TABRAK AJALAH');
+assert.strictEqual(pm[3][0].teamB, 'WINGSKANAN ESPORT 1');
+assert.strictEqual(pm[3][1].teamA, '666');
+assert.strictEqual(pm[3][1].teamB, 'VALKYRIE');
 
-pick(3, 0, 'APPA LINUX');          // -> LB SF 1 teamA
-pick(3, 1, 'TABRAK AJALAH');       // -> LB SF 2 teamA
+pick(3, 0, 'Anti Climax');         // -> LB SF 1 teamA
+pick(3, 1, 'VALKYRIE');            // -> LB SF 2 teamA
 
 // Round 4 (UB Final, LB SF 1, LB SF 2, LB Prelim, LB Final)
 assert.strictEqual(pm[4][0].teamA, 'ATMO');
 assert.strictEqual(pm[4][0].teamB, 'AANG ALPHA');
-assert.strictEqual(pm[4][1].teamA, 'APPA LINUX');
+assert.strictEqual(pm[4][1].teamA, 'Anti Climax');
 assert.strictEqual(pm[4][1].teamB, 'Native');
-assert.strictEqual(pm[4][2].teamA, 'TABRAK AJALAH');
-assert.strictEqual(pm[4][2].teamB, 'VALKYRIE');
+assert.strictEqual(pm[4][2].teamA, 'VALKYRIE');
+assert.strictEqual(pm[4][2].teamB, '7 SINS');
 
 // Play UB Final
 pick(4, 0, 'ATMO');                // -> Grand Final teamA, AANG ALPHA drops to LB Final teamB

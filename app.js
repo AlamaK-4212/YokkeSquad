@@ -374,14 +374,14 @@ const DEFAULT_MLBB_GROUPS = {
 const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
   [
-    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Anti Climax', teamB: 'Miskin Mekanik', winner: null },
-    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
-    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
-    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'BOLO CLUB', teamB: 'Native', winner: null },
-    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
-    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TY BEKASI', teamB: 'WINGSKANAN ESPORT 1', winner: null },
-    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '666', teamB: 'AANG ALPHA', winner: null },
-    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'YOKKE LAMPUNG', winner: null }
+    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
+    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Native', teamB: 'BOLO CLUB', winner: null },
+    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
+    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'WINGSKANAN ESPORT 1', teamB: 'TY BEKASI', winner: null },
+    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Miskin Mekanik', teamB: '666', winner: null },
+    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
+    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
+    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'AANG ALPHA', teamB: 'YOKKE LAMPUNG', winner: null }
   ],
   // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
   [
@@ -389,7 +389,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
     { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
     { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
     { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'DEADLINE SLAYER', teamB: 'Gugur UB R1 1', winner: null },
+    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 1', teamB: 'My Palembang', winner: null },
     { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'MiracleXStars', winner: null },
     { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'LOLO', winner: null },
     { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'Yokke Batam Squad (YBS)', winner: null },
@@ -430,6 +430,53 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
+const PLAYOFF_DATA_VERSION = '2026-11-07-v1-ground-truth-gid10004';
+
+/**
+ * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
+ * Memastikan slot array selalu utuh dan memetakan matchLabel ke slot kanonikal secara deterministik.
+ */
+function normalizeGroupPlayoffMatches(incoming) {
+  const template = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
+  if (!incoming) return template;
+
+  const incomingList = [];
+  if (Array.isArray(incoming)) {
+    incoming.forEach(item => {
+      if (Array.isArray(item)) {
+        item.forEach(m => { if (m && typeof m === 'object') incomingList.push(m); });
+      } else if (item && typeof item === 'object') {
+        incomingList.push(item);
+      }
+    });
+  }
+  if (incomingList.length === 0) return template;
+
+  const matchMap = new Map();
+  incomingList.forEach(m => {
+    if (m && m.matchLabel) matchMap.set(String(m.matchLabel).trim(), m);
+  });
+
+  template.forEach(round => {
+    round.forEach(defaultMatch => {
+      const found = matchMap.get(defaultMatch.matchLabel);
+      if (found) {
+        if (found.teamA !== undefined && found.teamA !== null && found.teamA !== '') defaultMatch.teamA = found.teamA;
+        if (found.teamB !== undefined && found.teamB !== null && found.teamB !== '') defaultMatch.teamB = found.teamB;
+        if (found.winner !== undefined && found.winner !== null) defaultMatch.winner = found.winner;
+        if (found.scoreA !== undefined && found.scoreA !== null && found.scoreA !== '-') defaultMatch.scoreA = found.scoreA;
+        if (found.scoreB !== undefined && found.scoreB !== null && found.scoreB !== '-') defaultMatch.scoreB = found.scoreB;
+        if (found.status !== undefined && found.status !== null) defaultMatch.status = found.status;
+        if (found.day !== undefined && found.day !== null) defaultMatch.day = found.day;
+        if (found.bracket !== undefined && found.bracket !== null) defaultMatch.bracket = found.bracket;
+        if (found.phaseName !== undefined && found.phaseName !== null) defaultMatch.phaseName = found.phaseName;
+      }
+    });
+  });
+
+  return template;
+}
+
 let savedGroupData = null;
 try {
   savedGroupData = JSON.parse(localStorage.getItem('yokke_group_data'));
@@ -442,12 +489,16 @@ let groupMatchResults = JSON.parse(localStorage.getItem('yokke_group_match_resul
 
 let savedPlayoffData = null;
 try {
-  savedPlayoffData = JSON.parse(localStorage.getItem('yokke_group_playoff_matches'));
+  const curPlayoffVer = localStorage.getItem('yokke_playoff_version');
+  if (curPlayoffVer !== PLAYOFF_DATA_VERSION) {
+    localStorage.removeItem('yokke_group_playoff_matches');
+    localStorage.setItem('yokke_playoff_version', PLAYOFF_DATA_VERSION);
+  } else {
+    savedPlayoffData = JSON.parse(localStorage.getItem('yokke_group_playoff_matches'));
+  }
 } catch (e) {}
 
-let groupPlayoffMatches = (Array.isArray(savedPlayoffData) && savedPlayoffData.length === 6 && savedPlayoffData[0] && savedPlayoffData[0].length === 8)
-  ? savedPlayoffData
-  : JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
+let groupPlayoffMatches = normalizeGroupPlayoffMatches(savedPlayoffData);
 
 // MCGG Multi-Lobby State
 let currentMCGGLobby = 'LOBBY_A';
@@ -1563,19 +1614,11 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
             setLastSyncedMatches(groupMatchResults);
           }
         }
-        if (data.config.groupPlayoffMatches !== undefined && Array.isArray(data.config.groupPlayoffMatches)) {
-          if (data.config.groupPlayoffMatches.length === 6) {
-            const rawPO = data.config.groupPlayoffMatches;
-            const roundCaps = [8, 12, 10, 2, 5, 1];
-            groupPlayoffMatches = rawPO.map((rnd, rIdx) => {
-              if (!Array.isArray(rnd)) return [];
-              return rnd.filter(Boolean).slice(0, roundCaps[rIdx] || 8);
-            });
-            localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
-          } else if (data.config.groupPlayoffMatches.length === 0) {
-            groupPlayoffMatches = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES));
-            localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
-          }
+        if (data.config.groupPlayoffMatches !== undefined) {
+          groupPlayoffMatches = normalizeGroupPlayoffMatches(data.config.groupPlayoffMatches);
+          localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
+  localStorage.setItem('yokke_playoff_version', PLAYOFF_DATA_VERSION);
+          localStorage.setItem('yokke_playoff_version', PLAYOFF_DATA_VERSION);
         }
         if (data.config.tournamentStageState && typeof data.config.tournamentStageState === 'object') {
           tournamentStageState = data.config.tournamentStageState;
@@ -2016,6 +2059,7 @@ function saveState() {
   localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
   localStorage.setItem('yokke_mlbb_format', tournamentFormat);
   localStorage.setItem('yokke_group_playoff_matches', JSON.stringify(groupPlayoffMatches));
+  localStorage.setItem('yokke_playoff_version', PLAYOFF_DATA_VERSION);
   renderParticipants();
   updateAuthUI();
   updateCounts();
