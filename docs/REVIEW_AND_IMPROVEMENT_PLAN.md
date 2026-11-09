@@ -196,6 +196,7 @@ Berikut merupakan bagan 38 pertandingan babak playoff eliminasi ganda (5 hari tu
 
 ### 🟡 P1 - Desain Tampilan via Stitch MCP & UX
 - [x] Rancang arsitektur komponen & modul layar turnamen terintegrasi Stitch MCP.
+- [x] Proteksi privasi hero signature MVP tournament leader sebelum Grand Final (disamarkan dengan tanda tanya ❓ dan ???).
 - [ ] Implementasikan prototipe layout Playoff Bracket Tree 6 ronde menggunakan Stitch MCP.
 - [ ] Implementasikan redesain Cyberpunk Admin Match Controller & Login Modal.
 - [ ] Optimalkan kartu jadwal tanding mobile-first feed dengan live stream links.

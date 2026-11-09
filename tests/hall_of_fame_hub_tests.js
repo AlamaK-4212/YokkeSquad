@@ -72,12 +72,11 @@ runTest('3.1 Spotlight Utama MVP MLBB: Gerard Dionizio "Yokke.♤SuperUsagi" (7x
   assert(htmlCode.includes('APPA LINUX'), 'Harus mencantumkan squad APPA LINUX');
   assert(htmlCode.includes('Captain') || htmlCode.includes('Roamer') || htmlCode.includes('Playmaker'), 'Harus mencantumkan role Captain / Roamer / Playmaker');
   assert(htmlCode.includes('7x MVP'), 'Harus mencantumkan total 7x MVP');
-  assert(htmlCode.includes('Badang'), 'Hero Badang harus ada (Top 1 Pick 3x MVP Yokke.♤SuperUsagi)');
-  assert(htmlCode.includes('assets/heroes/badang.png'), 'Gambar hero Badang harus terpasang');
-  assert(htmlCode.includes('Masha'), 'Hero Masha harus ada (Top 2 Pick 2x MVP Yokke.♤SuperUsagi)');
-  assert(htmlCode.includes('assets/heroes/masha.png'), 'Gambar hero Masha harus terpasang');
-  assert(htmlCode.includes('Carmilla'), 'Hero Carmilla harus ada (Top 3 Pick 1x MVP Yokke.♤SuperUsagi)');
-  assert(htmlCode.includes('assets/heroes/carmilla.png'), 'Gambar hero Carmilla harus terpasang');
+  // Aturan Privasi Sebelum Grand Final: Hero signature pemain MVP disamarkan dengan symbol tanda tanya (❓) dan (???)
+  assert(htmlCode.includes('???'), 'Hero MVP pemain terbanyak harus disamarkan dengan ??? sebelum babak final');
+  assert(htmlCode.includes('❓'), 'Hero MVP pemain terbanyak harus memiliki ikon tanda tanya ❓ sebelum babak final');
+  assert(htmlCode.includes('?x MVP'), 'Harus menyamarkan jumlah MVP per hero (?x MVP) sebelum final');
+  assert(htmlCode.includes('Dirahasiakan') || htmlCode.includes('Terkunci Sebelum Final'), 'Harus menampilkan keterangan rahasia/terkunci sebelum final');
   assert(htmlCode.includes('TOP 1 TOURNAMENT MVP'), 'Harus memuat badge TOP 1 TOURNAMENT MVP');
   assert(htmlCode.includes('Konsistensi dan ketangguhan di panggung playoff'), 'Harus memuat kutipan signature speech');
 });
