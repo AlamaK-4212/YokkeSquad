@@ -1294,6 +1294,13 @@ function getInitialData(ss) {
       }
       if (hasPlayoffRows) {
         var roundCaps = [8, 12, 10, 2, 5, 1];
+        // Auto-heal jika baris sheet memuat drawing acak silang yang salah (misal Native vs Anti Climax di UB_R1_1)
+        if (reconstructedPlayoff[0] && reconstructedPlayoff[0][0] && (
+          (reconstructedPlayoff[0][0].teamA === "Native" && reconstructedPlayoff[0][0].teamB === "Anti Climax") ||
+          (reconstructedPlayoff[0][1] && reconstructedPlayoff[0][1].teamA === "AANG ALPHA" && reconstructedPlayoff[0][1].teamB === "666")
+        )) {
+          reconstructedPlayoff[0] = JSON.parse(JSON.stringify(DEFAULT_MLBB_PLAYOFF_MATCHES[0]));
+        }
         appConfig.groupPlayoffMatches = reconstructedPlayoff.map(function(round, rIdx) {
           return round.filter(Boolean).slice(0, roundCaps[rIdx] || 8);
         });

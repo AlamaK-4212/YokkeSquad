@@ -430,7 +430,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-07-v3-lower-bracket-semifinals-exact';
+const PLAYOFF_DATA_VERSION = '2026-11-09-v4-restore-ground-truth-playoff-brackets';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
@@ -457,12 +457,23 @@ function normalizeGroupPlayoffMatches(incoming) {
     if (m && m.matchLabel) matchMap.set(String(m.matchLabel).trim(), m);
   });
 
+  // Deteksi anomali drawing acak silang yang salah (misal Native vs Anti Climax di UB_R1_1)
+  const isScrambledDraw = (
+    (matchMap.get('UB_R1_1')?.teamA === 'Native' && matchMap.get('UB_R1_1')?.teamB === 'Anti Climax') ||
+    (matchMap.get('UB_R1_2')?.teamA === 'AANG ALPHA' && matchMap.get('UB_R1_2')?.teamB === '666') ||
+    (matchMap.get('UB_R1_7')?.teamA === 'VALKYRIE' && matchMap.get('UB_R1_7')?.teamB === 'APPA LINUX')
+  );
+
   template.forEach(round => {
     round.forEach(defaultMatch => {
       const found = matchMap.get(defaultMatch.matchLabel);
       if (found) {
-        if (found.teamA !== undefined && found.teamA !== null && found.teamA !== '') defaultMatch.teamA = found.teamA;
-        if (found.teamB !== undefined && found.teamB !== null && found.teamB !== '') defaultMatch.teamB = found.teamB;
+        // Jika data incoming terdeteksi mengalami drawing scramble, pertahankan pasangan tim resmi untuk UB_R1
+        const skipTeamOverride = isScrambledDraw && defaultMatch.matchLabel && defaultMatch.matchLabel.startsWith('UB_R1_');
+        if (!skipTeamOverride) {
+          if (found.teamA !== undefined && found.teamA !== null && found.teamA !== '') defaultMatch.teamA = found.teamA;
+          if (found.teamB !== undefined && found.teamB !== null && found.teamB !== '') defaultMatch.teamB = found.teamB;
+        }
         if (found.winner !== undefined && found.winner !== null) defaultMatch.winner = found.winner;
         if (found.scoreA !== undefined && found.scoreA !== null && found.scoreA !== '-') defaultMatch.scoreA = found.scoreA;
         if (found.scoreB !== undefined && found.scoreB !== null && found.scoreB !== '-') defaultMatch.scoreB = found.scoreB;
@@ -585,7 +596,7 @@ let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') 
   mlbb: {
     stage: 'STAGE_1_GROUP', // 'STAGE_1_GROUP' | 'STAGE_2_PLAYOFF'
     isGroupLocked: false,
-    isPlayoffLocked: false,
+    isPlayoffLocked: true,
     tieBreaker: { needed: false, group: '', teamA: '', teamB: '', winner: null }
   },
   mcgg: {
@@ -4414,10 +4425,10 @@ function proceedToMLBBStage2() {
   }
 
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
-  tournamentStageState.mlbb.isPlayoffLocked = false;
+  tournamentStageState.mlbb.isPlayoffLocked = true;
   currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
   _isPlayoffBracketCollapsed = false;
-  initGroupPlayoff(true);
+  initGroupPlayoff(false);
   saveStageStateLocal();
   saveState();
   updateAuthUI();
@@ -11337,9 +11348,9 @@ function goToNextMLBBPlayoffPhase() {
   currentSelectedMLBBNode = 'PLAYOFF_OVERVIEW';
   _isPlayoffBracketCollapsed = false;
   tournamentStageState.mlbb.stage = 'STAGE_2_PLAYOFF';
-  const isLocked = !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isPlayoffLocked);
+  tournamentStageState.mlbb.isPlayoffLocked = true;
   if (typeof initGroupPlayoff === 'function') {
-    initGroupPlayoff(!isLocked);
+    initGroupPlayoff(false);
   }
   saveStageStateLocal();
   saveState();
