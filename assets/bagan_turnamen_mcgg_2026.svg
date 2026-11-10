@@ -1,0 +1,614 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2040 1180" width="2040" height="1180">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGlow" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#121e3d"/>
+      <stop offset="50%" stop-color="#0a1022"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </radialGradient>
+
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="50%" stop-color="#7928ca"/>
+      <stop offset="100%" stop-color="#ff0080"/>
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="wildcardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1c1917" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Marker Arrow Heads -->
+    <marker id="arrowCyan" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#00d2ff" />
+    </marker>
+    <marker id="arrowGold" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#fbbf24" />
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#34d399" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 900; letter-spacing: 1px; }
+    .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 600; }
+    .header-pill { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 13px; }
+    .stage-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 16px; }
+    .stage-badge { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 11px; }
+    .card-title { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 14px; }
+    .item-text { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; font-weight: 500; }
+    .bold-item { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; font-weight: 700; }
+    .flow-line { fill: none; stroke-linecap: round; stroke-dasharray: 6 3; }
+  </style>
+
+  <!-- Background Base -->
+  <rect width="100%" height="100%" fill="url(#bgGlow)" />
+  
+  <!-- Subtle Grid Pattern -->
+  <g opacity="0.05">
+    <path d="M 0,0 L 2040,0 M 0,60 L 2040,60 M 0,120 L 2040,120 M 0,180 L 2040,180 M 0,240 L 2040,240 M 0,300 L 2040,300 M 0,360 L 2040,360 M 0,420 L 2040,420 M 0,480 L 2040,480 M 0,540 L 2040,540 M 0,600 L 2040,600 M 0,660 L 2040,660 M 0,720 L 2040,720 M 0,780 L 2040,780 M 0,840 L 2040,840 M 0,900 L 2040,900 M 0,960 L 2040,960 M 0,1020 L 2040,1020 M 0,1080 L 2040,1080" stroke="#00d2ff" stroke-width="1"/>
+    <path d="M 0,0 L 0,1180 M 80,0 L 80,1180 M 160,0 L 160,1180 M 240,0 L 240,1180 M 320,0 L 320,1180 M 400,0 L 400,1180 M 480,0 L 480,1180 M 560,0 L 560,1180 M 640,0 L 640,1180 M 720,0 L 720,1180 M 800,0 L 800,1180 M 880,0 L 880,1180 M 960,0 L 960,1180 M 1040,0 L 1040,1180 M 1120,0 L 1120,1180 M 1200,0 L 1200,1180 M 1280,0 L 1280,1180 M 1360,0 L 1360,1180 M 1440,0 L 1440,1180 M 1520,0 L 1520,1180 M 1600,0 L 1600,1180 M 1680,0 L 1680,1180 M 1760,0 L 1760,1180 M 1840,0 L 1840,1180 M 1920,0 L 1920,1180 M 2000,0 L 2000,1180" stroke="#00d2ff" stroke-width="1"/>
+  </g>
+
+  <!-- ==================== HEADER BAR ==================== -->
+  <g transform="translate(60, 30)">
+    <!-- Header Logo & Branding Badge -->
+    <rect x="0" y="0" width="160" height="42" rx="8" fill="#0f172a" stroke="#00d2ff" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="80" y="27" fill="#00d2ff" font-size="16" font-weight="900" text-anchor="middle" font-family="'Segoe UI', sans-serif">YOKKE SQUAD</text>
+
+    <!-- Main Title -->
+    <text x="180" y="30" fill="#ffffff" class="title" font-size="28">
+      BAGAN RESMI TURNAMEN MAGIC CHESS: GO GO (MCGG) 2026
+    </text>
+    <text x="180" y="52" fill="#94a3b8" class="subtitle" font-size="14">
+      Skema Alur Babak Kualifikasi ➔ Wildcard ➔ 32 Besar ➔ Semifinal 16 Besar ➔ Super Grand Final
+    </text>
+
+    <!-- Right Header Badges -->
+    <g transform="translate(1420, 5)">
+      <rect x="0" y="0" width="140" height="34" rx="17" fill="rgba(6, 214, 160, 0.15)" stroke="#06d6a0" stroke-width="1.2"/>
+      <text x="70" y="22" fill="#34d399" class="header-pill" text-anchor="middle">🗓️ 4 Hari Turnamen</text>
+
+      <rect x="155" y="0" width="170" height="34" rx="17" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="1.2"/>
+      <text x="240" y="22" fill="#fbbf24" class="header-pill" text-anchor="middle">♟️ 37 Peserta ➔ 1 Juara</text>
+
+      <rect x="340" y="0" width="160" height="34" rx="17" fill="rgba(0, 210, 255, 0.15)" stroke="#00d2ff" stroke-width="1.2"/>
+      <text x="420" y="22" fill="#38bdf8" class="header-pill" text-anchor="middle">📍 Kantor Pusat Yokke</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN HEADERS ==================== -->
+  <!-- Col 1 Header -->
+  <g transform="translate(50, 110)">
+    <rect x="0" y="0" width="370" height="42" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#0284c7" stroke-width="1.5" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="8" height="42" rx="4" fill="#00d2ff" />
+    <text x="22" y="26" fill="#38bdf8" class="stage-title">FASE 1: KUALIFIKASI (DAY 1)</text>
+    <rect x="270" y="10" width="85" height="22" rx="11" fill="rgba(56, 189, 248, 0.2)"/>
+    <text x="312" y="25" fill="#38bdf8" class="stage-badge" text-anchor="middle">5 Grup • 37 P</text>
+  </g>
+
+  <!-- Col 2 Header -->
+  <g transform="translate(480, 110)">
+    <rect x="0" y="0" width="410" height="42" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#d97706" stroke-width="1.5" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="8" height="42" rx="4" fill="#fbbf24" />
+    <text x="22" y="26" fill="#fbbf24" class="stage-title">FASE 2: WILDCARD &amp; 32 BESAR (DAY 2)</text>
+    <rect x="330" y="10" width="65" height="22" rx="11" fill="rgba(245, 158, 11, 0.2)"/>
+    <text x="362" y="25" fill="#fbbf24" class="stage-badge" text-anchor="middle">32 Pemain</text>
+  </g>
+
+  <!-- Col 3 Header -->
+  <g transform="translate(950, 110)">
+    <rect x="0" y="0" width="400" height="42" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#9333ea" stroke-width="1.5" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="8" height="42" rx="4" fill="#c084fc" />
+    <text x="22" y="26" fill="#c084fc" class="stage-title">FASE 3: SEMIFINAL (DAY 3)</text>
+    <rect x="290" y="10" width="95" height="22" rx="11" fill="rgba(192, 132, 252, 0.2)"/>
+    <text x="337" y="25" fill="#c084fc" class="stage-badge" text-anchor="middle">16 Besar • 2 Grup</text>
+  </g>
+
+  <!-- Col 4 Header -->
+  <g transform="translate(1410, 110)">
+    <rect x="0" y="0" width="580" height="42" rx="10" fill="rgba(15, 23, 42, 0.85)" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="8" height="42" rx="4" fill="#f87171" />
+    <text x="22" y="26" fill="#f87171" class="stage-title">FASE 4: SUPER GRAND FINAL (DAY 4 - OFFLINE)</text>
+    <rect x="475" y="10" width="90" height="22" rx="11" fill="rgba(239, 68, 68, 0.2)"/>
+    <text x="520" y="25" fill="#f87171" class="stage-badge" text-anchor="middle">Top 8 Finalis</text>
+  </g>
+
+  <!-- ==================== COLUMN 1: KUALIFIKASI 5 GRUP ==================== -->
+  <!-- Grup A -->
+  <g transform="translate(50, 170)">
+    <rect width="370" height="175" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" filter="url(#shadow)"/>
+    <!-- Card Header -->
+    <path d="M 0,10 Q 0,0 10,0 L 360,0 Q 370,0 370,10 L 370,32 L 0,32 Z" fill="rgba(56, 189, 248, 0.15)"/>
+    <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI A (8 Peserta)</text>
+    <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
+    
+    <!-- Players -->
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. hutanlindung <tspan fill="#34d399">(+7) 🥇</tspan></text>
+    <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. jonomon19 <tspan fill="#38bdf8">(+3)</tspan></text>
+
+    <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. skuidwert <tspan fill="#38bdf8">(+4)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. Alis Setan17 <tspan fill="#94a3b8">(0)</tspan></text>
+
+    <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. Wienie.10 <tspan fill="#38bdf8">(+4)</tspan></text>
+    <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. BuzzFeed <tspan fill="#f87171">(-2)</tspan></text>
+
+    <!-- Divider -->
+    <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
+    <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7 &amp; 8):</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. 4212 (-4)</text>
+    <text x="195" y="145" fill="#fde047" class="item-text">8. Necrophos (-12)</text>
+    <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
+    <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai 3 Ronde (Non-Meta, All Pool, Draft Pick)</text>
+  </g>
+
+  <!-- Grup B -->
+  <g transform="translate(50, 365)">
+    <rect width="370" height="175" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" filter="url(#shadow)"/>
+    <path d="M 0,10 Q 0,0 10,0 L 360,0 Q 370,0 370,10 L 370,32 L 0,32 Z" fill="rgba(56, 189, 248, 0.15)"/>
+    <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI B (8 Peserta)</text>
+    <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
+    
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. Yona <tspan fill="#34d399">(+11) 🥇</tspan></text>
+    <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. Cookie S <tspan fill="#38bdf8">(+1)</tspan></text>
+
+    <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. BagusSt <tspan fill="#38bdf8">(+7)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. Hipp <tspan fill="#38bdf8">(+1)</tspan></text>
+
+    <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. En D M0 <tspan fill="#38bdf8">(+5)</tspan></text>
+    <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. dlya las <tspan fill="#f87171">(-6)</tspan></text>
+
+    <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
+    <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7 &amp; 8):</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. mangonet (-7)</text>
+    <text x="195" y="145" fill="#fde047" class="item-text">8. Bernadetha (-12)</text>
+    <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
+    <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai 3 Ronde (Non-Meta, All Pool, Draft Pick)</text>
+  </g>
+
+  <!-- Grup C -->
+  <g transform="translate(50, 560)">
+    <rect width="370" height="175" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" filter="url(#shadow)"/>
+    <path d="M 0,10 Q 0,0 10,0 L 360,0 Q 370,0 370,10 L 370,32 L 0,32 Z" fill="rgba(56, 189, 248, 0.15)"/>
+    <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI C (7 Peserta)</text>
+    <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
+    
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. H O K K I E <tspan fill="#34d399">(+6) 🥇</tspan></text>
+    <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. Xylo^ <tspan fill="#94a3b8">(0)</tspan></text>
+
+    <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. Mugiwara <tspan fill="#38bdf8">(+6)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. sadistic_killer <tspan fill="#f87171">(-1)</tspan></text>
+
+    <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. Tokyo <tspan fill="#38bdf8">(+4)</tspan></text>
+    <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. Ganool <tspan fill="#f87171">(-3)</tspan></text>
+
+    <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
+    <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7):</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. dhimssky (-4)</text>
+    <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
+    <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai 2 Ronde Resmi Kualifikasi</text>
+  </g>
+
+  <!-- Grup D -->
+  <g transform="translate(50, 755)">
+    <rect width="370" height="175" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" filter="url(#shadow)"/>
+    <path d="M 0,10 Q 0,0 10,0 L 360,0 Q 370,0 370,10 L 370,32 L 0,32 Z" fill="rgba(56, 189, 248, 0.15)"/>
+    <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI D (7 Peserta)</text>
+    <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
+    
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. David Iskandar <tspan fill="#34d399">(+7) 🥇</tspan></text>
+    <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. Queen• <tspan fill="#38bdf8">(+1)</tspan></text>
+
+    <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. Odet tiktok <tspan fill="#38bdf8">(+6)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. whyJude <tspan fill="#f87171">(-1)</tspan></text>
+
+    <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. Eldrid <tspan fill="#38bdf8">(+5)</tspan></text>
+    <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. Laga Al Ahli <tspan fill="#f87171">(-2)</tspan></text>
+
+    <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
+    <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7):</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. Oweysis (-3)</text>
+    <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
+    <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai 2 Ronde Resmi Kualifikasi</text>
+  </g>
+
+  <!-- Grup E -->
+  <g transform="translate(50, 950)">
+    <rect width="370" height="175" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" filter="url(#shadow)"/>
+    <path d="M 0,10 Q 0,0 10,0 L 360,0 Q 370,0 370,10 L 370,32 L 0,32 Z" fill="rgba(56, 189, 248, 0.15)"/>
+    <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI E (7 Peserta)</text>
+    <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
+    
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. Kuproy <tspan fill="#34d399">(+4) 🥇</tspan></text>
+    <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. mfsamudra <tspan fill="#38bdf8">(+1)</tspan></text>
+
+    <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. KoncoKentel <tspan fill="#38bdf8">(+3)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. Eko Marwanto P. <tspan fill="#f87171">(-1)</tspan></text>
+
+    <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. EhhChaky <tspan fill="#38bdf8">(+2)</tspan></text>
+    <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. Yokke.DHANNKEBOT <tspan fill="#f87171">(-2)</tspan></text>
+
+    <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
+    <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7):</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. Alvin Elshadai P. (-3)</text>
+    <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
+    <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai Ronde Kualifikasi</text>
+  </g>
+
+  <!-- ==================== COLUMN 2A: BABAK WILDCARD ==================== -->
+  <g transform="translate(480, 170)">
+    <rect width="410" height="235" rx="12" fill="url(#wildcardGrad)" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+    <path d="M 0,12 Q 0,0 12,0 L 398,0 Q 410,0 410,12 L 410,38 L 0,38 Z" fill="rgba(245, 158, 11, 0.25)"/>
+    <text x="16" y="25" fill="#fbbf24" font-size="15" font-weight="800" font-family="'Segoe UI', sans-serif">⚡ LOBI BABAK WILDCARD (7 Peserta)</text>
+    <rect x="305" y="8" width="92" height="22" rx="11" fill="rgba(245, 158, 11, 0.3)"/>
+    <text x="351" y="23" fill="#fef08a" font-size="11" font-weight="800" text-anchor="middle">1 Match BO1</text>
+
+    <text x="16" y="58" fill="#fef3c7" font-size="12" font-weight="700">Sistem Pertandingan:</text>
+    <text x="16" y="78" fill="#cbd5e1" font-size="11">1 Match Tunggal (In-Game Draft Pick &amp; Ban)</text>
+
+    <!-- Participant Badges -->
+    <g transform="translate(16, 95)">
+      <!-- Row 1 -->
+      <rect x="0" y="0" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="10" y="18" fill="#fef08a" font-size="11" font-weight="600">1. 4212 <tspan fill="#94a3b8">(Grup A)</tspan></text>
+
+      <rect x="195" y="0" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="205" y="18" fill="#fef08a" font-size="11" font-weight="600">2. Necrophos <tspan fill="#94a3b8">(Grup A)</tspan></text>
+
+      <!-- Row 2 -->
+      <rect x="0" y="32" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="10" y="50" fill="#fef08a" font-size="11" font-weight="600">3. mangonet <tspan fill="#94a3b8">(Grup B)</tspan></text>
+
+      <rect x="195" y="32" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="205" y="50" fill="#fef08a" font-size="11" font-weight="600">4. Bernadetha <tspan fill="#94a3b8">(Grup B)</tspan></text>
+
+      <!-- Row 3 -->
+      <rect x="0" y="64" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="10" y="82" fill="#fef08a" font-size="11" font-weight="600">5. dhimssky <tspan fill="#94a3b8">(Grup C)</tspan></text>
+
+      <rect x="195" y="64" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="205" y="82" fill="#fef08a" font-size="11" font-weight="600">6. Oweysis <tspan fill="#94a3b8">(Grup D)</tspan></text>
+      
+      <!-- Row 4 -->
+      <rect x="97" y="96" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
+      <text x="107" y="114" fill="#fef08a" font-size="11" font-weight="600">7. Alvin Elshadai <tspan fill="#94a3b8">(Grup E)</tspan></text>
+    </g>
+
+    <rect x="0" y="245" width="410" height="30" rx="0 0 12 12" fill="rgba(245, 158, 11, 0.2)"/>
+    <text x="205" y="265" fill="#fde047" font-size="12" font-weight="800" text-anchor="middle">👑 TOP 2 LOLOS KE BABAK 32 BESAR (SLOT 31 &amp; 32)</text>
+  </g>
+
+  <!-- ==================== COLUMN 2B: BABAK 32 BESAR ==================== -->
+  <g transform="translate(480, 475)">
+    <!-- Main Box Container -->
+    <rect width="410" height="650" rx="12" fill="url(#cardGrad)" stroke="#00d2ff" stroke-width="2" filter="url(#shadow)"/>
+    <path d="M 0,12 Q 0,0 12,0 L 398,0 Q 410,0 410,12 L 410,40 L 0,40 Z" fill="rgba(0, 210, 255, 0.2)"/>
+    <text x="16" y="26" fill="#38bdf8" font-size="16" font-weight="800" font-family="'Segoe UI', sans-serif">🛡️ BABAK 32 BESAR (4 GRUP)</text>
+    <rect x="260" y="9" width="138" height="22" rx="11" fill="rgba(6, 214, 160, 0.25)"/>
+    <text x="329" y="24" fill="#34d399" font-size="11" font-weight="800" text-anchor="middle">30 Lolos + 2 Wildcard</text>
+
+    <!-- Description -->
+    <text x="16" y="62" fill="#94a3b8" font-size="11.5">
+      🎲 Diundi acak merata ke dalam 4 grup (Grup A, B, C, D @ 8 Pemain).
+    </text>
+    <text x="16" y="78" fill="#cbd5e1" font-size="11">
+      Format: 3 Match (Non-Meta • All Pool Commander • Draft Pick)
+    </text>
+
+    <!-- Sub Group 32-A -->
+    <g transform="translate(16, 95)">
+      <rect width="378" height="118" rx="8" fill="rgba(15, 23, 42, 0.7)" stroke="#1e293b" stroke-width="1.2"/>
+      <rect x="0" y="0" width="378" height="24" rx="8 8 0 0" fill="rgba(56, 189, 248, 0.15)"/>
+      <text x="12" y="16" fill="#38bdf8" font-size="12" font-weight="800">♟️ 32 BESAR - GRUP A (8 Pemain)</text>
+      <text x="365" y="16" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 4 Lolos</text>
+      <text x="12" y="42" fill="#94a3b8" font-size="11">Slot 1 s/d 8 (Hasil Undian Acak Resmi Panitia)</text>
+      <text x="12" y="62" fill="#e2e8f0" font-size="11">• 8 Pemain bertanding akumulasi 3 Match</text>
+      <rect x="10" y="78" width="358" height="26" rx="6" fill="rgba(6, 214, 160, 0.12)" stroke="#059669"/>
+      <text x="189" y="95" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">➔ 4 Pemain Terbaik Lolos ke Semifinal A</text>
+    </g>
+
+    <!-- Sub Group 32-B -->
+    <g transform="translate(16, 228)">
+      <rect width="378" height="118" rx="8" fill="rgba(15, 23, 42, 0.7)" stroke="#1e293b" stroke-width="1.2"/>
+      <rect x="0" y="0" width="378" height="24" rx="8 8 0 0" fill="rgba(168, 85, 247, 0.15)"/>
+      <text x="12" y="16" fill="#c084fc" font-size="12" font-weight="800">♟️ 32 BESAR - GRUP B (8 Pemain)</text>
+      <text x="365" y="16" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 4 Lolos</text>
+      <text x="12" y="42" fill="#94a3b8" font-size="11">Slot 1 s/d 8 (Hasil Undian Acak Resmi Panitia)</text>
+      <text x="12" y="62" fill="#e2e8f0" font-size="11">• 8 Pemain bertanding akumulasi 3 Match</text>
+      <rect x="10" y="78" width="358" height="26" rx="6" fill="rgba(6, 214, 160, 0.12)" stroke="#059669"/>
+      <text x="189" y="95" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">➔ 4 Pemain Terbaik Lolos ke Semifinal A</text>
+    </g>
+
+    <!-- Sub Group 32-C -->
+    <g transform="translate(16, 361)">
+      <rect width="378" height="118" rx="8" fill="rgba(15, 23, 42, 0.7)" stroke="#1e293b" stroke-width="1.2"/>
+      <rect x="0" y="0" width="378" height="24" rx="8 8 0 0" fill="rgba(56, 189, 248, 0.15)"/>
+      <text x="12" y="16" fill="#38bdf8" font-size="12" font-weight="800">♟️ 32 BESAR - GRUP C (8 Pemain)</text>
+      <text x="365" y="16" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 4 Lolos</text>
+      <text x="12" y="42" fill="#94a3b8" font-size="11">Slot 1 s/d 8 (Hasil Undian Acak Resmi Panitia)</text>
+      <text x="12" y="62" fill="#e2e8f0" font-size="11">• 8 Pemain bertanding akumulasi 3 Match</text>
+      <rect x="10" y="78" width="358" height="26" rx="6" fill="rgba(6, 214, 160, 0.12)" stroke="#059669"/>
+      <text x="189" y="95" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">➔ 4 Pemain Terbaik Lolos ke Semifinal B</text>
+    </g>
+
+    <!-- Sub Group 32-D -->
+    <g transform="translate(16, 494)">
+      <rect width="378" height="118" rx="8" fill="rgba(15, 23, 42, 0.7)" stroke="#1e293b" stroke-width="1.2"/>
+      <rect x="0" y="0" width="378" height="24" rx="8 8 0 0" fill="rgba(168, 85, 247, 0.15)"/>
+      <text x="12" y="16" fill="#c084fc" font-size="12" font-weight="800">♟️ 32 BESAR - GRUP D (8 Pemain)</text>
+      <text x="365" y="16" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 4 Lolos</text>
+      <text x="12" y="42" fill="#94a3b8" font-size="11">Slot 1 s/d 8 (Hasil Undian Acak Resmi Panitia)</text>
+      <text x="12" y="62" fill="#e2e8f0" font-size="11">• 8 Pemain bertanding akumulasi 3 Match</text>
+      <rect x="10" y="78" width="358" height="26" rx="6" fill="rgba(6, 214, 160, 0.12)" stroke="#059669"/>
+      <text x="189" y="95" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">➔ 4 Pemain Terbaik Lolos ke Semifinal B</text>
+    </g>
+
+    <!-- Bottom Ribbon -->
+    <rect x="0" y="622" width="410" height="28" rx="0 0 12 12" fill="rgba(0, 210, 255, 0.15)"/>
+    <text x="205" y="641" fill="#38bdf8" font-size="11.5" font-weight="800" text-anchor="middle">🔥 TOTAL 16 PEMAIN LOLOS KE BABAK SEMIFINAL (DAY 3)</text>
+  </g>
+
+  <!-- ==================== COLUMN 3: SEMIFINAL (16 BESAR) ==================== -->
+  <g transform="translate(950, 170)">
+    <!-- Semifinal A Card -->
+    <g transform="translate(0, 0)">
+      <rect width="400" height="290" rx="12" fill="url(#cardGrad)" stroke="#c084fc" stroke-width="1.8" filter="url(#shadow)"/>
+      <path d="M 0,12 Q 0,0 12,0 L 388,0 Q 400,0 400,12 L 400,38 L 0,38 Z" fill="rgba(192, 132, 252, 0.2)"/>
+      <text x="16" y="25" fill="#c084fc" font-size="15" font-weight="800">🔥 SEMIFINAL A (8 Pemain)</text>
+      <rect x="290" y="8" width="95" height="22" rx="11" fill="rgba(6, 214, 160, 0.2)"/>
+      <text x="337" y="23" fill="#34d399" font-size="11" font-weight="800" text-anchor="middle">Top 4 Lolos GF</text>
+
+      <text x="16" y="62" fill="#cbd5e1" font-size="12" font-weight="700">Komposisi Peserta:</text>
+      <text x="16" y="84" fill="#e2e8f0" font-size="11">• 4 Pemain Terbaik dari 32 Besar Grup A</text>
+      <text x="16" y="104" fill="#e2e8f0" font-size="11">• 4 Pemain Terbaik dari 32 Besar Grup B</text>
+
+      <line x1="16" y1="120" x2="384" y2="120" stroke="#334155"/>
+
+      <text x="16" y="142" fill="#cbd5e1" font-size="12" font-weight="700">Format Pertandingan (3 Match):</text>
+      <text x="16" y="164" fill="#94a3b8" font-size="11">Match 1: Non-Meta Pool</text>
+      <text x="16" y="184" fill="#94a3b8" font-size="11">Match 2: All Commander Pool</text>
+      <text x="16" y="204" fill="#94a3b8" font-size="11">Match 3: In-Game Draft Pick &amp; Ban</text>
+
+      <rect x="16" y="225" width="368" height="38" rx="8" fill="rgba(245, 158, 11, 0.15)" stroke="#d97706"/>
+      <text x="200" y="249" fill="#fbbf24" font-size="12" font-weight="800" text-anchor="middle">🏆 TOP 4 LOLOS KE SUPER GRAND FINAL</text>
+    </g>
+
+    <!-- Semifinal B Card -->
+    <g transform="translate(0, 330)">
+      <rect width="400" height="290" rx="12" fill="url(#cardGrad)" stroke="#c084fc" stroke-width="1.8" filter="url(#shadow)"/>
+      <path d="M 0,12 Q 0,0 12,0 L 388,0 Q 400,0 400,12 L 400,38 L 0,38 Z" fill="rgba(192, 132, 252, 0.2)"/>
+      <text x="16" y="25" fill="#c084fc" font-size="15" font-weight="800">🔥 SEMIFINAL B (8 Pemain)</text>
+      <rect x="290" y="8" width="95" height="22" rx="11" fill="rgba(6, 214, 160, 0.2)"/>
+      <text x="337" y="23" fill="#34d399" font-size="11" font-weight="800" text-anchor="middle">Top 4 Lolos GF</text>
+
+      <text x="16" y="62" fill="#cbd5e1" font-size="12" font-weight="700">Komposisi Peserta:</text>
+      <text x="16" y="84" fill="#e2e8f0" font-size="11">• 4 Pemain Terbaik dari 32 Besar Grup C</text>
+      <text x="16" y="104" fill="#e2e8f0" font-size="11">• 4 Pemain Terbaik dari 32 Besar Grup D</text>
+
+      <line x1="16" y1="120" x2="384" y2="120" stroke="#334155"/>
+
+      <text x="16" y="142" fill="#cbd5e1" font-size="12" font-weight="700">Format Pertandingan (3 Match):</text>
+      <text x="16" y="164" fill="#94a3b8" font-size="11">Match 1: Non-Meta Pool</text>
+      <text x="16" y="184" fill="#94a3b8" font-size="11">Match 2: All Commander Pool</text>
+      <text x="16" y="204" fill="#94a3b8" font-size="11">Match 3: In-Game Draft Pick &amp; Ban</text>
+
+      <rect x="16" y="225" width="368" height="38" rx="8" fill="rgba(245, 158, 11, 0.15)" stroke="#d97706"/>
+      <text x="200" y="249" fill="#fbbf24" font-size="12" font-weight="800" text-anchor="middle">🏆 TOP 4 LOLOS KE SUPER GRAND FINAL</text>
+    </g>
+
+    <!-- Regulation Notice Card -->
+    <g transform="translate(0, 650)">
+      <rect width="400" height="270" rx="12" fill="rgba(15, 23, 42, 0.85)" stroke="#334155" stroke-width="1.2"/>
+      <text x="16" y="30" fill="#38bdf8" font-size="13" font-weight="800">📋 SKEMA POIN PERTANDINGAN MCGG</text>
+      
+      <g transform="translate(16, 45)">
+        <rect x="0" y="0" width="75" height="40" rx="6" fill="#065f46"/>
+        <text x="37" y="18" fill="#a7f3d0" font-size="10" font-weight="700" text-anchor="middle">Juara 1</text>
+        <text x="37" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">+4 Poin</text>
+
+        <rect x="90" y="0" width="75" height="40" rx="6" fill="#047857"/>
+        <text x="127" y="18" fill="#a7f3d0" font-size="10" font-weight="700" text-anchor="middle">Juara 2</text>
+        <text x="127" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">+3 Poin</text>
+
+        <rect x="180" y="0" width="75" height="40" rx="6" fill="#0284c7"/>
+        <text x="217" y="18" fill="#bae6fd" font-size="10" font-weight="700" text-anchor="middle">Juara 3</text>
+        <text x="217" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">+2 Poin</text>
+
+        <rect x="270" y="0" width="75" height="40" rx="6" fill="#0369a1"/>
+        <text x="307" y="18" fill="#bae6fd" font-size="10" font-weight="700" text-anchor="middle">Juara 4</text>
+        <text x="307" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">+1 Poin</text>
+      </g>
+
+      <g transform="translate(16, 95)">
+        <rect x="0" y="0" width="75" height="40" rx="6" fill="#991b1b"/>
+        <text x="37" y="18" fill="#fecaca" font-size="10" font-weight="700" text-anchor="middle">Juara 5</text>
+        <text x="37" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">-1 Poin</text>
+
+        <rect x="90" y="0" width="75" height="40" rx="6" fill="#b91c1c"/>
+        <text x="127" y="18" fill="#fecaca" font-size="10" font-weight="700" text-anchor="middle">Juara 6</text>
+        <text x="127" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">-2 Poin</text>
+
+        <rect x="180" y="0" width="75" height="40" rx="6" fill="#dc2626"/>
+        <text x="217" y="18" fill="#fecaca" font-size="10" font-weight="700" text-anchor="middle">Juara 7</text>
+        <text x="217" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">-3 Poin</text>
+
+        <rect x="270" y="0" width="75" height="40" rx="6" fill="#7f1d1d"/>
+        <text x="307" y="18" fill="#fecaca" font-size="10" font-weight="700" text-anchor="middle">Juara 8</text>
+        <text x="307" y="33" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">-4 Poin</text>
+      </g>
+
+      <line x1="16" y1="150" x2="384" y2="150" stroke="#334155"/>
+      <text x="16" y="172" fill="#fbbf24" font-size="11" font-weight="700">⚖️ Regulasi Khusus Tie-Breaker (Jika Poin Sama):</text>
+      <text x="16" y="192" fill="#cbd5e1" font-size="10.5">1. Jumlah Perolehan Juara 1 (MVP) Terbanyak</text>
+      <text x="16" y="210" fill="#cbd5e1" font-size="10.5">2. Jumlah Perolehan Masuk Top 4 Terbanyak</text>
+      <text x="16" y="228" fill="#cbd5e1" font-size="10.5">3. Peringkat Tertinggi pada Ronde Terakhir (Match 3)</text>
+      <text x="16" y="246" fill="#cbd5e1" font-size="10.5">4. Pinalti Pelanggaran Terkecil (Sanksi Commander: -2 Poin)</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 4: SUPER GRAND FINAL ==================== -->
+  <g transform="translate(1410, 170)">
+    <!-- Grand Final Arena Box -->
+    <rect width="580" height="750" rx="16" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="2.5" filter="url(#shadow)"/>
+    <path d="M 0,16 Q 0,0 16,0 L 564,0 Q 580,0 580,16 L 580,50 L 0,50 Z" fill="rgba(245, 158, 11, 0.25)"/>
+    
+    <text x="24" y="34" fill="#fbbf24" font-size="20" font-weight="900" font-family="'Segoe UI', sans-serif">
+      🏆 SUPER GRAND FINAL (TOP 8 FINALIS)
+    </text>
+    <rect x="430" y="12" width="135" height="26" rx="13" fill="rgba(239, 68, 68, 0.3)" stroke="#ef4444"/>
+    <text x="497" y="29" fill="#fca5a5" font-size="12" font-weight="800" text-anchor="middle">OFFLINE VENUE</text>
+
+    <!-- Venue Detail Banner -->
+    <g transform="translate(24, 65)">
+      <rect width="532" height="48" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="#334155"/>
+      <text x="16" y="20" fill="#38bdf8" font-size="12" font-weight="700">📍 Lokasi Pertandingan Offline:</text>
+      <text x="16" y="38" fill="#ffffff" font-size="13" font-weight="800">Gedung Kantor Pusat PT Finnet Indonesia (Yokke)</text>
+      <text x="515" y="30" fill="#34d399" font-size="12" font-weight="800" text-anchor="end">BO5 MATCH ⚔️</text>
+    </g>
+
+    <!-- 8 Finalist Slots -->
+    <g transform="translate(24, 128)">
+      <text x="0" y="16" fill="#e2e8f0" font-size="13" font-weight="800">8 Finalis Terbaik (4 Semifinal A + 4 Semifinal B):</text>
+      
+      <!-- Slot Grid -->
+      <g transform="translate(0, 28)">
+        <rect x="0" y="0" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="12" y="22" fill="#38bdf8" font-size="12" font-weight="700">1. Finalis Semifinal A #1</text>
+        
+        <rect x="277" y="0" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="289" y="22" fill="#c084fc" font-size="12" font-weight="700">5. Finalis Semifinal B #1</text>
+
+        <rect x="0" y="42" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="12" y="64" fill="#38bdf8" font-size="12" font-weight="700">2. Finalis Semifinal A #2</text>
+        
+        <rect x="277" y="42" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="289" y="64" fill="#c084fc" font-size="12" font-weight="700">6. Finalis Semifinal B #2</text>
+
+        <rect x="0" y="84" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="12" y="106" fill="#38bdf8" font-size="12" font-weight="700">3. Finalis Semifinal A #3</text>
+        
+        <rect x="277" y="84" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="289" y="106" fill="#c084fc" font-size="12" font-weight="700">7. Finalis Semifinal B #3</text>
+
+        <rect x="0" y="126" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="12" y="148" fill="#38bdf8" font-size="12" font-weight="700">4. Finalis Semifinal A #4</text>
+        
+        <rect x="277" y="126" width="255" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="289" y="148" fill="#c084fc" font-size="12" font-weight="700">8. Finalis Semifinal B #4</text>
+      </g>
+    </g>
+
+    <!-- Podium Juara Showcase -->
+    <g transform="translate(24, 345)">
+      <rect width="532" height="260" rx="12" fill="rgba(10, 15, 30, 0.9)" stroke="#fbbf24" stroke-width="1.5" filter="url(#neonGlow)"/>
+      <text x="266" y="32" fill="#fbbf24" font-size="16" font-weight="900" text-anchor="middle">👑 PODIUM JUARA MCGG YOKKE 2026</text>
+
+      <!-- Juara 1 Podium (Center) -->
+      <g transform="translate(191, 55)">
+        <rect width="150" height="185" rx="10" fill="url(#goldGrad)" filter="url(#shadow)"/>
+        <text x="75" y="32" fill="#78350f" font-size="28" text-anchor="middle">🏆</text>
+        <text x="75" y="58" fill="#ffffff" font-size="14" font-weight="900" text-anchor="middle">CHAMPION</text>
+        <text x="75" y="76" fill="#fef3c7" font-size="12" font-weight="800" text-anchor="middle">JUARA 1</text>
+        <rect x="15" y="90" width="120" height="35" rx="6" fill="rgba(0,0,0,0.3)"/>
+        <text x="75" y="112" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">TBD</text>
+        <text x="75" y="145" fill="#78350f" font-size="10.5" font-weight="800" text-anchor="middle">Throne of Glory</text>
+      </g>
+
+      <!-- Juara 2 Podium (Left) -->
+      <g transform="translate(20, 95)">
+        <rect width="150" height="145" rx="10" fill="linear-gradient(135deg, #94a3b8, #64748b)" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="75" y="30" fill="#334155" font-size="24" text-anchor="middle">🥈</text>
+        <text x="75" y="52" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">RUNNER-UP</text>
+        <text x="75" y="68" fill="#f1f5f9" font-size="11" font-weight="700" text-anchor="middle">JUARA 2</text>
+        <rect x="15" y="80" width="120" height="32" rx="6" fill="rgba(0,0,0,0.3)"/>
+        <text x="75" y="101" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">TBD</text>
+      </g>
+
+      <!-- Juara 3 Podium (Right) -->
+      <g transform="translate(362, 110)">
+        <rect width="150" height="130" rx="10" fill="linear-gradient(135deg, #d97706, #b45309)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="75" y="28" fill="#451a03" font-size="22" text-anchor="middle">🥉</text>
+        <text x="75" y="48" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">3RD PLACE</text>
+        <text x="75" y="64" fill="#fef3c7" font-size="11" font-weight="700" text-anchor="middle">JUARA 3</text>
+        <rect x="15" y="74" width="120" height="32" rx="6" fill="rgba(0,0,0,0.3)"/>
+        <text x="75" y="95" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">TBD</text>
+      </g>
+    </g>
+
+    <!-- Bottom Notice -->
+    <g transform="translate(24, 620)">
+      <rect width="532" height="100" rx="10" fill="rgba(15, 23, 42, 0.7)" stroke="#334155"/>
+      <text x="16" y="26" fill="#f87171" font-size="12" font-weight="800">⚔️ Sistem Match Super Grand Final (BO5):</text>
+      <text x="16" y="48" fill="#cbd5e1" font-size="11">Ronde 1: Non-Meta Pool Commander • Ronde 2: All Commander Pool</text>
+      <text x="16" y="66" fill="#cbd5e1" font-size="11">Ronde 3: In-Game Draft Pick &amp; Ban • Ronde 4 &amp; 5: Free Pick / Ban Strategy</text>
+      <text x="16" y="86" fill="#34d399" font-size="11" font-weight="700">Penentuan Juara mutlak berdasarkan akumulasi poin tertinggi 5 ronde.</text>
+    </g>
+  </g>
+
+  <!-- ==================== FLOW CONNECTORS & ARROWS ==================== -->
+  <!-- Col 1 to Col 2 Wildcard Arrow (Peringkat 7 & 8) -->
+  <path d="M 420,257 C 450,257 450,230 480,230" stroke="#fbbf24" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGold)"/>
+  <path d="M 420,452 C 460,452 460,260 480,260" stroke="#fbbf24" stroke-width="2" class="flow-line" marker-end="url(#arrowGold)"/>
+  <path d="M 420,647 C 465,647 465,280 480,280" stroke="#fbbf24" stroke-width="2" class="flow-line" marker-end="url(#arrowGold)"/>
+
+  <!-- Col 1 to Col 2 32 Besar Arrow (Top 6 Tiap Grup) -->
+  <path d="M 420,200 C 450,200 450,530 480,530" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 420,395 C 460,395 460,630 480,630" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 420,590 C 455,590 455,750 480,750" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 420,785 C 455,785 455,870 480,870" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 420,980 C 460,980 460,980 480,980" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+
+  <!-- Wildcard Winner to 32 Besar Arrow -->
+  <path d="M 685,405 L 685,475" stroke="#fbbf24" stroke-width="3" class="flow-line" marker-end="url(#arrowGold)"/>
+
+  <!-- Col 2 (32 Besar) to Col 3 (Semifinal) Arrows -->
+  <path d="M 890,625 C 920,625 920,280 950,280" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 890,758 C 920,758 920,340 950,340" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 890,891 C 920,891 920,450 950,450" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+  <path d="M 890,1024 C 925,1024 925,520 950,520" stroke="#34d399" stroke-width="2.5" class="flow-line" marker-end="url(#arrowGreen)"/>
+
+  <!-- Col 3 (Semifinal) to Col 4 (Grand Final) Arrows -->
+  <path d="M 1350,315 C 1380,315 1380,360 1410,360" stroke="#fbbf24" stroke-width="3" class="flow-line" marker-end="url(#arrowGold)"/>
+  <path d="M 1350,475 C 1380,475 1380,430 1410,430" stroke="#fbbf24" stroke-width="3" class="flow-line" marker-end="url(#arrowGold)"/>
+
+  <!-- Footer Watermark -->
+  <g transform="translate(60, 1150)">
+    <text x="0" y="0" fill="#475569" font-size="12" font-family="'Segoe UI', sans-serif">
+      Official Tournament Document • Yokke Squad E-Sports 2026 Committee • Magic Chess Go Go (MCGG)
+    </text>
+    <text x="1920" y="0" fill="#475569" font-size="12" font-family="'Segoe UI', sans-serif" text-anchor="end">
+      Dokumen Diperbarui: 11 November 2026 • Status: Siap Masuk Babak Wildcard &amp; 32 Besar (Day 2)
+    </text>
+  </g>
+</svg>
