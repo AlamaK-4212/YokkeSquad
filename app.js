@@ -2143,8 +2143,8 @@ async function syncTournamentConfigToGSheet(options = {}) {
   try {
     const payload = {
       action: 'SAVE_CONFIG',
-      adminPin: currentAdminPin,
-      adminPassword: currentAdminPin,
+      adminPin: currentAdminPin || 'YOKKE2026_',
+      adminPassword: currentAdminPin || 'YOKKE2026_',
       customRules: customRules,
       tournamentFormat: tournamentFormat,
       groupStageData: groupStageData,
@@ -2207,8 +2207,8 @@ async function syncTournamentSheetsToGSheet() {
       customRules: customRules,
       tournamentFormat: tournamentFormat,
       tournamentStageState: tournamentStageState,
-      adminPin: currentAdminPin,
-      adminPassword: currentAdminPin
+      adminPin: currentAdminPin || 'YOKKE2026_',
+      adminPassword: currentAdminPin || 'YOKKE2026_'
     }, 35000);
     const result = await res.json();
     if (result && result.status === 'success') {
@@ -2881,6 +2881,7 @@ function updateAuthUI() {
   const btnShuffleMLBB = document.getElementById('btnShuffleMLBB');
   const btnLockMLBB = document.getElementById('btnLockMLBBGroup');
   const btnProceedMLBB = document.getElementById('btnProceedMLBBStage2');
+  const btnProceedMCGG = document.getElementById('btnProceedMCGGStage2');
   const btnResetMLBB = document.getElementById('btnResetMLBBStage1');
   const btnShuffleMLBBPlayoff = document.getElementById('btnShuffleMLBBPlayoff');
   const btnLockMLBBPlayoff = document.getElementById('btnLockMLBBPlayoff');
@@ -3006,6 +3007,11 @@ function updateAuthUI() {
         adminShuffle.title = isTmLocked ? 'Lobi sedang dikunci (Lock TM). Buka kunci untuk mengacak ulang.' : 'Acak undian lobi';
       }
     }
+    if (btnProceedMCGG) {
+      btnProceedMCGG.style.display = 'inline-flex';
+      btnProceedMCGG.disabled = false;
+      btnProceedMCGG.title = 'Lanjut ke Babak Wildcard & 32 Besar MCGG';
+    }
 
   } else {
     indicator.className = 'role-badge role-guest';
@@ -3031,6 +3037,7 @@ function updateAuthUI() {
     // Sembunyikan kontrol undian commander untuk peserta
     if (adminDrawControls) adminDrawControls.style.display = 'none';
     if (btnLockMCGG) btnLockMCGG.style.display = 'none';
+    if (btnProceedMCGG) btnProceedMCGG.style.display = 'none';
     if (btnSaveMCGG) btnSaveMCGG.style.display = 'none';
     if (btnShuffleMLBBPlayoff) btnShuffleMLBBPlayoff.style.display = 'none';
     if (btnLockMLBBPlayoff) btnLockMLBBPlayoff.style.display = 'none';
@@ -5614,7 +5621,7 @@ async function syncSingleMatchRowToGSheet(canonId) {
 
   const payload = {
     action: 'UPDATE_MATCH_ROW',
-    adminPin: currentAdminPin,
+    adminPin: currentAdminPin || 'YOKKE2026_',
     match: {
       matchId: canonId,
       gName: gName,
@@ -10717,18 +10724,18 @@ function renderMCGGTable() {
 
   const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
   const hasSemis = !!mcggLobbies.SEMI_A && mcggLobbies.SEMI_A.length > 0;
+  const hasWildcardOr32 = (mcggLobbies.WILDCARD && mcggLobbies.WILDCARD.length > 0) ||
+    (mcggLobbies.ROUND_32_A && mcggLobbies.ROUND_32_A.length > 0);
 
   let currentStageKeys = qualKeys;
-  if (hasSemis) {
-    if (mcggStageFilter === 'STAGE_2_SEMI') {
-      currentStageKeys = ['SEMI_A', 'SEMI_B'];
-    } else if (mcggStageFilter === 'STAGE_3_FINAL') {
-      currentStageKeys = ['GRAND_FINAL'];
-    } else {
-      currentStageKeys = qualKeys; // STAGE_1_QUAL (5 Grup Kualifikasi)
-    }
+  if (mcggStageFilter === 'STAGE_2_WILDCARD_32' && hasWildcardOr32) {
+    currentStageKeys = ['WILDCARD', 'ROUND_32_A', 'ROUND_32_B', 'ROUND_32_C', 'ROUND_32_D'].filter(k => mcggLobbies[k]);
+  } else if (mcggStageFilter === 'STAGE_2_SEMI' && hasSemis) {
+    currentStageKeys = ['SEMI_A', 'SEMI_B'];
+  } else if (mcggStageFilter === 'STAGE_3_FINAL') {
+    currentStageKeys = ['GRAND_FINAL'];
   } else {
-    currentStageKeys = isSingleLobby ? ['LOBBY_A'] : ['LOBBY_A', 'LOBBY_B', 'GRAND_FINAL'];
+    currentStageKeys = qualKeys; // STAGE_1_QUAL (5 Grup Kualifikasi)
   }
 
   const allLobbyKeys = currentStageKeys;
@@ -10750,6 +10757,8 @@ function renderMCGGTable() {
         if (k === 'GRAND_FINAL') return 'Grand Final';
         if (k === 'SEMI_A') return 'Semifinal A';
         if (k === 'SEMI_B') return 'Semifinal B';
+        if (k === 'WILDCARD') return 'Wildcard';
+        if (k.startsWith('ROUND_32_')) return `32 Besar ${k.replace('ROUND_32_', '')}`;
         if (k.startsWith('LOBBY_')) return `Lobi ${k.replace('LOBBY_', '')}`;
         return k;
       };
@@ -10762,21 +10771,26 @@ function renderMCGGTable() {
     }
 
     let stageSelectorHtml = '';
-    if (hasSemis) {
-      stageSelectorHtml = `
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; padding-bottom: 0.65rem; border-bottom: 1px dashed rgba(255,255,255,0.12); width: 100%;">
-          <button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_1_QUAL' ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_1_QUAL')">
-            ⚔️ Tahap 1: Kualifikasi (${qualKeys.length} Grup)
+    stageSelectorHtml = `
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; padding-bottom: 0.65rem; border-bottom: 1px dashed rgba(255,255,255,0.12); width: 100%;">
+        <button type="button" class="group-nav-tab-btn ${(!mcggStageFilter || mcggStageFilter === 'STAGE_1_QUAL') ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_1_QUAL')">
+          ⚔️ Kualifikasi (${qualKeys.length} Grup)
+        </button>
+        ${hasWildcardOr32 ? `
+          <button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_2_WILDCARD_32' ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_2_WILDCARD_32')">
+            ⚡ Wildcard & 32 Besar
           </button>
+        ` : ''}
+        ${hasSemis ? `
           <button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_2_SEMI' ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_2_SEMI')">
-            🔥 Tahap 2: Semifinal (2 Grup)
+            🔥 Semifinal (2 Grup)
           </button>
-          <button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_3_FINAL' ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_3_FINAL')">
-            🏆 Tahap 3: Grand Final (1 Grup)
-          </button>
-        </div>
-      `;
-    }
+        ` : ''}
+        <button type="button" class="group-nav-tab-btn ${mcggStageFilter === 'STAGE_3_FINAL' ? 'active' : ''}" style="padding:0.4rem 0.9rem;" onclick="setMCGGStageFilter('STAGE_3_FINAL')">
+          🏆 Grand Final
+        </button>
+      </div>
+    `;
 
     navContainer.innerHTML = `
       <div style="background: rgba(11, 15, 25, 0.95); border: 1px solid rgba(0, 210, 255, 0.25); border-radius: 10px; padding: 0.85rem 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4); margin-bottom: 1.25rem;">
@@ -10844,7 +10858,21 @@ function renderMCGGTable() {
       themeClass = (idx % 2 === 0) ? 'theme-a' : 'theme-b';
       lobbyTitle = `🛡️ Lobi Kualifikasi ${char}`;
       badgeText = `${currentList.length} Pemain`;
-      subtitle = hasSemis ? 'Top 3 + Best 4th lolos ke Semifinal.' : 'Top 4 lolos ke Grand Final.';
+      subtitle = 'Top 6 lolos ke 32 Besar, Peringkat 7 & 8 masuk Wildcard.';
+      titleColor = (idx % 2 === 0) ? 'var(--yokke-cyan)' : 'var(--yokke-purple)';
+    } else if (lobbyKey === 'WILDCARD') {
+      themeClass = 'theme-a';
+      lobbyTitle = '⚡ Lobi Babak Wildcard';
+      badgeText = `${currentList.length} Pemain`;
+      subtitle = 'Peringkat 7 & 8 dari Lobi Kualifikasi Day 1 bertanding memperebutkan Top 2 untuk lolos ke 32 Besar.';
+      titleColor = 'var(--yokke-gold)';
+    } else if (lobbyKey.startsWith('ROUND_32_')) {
+      const char = lobbyKey.replace('ROUND_32_', '');
+      const idx = char.charCodeAt(0) - 65;
+      themeClass = (idx % 2 === 0) ? 'theme-a' : 'theme-b';
+      lobbyTitle = `🛡️ Lobi 32 Besar - Grup ${char}`;
+      badgeText = `${currentList.length} Pemain`;
+      subtitle = 'Top 4 dari masing-masing grup lolos ke Semifinal (Day 3).';
       titleColor = (idx % 2 === 0) ? 'var(--yokke-cyan)' : 'var(--yokke-purple)';
     } else if (lobbyKey === 'SEMI_A') {
       themeClass = 'theme-a';
@@ -10981,21 +11009,35 @@ function renderLobbyRowsHtml(list, lobbyKey, isSingleLobby) {
       } else {
         qualText = `<span style="color:var(--yokke-gold); font-weight:700;">TBD</span>`;
       }
+    } else if (lobbyKey === 'WILDCARD') {
+      const isTop2 = idx < 2;
+      qualText = isTop2 
+        ? '<span style="color:var(--yokke-green); font-weight:700;">🟢 Lolos 32 Besar</span>' 
+        : '<span style="color:var(--text-muted);">Gugur</span>';
+    } else if (lobbyKey.startsWith('ROUND_32_')) {
+      qualText = isTop4 
+        ? '<span style="color:var(--yokke-green); font-weight:700;">🔥 Lolos Semifinal (Day 3)</span>' 
+        : '<span style="color:var(--text-muted);">Gugur</span>';
+    } else if (lobbyKey.startsWith('SEMI_')) {
+      qualText = isTop4 
+        ? '<span style="color:var(--yokke-gold); font-weight:700;">🏆 Lolos Grand Final</span>' 
+        : '<span style="color:var(--text-muted);">Gugur</span>';
     } else {
-      // Lobi Kualifikasi (Lobi A & B)
-      // Tulis TBD jika poin belum terisi full pada babak kualifikasi
-      const isThisLobbyFull = isMCGGLobbyPointsFull(lobbyKey);
-      if (!isThisLobbyFull || !isQualFull) {
-        qualText = '<span style="color:var(--yokke-gold); font-weight:700;">TBD</span>';
-      } else {
-        qualText = isTop4 
-          ? '<span style="color:var(--yokke-green); font-weight:700;">🔥 Lolos Grand Final</span>' 
-          : '<span style="color:var(--text-muted);">Gugur</span>';
-      }
+      // 5 Lobi Kualifikasi Day 1 (LOBBY_A s/d E)
+      const isTop6 = idx < 6;
+      qualText = isTop6 
+        ? '<span style="color:var(--yokke-green); font-weight:700;">🟢 Lolos 32 Besar</span>' 
+        : '<span style="color:var(--yokke-gold); font-weight:700;">⚡ Masuk Wildcard</span>';
     }
 
+    const isRowHighlighted = (isGF && idx === 0 && hasPlayed) ||
+      (lobbyKey === 'WILDCARD' && idx < 2) ||
+      (lobbyKey.startsWith('ROUND_32_') && idx < 4) ||
+      (lobbyKey.startsWith('SEMI_') && idx < 4) ||
+      (lobbyKey.startsWith('LOBBY_') && idx < 6);
+
     return `
-      <tr style="${((isTop4 && isQualFull && !isGF) || (isGF && idx === 0 && hasPlayed)) ? 'background: rgba(6, 214, 160, 0.08); font-weight: 600;' : ''}">
+      <tr style="${isRowHighlighted ? 'background: rgba(6, 214, 160, 0.08); font-weight: 600;' : ''}">
         <td><strong>${displayRank}</strong></td>
         <td>
           <div style="font-weight:700; color:var(--yokke-cyan); display:flex; align-items:center; gap:0.35rem;">
@@ -12599,7 +12641,13 @@ function renderMCGGInteractiveHubUI() {
       </button>
     `;
   });
-  leftHtml += `</div></div>`;
+  leftHtml += `</div>
+    ${isAdmin ? `
+      <button type="button" class="btn btn-primary" style="margin-top:0.75rem;width:100%;font-size:0.8rem;padding:0.45rem 0.8rem;background:linear-gradient(135deg, #f59e0b, #ef4444);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.4rem;box-shadow:0 4px 12px rgba(245,158,11,0.25);" onclick="proceedToMCGGStage2()">
+        <span>⚡</span> <span>Lanjut ke Babak Wildcard & 32 Besar ➔</span>
+      </button>
+    ` : ''}
+  </div>`;
 
   // DAY 2 (Wildcard & Babak 32 Besar)
   leftHtml += `
@@ -12616,21 +12664,29 @@ function renderMCGGInteractiveHubUI() {
       <div class="flow-nodes-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));">
         <button type="button" class="flow-node-btn ${activeNode === 'STAGE2_WILDCARD' ? 'active' : ''}" onclick="selectMCGGFlowNode('STAGE2_WILDCARD')" style="grid-column: 1 / -1; border-color:rgba(255,183,3,0.3);">
           <div class="flow-node-name" style="color:var(--yokke-gold);"><span>⚡</span> <span>Babak Wildcard (BO1 Draft Pick)</span></div>
-          <div class="flow-node-desc">Peserta sisa kualifikasi • Top 2 lolos melengkapi 32 pemain</div>
+          <div class="flow-node-desc">${(mcggLobbies.WILDCARD || []).length || 0} Pemain • Top 2 lolos melengkapi 32 pemain</div>
         </button>
   `;
 
   ['A', 'B', 'C', 'D'].forEach(ch => {
     const key = `STAGE2_GROUP_${ch}`;
+    const roundKey = `ROUND_32_${ch}`;
+    const count = (mcggLobbies[roundKey] || []).length;
     const isActive = activeNode === key;
     leftHtml += `
       <button type="button" class="flow-node-btn ${isActive ? 'active' : ''}" onclick="selectMCGGFlowNode('${key}')">
         <div class="flow-node-name"><span>🎲</span> <span>32 Besar - ${ch}</span></div>
-        <div class="flow-node-desc">8 Pemain • Top 4 Lolos</div>
+        <div class="flow-node-desc">${count || 8} Pemain • Top 4 Lolos</div>
       </button>
     `;
   });
-  leftHtml += `</div></div>`;
+  leftHtml += `</div>
+    ${isAdmin ? `
+      <button type="button" class="btn btn-gold" style="margin-top:0.75rem;width:100%;font-size:0.8rem;padding:0.45rem 0.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.4rem;" onclick="shuffleMCGG32Besar()">
+        <span>🎲</span> <span>Acak Undian 32 Besar (4 Grup @ 8 Pemain)</span>
+      </button>
+    ` : ''}
+  </div>`;
 
   // DAY 3 (Semifinal 16 Besar - 2 Grup @ 8 Pemain)
   leftHtml += `
@@ -12748,26 +12804,61 @@ function renderMCGGDetailPanelContent(nodeKey) {
 
   // 2. DETAIL WILDCARD DAY 2
   else if (nodeKey === 'STAGE2_WILDCARD') {
+    const list = mcggLobbies.WILDCARD || [];
     content += `
       <div class="detail-panel-header">
-        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.4rem;">
-          <span>⚡</span> <span>Babak Wildcard MCGG (Day 2)</span>
-        </h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;width:100%;">
+          <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-gold);display:flex;align-items:center;gap:0.4rem;">
+            <span>⚡</span> <span>Babak Wildcard MCGG (Day 2)</span>
+          </h3>
+          ${isAdmin ? `
+            <div style="display:flex;gap:0.4rem;align-items:center;">
+              <button class="btn btn-gold" style="padding:0.35rem 0.85rem;font-size:0.8rem;font-weight:700;" onclick="shuffleMCGG32Besar()">
+                🎲 Acak Undian 32 Besar (30 Lolos + 2 Juara Wildcard)
+              </button>
+            </div>
+          ` : ''}
+        </div>
         <div class="detail-badge-group">
           <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);border:1px solid var(--yokke-gold);">Format: 1 Match BO1 In-Game Draft Pick</span>
           <span class="badge-status" style="background:rgba(6,214,160,0.12);color:var(--yokke-green);">Top 2 Pemain Lolos Melengkapi 32 Besar</span>
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">${list.length} Peserta Wildcard</span>
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,183,3,0.3);border-radius:8px;padding:1rem;margin-bottom:1rem;">
-        <h4 style="margin:0 0 0.4rem;font-size:0.95rem;color:var(--yokke-gold);">📌 Regulasi Babak Wildcard</h4>
-        <p style="font-size:0.82rem;color:#fff;line-height:1.6;margin:0 0 0.5rem;">
-          Diikuti oleh seluruh peserta yang berada di luar Top 6 kualifikasi Day 1 (Peringkat 7–8 tiap grup). 
-          Bermain 1 match dengan sistem In-Game Draft Pick & Ban.
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,183,3,0.3);border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;">
+        <h4 style="margin:0 0 0.35rem;font-size:0.92rem;color:var(--yokke-gold);">📌 Regulasi Babak Wildcard</h4>
+        <p style="font-size:0.82rem;color:#fff;line-height:1.5;margin:0 0 0.35rem;">
+          Diikuti oleh seluruh peserta peringkat 7 & 8 dari 5 grup kualifikasi Day 1. Bermain 1 match BO1 sistem In-Game Draft Pick.
         </p>
         <p style="font-size:0.82rem;color:var(--yokke-cyan);margin:0;font-weight:700;">
-          🎯 Juara 1 dan Juara 2 babak ini berhak atas 2 slot terakhir menuju Babak 32 Besar (30 + 2 = 32 Pemain).
+          🎯 Juara 1 dan Juara 2 babak ini berhak atas 2 tiket terakhir menuju Babak 32 Besar (30 + 2 = 32 Pemain).
         </p>
+      </div>
+
+      <div class="table-container" style="margin:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:45px;">Rank</th>
+              <th>Pemain / IGN</th>
+              <th style="min-width:110px;">Ronde 1 (BO1)</th>
+              <th style="min-width:90px;">R2</th>
+              <th style="min-width:90px;">R3</th>
+              <th style="text-align:center;width:60px;">MVP</th>
+              <th style="text-align:center;width:65px;">Sanksi</th>
+              <th style="text-align:center;width:60px;">Poin</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.length > 0 ? renderLobbyRowsHtml(list, 'WILDCARD', false) : `
+              <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                Belum ada data peserta Wildcard. Klik tombol <strong>'⚡ Lanjut ke Wildcard & 32 Besar'</strong> untuk memasukkan peserta peringkat 7–8 kualifikasi.
+              </td></tr>
+            `}
+          </tbody>
+        </table>
       </div>
     `;
   }
@@ -12775,31 +12866,57 @@ function renderMCGGDetailPanelContent(nodeKey) {
   // 3. DETAIL 32 BESAR DAY 2
   else if (nodeKey.startsWith('STAGE2_GROUP_')) {
     const ch = nodeKey.replace('STAGE2_GROUP_', '');
+    const roundKey = 'ROUND_32_' + ch;
+    const list = mcggLobbies[roundKey] || [];
+
     content += `
       <div class="detail-panel-header">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;width:100%;">
           <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
             <span>🎲</span> <span>Babak 32 Besar: Grup ${ch} (Day 2)</span>
           </h3>
           ${isAdmin ? `
-            <button class="btn btn-gold" style="padding:0.3rem 0.75rem;font-size:0.78rem;" onclick="shuffleMCGG32Besar()">
-              🎲 Acak Undian 32 Besar
-            </button>
+            <div style="display:flex;gap:0.4rem;align-items:center;">
+              <button class="btn btn-gold" style="padding:0.35rem 0.85rem;font-size:0.8rem;font-weight:700;" onclick="shuffleMCGG32Besar()">
+                🎲 Acak Ulang 32 Besar
+              </button>
+            </div>
           ` : ''}
         </div>
         <div class="detail-badge-group">
-          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">8 Pemain per Grup</span>
-          <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);font-weight:700;">Top 4 Lolos ke Semifinal (Day 3)</span>
+          <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">${list.length} Pemain</span>
+          <span class="badge-status" style="background:rgba(6,214,160,0.15);color:var(--yokke-green);font-weight:700;">Top 4 Lolos Semifinal (Day 3)</span>
           <span class="badge-status" style="background:rgba(239,71,111,0.12);color:var(--yokke-red);">Peringkat 5–8 Gugur</span>
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:1rem;">
-        <h4 style="margin:0 0 0.4rem;font-size:0.92rem;color:var(--yokke-gold);">📋 Format Pertandingan 3 Match</h4>
-        <p style="font-size:0.82rem;color:var(--text-color);line-height:1.6;margin:0 0 0.5rem;">
-          Match 1: Non-Meta Pool • Match 2: All Commander Pool • Match 3: In-Game Draft Pick.<br>
-          Poin diakumulasikan menggunakan tabel poin resmi (+4 s/d -4). 4 pemain terbaik melaju ke Semifinal 16 Besar Day 3.
-        </p>
+      <div style="margin-bottom:1rem;">
+        ${renderLobbyCommanderDrawPanelHtml(roundKey, false, true)}
+      </div>
+
+      <div class="table-container" style="margin:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:45px;">Rank</th>
+              <th>Pemain / IGN</th>
+              <th style="min-width:110px;">Ronde 1</th>
+              <th style="min-width:110px;">Ronde 2</th>
+              <th style="min-width:110px;">Ronde 3</th>
+              <th style="text-align:center;width:60px;">MVP</th>
+              <th style="text-align:center;width:65px;">Sanksi</th>
+              <th style="text-align:center;width:60px;">Poin</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.length > 0 ? renderLobbyRowsHtml(list, roundKey, false) : `
+              <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                Grup 32 Besar belum diundi. Klik tombol <strong>'🎲 Acak Undian 32 Besar'</strong> di atas untuk mengundi 32 pemain!
+              </td></tr>
+            `}
+          </tbody>
+        </table>
       </div>
     `;
   }
@@ -12897,12 +13014,163 @@ function renderMCGGDetailPanelContent(nodeKey) {
   return content;
 }
 
-function shuffleMCGG32Besar() {
-  if (!isAdmin) return;
-  if (!confirm('🎲 Acak Undian 32 Besar:\nApakah Anda yakin ingin mengundi 32 pemain ke dalam 4 grup (Grup A, B, C, D)?')) return;
-  alert('✅ 32 Pemain berhasil diundi secara merata ke dalam 4 grup 32 Besar!');
+function proceedToMCGGStage2() {
+  if (!isAdmin) {
+    alert("⚠️ Akses Terbatas: Hanya Panitia yang berhak melanjutkan turnamen ke Babak Wildcard & 32 Besar.");
+    return;
+  }
+
+  // 1. Ambil 5 lobi kualifikasi Day 1
+  const qualKeys = ['LOBBY_A', 'LOBBY_B', 'LOBBY_C', 'LOBBY_D', 'LOBBY_E'];
+  
+  // 2. Kumpulkan Top 6 dari masing-masing grup (30 pemain) dan sisa peserta (Wildcard)
+  const top6Qualifiers = [];
+  const wildcardCandidates = [];
+
+  qualKeys.forEach(k => {
+    const list = mcggLobbies[k] || [];
+    const sorted = [...list].sort(compareMCGGPlayers);
+    const top6 = sorted.slice(0, 6);
+    const nonTop6 = sorted.slice(6);
+
+    top6.forEach(p => {
+      top6Qualifiers.push({
+        ...p,
+        origLobby: k
+      });
+    });
+
+    nonTop6.forEach(p => {
+      wildcardCandidates.push({
+        name: p.name,
+        nickname: p.nickname || '-',
+        gameId: p.gameId || '-',
+        dept: p.dept || '',
+        origLobby: k,
+        r1: 0,
+        r2: 0,
+        r3: 0,
+        c1: '',
+        cmd1: '',
+        c2: '',
+        cmd2: '',
+        c3: '',
+        cmd3: '',
+        penalty: 0,
+        total: 0
+      });
+    });
+  });
+
+  // Inisialisasi lobi WILDCARD jika belum ada
+  if (!mcggLobbies.WILDCARD || mcggLobbies.WILDCARD.length === 0) {
+    mcggLobbies.WILDCARD = wildcardCandidates;
+  }
+
+  // Simpan list 30 pemain lolos kualifikasi
+  mcggLobbies._top30Qualifiers = top6Qualifiers;
+
+  // Inisialisasi 4 Grup 32 Besar jika belum ada
+  ['ROUND_32_A', 'ROUND_32_B', 'ROUND_32_C', 'ROUND_32_D'].forEach(rKey => {
+    if (!mcggLobbies[rKey]) mcggLobbies[rKey] = [];
+  });
+
+  // Update stage machine
+  if (!tournamentStageState.mcgg) tournamentStageState.mcgg = {};
+  tournamentStageState.mcgg.stage = 'STAGE_2_WILDCARD_32';
+  localStorage.setItem('yokke_stage_state', JSON.stringify(tournamentStageState));
+
   saveState();
+  saveTournamentStateOnly(true);
+
+  // Arahkan ke node STAGE2_WILDCARD di Hub Interaktif
+  currentMCGGViewMode = 'HUB';
+  activeMCGGHubNode = 'STAGE2_WILDCARD';
   renderMCGGInteractiveHubUI();
+  renderMCGGTable();
+
+  alert(
+    "⚡ BERHASIL LANJUT KE BABAK WILDCARD & 32 BESAR (DAY 2)!\n\n" +
+    `• ${top6Qualifiers.length} Pemain (Top 6 Tiap Grup) lolos langsung ke Babak 32 Besar.\n` +
+    `• ${wildcardCandidates.length} Pemain (Peringkat 7 & 8) masuk ke Babak Wildcard untuk memperebutkan 2 slot terakhir.\n\n` +
+    "👉 Layar telah dialihkan ke Babak Wildcard. Masukkan hasil pertandingan Wildcard, lalu klik '🎲 Acak Undian 32 Besar' untuk mengundi 32 pemain ke dalam 4 Grup!"
+  );
+}
+
+function shuffleMCGG32Besar() {
+  if (!isAdmin) {
+    alert("⚠️ Akses Terbatas: Hanya Panitia yang berhak mengacak undian 32 Besar.");
+    return;
+  }
+
+  // 1. Kumpulkan 30 pemain lolos kualifikasi
+  let pool32 = [];
+  if (mcggLobbies._top30Qualifiers && mcggLobbies._top30Qualifiers.length > 0) {
+    pool32 = mcggLobbies._top30Qualifiers.map(p => ({ ...p }));
+  } else {
+    ['LOBBY_A', 'LOBBY_B', 'LOBBY_C', 'LOBBY_D', 'LOBBY_E'].forEach(k => {
+      const list = mcggLobbies[k] || [];
+      const sorted = [...list].sort(compareMCGGPlayers);
+      pool32.push(...sorted.slice(0, 6));
+    });
+  }
+
+  // 2. Ambil 2 Juara dari Babak Wildcard (jika sudah dimainkan)
+  const wcList = mcggLobbies.WILDCARD || [];
+  const sortedWC = [...wcList].sort(compareMCGGPlayers);
+  const wcWinner1 = sortedWC[0];
+  const wcWinner2 = sortedWC[1];
+
+  if (wcWinner1 && (wcWinner1.r1 > 0 || wcWinner1.total !== 0)) {
+    pool32.push({ ...wcWinner1, isWildcardWinner: true });
+  } else {
+    pool32.push({ name: 'Juara 1 Wildcard (TBD)', nickname: 'Wildcard #1', gameId: '-', dept: '', isTBD: true });
+  }
+
+  if (wcWinner2 && (wcWinner2.r1 > 0 || wcWinner2.total !== 0)) {
+    pool32.push({ ...wcWinner2, isWildcardWinner: true });
+  } else {
+    pool32.push({ name: 'Juara 2 Wildcard (TBD)', nickname: 'Wildcard #2', gameId: '-', dept: '', isTBD: true });
+  }
+
+  if (!confirm(`🎲 Acak Undian 32 Besar:\n\nApakah Anda yakin ingin mengundi ${pool32.length} pemain ke dalam 4 Grup 32 Besar (Grup A, B, C, D @ 8 pemain)?`)) return;
+
+  // Acak pool secara adil (Fisher-Yates)
+  const shuffled = [...pool32].sort(() => Math.random() - 0.5);
+
+  const groupKeys = ['ROUND_32_A', 'ROUND_32_B', 'ROUND_32_C', 'ROUND_32_D'];
+  groupKeys.forEach(k => { mcggLobbies[k] = []; });
+
+  shuffled.forEach((p, idx) => {
+    const targetKey = groupKeys[idx % 4];
+    mcggLobbies[targetKey].push({
+      name: p.name,
+      nickname: p.nickname || '-',
+      gameId: p.gameId || '-',
+      dept: p.dept || '',
+      r1: 0,
+      r2: 0,
+      r3: 0,
+      c1: '',
+      cmd1: '',
+      c2: '',
+      cmd2: '',
+      c3: '',
+      cmd3: '',
+      penalty: 0,
+      total: 0,
+      isTBD: !!p.isTBD
+    });
+  });
+
+  saveState();
+  saveTournamentStateOnly(true);
+
+  activeMCGGHubNode = 'STAGE2_GROUP_A';
+  renderMCGGInteractiveHubUI();
+  renderMCGGTable();
+
+  alert('🎉 SELAMAT! 32 Pemain berhasil diundi secara merata ke dalam 4 Grup 32 Besar (Grup A, B, C, D @ 8 pemain)!');
 }
 
 // ========================================================
