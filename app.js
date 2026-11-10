@@ -528,54 +528,54 @@ let groupPlayoffMatches = normalizeGroupPlayoffMatches(savedPlayoffData);
 
 // MCGG Multi-Lobby State
 let currentMCGGLobby = 'LOBBY_A';
-// 5 Lobi Kualifikasi Resmi MCGG Turnamen Yokke Squad 2026 (Sesuai Hasil Acak Ground Truth GSheet)
+// 5 Lobi Kualifikasi Resmi MCGG Turnamen Yokke Squad 2026 (Sesuai Hasil Pertandingan Resmi Match 1-3)
 const DEFAULT_MCGG_LOBBIES = {
   LOBBY_A: [
-    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'diggie', cmd1: 'Diggie [Eggie]', c2: 'moskov', cmd2: 'Moskov', c3: '', penalty: 0, total: 0 },
-    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'gusion', cmd2: 'Gusion [Gujun]', c3: '', penalty: 0, total: 0 },
-    { name: 'Yudhistira Pratama Ramadhan', nickname: 'BuzzFeed', gameId: '3266192 (4113)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'mavis', cmd1: 'Mavis [Alice]', c2: 'benny', cmd2: 'Benny [Popol]', c3: '', penalty: 0, total: 0 },
-    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'mavis', cmd2: 'Mavis [Alice]', c3: '', penalty: 0, total: 0 },
-    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'harper', cmd1: 'Harper [Alucard]', c2: 'dyrroth', cmd2: 'Dyrroth', c3: '', penalty: 0, total: 0 },
-    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'cyclops', cmd1: 'Cyclops [Asta]', c2: 'floryn', cmd2: 'Floryn [Dubi]', c3: '', penalty: 0, total: 0 },
-    { name: 'Dandy Nasri', nickname: 'Wienie.10', gameId: '3180808 (4068)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: 'valir', cmd2: 'Valir', c3: '', penalty: 0, total: 0 },
-    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'layla', cmd2: 'Layla', c3: '', penalty: 0, total: 0 }
+    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 3, r2: 6, r3: 2, c1: 'diggie', cmd1: 'Diggie [Eggie]', c2: 'moskov', cmd2: 'Moskov', c3: 'chou', cmd3: 'Chou', penalty: 0, total: 3 },
+    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 4, r2: 5, r3: 1, c1: 'fanny', cmd1: 'Fanny', c2: 'gusion', cmd2: 'Gusion [Gujun]', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 4 },
+    { name: 'Yudhistira Pratama Ramadhan', nickname: 'BuzzFeed', gameId: '3266192 (4113)', dept: '', r1: 5, r2: 3, r3: 7, c1: 'mavis', cmd1: 'Mavis [Alice]', c2: 'benny', cmd2: 'Benny [Popol]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: -2 },
+    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 6, r2: 7, r3: 4, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'mavis', cmd2: 'Mavis [Alice]', c3: 'alice', cmd3: 'Alice [Mavis]', penalty: 0, total: -4 },
+    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 8, r2: 8, r3: 8, c1: 'harper', cmd1: 'Harper [Alucard]', c2: 'dyrroth', cmd2: 'Dyrroth', c3: '', cmd3: '', penalty: 0, total: -12 },
+    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 1, r2: 1, r3: 5, c1: 'cyclops', cmd1: 'Cyclops [Asta]', c2: 'floryn', cmd2: 'Floryn [Dubi]', c3: 'vale', cmd3: 'Vale', penalty: 0, total: 7 },
+    { name: 'Dandy Nasri', nickname: 'Wienie.10', gameId: '3180808 (4068)', dept: '', r1: 2, r2: 2, r3: 6, c1: 'paquito', cmd1: 'Paquito', c2: 'valir', cmd2: 'Valir', c3: 'paquito', cmd3: 'Paquito', penalty: 0, total: 4 },
+    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 7, r2: 4, r3: 3, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'layla', cmd2: 'Layla', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 0 }
   ],
   LOBBY_B: [
-    { name: 'Bagus Setiawan', nickname: 'BagusSt', gameId: '3501438 (4089)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'yuzhong', cmd1: 'Yu Zhong [Pao]', c2: 'ruby', cmd2: 'Ruby [Bersi]', c3: '', penalty: 0, total: 0 },
-    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'popol', cmd2: 'Popol [Benny]', c3: '', penalty: 0, total: 0 },
-    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: 'buss', cmd2: 'Buss [Harley]', c3: '', penalty: 0, total: 0 },
-    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: 'guinevere', cmd2: 'Guinevere', c3: '', penalty: 0, total: 0 },
-    { name: 'Faldi Rasis Purnomo', nickname: 'En D M0', gameId: '1645656 (4002)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'aurora', cmd2: 'Aurora', c3: '', penalty: 0, total: 0 },
-    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'vale', cmd1: 'Vale', c2: 'lukas', cmd2: 'Lukas', c3: '', penalty: 0, total: 0 },
-    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'moskov', cmd1: 'Moskov', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: '', penalty: 0, total: 0 },
-    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'aurora', cmd1: 'Aurora', c2: 'alice', cmd2: 'Alice [Mavis]', c3: '', penalty: 0, total: 0 }
+    { name: 'Bagus Setiawan', nickname: 'BagusSt', gameId: '3501438 (4089)', dept: '', r1: 3, r2: 1, r3: 4, c1: 'yuzhong', cmd1: 'Yu Zhong [Pao]', c2: 'ruby', cmd2: 'Ruby [Bersi]', c3: 'chou', cmd3: 'Chou', penalty: 0, total: 7 },
+    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 4, r2: 4, r3: 5, c1: 'fanny', cmd1: 'Fanny', c2: 'popol', cmd2: 'Popol [Benny]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 1 },
+    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 1, r2: 2, r3: 1, c1: 'chou', cmd1: 'Chou', c2: 'buss', cmd2: 'Buss [Harley]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 11 },
+    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 6, r2: 7, r3: 6, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: 'guinevere', cmd2: 'Guinevere', c3: 'chou', cmd3: 'Chou', penalty: 0, total: -7 },
+    { name: 'Faldi Rasis Purnomo', nickname: 'En D M0', gameId: '1645656 (4002)', dept: '', r1: 2, r2: 5, r3: 2, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'aurora', cmd2: 'Aurora', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 5 },
+    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 8, r2: 8, r3: 8, c1: 'vale', cmd1: 'Vale', c2: 'lukas', cmd2: 'Lukas', c3: '', cmd3: '', penalty: 0, total: -12 },
+    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 7, r2: 3, r3: 3, c1: 'moskov', cmd1: 'Moskov', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 1 },
+    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 5, r2: 6, r3: 7, c1: 'aurora', cmd1: 'Aurora', c2: 'alice', cmd2: 'Alice [Mavis]', c3: 'alice', cmd3: 'Alice [Mavis]', penalty: 0, total: -6 }
   ],
   LOBBY_C: [
-    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'eggie', cmd2: 'Eggie [Diggie]', c3: '', penalty: 0, total: 0 },
-    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'harley', cmd2: 'Harley [Buss]', c3: '', penalty: 0, total: 0 },
-    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'chou', cmd2: 'Chou', c3: '', penalty: 0, total: 0 },
-    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'kalea', cmd2: 'Kalea [Dubi]', c3: '', penalty: 0, total: 0 },
-    { name: 'Irza Muttaqin', nickname: 'Tokyo', gameId: '10610516(4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'franco', cmd2: 'Franco [Ragnar]', c3: '', penalty: 0, total: 0 },
-    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'ling', cmd2: 'Ling', c3: '', penalty: 0, total: 0 },
-    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'luoyi', cmd2: 'Luo Yi [Yuki]', c3: '', penalty: 0, total: 0 }
+    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 1, r2: 3, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'eggie', cmd2: 'Eggie [Diggie]', c3: '', cmd3: '', penalty: 0, total: 6 },
+    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 7, r2: 2, r3: 0, c1: 'harley', cmd1: 'Harley [Buss]', c2: 'harley', cmd2: 'Harley [Buss]', c3: '', cmd3: '', penalty: 0, total: 0 },
+    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 3, r2: 1, r3: 0, c1: 'chou', cmd1: 'Chou', c2: 'chou', cmd2: 'Chou', c3: '', cmd3: '', penalty: 0, total: 6 },
+    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 4, r2: 6, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'kalea', cmd2: 'Kalea [Dubi]', c3: '', cmd3: '', penalty: 0, total: -1 },
+    { name: 'Irza Muttaqin', nickname: 'Tokyo', gameId: '10610516(4048)', dept: '', r1: 2, r2: 4, r3: 0, c1: 'layla', cmd1: 'Layla', c2: 'franco', cmd2: 'Franco [Ragnar]', c3: '', cmd3: '', penalty: 0, total: 4 },
+    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 6, r2: 5, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: 'ling', cmd2: 'Ling', c3: '', cmd3: '', penalty: 0, total: -3 },
+    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 5, r2: 7, r3: 0, c1: 'gusion', cmd1: 'Gusion [Gujun]', c2: 'luoyi', cmd2: 'Luo Yi [Yuki]', c3: '', cmd3: '', penalty: 0, total: -4 }
   ],
   LOBBY_D: [
-    { name: 'Muhammad Harits Eldrid', nickname: 'Eldrid', gameId: '111771260', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Muh Asrul', nickname: 'Odet tiktok', gameId: '13492185 (4170)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Rani Tiara Putri', nickname: 'Queen•', gameId: '86774755 (4070)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Setyo Haryo Alifianto', nickname: 'whyJude', gameId: '9585223 (4098)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Laga Al Ahli', nickname: 'Laga Al Ahli', gameId: '1605612 (1007)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Cikal Yulanda', nickname: 'Oweysis', gameId: '13862548 (4154)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'David Iskandar', nickname: 'David Iskandar', gameId: '5633899 & 4199', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+    { name: 'Muhammad Harits Eldrid', nickname: 'Eldrid', gameId: '111771260', dept: '', r1: 3, r2: 2, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: '', cmd3: '', penalty: 0, total: 5 },
+    { name: 'Muh Asrul', nickname: 'Odet tiktok', gameId: '13492185 (4170)', dept: '', r1: 1, r2: 3, r3: 0, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'alice', cmd2: 'Alice [Mavis]', c3: '', cmd3: '', penalty: 0, total: 6 },
+    { name: 'Rani Tiara Putri', nickname: 'Queen•', gameId: '86774755 (4070)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'ruby', cmd1: 'Ruby [Bersi]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 },
+    { name: 'Setyo Haryo Alifianto', nickname: 'whyJude', gameId: '9585223 (4098)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
+    { name: 'Laga Al Ahli', nickname: 'Laga Al Ahli', gameId: '1605612 (1007)', dept: '', r1: 6, r2: 0, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -2 },
+    { name: 'Cikal Yulanda', nickname: 'Oweysis', gameId: '13862548 (4154)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
+    { name: 'David Iskandar', nickname: 'David Iskandar', gameId: '5633899 & 4199', dept: '', r1: 2, r2: 1, r3: 0, c1: 'layla', cmd1: 'Layla', c2: 'layla', cmd2: 'Layla', c3: '', cmd3: '', penalty: 0, total: 7 }
   ],
   LOBBY_E: [
-    { name: 'Rendy Wibi Pratama', nickname: 'EhhChaky', gameId: '3221758 (4129)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Elham Yudhistira', nickname: 'KoncoKentel', gameId: '2559856 (4081)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Eko Marwanto Putro', nickname: 'Eko Marwanto Putro', gameId: '5730333 (4059)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Fardhan Mauladi', nickname: 'Yokke.DHANNKEBOT', gameId: '111118942(4283)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Alvin Elshadai Pangaribuan', gameId: '20564452 (4150)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Muhamad Fajar Samudra', nickname: 'Muhamad Fajar Samudra', gameId: '4881010 (4163)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+    { name: 'Rendy Wibi Pratama', nickname: 'EhhChaky', gameId: '3221758 (4129)', dept: '', r1: 3, r2: 0, r3: 0, c1: 'popol', cmd1: 'Popol [Benny]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 2 },
+    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 1, r2: 0, r3: 0, c1: 'layla', cmd1: 'Layla', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 4 },
+    { name: 'Elham Yudhistira', nickname: 'KoncoKentel', gameId: '2559856 (4081)', dept: '', r1: 2, r2: 0, r3: 0, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 3 },
+    { name: 'Eko Marwanto Putro', nickname: 'Eko Marwanto Putro', gameId: '5730333 (4059)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'alice', cmd1: 'Alice [Mavis]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
+    { name: 'Fardhan Mauladi', nickname: 'Yokke.DHANNKEBOT', gameId: '111118942(4283)', dept: '', r1: 6, r2: 0, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -2 },
+    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Alvin Elshadai Pangaribuan', gameId: '20564452 (4150)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
+    { name: 'Muhamad Fajar Samudra', nickname: 'Muhamad Fajar Samudra', gameId: '4881010 (4163)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 }
   ],
   SEMI_A: [],
   SEMI_B: [],
@@ -591,7 +591,7 @@ let mcggLobbies = (savedLobbies && Object.keys(savedLobbies).filter(k => k.start
   ? savedLobbies
   : JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES));
 
-// Deep merge commander assignments dari DEFAULT_MCGG_LOBBIES jika commander lokal kosong
+// Deep merge commander assignments & match results dari DEFAULT_MCGG_LOBBIES jika data lokal kosong
 Object.keys(DEFAULT_MCGG_LOBBIES).forEach(lKey => {
   if (mcggLobbies[lKey] && Array.isArray(mcggLobbies[lKey])) {
     mcggLobbies[lKey].forEach((p, idx) => {
@@ -603,6 +603,11 @@ Object.keys(DEFAULT_MCGG_LOBBIES).forEach(lKey => {
         if (p.c1 && !p.cmd1) p.cmd1 = defP.cmd1 || p.c1;
         if (p.c2 && !p.cmd2) p.cmd2 = defP.cmd2 || p.c2;
         if (p.c3 && !p.cmd3) p.cmd3 = defP.cmd3 || p.c3;
+        if ((!p.r1 || p.r1 === 0) && defP.r1) p.r1 = defP.r1;
+        if ((!p.r2 || p.r2 === 0) && defP.r2) p.r2 = defP.r2;
+        if ((!p.r3 || p.r3 === 0) && defP.r3) p.r3 = defP.r3;
+        const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
+        p.total = (POINT_MAP[p.r1] || 0) + (POINT_MAP[p.r2] || 0) + (POINT_MAP[p.r3] || 0) - (p.penalty || 0);
       }
     });
   }
@@ -1781,6 +1786,11 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
                   if (inP.c1 && !inP.cmd1) inP.cmd1 = getCommanderFormattedName(inP.c1);
                   if (inP.c2 && !inP.cmd2) inP.cmd2 = getCommanderFormattedName(inP.c2);
                   if (inP.c3 && !inP.cmd3) inP.cmd3 = getCommanderFormattedName(inP.c3);
+                  if ((!inP.r1 || inP.r1 === 0) && localP.r1) inP.r1 = localP.r1;
+                  if ((!inP.r2 || inP.r2 === 0) && localP.r2) inP.r2 = localP.r2;
+                  if ((!inP.r3 || inP.r3 === 0) && localP.r3) inP.r3 = localP.r3;
+                  const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
+                  inP.total = (POINT_MAP[inP.r1] || 0) + (POINT_MAP[inP.r2] || 0) + (POINT_MAP[inP.r3] || 0) - (inP.penalty || 0);
                 }
               });
             }
