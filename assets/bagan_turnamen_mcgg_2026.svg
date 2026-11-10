@@ -250,18 +250,18 @@
     <text x="14" y="22" fill="#38bdf8" class="card-title">🛡️ LOBI KUALIFIKASI E (7 Peserta)</text>
     <text x="355" y="21" fill="#34d399" font-size="10" font-weight="700" text-anchor="end">Top 6 Lolos</text>
     
-    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. Kuproy <tspan fill="#34d399">(+4) 🥇</tspan></text>
+    <text x="14" y="50" fill="#e2e8f0" class="bold-item">1. BladeSpy <tspan fill="#34d399">(+4) 🥇</tspan></text>
     <text x="195" y="50" fill="#e2e8f0" class="bold-item">4. mfsamudra <tspan fill="#38bdf8">(+1)</tspan></text>
 
     <text x="14" y="70" fill="#e2e8f0" class="bold-item">2. KoncoKentel <tspan fill="#38bdf8">(+3)</tspan></text>
-    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. Eko Marwanto P. <tspan fill="#f87171">(-1)</tspan></text>
+    <text x="195" y="70" fill="#e2e8f0" class="bold-item">5. Mokondo.H. <tspan fill="#f87171">(-1)</tspan></text>
 
     <text x="14" y="90" fill="#e2e8f0" class="bold-item">3. EhhChaky <tspan fill="#38bdf8">(+2)</tspan></text>
     <text x="195" y="90" fill="#e2e8f0" class="bold-item">6. Yokke.DHANNKEBOT <tspan fill="#f87171">(-2)</tspan></text>
 
     <line x1="14" y1="105" x2="356" y2="105" stroke="#334155" stroke-dasharray="3 3"/>
     <text x="14" y="124" fill="#fbbf24" font-size="11" font-weight="700">⚡ Masuk Wildcard (Rank 7):</text>
-    <text x="14" y="145" fill="#fde047" class="item-text">7. Alvin Elshadai P. (-3)</text>
+    <text x="14" y="145" fill="#fde047" class="item-text">7. Kuproy (-3)</text>
     <rect x="0" y="160" width="370" height="15" rx="0 0 10 10" fill="rgba(6, 214, 160, 0.1)"/>
     <text x="185" y="171" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle">✔ Selesai Ronde Kualifikasi</text>
   </g>
@@ -302,7 +302,7 @@
       
       <!-- Row 4 -->
       <rect x="97" y="96" width="180" height="26" rx="6" fill="rgba(0,0,0,0.4)" stroke="#78350f"/>
-      <text x="107" y="114" fill="#fef08a" font-size="11" font-weight="600">7. Alvin Elshadai <tspan fill="#94a3b8">(Grup E)</tspan></text>
+      <text x="107" y="114" fill="#fef08a" font-size="11" font-weight="600">7. Kuproy (Arief H.) <tspan fill="#94a3b8">(Grup E)</tspan></text>
     </g>
 
     <rect x="0" y="245" width="410" height="30" rx="0 0 12 12" fill="rgba(245, 158, 11, 0.2)"/>

@@ -570,12 +570,12 @@ const DEFAULT_MCGG_LOBBIES = {
   ],
   LOBBY_E: [
     { name: 'Rendy Wibi Pratama', nickname: 'EhhChaky', gameId: '3221758 (4129)', dept: '', r1: 3, r2: 0, r3: 0, c1: 'popol', cmd1: 'Popol [Benny]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 2 },
-    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 1, r2: 0, r3: 0, c1: 'layla', cmd1: 'Layla', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 4 },
+    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
     { name: 'Elham Yudhistira', nickname: 'KoncoKentel', gameId: '2559856 (4081)', dept: '', r1: 2, r2: 0, r3: 0, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 3 },
-    { name: 'Eko Marwanto Putro', nickname: 'Eko Marwanto Putro', gameId: '5730333 (4059)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'alice', cmd1: 'Alice [Mavis]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
+    { name: 'Eko Marwanto Putro', nickname: 'BladeSpy', gameId: '5730333 (4059)', dept: '', r1: 1, r2: 0, r3: 0, c1: 'minotaur', cmd1: 'Minotaur [Aldous]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 4 },
     { name: 'Fardhan Mauladi', nickname: 'Yokke.DHANNKEBOT', gameId: '111118942(4283)', dept: '', r1: 6, r2: 0, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -2 },
-    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Alvin Elshadai Pangaribuan', gameId: '20564452 (4150)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
-    { name: 'Muhamad Fajar Samudra', nickname: 'Muhamad Fajar Samudra', gameId: '4881010 (4163)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 }
+    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Mokondo.Hideung', gameId: '20564452 (4150)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'alice', cmd1: 'Alice [Mavis]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
+    { name: 'Muhamad Fajar Samudra', nickname: 'mfsamudra', gameId: '4881010 (4163)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 }
   ],
   SEMI_A: [],
   SEMI_B: [],
