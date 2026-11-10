@@ -853,7 +853,15 @@ function getInitialData(ss) {
           if (key === "groupMatchResults") appConfig.groupMatchResults = JSON.parse(val);
           if (key === "groupPlayoffMatches") appConfig.groupPlayoffMatches = JSON.parse(val);
           if (key === "mcggLobbies") appConfig.mcggLobbies = JSON.parse(val);
-          if (key === "mcggDrawState") appConfig.mcggDrawState = JSON.parse(val);
+          if (key === "mcggDrawState") {
+            try {
+              if (val && val !== "MIGRATED_TO_RELATIONAL_SHEETS") {
+                appConfig.mcggDrawState = JSON.parse(val);
+              }
+            } catch(drawErr) {
+              Logger.log("Error parsing mcggDrawState: " + drawErr);
+            }
+          }
           if (key === "tournamentStageState") appConfig.tournamentStageState = JSON.parse(val);
           if (key === "invitedTeams") appConfig.invitedTeams = JSON.parse(val);
           if (key === "isRegistrationClosed") appConfig.isRegistrationClosed = (val === "true");
@@ -927,39 +935,53 @@ function getInitialData(ss) {
 
         if (!sheetLobbies[lKey]) sheetLobbies[lKey] = [];
 
-        var pDept = "";
+        var pDept = mRow[3] ? mRow[3].toString().trim() : "";
+        var pNick = "-";
+        var pGameId = "-";
         for (var pi = 0; pi < result.participants.length; pi++) {
           var part = result.participants[pi];
           if (part.category === "MCGG") {
-            if ((part.name && part.name.trim().toLowerCase() === pName.toLowerCase()) ||
-                (part.nickname && mRow[3] && part.nickname.trim().toLowerCase() === mRow[3].toString().trim().toLowerCase()) ||
-                (part.gameId && mRow[4] && part.gameId.toString().trim() === mRow[4].toString().trim())) {
-              pDept = part.dept || "";
+            if (part.name && part.name.trim().toLowerCase() === pName.toLowerCase()) {
+              if (part.dept) pDept = part.dept;
+              if (part.nickname && part.nickname !== "-" && part.nickname !== "undefined") pNick = part.nickname;
+              if (part.gameId && part.gameId !== "-" && part.gameId !== "undefined") pGameId = part.gameId;
               break;
             }
           }
         }
 
-        var c1Val = mRow[5] ? mRow[5].toString().trim() : "";
-        var c2Val = mRow[7] ? mRow[7].toString().trim() : "";
-        var c3Val = mRow[9] ? mRow[9].toString().trim() : "";
+        var r1Val = helperParseRank(mRow[4]);
+        var c1Val = mRow[6] ? mRow[6].toString().trim() : "";
         if (c1Val === "-") c1Val = "";
+
+        var r2Val = helperParseRank(mRow[7]);
+        var c2Val = mRow[9] ? mRow[9].toString().trim() : "";
         if (c2Val === "-") c2Val = "";
+
+        var r3Val = helperParseRank(mRow[10]);
+        var c3Val = mRow[12] ? mRow[12].toString().trim() : "";
         if (c3Val === "-") c3Val = "";
+
+        var totalVal = parseFloat(mRow[13]) || 0;
+        var mvpVal = parseInt(mRow[14], 10) || 0;
 
         sheetLobbies[lKey].push({
           name: pName,
           dept: pDept,
-          nickname: mRow[3] ? mRow[3].toString().trim() : "-",
-          gameId: mRow[4] ? mRow[4].toString().trim() : "-",
+          nickname: pNick,
+          gameId: pGameId,
+          r1: r1Val,
           c1: c1Val,
-          r1: helperParseRank(mRow[6]),
+          cmd1: c1Val,
+          r2: r2Val,
           c2: c2Val,
-          r2: helperParseRank(mRow[8]),
+          cmd2: c2Val,
+          r3: r3Val,
           c3: c3Val,
-          r3: helperParseRank(mRow[10]),
-          penalty: parseFloat(mRow[11]) || 0,
-          total: parseFloat(mRow[12]) || 0
+          cmd3: c3Val,
+          penalty: 0,
+          total: totalVal,
+          mvpCount: mvpVal
         });
       }
 
@@ -1539,7 +1561,7 @@ function doPost(e) {
         { key: "mcggLobbies", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
         { key: "tournamentStageState", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
         { key: "customRules", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
-        { key: "mcggDrawState", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
+        { key: "mcggDrawState", val: (data.mcggDrawState ? (typeof data.mcggDrawState === "object" ? JSON.stringify(data.mcggDrawState) : String(data.mcggDrawState)) : null) },
         { key: "invitedTeams", val: "MIGRATED_TO_RELATIONAL_SHEETS" }
       ];
 
@@ -2604,19 +2626,90 @@ function syncDedicatedTournamentSheets(ss, payload) {
   ];
   const mcggRows = [mcggHeaders];
 
+  // Kamus Resolver Nama Commander (Built-in 40 Hero + Dinamis dari Tab Set Up)
+  var setupSheet = ss.getSheetByName("MCGG Match Set Up") || 
+                   ss.getSheetByName("mcgg set up") || 
+                   ss.getSheetByName("MCGG Set Up") || 
+                   ss.getSheetByName("MCGG Setup");
+  var cmdMap = {
+    'chou': 'Chou', 'fanny': 'Fanny', 'vale': 'Vale',
+    'alice': 'Mavis [Alice]', 'mavis': 'Mavis [Alice]',
+    'alucard': 'Harper [Alucard]', 'harper': 'Harper [Alucard]',
+    'kalea': 'Dubi [Kalea]', 'dubi': 'Dubi [Kalea]',
+    'lancelot': 'Remy [Lancelot]', 'remy': 'Remy [Lancelot]',
+    'layla': 'Layla', 'moskov': 'Moskov',
+    'austus': 'Austus', 'aamon': 'Austus', 'brody': 'Brody',
+    'franco': 'Franco [Ragnar]', 'ragnar': 'Franco [Ragnar]',
+    'ling': 'Ling', 'luoyi': 'Luo Yi [Yuki]', 'yuki': 'Yuki [Luo Yi]',
+    'tharz': 'Tharz', 'lylia': 'Tharz', 'wanwan': 'Wanwan',
+    'abe': 'Abe', 'benny': 'Benny [Popol]', 'popol': 'Popol [Benny]',
+    'brown': 'Brown [Minotaur]', 'minotaur': 'Minotaur [Brown]',
+    'buss': 'Buss [Harley]', 'harley': 'Harley [Buss]',
+    'connie': 'Connie [Vexana]', 'vexana': 'Vexana [Connie]',
+    'diggie': 'Diggie [Eggie]', 'eggie': 'Eggie [Diggie]',
+    'eva': 'Eva', 'floryn': 'Floryn [Dubi]', 'gord': 'Gord',
+    'kaboom': 'Johnson [Kaboom]', 'johnson': 'Johnson [Kaboom]',
+    'pao': 'Yu Zhong [Pao]', 'yuzhong': 'Yu Zhong [Pao]',
+    'ruby': 'Ruby [Bersi]', 'bersi': 'Ruby [Bersi]',
+    'rya': 'Rya', 'lunox': 'Rya',
+    'paquito': 'Paquito', 'cyclops': 'Cyclops [Asta]',
+    'dyrroth': 'Dyrroth', 'valir': 'Valir',
+    'gusion': 'Gusion [Gujun]', 'lukas': 'Lukas',
+    'aurora': 'Aurora', 'guinevere': 'Guinevere'
+  };
+
+  if (setupSheet && setupSheet.getLastRow() > 1) {
+    var sData = setupSheet.getDataRange().getValues();
+    for (var s = 1; s < sData.length; s++) {
+      var sRow = sData[s];
+      if (!sRow || sRow.length === 0) continue;
+      var hero = sRow[0] ? sRow[0].toString().trim() : "";
+      var alter = sRow[1] ? sRow[1].toString().trim() : "";
+      if (hero || alter) {
+        var fmt = hero;
+        if (hero && alter && hero.toLowerCase() !== alter.toLowerCase()) {
+          fmt = hero + " [" + alter + "]";
+        } else if (!hero && alter) {
+          fmt = alter;
+        }
+        if (hero) cmdMap[hero.toLowerCase()] = fmt;
+        if (alter) cmdMap[alter.toLowerCase()] = fmt;
+      }
+    }
+  }
+
+  var formatCmd = function(val) {
+    if (!val || val === '-' || val === 'undefined' || val === 'null') return '-';
+    var str = val.toString().trim();
+    if (!str || str === '-') return '-';
+    if (str.indexOf('[') !== -1) return str;
+    var low = str.toLowerCase();
+    if (cmdMap[low]) return cmdMap[low];
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const lobbies = payload.mcggLobbies || {};
   Object.keys(lobbies).forEach(lobbyKey => {
     const pList = lobbies[lobbyKey] || [];
-    const isQual = lobbyKey === 'LOBBY_A' || lobbyKey === 'LOBBY_B';
-    const qualDone = pList.every(p => p.r1 && p.r2 && p.r3);
+    const isQual = lobbyKey.indexOf('LOBBY_') === 0 && lobbyKey !== 'LOBBY_LOWER';
+    const qualDone = pList.length > 0 && pList.every(p => p.r1 && p.r2 && p.r3);
 
     pList.forEach((p, idx) => {
       let status = 'Babak Kualifikasi';
       if (lobbyKey === 'GRAND_FINAL') {
         status = 'Grand Finalist';
+      } else if (lobbyKey === 'SEMI_A' || lobbyKey === 'SEMI_B') {
+        status = 'Babak Semifinal';
       } else if (isQual && qualDone) {
-        status = (idx < 4) ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        status = (idx < 3) ? 'LOLOS KE SEMIFINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
       }
+
+      var c1Display = formatCmd(p.cmd1 || p.c1);
+      var c2Display = formatCmd(p.cmd2 || p.c2);
+      var c3Display = formatCmd(p.cmd3 || p.c3);
+
+      var mvpCount = (p.mvpCount !== undefined) ? p.mvpCount : [p.r1, p.r2, p.r3].filter(function(r) { return parseInt(r, 10) === 1; }).length;
+      var totalPts = (p.total !== undefined && p.total !== null && p.total !== '') ? p.total : ((POINT_MAP[p.r1] || 0) + (POINT_MAP[p.r2] || 0) + (POINT_MAP[p.r3] || 0) + (p.penalty || 0));
 
       mcggRows.push([
         lobbyKey,
@@ -2625,15 +2718,15 @@ function syncDedicatedTournamentSheets(ss, payload) {
         p.dept || '-',
         p.r1 ? `Rank ${p.r1}` : '-',
         p.r1 ? (POINT_MAP[p.r1] || 0) : 0,
-        p.cmd1 || '-',
+        c1Display,
         p.r2 ? `Rank ${p.r2}` : '-',
         p.r2 ? (POINT_MAP[p.r2] || 0) : 0,
-        p.cmd2 || '-',
+        c2Display,
         p.r3 ? `Rank ${p.r3}` : '-',
         p.r3 ? (POINT_MAP[p.r3] || 0) : 0,
-        p.cmd3 || '-',
-        p.total || 0,
-        p.mvpCount || 0,
+        c3Display,
+        totalPts,
+        mvpCount,
         status
       ]);
     });

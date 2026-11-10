@@ -82,7 +82,7 @@ try {
 
 let currentAdminPin = sessionStorage.getItem('yokke_admin_session_auth') || "";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwb_TTZOowfQ-5ifNel5MURjaPIBqMC4XBEI-Lm9RoaOANM2qNYLohvkfKU6Re5I1LgOg/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwadUI9_Ofyg8BP3ovaTLbW-zqocCXtwBEAqgDsHSsSAJiEJHcdtvaykmGjzGxA5KIB7Q/exec";
 
 /**
  * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
@@ -531,33 +531,33 @@ let currentMCGGLobby = 'LOBBY_A';
 // 5 Lobi Kualifikasi Resmi MCGG Turnamen Yokke Squad 2026 (Sesuai Hasil Acak Ground Truth GSheet)
 const DEFAULT_MCGG_LOBBIES = {
   LOBBY_A: [
-    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Yudhistira Pratama Ramadhan', nickname: 'Yudhistira Pratama Ramadhan', gameId: '3266192 (4113)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Dandy Nasri', nickname: 'Dandy Nasri', gameId: '3180808 (4068)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'diggie', cmd1: 'Diggie [Eggie]', c2: 'moskov', cmd2: 'Moskov', c3: '', penalty: 0, total: 0 },
+    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'gusion', cmd2: 'Gusion [Gujun]', c3: '', penalty: 0, total: 0 },
+    { name: 'Yudhistira Pratama Ramadhan', nickname: 'BuzzFeed', gameId: '3266192 (4113)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'mavis', cmd1: 'Mavis [Alice]', c2: 'benny', cmd2: 'Benny [Popol]', c3: '', penalty: 0, total: 0 },
+    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'mavis', cmd2: 'Mavis [Alice]', c3: '', penalty: 0, total: 0 },
+    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'harper', cmd1: 'Harper [Alucard]', c2: 'dyrroth', cmd2: 'Dyrroth', c3: '', penalty: 0, total: 0 },
+    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'cyclops', cmd1: 'Cyclops [Asta]', c2: 'floryn', cmd2: 'Floryn [Dubi]', c3: '', penalty: 0, total: 0 },
+    { name: 'Dandy Nasri', nickname: 'Wienie.10', gameId: '3180808 (4068)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: 'valir', cmd2: 'Valir', c3: '', penalty: 0, total: 0 },
+    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'layla', cmd2: 'Layla', c3: '', penalty: 0, total: 0 }
   ],
   LOBBY_B: [
-    { name: 'Bagus Setiawan', nickname: 'BagasST', gameId: '3501438 (4089)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Faldi Rasis Purnomo', nickname: 'Faldi Rasis Purnomo', gameId: '1645656 (4002)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+    { name: 'Bagus Setiawan', nickname: 'BagusSt', gameId: '3501438 (4089)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'yuzhong', cmd1: 'Yu Zhong [Pao]', c2: 'ruby', cmd2: 'Ruby [Bersi]', c3: '', penalty: 0, total: 0 },
+    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'popol', cmd2: 'Popol [Benny]', c3: '', penalty: 0, total: 0 },
+    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: 'buss', cmd2: 'Buss [Harley]', c3: '', penalty: 0, total: 0 },
+    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: 'guinevere', cmd2: 'Guinevere', c3: '', penalty: 0, total: 0 },
+    { name: 'Faldi Rasis Purnomo', nickname: 'En D M0', gameId: '1645656 (4002)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'aurora', cmd2: 'Aurora', c3: '', penalty: 0, total: 0 },
+    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'vale', cmd1: 'Vale', c2: 'lukas', cmd2: 'Lukas', c3: '', penalty: 0, total: 0 },
+    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'moskov', cmd1: 'Moskov', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: '', penalty: 0, total: 0 },
+    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 0, r2: 0, r3: 0, c1: 'aurora', cmd1: 'Aurora', c2: 'alice', cmd2: 'Alice [Mavis]', c3: '', penalty: 0, total: 0 }
   ],
   LOBBY_C: [
-    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Irza Muttaqin', nickname: 'Irza Muttaqin', gameId: '10610516(4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
-    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 }
+    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'eggie', cmd2: 'Eggie [Diggie]', c3: '', penalty: 0, total: 0 },
+    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'harley', cmd2: 'Harley [Buss]', c3: '', penalty: 0, total: 0 },
+    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'chou', cmd2: 'Chou', c3: '', penalty: 0, total: 0 },
+    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'kalea', cmd2: 'Kalea [Dubi]', c3: '', penalty: 0, total: 0 },
+    { name: 'Irza Muttaqin', nickname: 'Tokyo', gameId: '10610516(4048)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'franco', cmd2: 'Franco [Ragnar]', c3: '', penalty: 0, total: 0 },
+    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'ling', cmd2: 'Ling', c3: '', penalty: 0, total: 0 },
+    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 0, r2: 0, r3: 0, c1: '', cmd1: '', c2: 'luoyi', cmd2: 'Luo Yi [Yuki]', c3: '', penalty: 0, total: 0 }
   ],
   LOBBY_D: [
     { name: 'Muhammad Harits Eldrid', nickname: 'Eldrid', gameId: '111771260', dept: '', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0 },
@@ -591,6 +591,23 @@ let mcggLobbies = (savedLobbies && Object.keys(savedLobbies).filter(k => k.start
   ? savedLobbies
   : JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES));
 
+// Deep merge commander assignments dari DEFAULT_MCGG_LOBBIES jika commander lokal kosong
+Object.keys(DEFAULT_MCGG_LOBBIES).forEach(lKey => {
+  if (mcggLobbies[lKey] && Array.isArray(mcggLobbies[lKey])) {
+    mcggLobbies[lKey].forEach((p, idx) => {
+      const defP = (DEFAULT_MCGG_LOBBIES[lKey] || []).find(dp => dp.name && p.name && dp.name.trim().toLowerCase() === p.name.trim().toLowerCase()) || (DEFAULT_MCGG_LOBBIES[lKey] || [])[idx];
+      if (defP) {
+        if (!p.c1 && defP.c1) { p.c1 = defP.c1; p.cmd1 = defP.cmd1; }
+        if (!p.c2 && defP.c2) { p.c2 = defP.c2; p.cmd2 = defP.cmd2; }
+        if (!p.c3 && defP.c3) { p.c3 = defP.c3; p.cmd3 = defP.cmd3; }
+        if (p.c1 && !p.cmd1) p.cmd1 = defP.cmd1 || p.c1;
+        if (p.c2 && !p.cmd2) p.cmd2 = defP.cmd2 || p.c2;
+        if (p.c3 && !p.cmd3) p.cmd3 = defP.cmd3 || p.c3;
+      }
+    });
+  }
+});
+
 // State Kontrol Tahapan Turnamen (Stage Machine ala Challonge)
 let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') || JSON.stringify({
   mlbb: {
@@ -617,20 +634,25 @@ const POINT_TABLE = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
 
 // Master Data 40 Official Little Commanders MCGG (Local Assets Pipeline)
 const MCGG_COMMANDERS = [
-  // --- TIER HIGH (3 Commander) ---
+  // --- TIER HIGH ---
   { id: 'chou', name: 'Chou', hero: 'Chou', alterName: '', displayName: 'Chou', tier: 'High', heroImage: 'assets/commanders/chou.png', alterImage: '', aliases: ['chou'] },
   { id: 'fanny', name: 'Fanny', hero: 'Fanny', alterName: '', displayName: 'Fanny', tier: 'High', heroImage: 'assets/commanders/fanny.png', alterImage: '', aliases: ['fanny'] },
   { id: 'vale', name: 'Vale', hero: 'Vale', alterName: '', displayName: 'Vale', tier: 'High', heroImage: 'assets/commanders/vale.png', alterImage: '', aliases: ['vale'] },
+  { id: 'lukas', name: 'Lukas', hero: 'Lukas', alterName: '', displayName: 'Lukas', tier: 'High', heroImage: 'assets/commanders/lukas.png', alterImage: '', aliases: ['lukas'] },
 
-  // --- TIER MID (6 Commander) ---
+  // --- TIER MID ---
   { id: 'alice', name: 'Alice', hero: 'Alice', alterName: 'Mavis', displayName: 'Alice [Mavis]', tier: 'Mid', heroImage: 'assets/commanders/alice.png', alterImage: 'assets/commanders/mavis.png', aliases: ['alice'] },
   { id: 'alucard', name: 'Alucard', hero: 'Alucard', alterName: 'Harper', displayName: 'Alucard [Harper]', tier: 'Mid', heroImage: 'assets/commanders/alucard.png', alterImage: 'assets/commanders/harper.png', aliases: ['alucard'] },
   { id: 'kalea', name: 'Kalea', hero: 'Kalea', alterName: 'Dubi', displayName: 'Kalea [Dubi]', tier: 'Mid', heroImage: 'assets/commanders/kalea.png', alterImage: 'assets/commanders/dubi.png', aliases: ['kalea'] },
   { id: 'lancelot', name: 'Lancelot', hero: 'Lancelot', alterName: 'Remy', displayName: 'Lancelot [Remy]', tier: 'Mid', heroImage: 'assets/commanders/lancelot.png', alterImage: 'assets/commanders/remy.png', aliases: ['lancelot'] },
   { id: 'layla', name: 'Layla', hero: 'Layla', alterName: '', displayName: 'Layla', tier: 'Mid', heroImage: 'assets/commanders/layla.png', alterImage: '', aliases: ['layla'] },
   { id: 'moskov', name: 'Moskov', hero: 'Moskov', alterName: '', displayName: 'Moskov', tier: 'Mid', heroImage: 'assets/commanders/moskov.png', alterImage: '', aliases: ['moskov'] },
+  { id: 'dyrroth', name: 'Dyrroth', hero: 'Dyrroth', alterName: '', displayName: 'Dyrroth', tier: 'Mid', heroImage: 'assets/commanders/dyrroth.png', alterImage: '', aliases: ['dyrroth'] },
+  { id: 'valir', name: 'Valir', hero: 'Valir', alterName: '', displayName: 'Valir', tier: 'Mid', heroImage: 'assets/commanders/valir.png', alterImage: '', aliases: ['valir'] },
+  { id: 'gusion', name: 'Gusion', hero: 'Gusion', alterName: 'Gujun', displayName: 'Gusion [Gujun]', tier: 'Mid', heroImage: 'assets/commanders/gusion.png', alterImage: 'assets/commanders/gujun.png', aliases: ['gusion', 'gujun'] },
+  { id: 'johnson', name: 'Johnson', hero: 'Johnson', alterName: 'Kaboom', displayName: 'Johnson [Kaboom]', tier: 'Mid', heroImage: 'assets/commanders/kaboom.png', alterImage: '', aliases: ['johnson', 'kaboom'] },
 
-  // --- TIER META (8 Commander) ---
+  // --- TIER META ---
   { id: 'austus', name: 'Austus', hero: 'Austus', alterName: '', displayName: 'Austus', tier: 'Meta', heroImage: 'assets/commanders/austus.png', alterImage: '', aliases: ['austus', 'aamon'] },
   { id: 'brody', name: 'Brody', hero: 'Brody', alterName: '', displayName: 'Brody', tier: 'Meta', heroImage: 'assets/commanders/brody.png', alterImage: '', aliases: ['brody'] },
   { id: 'franco', name: 'Franco', hero: 'Franco', alterName: 'Ragnar', displayName: 'Franco [Ragnar]', tier: 'Meta', heroImage: 'assets/commanders/franco.png', alterImage: 'assets/commanders/ragnar.png', aliases: ['franco'] },
@@ -639,8 +661,9 @@ const MCGG_COMMANDERS = [
   { id: 'tharz', name: 'Tharz', hero: 'Tharz', alterName: '', displayName: 'Tharz', tier: 'Meta', heroImage: 'assets/commanders/tharz.png', alterImage: '', aliases: ['tharz', 'lylia'] },
   { id: 'wanwan', name: 'Wanwan', hero: 'Wanwan', alterName: '', displayName: 'Wanwan', tier: 'Meta', heroImage: 'assets/commanders/wanwan.png', alterImage: '', aliases: ['wanwan'] },
   { id: 'yuki', name: 'Yuki', hero: 'Yuki', alterName: 'Luo Yi', displayName: 'Yuki [Luo Yi]', tier: 'Meta', heroImage: 'assets/commanders/yuki.png', alterImage: 'assets/commanders/luoyi.png', aliases: ['yuki'] },
+  { id: 'guinevere', name: 'Guinevere', hero: 'Guinevere', alterName: '', displayName: 'Guinevere', tier: 'Meta', heroImage: 'assets/commanders/guinevere.png', alterImage: '', aliases: ['guinevere'] },
 
-  // --- TIER NORMAL (23 Commander) ---
+  // --- TIER NORMAL ---
   { id: 'abe', name: 'Abe', hero: 'Abe', alterName: '', displayName: 'Abe', tier: 'Normal', heroImage: 'assets/commanders/abe.png', alterImage: '', aliases: ['abe'] },
   { id: 'benny', name: 'Benny', hero: 'Benny', alterName: 'Popol', displayName: 'Benny [Popol]', tier: 'Normal', heroImage: 'assets/commanders/benny.png', alterImage: 'assets/commanders/popol.png', aliases: ['benny'] },
   { id: 'brown', name: 'Brown', hero: 'Brown', alterName: 'Minotaur', displayName: 'Brown [Minotaur]', tier: 'Normal', heroImage: 'assets/commanders/brown.png', alterImage: 'assets/commanders/minotaur.png', aliases: ['brown'] },
@@ -650,20 +673,24 @@ const MCGG_COMMANDERS = [
   { id: 'dubi', name: 'Dubi', hero: 'Dubi', alterName: 'Kalea', displayName: 'Dubi [Kalea]', tier: 'Normal', heroImage: 'assets/commanders/dubi.png', alterImage: 'assets/commanders/kalea.png', aliases: ['dubi'] },
   { id: 'eggie', name: 'Eggie', hero: 'Eggie', alterName: 'Diggie', displayName: 'Eggie [Diggie]', tier: 'Normal', heroImage: 'assets/commanders/eggie.png', alterImage: 'assets/commanders/diggie.png', aliases: ['eggie'] },
   { id: 'eva', name: 'Eva', hero: 'Eva', alterName: '', displayName: 'Eva', tier: 'Normal', heroImage: 'assets/commanders/eva.png', alterImage: '', aliases: ['eva'] },
-  { id: 'floryn', name: 'Floryn', hero: 'Floryn', alterName: '', displayName: 'Floryn', tier: 'Normal', heroImage: 'assets/commanders/floryn.png', alterImage: '', aliases: ['floryn'] },
+  { id: 'floryn', name: 'Floryn', hero: 'Floryn', alterName: 'Dubi', displayName: 'Floryn [Dubi]', tier: 'Normal', heroImage: 'assets/commanders/floryn.png', alterImage: 'assets/commanders/dubi.png', aliases: ['floryn'] },
   { id: 'gord', name: 'Gord', hero: 'Gord', alterName: '', displayName: 'Gord', tier: 'Normal', heroImage: 'assets/commanders/gord.png', alterImage: '', aliases: ['gord'] },
   { id: 'harley', name: 'Harley', hero: 'Harley', alterName: 'Buss', displayName: 'Harley [Buss]', tier: 'Normal', heroImage: 'assets/commanders/harley.png', alterImage: 'assets/commanders/buss.png', aliases: ['harley'] },
   { id: 'harper', name: 'Harper', hero: 'Harper', alterName: 'Alucard', displayName: 'Harper [Alucard]', tier: 'Normal', heroImage: 'assets/commanders/harper.png', alterImage: 'assets/commanders/alucard.png', aliases: ['harper'] },
-  { id: 'kaboom', name: 'Kaboom', hero: 'Kaboom', alterName: '', displayName: 'Kaboom', tier: 'Normal', heroImage: 'assets/commanders/kaboom.png', alterImage: '', aliases: ['kaboom', 'johnson'] },
+  { id: 'kaboom', name: 'Kaboom', hero: 'Kaboom', alterName: 'Johnson', displayName: 'Kaboom [Johnson]', tier: 'Normal', heroImage: 'assets/commanders/kaboom.png', alterImage: '', aliases: ['kaboom', 'johnson'] },
   { id: 'mavis', name: 'Mavis', hero: 'Mavis', alterName: 'Alice', displayName: 'Mavis [Alice]', tier: 'Normal', heroImage: 'assets/commanders/mavis.png', alterImage: 'assets/commanders/alice.png', aliases: ['mavis'] },
   { id: 'minotaur', name: 'Minotaur', hero: 'Minotaur', alterName: 'Brown', displayName: 'Minotaur [Brown]', tier: 'Normal', heroImage: 'assets/commanders/minotaur.png', alterImage: 'assets/commanders/brown.png', aliases: ['minotaur'] },
-  { id: 'pao', name: 'Pao', hero: 'Pao', alterName: '', displayName: 'Pao', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['pao', 'yu zhong', 'yuzhong'] },
+  { id: 'pao', name: 'Pao', hero: 'Pao', alterName: 'Yu Zhong', displayName: 'Pao [Yu Zhong]', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['pao', 'yu zhong', 'yuzhong'] },
   { id: 'popol', name: 'Popol', hero: 'Popol', alterName: 'Benny', displayName: 'Popol [Benny]', tier: 'Normal', heroImage: 'assets/commanders/popol.png', alterImage: 'assets/commanders/benny.png', aliases: ['popol'] },
   { id: 'ragnar', name: 'Ragnar', hero: 'Ragnar', alterName: 'Franco', displayName: 'Ragnar [Franco]', tier: 'Normal', heroImage: 'assets/commanders/ragnar.png', alterImage: 'assets/commanders/franco.png', aliases: ['ragnar'] },
   { id: 'remy', name: 'Remy', hero: 'Remy', alterName: 'Lancelot', displayName: 'Remy [Lancelot]', tier: 'Normal', heroImage: 'assets/commanders/remy.png', alterImage: 'assets/commanders/lancelot.png', aliases: ['remy'] },
-  { id: 'ruby', name: 'Ruby', hero: 'Ruby', alterName: '', displayName: 'Ruby', tier: 'Normal', heroImage: 'assets/commanders/ruby.png', alterImage: '', aliases: ['ruby', 'bersi'] },
+  { id: 'ruby', name: 'Ruby', hero: 'Ruby', alterName: 'Bersi', displayName: 'Ruby [Bersi]', tier: 'Meta', heroImage: 'assets/commanders/ruby.png', alterImage: '', aliases: ['ruby', 'bersi'] },
   { id: 'rya', name: 'Rya', hero: 'Rya', alterName: '', displayName: 'Rya', tier: 'Normal', heroImage: 'assets/commanders/rya.png', alterImage: '', aliases: ['rya', 'lunox'] },
-  { id: 'vexana', name: 'Vexana', hero: 'Vexana', alterName: 'Connie', displayName: 'Vexana [Connie]', tier: 'Normal', heroImage: 'assets/commanders/vexana.png', alterImage: 'assets/commanders/connie.png', aliases: ['vexana'] }
+  { id: 'vexana', name: 'Vexana', hero: 'Vexana', alterName: 'Connie', displayName: 'Vexana [Connie]', tier: 'Normal', heroImage: 'assets/commanders/vexana.png', alterImage: 'assets/commanders/connie.png', aliases: ['vexana'] },
+  { id: 'paquito', name: 'Paquito', hero: 'Paquito', alterName: '', displayName: 'Paquito', tier: 'Normal', heroImage: 'assets/commanders/paquito.png', alterImage: '', aliases: ['paquito'] },
+  { id: 'cyclops', name: 'Cyclops', hero: 'Cyclops', alterName: 'Asta', displayName: 'Cyclops [Asta]', tier: 'Normal', heroImage: 'assets/commanders/cyclops.png', alterImage: '', aliases: ['cyclops', 'asta'] },
+  { id: 'aurora', name: 'Aurora', hero: 'Aurora', alterName: '', displayName: 'Aurora', tier: 'Normal', heroImage: 'assets/commanders/aurora.png', alterImage: '', aliases: ['aurora'] },
+  { id: 'yuzhong', name: 'Yu Zhong', hero: 'Yu Zhong', alterName: 'Pao', displayName: 'Yu Zhong [Pao]', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['yuzhong', 'yu zhong', 'pao'] }
 ];
 
 // Helper Format Nama Commander: Hero [Alter] jika alter ada, atau Hero jika tidak ada
@@ -764,8 +791,67 @@ function renderCommanderCardVisualHtml(cmd) {
   }
 }
 
+// Generator Default State Undian Commander Resmi TM
+function buildDefaultMCGGDrawState() {
+  const pools = {
+    LOBBY_A: {
+      m1: ['fanny', 'johnson', 'remy', 'diggie', 'cyclops', 'harper', 'mavis', 'paquito'],
+      m2: ['dyrroth', 'valir', 'floryn', 'benny', 'mavis', 'layla', 'gusion', 'moskov']
+    },
+    LOBBY_B: {
+      m1: ['vale', 'fanny', 'aurora', 'chou', 'moskov', 'dubi', 'eggie', 'yuzhong'],
+      m2: ['alice', 'lukas', 'aurora', 'ruby', 'dubi', 'popol', 'guinevere', 'buss']
+    },
+    LOBBY_C: {
+      m2: ['chou', 'harley', 'franco', 'luoyi', 'kalea', 'eggie', 'ling', 'cyclops']
+    }
+  };
+  const res = {};
+  ['LOBBY_A', 'LOBBY_B', 'LOBBY_C'].forEach(lKey => {
+    res[lKey] = { activeMatch: 2 };
+    const pList = DEFAULT_MCGG_LOBBIES[lKey] || [];
+    ['match1', 'match2'].forEach((mKey, mIdx) => {
+      const matchNum = mIdx + 1;
+      const pKey = `m${matchNum}`;
+      if (pools[lKey][pKey]) {
+        res[lKey][mKey] = {
+          pool: pools[lKey][pKey].map(id => getCommanderById(id)).filter(Boolean),
+          assigned: pList.map((p, idx) => ({
+            playerIndex: idx,
+            playerName: p.name,
+            playerNick: (p.nickname && p.nickname !== '-' && p.nickname !== 'undefined') ? p.nickname : p.name,
+            gameId: p.gameId || '-',
+            commander: getCommanderById(p[`c${matchNum}`])
+          })).filter(a => !!a.commander),
+          isLocked: true
+        };
+      }
+    });
+  });
+  return res;
+}
+
 // State Hasil Undian Commander Per Lobi
-let mcggDrawState = JSON.parse(localStorage.getItem('yokke_commander_draw') || '{}');
+let mcggDrawState = JSON.parse(localStorage.getItem('yokke_commander_draw') || 'null');
+if (!mcggDrawState || Object.keys(mcggDrawState).length === 0) {
+  mcggDrawState = buildDefaultMCGGDrawState();
+} else {
+  // Merge jika ada lobi yang belum memiliki data undian
+  const defDraw = buildDefaultMCGGDrawState();
+  Object.keys(defDraw).forEach(lKey => {
+    if (!mcggDrawState[lKey]) {
+      mcggDrawState[lKey] = defDraw[lKey];
+    } else {
+      ['match1', 'match2'].forEach(mKey => {
+        if (!mcggDrawState[lKey][mKey] || (mcggDrawState[lKey][mKey].assigned || []).length === 0) {
+          if (defDraw[lKey][mKey]) {
+            mcggDrawState[lKey][mKey] = defDraw[lKey][mKey];
+          }
+        }
+      });
+    }
+  });
+}
 let lastCommanderDrawMatch = 1;
 
 // URLs Dokumen Peraturan Resmi Google Docs YMC S4 2026
@@ -1674,11 +1760,31 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
             }
           });
         }
-        if (data.config.mcggDrawState && typeof data.config.mcggDrawState === 'object') {
-          mcggDrawState = data.config.mcggDrawState;
+        if (data.config.mcggDrawState && typeof data.config.mcggDrawState === 'object' && Object.keys(data.config.mcggDrawState).length > 0) {
+          Object.keys(data.config.mcggDrawState).forEach(lKey => {
+            mcggDrawState[lKey] = Object.assign({}, mcggDrawState[lKey] || {}, data.config.mcggDrawState[lKey]);
+          });
           localStorage.setItem('yokke_commander_draw', JSON.stringify(mcggDrawState));
         }
         if (data.config.mcggLobbies && Object.keys(data.config.mcggLobbies).length > 0) {
+          // Merge preserving commander assignments if incoming from server is empty
+          Object.keys(data.config.mcggLobbies).forEach(k => {
+            const incomingList = data.config.mcggLobbies[k];
+            const localList = mcggLobbies[k] || [];
+            if (Array.isArray(incomingList)) {
+              incomingList.forEach((inP, pIdx) => {
+                const localP = localList.find(lp => lp.name && inP.name && lp.name.trim().toLowerCase() === inP.name.trim().toLowerCase()) || localList[pIdx];
+                if (localP) {
+                  if (!inP.c1 && localP.c1) { inP.c1 = localP.c1; inP.cmd1 = localP.cmd1 || inP.cmd1; }
+                  if (!inP.c2 && localP.c2) { inP.c2 = localP.c2; inP.cmd2 = localP.cmd2 || inP.cmd2; }
+                  if (!inP.c3 && localP.c3) { inP.c3 = localP.c3; inP.cmd3 = localP.cmd3 || inP.cmd3; }
+                  if (inP.c1 && !inP.cmd1) inP.cmd1 = getCommanderFormattedName(inP.c1);
+                  if (inP.c2 && !inP.cmd2) inP.cmd2 = getCommanderFormattedName(inP.c2);
+                  if (inP.c3 && !inP.cmd3) inP.cmd3 = getCommanderFormattedName(inP.c3);
+                }
+              });
+            }
+          });
           mcggLobbies = data.config.mcggLobbies;
           localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
           renderMCGGTable();
@@ -1962,6 +2068,15 @@ async function saveAllChangesToGoogleSheet() {
   // 3. SIMPAN KONFIGURASI TURNAMEN & REKAP SKOR
   try {
     if (saveBtn) saveBtn.innerText = 'Menyimpan Pengaturan... ⏳';
+    // Pastikan seluruh p.cmd1, p.cmd2, p.cmd3 terisi nama display rapi
+    Object.keys(mcggLobbies || {}).forEach(k => {
+      (mcggLobbies[k] || []).forEach(p => {
+        if (p.c1 && !p.cmd1) p.cmd1 = getCommanderFormattedName(p.c1);
+        if (p.c2 && !p.cmd2) p.cmd2 = getCommanderFormattedName(p.c2);
+        if (p.c3 && !p.cmd3) p.cmd3 = getCommanderFormattedName(p.c3);
+      });
+    });
+
     await postToGoogleAppsScript({
       action: 'SAVE_CONFIG',
       adminPin: currentAdminPin,
@@ -2005,6 +2120,15 @@ async function syncTournamentConfigToGSheet(options = {}) {
 
   saveState();
   saveStageStateLocal();
+
+  // Pastikan seluruh p.cmd1, p.cmd2, p.cmd3 terisi nama display rapi
+  Object.keys(mcggLobbies || {}).forEach(k => {
+    (mcggLobbies[k] || []).forEach(p => {
+      if (p.c1 && !p.cmd1) p.cmd1 = getCommanderFormattedName(p.c1);
+      if (p.c2 && !p.cmd2) p.cmd2 = getCommanderFormattedName(p.c2);
+      if (p.c3 && !p.cmd3) p.cmd3 = getCommanderFormattedName(p.c3);
+    });
+  });
 
   try {
     const payload = {
@@ -2053,6 +2177,15 @@ async function syncTournamentSheetsToGSheet() {
     btn.disabled = true;
     btn.innerText = 'Memperbarui Sheet... ⏳';
   }
+
+  // Pastikan seluruh p.cmd1, p.cmd2, p.cmd3 terisi nama display rapi
+  Object.keys(mcggLobbies || {}).forEach(k => {
+    (mcggLobbies[k] || []).forEach(p => {
+      if (p.c1 && !p.cmd1) p.cmd1 = getCommanderFormattedName(p.c1);
+      if (p.c2 && !p.cmd2) p.cmd2 = getCommanderFormattedName(p.c2);
+      if (p.c3 && !p.cmd3) p.cmd3 = getCommanderFormattedName(p.c3);
+    });
+  });
 
   try {
     const res = await postToGoogleAppsScript({
@@ -9885,6 +10018,8 @@ function updateMCGGCommander(arg1, arg2, arg3, arg4) {
   if (!list || !list[idx]) return;
 
   list[idx][cmdKey] = cmdId;
+  const numKey = cmdKey.replace('c', '');
+  list[idx][`cmd${numKey}`] = getCommanderFormattedName(cmdId);
 
   // Validasi otomatis sanksi jika Ronde 2 menggunakan commander yang sama dengan Ronde 1
   if (cmdKey === 'c2' || cmdKey === 'c1') {
@@ -10247,8 +10382,9 @@ function drawMatchPool(matchNum, targetLobbyKey) {
 
   // Bersihkan kolom commander di tabel jika diacak ulang
   currentList.forEach(p => {
-    if (matchNum === 1) p.c1 = '';
-    if (matchNum === 2) p.c2 = '';
+    if (matchNum === 1) { p.c1 = ''; p.cmd1 = ''; }
+    if (matchNum === 2) { p.c2 = ''; p.cmd2 = ''; }
+    if (matchNum === 3) { p.c3 = ''; p.cmd3 = ''; }
   });
 
   localStorage.setItem('yokke_commander_draw', JSON.stringify(mcggDrawState));
@@ -10292,10 +10428,18 @@ function assignMatchPoolToPlayers(matchNum, targetLobbyKey) {
       commander: cmd
     });
 
-    if (matchNum === 1) player.c1 = cmd.id;
+    if (matchNum === 1) {
+      player.c1 = cmd.id;
+      player.cmd1 = getCommanderFormattedName(cmd);
+    }
     if (matchNum === 2) {
       player.c2 = cmd.id;
+      player.cmd2 = getCommanderFormattedName(cmd);
       validateMCGGDuplicateCommander(lobbyKey, i);
+    }
+    if (matchNum === 3) {
+      player.c3 = cmd.id;
+      player.cmd3 = getCommanderFormattedName(cmd);
     }
   });
 
@@ -10379,7 +10523,11 @@ function resetLobbyDraw(lobbyKey) {
   const list = mcggLobbies[lobbyKey] || [];
   list.forEach(p => {
     p.c1 = '';
+    p.cmd1 = '';
     p.c2 = '';
+    p.cmd2 = '';
+    p.c3 = '';
+    p.cmd3 = '';
   });
 
   saveState();
