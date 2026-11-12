@@ -173,6 +173,32 @@ runTest('1.10 Verifikasi datalist dan handler pembaruan otomatis di index.html d
   assert(appCode.includes('function handleMcggNameInput('), 'Harus ada handler handleMcggNameInput');
 });
 
+runTest('1.11 Tie-Breaker MCGG: Prioritas Peringkat Tertinggi yang Dicapai saat Poin Sama', () => {
+  const appCode = fs.readFileSync(path.join(__dirname, '../app.js'), 'utf8');
+  assert(appCode.includes('function compareMCGGPlayers('), 'Harus ada fungsi compareMCGGPlayers');
+  
+  const startIdx = appCode.indexOf('function compareMCGGPlayers(');
+  const endIdx = appCode.indexOf('function syncMCGGSemiFinal(');
+  const fnCode = appCode.substring(startIdx, endIdx);
+  const compareMCGGPlayers = new Function(fnCode + '\nreturn compareMCGGPlayers;')();
+
+  // Kasus 1: Poin sama (-2 vs -2). Player A finish [7, 5, 3] (Best: 3), Player B finish [4, 8, 4] (Best: 4)
+  const playerA = { name: 'Hipp', r1: 7, r2: 5, r3: 3, total: -2, penalty: 0 };
+  const playerB = { name: 'BagusSt', r1: 4, r2: 8, r3: 4, total: -2, penalty: 0 };
+  assert(compareMCGGPlayers(playerA, playerB) < 0, 'Hipp (Best: 3) harus lebih unggul dari BagusSt (Best: 4)');
+
+  // Kasus 2: Poin sama (+4 vs +4). Player C [1, 2, 7] (MVP / Best: 1), Player D [2, 6, 2] (Best: 2)
+  const playerC = { name: 'Mugiwara', r1: 1, r2: 2, r3: 7, total: 4, penalty: 0 };
+  const playerD = { name: 'Wienie.10', r1: 2, r2: 6, r3: 2, total: 4, penalty: 0 };
+  assert(compareMCGGPlayers(playerC, playerD) < 0, 'Mugiwara (Juara 1) harus lebih unggul dari Wienie.10 (Juara 2)');
+
+  // Kasus 3: Poin sama (-3 vs -3). Player E [2, 8, 6] (Best: 2), Player F [6, 7, 3] (Best: 3)
+  const playerE = { name: 'Yokke.DHANNKEBOT', r1: 2, r2: 8, r3: 6, total: -3, penalty: 0 };
+  const playerF = { name: 'Mokondo.Hideung', r1: 6, r2: 7, r3: 3, total: -3, penalty: 0 };
+  assert(compareMCGGPlayers(playerE, playerF) < 0, 'Yokke.DHANNKEBOT (Best: 2) harus lebih unggul dari Mokondo.Hideung (Best: 3)');
+});
+
+
 // ----------------------------------------------------
 // SUITE 2: ATURAN VALIDASI REGISTRASI & INTEGRITAS ROSTER
 // ----------------------------------------------------

@@ -82,7 +82,7 @@ try {
 
 let currentAdminPin = sessionStorage.getItem('yokke_admin_session_auth') || "";
 const ADMIN_PIN = "YOKKE2026_";
-const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwadUI9_Ofyg8BP3ovaTLbW-zqocCXtwBEAqgDsHSsSAJiEJHcdtvaykmGjzGxA5KIB7Q/exec";
+const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyUZMfaQAiMFSHiLUTJq35HIY1JmMeyza3s3NZUPzLx0UKDOXaSdSxZiTK9p1yR5l5_VA/exec";
 
 /**
  * Helper fetch terpusat untuk komunikasi POST dengan Google Apps Script Web App.
@@ -530,73 +530,2314 @@ let groupPlayoffMatches = normalizeGroupPlayoffMatches(savedPlayoffData);
 let currentMCGGLobby = 'LOBBY_A';
 // 5 Lobi Kualifikasi Resmi MCGG Turnamen Yokke Squad 2026 (Sesuai Hasil Pertandingan Resmi Match 1-3)
 const DEFAULT_MCGG_LOBBIES = {
-  LOBBY_A: [
-    { name: 'Daniel Reimond', nickname: 'jonomon19', gameId: '6652814 (4125)', dept: '', r1: 3, r2: 6, r3: 2, c1: 'diggie', cmd1: 'Diggie [Eggie]', c2: 'moskov', cmd2: 'Moskov', c3: 'chou', cmd3: 'Chou', penalty: 0, total: 3 },
-    { name: 'Miftah Fadhlurrahman', nickname: 'skuidwert', gameId: '3296316(4079)', dept: '', r1: 4, r2: 5, r3: 1, c1: 'fanny', cmd1: 'Fanny', c2: 'gusion', cmd2: 'Gusion [Gujun]', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 4 },
-    { name: 'Yudhistira Pratama Ramadhan', nickname: 'BuzzFeed', gameId: '3266192 (4113)', dept: '', r1: 5, r2: 3, r3: 7, c1: 'mavis', cmd1: 'Mavis [Alice]', c2: 'benny', cmd2: 'Benny [Popol]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: -2 },
-    { name: 'Aziz Nur Maulana', nickname: '4212', gameId: '9658392 (4020)', dept: '', r1: 6, r2: 7, r3: 4, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'mavis', cmd2: 'Mavis [Alice]', c3: 'alice', cmd3: 'Alice [Mavis]', penalty: 0, total: -4 },
-    { name: 'Agil Patriosa', nickname: 'Necrophos', gameId: '111959630 (4261)', dept: '', r1: 8, r2: 8, r3: 8, c1: 'harper', cmd1: 'Harper [Alucard]', c2: 'dyrroth', cmd2: 'Dyrroth', c3: '', cmd3: '', penalty: 0, total: -12 },
-    { name: 'Raihan Purnama', nickname: 'hutanlindung', gameId: '17768274 (4031)', dept: '', r1: 1, r2: 1, r3: 5, c1: 'cyclops', cmd1: 'Cyclops [Asta]', c2: 'floryn', cmd2: 'Floryn [Dubi]', c3: 'vale', cmd3: 'Vale', penalty: 0, total: 7 },
-    { name: 'Dandy Nasri', nickname: 'Wienie.10', gameId: '3180808 (4068)', dept: '', r1: 2, r2: 2, r3: 6, c1: 'paquito', cmd1: 'Paquito', c2: 'valir', cmd2: 'Valir', c3: 'paquito', cmd3: 'Paquito', penalty: 0, total: 4 },
-    { name: 'MUHAMMAD FAUZI KURNIAWAN', nickname: 'Alis Setan17', gameId: '5488262 (4097)', dept: '', r1: 7, r2: 4, r3: 3, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'layla', cmd2: 'Layla', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 0 }
+  "LOBBY_A": [
+    {
+      "name": "Daniel Reimond",
+      "dept": "IT/QA",
+      "nickname": "jonomon19",
+      "gameId": "6652814 (4125)",
+      "r1": 3,
+      "c1": "Diggie [Eggie]",
+      "cmd1": "Diggie [Eggie]",
+      "r2": 6,
+      "c2": "Moskov",
+      "cmd2": "Moskov",
+      "r3": 2,
+      "c3": "Chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 0
+    },
+    {
+      "name": "Miftah Fadhlurrahman",
+      "dept": "Quality Assurance",
+      "nickname": "skuidwert",
+      "gameId": "3296316(4079)",
+      "r1": 4,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 5,
+      "c2": "Gusion [Gujun]",
+      "cmd2": "Gusion [Gujun]",
+      "r3": 1,
+      "c3": "Dubi [Kalea]",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 1
+    },
+    {
+      "name": "Yudhistira Pratama Ramadhan",
+      "dept": "ADO BANDUNG",
+      "nickname": "BuzzFeed",
+      "gameId": "3266192 (4113)",
+      "r1": 5,
+      "c1": "Mavis [Alice]",
+      "cmd1": "Mavis [Alice]",
+      "r2": 3,
+      "c2": "Benny [Popol]",
+      "cmd2": "Benny [Popol]",
+      "r3": 7,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": -2,
+      "mvpCount": 0
+    },
+    {
+      "name": "Aziz Nur Maulana",
+      "dept": "IT Engineering",
+      "nickname": "4212",
+      "gameId": "9658392 (4020)",
+      "r1": 6,
+      "c1": "Remy [Lancelot]",
+      "cmd1": "Remy [Lancelot]",
+      "r2": 7,
+      "c2": "Mavis [Alice]",
+      "cmd2": "Mavis [Alice]",
+      "r3": 4,
+      "c3": "Alice [Mavis]",
+      "cmd3": "Alice [Mavis]",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 0
+    },
+    {
+      "name": "Agil Patriosa",
+      "dept": "Risk Management",
+      "nickname": "Necrophos",
+      "gameId": "111959630 (4261)",
+      "r1": 8,
+      "c1": "Harper [Alucard]",
+      "cmd1": "Harper [Alucard]",
+      "r2": 8,
+      "c2": "Dyrroth",
+      "cmd2": "Dyrroth",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -12,
+      "mvpCount": 0
+    },
+    {
+      "name": "Raihan Purnama",
+      "dept": "OPPI",
+      "nickname": "hutanlindung",
+      "gameId": "17768274 (4031)",
+      "r1": 1,
+      "c1": "Cyclops [Asta]",
+      "cmd1": "Cyclops [Asta]",
+      "r2": 1,
+      "c2": "Floryn [Dubi]",
+      "cmd2": "Floryn [Dubi]",
+      "r3": 5,
+      "c3": "Vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": 7,
+      "mvpCount": 2
+    },
+    {
+      "name": "Dandy Nasri",
+      "dept": "Change&Release Management",
+      "nickname": "Wienie.10",
+      "gameId": "3180808 (4068)",
+      "r1": 2,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 2,
+      "c2": "Valir",
+      "cmd2": "Valir",
+      "r3": 6,
+      "c3": "Paquito",
+      "cmd3": "Paquito",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 0
+    },
+    {
+      "name": "MUHAMMAD FAUZI KURNIAWAN",
+      "dept": "Assistant Manager / Mercant business partnership",
+      "nickname": "Alis Setan17",
+      "gameId": "5488262 (4097)",
+      "r1": 7,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 4,
+      "c2": "Layla",
+      "cmd2": "Layla",
+      "r3": 3,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 0,
+      "mvpCount": 0
+    }
   ],
-  LOBBY_B: [
-    { name: 'Bagus Setiawan', nickname: 'BagusSt', gameId: '3501438 (4089)', dept: '', r1: 3, r2: 1, r3: 4, c1: 'yuzhong', cmd1: 'Yu Zhong [Pao]', c2: 'ruby', cmd2: 'Ruby [Bersi]', c3: 'chou', cmd3: 'Chou', penalty: 0, total: 7 },
-    { name: 'Muhammad Teguh', nickname: 'Hipp', gameId: '111712748(4278)', dept: '', r1: 4, r2: 4, r3: 5, c1: 'fanny', cmd1: 'Fanny', c2: 'popol', cmd2: 'Popol [Benny]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 1 },
-    { name: 'Sulistiyo Yonatan', nickname: 'Yona', gameId: '2355574 (4027)', dept: '', r1: 1, r2: 2, r3: 1, c1: 'chou', cmd1: 'Chou', c2: 'buss', cmd2: 'Buss [Harley]', c3: 'layla', cmd3: 'Layla', penalty: 0, total: 11 },
-    { name: 'Robih Dini', nickname: 'mangonet', gameId: '111819538 (4253)', dept: '', r1: 6, r2: 7, r3: 6, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: 'guinevere', cmd2: 'Guinevere', c3: 'chou', cmd3: 'Chou', penalty: 0, total: -7 },
-    { name: 'Faldi Rasis Purnomo', nickname: 'En D M0', gameId: '1645656 (4002)', dept: '', r1: 2, r2: 5, r3: 2, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'aurora', cmd2: 'Aurora', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 5 },
-    { name: 'Elrizki Mardhi Hasan', nickname: 'Bernadetha', gameId: '4543762 (4048)', dept: '', r1: 8, r2: 8, r3: 8, c1: 'vale', cmd1: 'Vale', c2: 'lukas', cmd2: 'Lukas', c3: '', cmd3: '', penalty: 0, total: -12 },
-    { name: 'Sherly Aprilia', nickname: 'Cookie S', gameId: '667212467 (8653)', dept: '', r1: 7, r2: 3, r3: 3, c1: 'moskov', cmd1: 'Moskov', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: 'dubi', cmd3: 'Dubi [Kalea]', penalty: 0, total: 1 },
-    { name: 'Amsal Robinhot', nickname: 'dlya las', gameId: '7736110 (4124)', dept: '', r1: 5, r2: 6, r3: 7, c1: 'aurora', cmd1: 'Aurora', c2: 'alice', cmd2: 'Alice [Mavis]', c3: 'alice', cmd3: 'Alice [Mavis]', penalty: 0, total: -6 }
+  "LOBBY_B": [
+    {
+      "name": "Bagus Setiawan",
+      "dept": "Quality Assurance",
+      "nickname": "BagusSt",
+      "gameId": "3501438 (4089)",
+      "r1": 3,
+      "c1": "Yu Zhong [Pao]",
+      "cmd1": "Yu Zhong [Pao]",
+      "r2": 1,
+      "c2": "Ruby [Bersi]",
+      "cmd2": "Ruby [Bersi]",
+      "r3": 4,
+      "c3": "wanwan",
+      "cmd3": "Wanwan",
+      "penalty": 0,
+      "total": 7,
+      "mvpCount": 1
+    },
+    {
+      "name": "Muhammad Teguh",
+      "dept": "IT Quality Assurance / IT QA",
+      "nickname": "Hipp",
+      "gameId": "111712748(4278",
+      "r1": 4,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 4,
+      "c2": "Popol [Benny]",
+      "cmd2": "Popol [Benny]",
+      "r3": 5,
+      "c3": "selena",
+      "cmd3": "Selena [Karina]",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0
+    },
+    {
+      "name": "Sulistiyo Yonatan",
+      "dept": "Marketing Yokke / ADO MEDAN",
+      "nickname": "Yona",
+      "gameId": "2355574 (4027)",
+      "r1": 1,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 2,
+      "c2": "Buss [Harley]",
+      "cmd2": "Buss [Harley]",
+      "r3": 3,
+      "c3": "layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 9,
+      "mvpCount": 1
+    },
+    {
+      "name": "Robih Dini",
+      "dept": "Middleware Engineering",
+      "nickname": "mangonet",
+      "gameId": "111819538 (4253)",
+      "r1": 6,
+      "c1": "Eggie [Diggie]",
+      "cmd1": "Eggie [Diggie]",
+      "r2": 7,
+      "c2": "Guinevere",
+      "cmd2": "Guinevere",
+      "r3": 6,
+      "c3": "wanwan",
+      "cmd3": "Wanwan",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0
+    },
+    {
+      "name": "Faldi Rasis Purnomo",
+      "dept": "Enterprise Risk Management / PRM",
+      "nickname": "En D M0",
+      "gameId": "1645656 (4002)",
+      "r1": 2,
+      "c1": "Dubi [Kalea]",
+      "cmd1": "Dubi [Kalea]",
+      "r2": 5,
+      "c2": "Aurora",
+      "cmd2": "Aurora",
+      "r3": 2,
+      "c3": "harper",
+      "cmd3": "Harper [Alucard]",
+      "penalty": 0,
+      "total": 5,
+      "mvpCount": 0
+    },
+    {
+      "name": "Elrizki Mardhi Hasan",
+      "dept": "OPPI",
+      "nickname": "Bernadetha",
+      "gameId": "4543762 (4048)",
+      "r1": 8,
+      "c1": "Vale",
+      "cmd1": "Vale",
+      "r2": 8,
+      "c2": "Lukas",
+      "cmd2": "Lukas",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -12,
+      "mvpCount": 0
+    },
+    {
+      "name": "Sherly Aprilia",
+      "dept": "LVM 1",
+      "nickname": "Cookie S",
+      "gameId": "667212467 (8653)",
+      "r1": 7,
+      "c1": "Moskov",
+      "cmd1": "Moskov",
+      "r2": 3,
+      "c2": "Dubi [Kalea]",
+      "cmd2": "Dubi [Kalea]",
+      "r3": 1,
+      "c3": "harper",
+      "cmd3": "Harper [Alucard]",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 1
+    },
+    {
+      "name": "Amsal Robinhot",
+      "dept": "Inventory Management",
+      "nickname": "dlya las",
+      "gameId": "7736110 (4124)",
+      "r1": 5,
+      "c1": "Aurora",
+      "cmd1": "Aurora",
+      "r2": 6,
+      "c2": "Alice [Mavis]",
+      "cmd2": "Alice [Mavis]",
+      "r3": 7,
+      "c3": "selena",
+      "cmd3": "Selena [Karina]",
+      "penalty": 0,
+      "total": -6,
+      "mvpCount": 0
+    }
   ],
-  LOBBY_C: [
-    { name: 'ANDHIKA BAYU PRASETYO', nickname: 'H O K K I E', gameId: '2336317 (4053)', dept: '', r1: 1, r2: 3, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: 'eggie', cmd2: 'Eggie [Diggie]', c3: '', cmd3: '', penalty: 0, total: 6 },
-    { name: 'Joko waluyono', nickname: 'Xylo^', gameId: '2357103 (4071)', dept: '', r1: 7, r2: 2, r3: 0, c1: 'harley', cmd1: 'Harley [Buss]', c2: 'harley', cmd2: 'Harley [Buss]', c3: '', cmd3: '', penalty: 0, total: 0 },
-    { name: 'FAJAR GILLES TIRANO', nickname: 'Mugiwara', gameId: '3122743 (4122)', dept: '', r1: 3, r2: 1, r3: 0, c1: 'chou', cmd1: 'Chou', c2: 'chou', cmd2: 'Chou', c3: '', cmd3: '', penalty: 0, total: 6 },
-    { name: 'Gilang Fandi Setiaji', nickname: 'sadistic_killer', gameId: '4117658(4148)', dept: '', r1: 4, r2: 6, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: 'kalea', cmd2: 'Kalea [Dubi]', c3: '', cmd3: '', penalty: 0, total: -1 },
-    { name: 'Irza Muttaqin', nickname: 'Tokyo', gameId: '10610516(4048)', dept: '', r1: 2, r2: 4, r3: 0, c1: 'layla', cmd1: 'Layla', c2: 'franco', cmd2: 'Franco [Ragnar]', c3: '', cmd3: '', penalty: 0, total: 4 },
-    { name: 'M ikhsan', nickname: 'Ganool', gameId: '16725620 (4014)', dept: '', r1: 6, r2: 5, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: 'ling', cmd2: 'Ling', c3: '', cmd3: '', penalty: 0, total: -3 },
-    { name: 'Dhimas Saputro', nickname: 'dhimssky', gameId: '20610458 (4119)', dept: '', r1: 5, r2: 7, r3: 0, c1: 'gusion', cmd1: 'Gusion [Gujun]', c2: 'luoyi', cmd2: 'Luo Yi [Yuki]', c3: '', cmd3: '', penalty: 0, total: -4 }
+  "LOBBY_C": [
+    {
+      "name": "ANDHIKA BAYU PRASETYO",
+      "dept": "Quality Assurance",
+      "nickname": "H O K K I E",
+      "gameId": "2336317 (4053)",
+      "r1": 1,
+      "c1": "Remy [Lancelot]",
+      "cmd1": "Remy [Lancelot]",
+      "r2": 3,
+      "c2": "Eggie [Diggie]",
+      "cmd2": "Eggie [Diggie]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1
+    },
+    {
+      "name": "Joko waluyono",
+      "dept": "MY / Ado bandung",
+      "nickname": "Xylo^",
+      "gameId": "2357103 (4071)",
+      "r1": 7,
+      "c1": "Harley [Buss]",
+      "cmd1": "Harley [Buss]",
+      "r2": 2,
+      "c2": "Harley [Buss]",
+      "cmd2": "Harley [Buss]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 0
+    },
+    {
+      "name": "FAJAR GILLES TIRANO",
+      "dept": "Ado jakarta kota",
+      "nickname": "Mugiwara",
+      "gameId": "3122743 (4122)",
+      "r1": 3,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 1,
+      "c2": "Chou",
+      "cmd2": "Chou",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1
+    },
+    {
+      "name": "Gilang Fandi Setiaji",
+      "dept": "Middleware Engineering / IT Engineering",
+      "nickname": "sadistic_killer",
+      "gameId": "4117658(4148)",
+      "r1": 4,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 6,
+      "c2": "Kalea [Dubi]",
+      "cmd2": "Kalea [Dubi]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -5,
+      "mvpCount": 0
+    },
+    {
+      "name": "Irza Muttaqin",
+      "dept": "Enterprise Risk Management",
+      "nickname": "Ťøķýô",
+      "gameId": "10610516(4048)",
+      "r1": 2,
+      "c1": "Layla",
+      "cmd1": "Layla",
+      "r2": 4,
+      "c2": "Franco [Ragnar]",
+      "cmd2": "Franco [Ragnar]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 0,
+      "mvpCount": 0
+    },
+    {
+      "name": "M ikhsan",
+      "dept": "Product",
+      "nickname": "Ganool",
+      "gameId": "16725620 (4014)",
+      "r1": 6,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 5,
+      "c2": "Ling",
+      "cmd2": "Ling",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0
+    },
+    {
+      "name": "Dhimas Saputro",
+      "dept": "CRM",
+      "nickname": "dhimssky",
+      "gameId": "20610458 (4119)",
+      "r1": 5,
+      "c1": "Gusion [Gujun]",
+      "cmd1": "Gusion [Gujun]",
+      "r2": 7,
+      "c2": "Luo Yi [Yuki]",
+      "cmd2": "Luo Yi [Yuki]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -8,
+      "mvpCount": 0
+    }
   ],
-  LOBBY_D: [
-    { name: 'Muhammad Harits Eldrid', nickname: 'Eldrid', gameId: '111771260', dept: '', r1: 3, r2: 2, r3: 0, c1: 'fanny', cmd1: 'Fanny', c2: 'dubi', cmd2: 'Dubi [Kalea]', c3: '', cmd3: '', penalty: 0, total: 5 },
-    { name: 'Muh Asrul', nickname: 'Odet tiktok', gameId: '13492185 (4170)', dept: '', r1: 1, r2: 3, r3: 0, c1: 'dubi', cmd1: 'Dubi [Kalea]', c2: 'alice', cmd2: 'Alice [Mavis]', c3: '', cmd3: '', penalty: 0, total: 6 },
-    { name: 'Rani Tiara Putri', nickname: 'Queen•', gameId: '86774755 (4070)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'ruby', cmd1: 'Ruby [Bersi]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 },
-    { name: 'Setyo Haryo Alifianto', nickname: 'whyJude', gameId: '9585223 (4098)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'johnson', cmd1: 'Johnson [Kaboom]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
-    { name: 'Laga Al Ahli', nickname: 'Laga Al Ahli', gameId: '1605612 (1007)', dept: '', r1: 6, r2: 0, r3: 0, c1: 'remy', cmd1: 'Remy [Lancelot]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -2 },
-    { name: 'Cikal Yulanda', nickname: 'Oweysis', gameId: '13862548 (4154)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
-    { name: 'David Iskandar', nickname: 'David Iskandar', gameId: '5633899 & 4199', dept: '', r1: 2, r2: 1, r3: 0, c1: 'layla', cmd1: 'Layla', c2: 'layla', cmd2: 'Layla', c3: '', cmd3: '', penalty: 0, total: 7 }
+  "LOBBY_D": [
+    {
+      "name": "Muhammad Harits Eldrid",
+      "dept": "Quality Assurance",
+      "nickname": "Eldrid",
+      "gameId": "111771260",
+      "r1": 3,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 2,
+      "c2": "Dubi [Kalea]",
+      "cmd2": "Dubi [Kalea]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0
+    },
+    {
+      "name": "Muh Asrul",
+      "dept": "Ado Thamrin",
+      "nickname": "Odet tiktok",
+      "gameId": "13492185 (4170)",
+      "r1": 1,
+      "c1": "Dubi [Kalea]",
+      "cmd1": "Dubi [Kalea]",
+      "r2": 3,
+      "c2": "Alice [Mavis]",
+      "cmd2": "Alice [Mavis]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1
+    },
+    {
+      "name": "Rani Tiara Putri",
+      "dept": "Marketing Yokke / ADO Palembang",
+      "nickname": "Queen•",
+      "gameId": "86774755 (4070)",
+      "r1": 4,
+      "c1": "Ruby [Bersi]",
+      "cmd1": "Ruby [Bersi]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0
+    },
+    {
+      "name": "Setyo Haryo Alifianto",
+      "dept": "IT DEV",
+      "nickname": "whyJude",
+      "gameId": "9585223 (4098)",
+      "r1": 5,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -9,
+      "mvpCount": 0
+    },
+    {
+      "name": "Laga Al Ahli",
+      "dept": "ERM/PRM",
+      "nickname": "Exjoyness.",
+      "gameId": "1605612 (1007)",
+      "r1": 6,
+      "c1": "Remy [Lancelot]",
+      "cmd1": "Remy [Lancelot]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -10,
+      "mvpCount": 0
+    },
+    {
+      "name": "Cikal Yulanda",
+      "dept": "Planning & Service Operations",
+      "nickname": "Oweysis",
+      "gameId": "13862548 (4154)",
+      "r1": 7,
+      "c1": "",
+      "cmd1": "",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -11,
+      "mvpCount": 0
+    },
+    {
+      "name": "David Iskandar",
+      "dept": "Project Management BMRI",
+      "nickname": "Disk",
+      "gameId": "5633899 & 4199",
+      "r1": 2,
+      "c1": "Layla",
+      "cmd1": "Layla",
+      "r2": 1,
+      "c2": "Layla",
+      "cmd2": "Layla",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 1
+    }
   ],
-  LOBBY_E: [
-    { name: 'Rendy Wibi Pratama', nickname: 'EhhChaky', gameId: '3221758 (4129)', dept: '', r1: 3, r2: 0, r3: 0, c1: 'popol', cmd1: 'Popol [Benny]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 2 },
-    { name: 'Arief Hidayat', nickname: 'Kuproy', gameId: '111695710 (4291)', dept: '', r1: 7, r2: 0, r3: 0, c1: '', cmd1: '', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -3 },
-    { name: 'Elham Yudhistira', nickname: 'KoncoKentel', gameId: '2559856 (4081)', dept: '', r1: 2, r2: 0, r3: 0, c1: 'eggie', cmd1: 'Eggie [Diggie]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 3 },
-    { name: 'Eko Marwanto Putro', nickname: 'BladeSpy', gameId: '5730333 (4059)', dept: '', r1: 1, r2: 0, r3: 0, c1: 'minotaur', cmd1: 'Minotaur [Aldous]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 4 },
-    { name: 'Fardhan Mauladi', nickname: 'Yokke.DHANNKEBOT', gameId: '111118942(4283)', dept: '', r1: 6, r2: 0, r3: 0, c1: 'paquito', cmd1: 'Paquito', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -2 },
-    { name: 'Alvin Elshadai Pangaribuan', nickname: 'Mokondo.Hideung', gameId: '20564452 (4150)', dept: '', r1: 5, r2: 0, r3: 0, c1: 'alice', cmd1: 'Alice [Mavis]', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: -1 },
-    { name: 'Muhamad Fajar Samudra', nickname: 'mfsamudra', gameId: '4881010 (4163)', dept: '', r1: 4, r2: 0, r3: 0, c1: 'chou', cmd1: 'Chou', c2: '', cmd2: '', c3: '', cmd3: '', penalty: 0, total: 1 }
+  "LOBBY_E": [
+    {
+      "name": "Rendy Wibi Pratama",
+      "dept": "Quality Assurance",
+      "nickname": "EhhChaky",
+      "gameId": "3221758 (4129)",
+      "r1": 3,
+      "c1": "Popol [Benny]",
+      "cmd1": "Popol [Benny]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -6,
+      "mvpCount": 0
+    },
+    {
+      "name": "Arief Hidayat",
+      "dept": "Sqm palembang",
+      "nickname": "Kuproy",
+      "gameId": "111695710 (4291)",
+      "r1": 7,
+      "c1": "",
+      "cmd1": "",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -11,
+      "mvpCount": 0
+    },
+    {
+      "name": "Elham Yudhistira",
+      "dept": "IT Dev",
+      "nickname": "KoncoKentel",
+      "gameId": "2559856 (4081)",
+      "r1": 2,
+      "c1": "Eggie [Diggie]",
+      "cmd1": "Eggie [Diggie]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -5,
+      "mvpCount": 0
+    },
+    {
+      "name": "Eko Marwanto Putro",
+      "dept": "Risk Management Group",
+      "nickname": "BladeSpy",
+      "gameId": "5730333 (4059)",
+      "r1": 1,
+      "c1": "Minotaur [Aldous]",
+      "cmd1": "Minotaur [Aldous]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 1
+    },
+    {
+      "name": "Fardhan Mauladi",
+      "dept": "Product Management",
+      "nickname": "Yokke.DHANNKEBOT",
+      "gameId": "111118942(4283)",
+      "r1": 6,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -10,
+      "mvpCount": 0
+    },
+    {
+      "name": "Alvin Elshadai Pangaribuan",
+      "dept": "Change&Release Management",
+      "nickname": "Mokondo.Hideung",
+      "gameId": "20564452 (4150)",
+      "r1": 5,
+      "c1": "Alice [Mavis]",
+      "cmd1": "Alice [Mavis]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -9,
+      "mvpCount": 0
+    },
+    {
+      "name": "Muhamad Fajar Samudra",
+      "dept": "Project Management BMRI",
+      "nickname": "mfsamudra",
+      "gameId": "4881010 (4163)",
+      "r1": 4,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0
+    }
   ],
-  SEMI_A: [],
-  SEMI_B: [],
-  GRAND_FINAL: []
+  "SEMI_A": [
+    {
+      "name": "Raihan Purnama",
+      "nickname": "hutanlindung",
+      "gameId": "17768274 (4031)",
+      "dept": "OPPI",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "lancelot", "cmd1": "Lancelot [Remy]", "c2": "kaboom", "cmd2": "Kaboom [Johnson]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Daniel Reimond",
+      "nickname": "jonomon19",
+      "gameId": "6652814 (4125)",
+      "dept": "IT/QA",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "minotaur", "cmd1": "Minotaur [Brown]", "c2": "lancelot", "cmd2": "Lancelot [Remy]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Faldi Rasis Purnomo",
+      "nickname": "En D M0",
+      "gameId": "1645656 (4002)",
+      "dept": "Enterprise Risk Management / PRM",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "floryn", "cmd1": "Floryn [Dubi]", "c2": "popol", "cmd2": "Popol [Benny]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "M ikhsan",
+      "nickname": "Ganool",
+      "gameId": "16725620 (4014)",
+      "dept": "Product",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "kalea", "cmd1": "Kalea [Dubi]", "c2": "layla", "cmd2": "Layla", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "FAJAR GILLES TIRANO",
+      "nickname": "Mugiwara",
+      "gameId": "3122743 (4122)",
+      "dept": "Ado jakarta kota",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "kagura", "cmd1": "Kagura [Saki]", "c2": "johnson", "cmd2": "Johnson [Kaboom]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Muh Asrul",
+      "nickname": "Odet tiktok",
+      "gameId": "13492185 (4170)",
+      "dept": "Ado Thamrin",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "cyclops", "cmd1": "Cyclops [Asta]", "c2": "karina", "cmd2": "Karina", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Rendy Wibi Pratama",
+      "nickname": "EhhChaky",
+      "gameId": "3221758 (4129)",
+      "dept": "Quality Assurance",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "brown", "cmd1": "Brown [Minotaur]", "c2": "eggie", "cmd2": "Eggie [Diggie]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "MUHAMMAD FAUZI KURNIAWAN",
+      "nickname": "Alis Setan17",
+      "gameId": "5488262 (4097)",
+      "dept": "Assistant Manager / Mercant business partnership",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "karina", "cmd1": "Karina", "c2": "brody", "cmd2": "Brody", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    }
+  ],
+  "SEMI_B": [
+    {
+      "name": "Joko waluyono",
+      "nickname": "Xylo^",
+      "gameId": "2357103 (4071)",
+      "dept": "MY / Ado bandung",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "alice", "cmd1": "Alice [Mavis]", "c2": "chou", "cmd2": "Chou", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "ANDHIKA BAYU PRASETYO",
+      "nickname": "H O K K I E",
+      "gameId": "2336317 (4053)",
+      "dept": "Quality Assurance",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "benny", "cmd1": "Benny [Popol]", "c2": "fanny", "cmd2": "Fanny", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Sulistiyo Yonatan",
+      "nickname": "Yona",
+      "gameId": "2355574 (4027)",
+      "dept": "Quality Assurance",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "chou", "cmd1": "Chou", "c2": "kalea", "cmd2": "Kalea [Dubi]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Yudhistira Pratama Ramadhan",
+      "nickname": "BuzzFeed",
+      "gameId": "3266192 (4113)",
+      "dept": "Quality Assurance",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "eva", "cmd1": "Eva", "c2": "ling", "cmd2": "Ling", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Laga Al Ahli",
+      "nickname": "Exjoyness.",
+      "gameId": "5475396 (4097)",
+      "dept": "IT/QA",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "mavis", "cmd1": "Mavis [Alice]", "c2": "vale", "cmd2": "Vale", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Dandy Nasri",
+      "nickname": "Wienie.10",
+      "gameId": "3180808 (4068)",
+      "dept": "Change&Release Management",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "yuzhong", "cmd1": "Yu Zhong [Pao]", "c2": "alucard", "cmd2": "Alucard [Harper]", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Eko Marwanto Putro",
+      "nickname": "BladeSpy",
+      "gameId": "5730333 (4059)",
+      "dept": "Risk Management Group",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "dubi", "cmd1": "Dubi [Kalea]", "c2": "guinevere", "cmd2": "Guinevere", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    },
+    {
+      "name": "Muhamad Fajar Samudra",
+      "nickname": "mfsamudra",
+      "gameId": "4881010 (4163)",
+      "dept": "Project Management BMRI",
+      "r1": 0, "r2": 0, "r3": 0,
+      "c1": "abe", "cmd1": "Abe", "c2": "austus", "cmd2": "Austus", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+    }
+  ],
+  "GRAND_FINAL": [
+    {
+      "name": "TBD (Top 1 Semifinal A)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 2 Semifinal A)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 3 Semifinal A)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 4 Semifinal A)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 1 Semifinal B)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 2 Semifinal B)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 3 Semifinal B)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    },
+    {
+      "name": "TBD (Top 4 Semifinal B)",
+      "nickname": "TBD",
+      "gameId": "-",
+      "r1": 0,
+      "r2": 0,
+      "r3": 0,
+      "c1": "",
+      "c2": "",
+      "c3": "",
+      "penalty": 0,
+      "total": 0,
+      "isTBD": true
+    }
+  ],
+  "WILDCARD": [
+    {
+      "name": "Aziz Nur Maulana",
+      "dept": "IT Engineering",
+      "nickname": "4212",
+      "gameId": "9658392 (4020)",
+      "r1": 3,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 0
+    },
+    {
+      "name": "Agil Patriosa",
+      "dept": "Risk Management",
+      "nickname": "Necrophos",
+      "gameId": "111959630 (4261)",
+      "r1": 8,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 0
+    },
+    {
+      "name": "Robih Dini",
+      "dept": "Middleware Engineering",
+      "nickname": "mangonet",
+      "gameId": "111819538 (4253)",
+      "r1": 4,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0
+    },
+    {
+      "name": "Elrizki Mardhi Hasan",
+      "dept": "OPPI",
+      "nickname": "Bernadetha",
+      "gameId": "4543762 (4048)",
+      "r1": 1,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 0
+    },
+    {
+      "name": "Dhimas Saputro",
+      "dept": "CRM",
+      "nickname": "dhimssky",
+      "gameId": "20610458 (4119)",
+      "r1": 2,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 0
+    },
+    {
+      "name": "Cikal Yulanda",
+      "dept": "Planning & Service Operations",
+      "nickname": "Oweysis",
+      "gameId": "13862548 (4154)",
+      "r1": 0,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 0,
+      "mvpCount": 0
+    },
+    {
+      "name": "Arief Hidayat",
+      "dept": "Sqm palembang",
+      "nickname": "Kuproy",
+      "gameId": "111695710 (4291)",
+      "r1": 8,
+      "c1": "",
+      "cmd1": "",
+      "r2": 0,
+      "c2": "",
+      "cmd2": "",
+      "r3": 0,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 0
+    }
+  ],
+  "_top30Qualifiers": [
+    {
+      "name": "Raihan Purnama",
+      "dept": "OPPI",
+      "nickname": "hutanlindung",
+      "gameId": "17768274 (4031)",
+      "r1": 1,
+      "c1": "Cyclops [Asta]",
+      "cmd1": "Cyclops [Asta]",
+      "r2": 1,
+      "c2": "Floryn [Dubi]",
+      "cmd2": "Floryn [Dubi]",
+      "r3": 5,
+      "c3": "Vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": 7,
+      "mvpCount": 2,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "Miftah Fadhlurrahman",
+      "dept": "Quality Assurance",
+      "nickname": "skuidwert",
+      "gameId": "3296316(4079)",
+      "r1": 4,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 5,
+      "c2": "Gusion [Gujun]",
+      "cmd2": "Gusion [Gujun]",
+      "r3": 1,
+      "c3": "Dubi [Kalea]",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "Dandy Nasri",
+      "dept": "Change&Release Management",
+      "nickname": "Wienie.10",
+      "gameId": "3180808 (4068)",
+      "r1": 2,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 2,
+      "c2": "Valir",
+      "cmd2": "Valir",
+      "r3": 6,
+      "c3": "Paquito",
+      "cmd3": "Paquito",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "Daniel Reimond",
+      "dept": "IT/QA",
+      "nickname": "jonomon19",
+      "gameId": "6652814 (4125)",
+      "r1": 3,
+      "c1": "Diggie [Eggie]",
+      "cmd1": "Diggie [Eggie]",
+      "r2": 6,
+      "c2": "Moskov",
+      "cmd2": "Moskov",
+      "r3": 2,
+      "c3": "Chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "MUHAMMAD FAUZI KURNIAWAN",
+      "dept": "Assistant Manager / Mercant business partnership",
+      "nickname": "Alis Setan17",
+      "gameId": "5488262 (4097)",
+      "r1": 7,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 4,
+      "c2": "Layla",
+      "cmd2": "Layla",
+      "r3": 3,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 0,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "Yudhistira Pratama Ramadhan",
+      "dept": "ADO BANDUNG",
+      "nickname": "BuzzFeed",
+      "gameId": "3266192 (4113)",
+      "r1": 5,
+      "c1": "Mavis [Alice]",
+      "cmd1": "Mavis [Alice]",
+      "r2": 3,
+      "c2": "Benny [Popol]",
+      "cmd2": "Benny [Popol]",
+      "r3": 7,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": -2,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_A"
+    },
+    {
+      "name": "Sulistiyo Yonatan",
+      "dept": "Marketing Yokke / ADO MEDAN",
+      "nickname": "Yona",
+      "gameId": "2355574 (4027)",
+      "r1": 1,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 2,
+      "c2": "Buss [Harley]",
+      "cmd2": "Buss [Harley]",
+      "r3": 1,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 11,
+      "mvpCount": 2,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "Bagus Setiawan",
+      "dept": "Quality Assurance",
+      "nickname": "BagusSt",
+      "gameId": "3501438 (4089)",
+      "r1": 3,
+      "c1": "Yu Zhong [Pao]",
+      "cmd1": "Yu Zhong [Pao]",
+      "r2": 1,
+      "c2": "Ruby [Bersi]",
+      "cmd2": "Ruby [Bersi]",
+      "r3": 4,
+      "c3": "Chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 7,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "Faldi Rasis Purnomo",
+      "dept": "Enterprise Risk Management / PRM",
+      "nickname": "En D M0",
+      "gameId": "1645656 (4002)",
+      "r1": 2,
+      "c1": "Dubi [Kalea]",
+      "cmd1": "Dubi [Kalea]",
+      "r2": 5,
+      "c2": "Aurora",
+      "cmd2": "Aurora",
+      "r3": 2,
+      "c3": "Dubi [Kalea]",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 5,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "Sherly Aprilia",
+      "dept": "LVM 1",
+      "nickname": "Cookie S",
+      "gameId": "667212467 (8653)",
+      "r1": 7,
+      "c1": "Moskov",
+      "cmd1": "Moskov",
+      "r2": 3,
+      "c2": "Dubi [Kalea]",
+      "cmd2": "Dubi [Kalea]",
+      "r3": 3,
+      "c3": "Dubi [Kalea]",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "Muhammad Teguh",
+      "dept": "IT Quality Assurance / IT QA",
+      "nickname": "Hipp",
+      "gameId": "111712748(4278",
+      "r1": 4,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 4,
+      "c2": "Popol [Benny]",
+      "cmd2": "Popol [Benny]",
+      "r3": 5,
+      "c3": "Layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "Amsal Robinhot",
+      "dept": "Inventory Management",
+      "nickname": "dlya las",
+      "gameId": "7736110 (4124)",
+      "r1": 5,
+      "c1": "Aurora",
+      "cmd1": "Aurora",
+      "r2": 6,
+      "c2": "Alice [Mavis]",
+      "cmd2": "Alice [Mavis]",
+      "r3": 7,
+      "c3": "Alice [Mavis]",
+      "cmd3": "Alice [Mavis]",
+      "penalty": 0,
+      "total": -6,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_B"
+    },
+    {
+      "name": "ANDHIKA BAYU PRASETYO",
+      "dept": "Quality Assurance",
+      "nickname": "H O K K I E",
+      "gameId": "2336317 (4053)",
+      "r1": 1,
+      "c1": "Remy [Lancelot]",
+      "cmd1": "Remy [Lancelot]",
+      "r2": 3,
+      "c2": "Eggie [Diggie]",
+      "cmd2": "Eggie [Diggie]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "FAJAR GILLES TIRANO",
+      "dept": "Ado jakarta kota",
+      "nickname": "Mugiwara",
+      "gameId": "3122743 (4122)",
+      "r1": 3,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 1,
+      "c2": "Chou",
+      "cmd2": "Chou",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "Irza Muttaqin",
+      "dept": "Enterprise Risk Management",
+      "nickname": "Ťøķýô",
+      "gameId": "10610516(4048)",
+      "r1": 2,
+      "c1": "Layla",
+      "cmd1": "Layla",
+      "r2": 4,
+      "c2": "Franco [Ragnar]",
+      "cmd2": "Franco [Ragnar]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 0,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "Joko waluyono",
+      "dept": "MY / Ado bandung",
+      "nickname": "Xylo^",
+      "gameId": "2357103 (4071)",
+      "r1": 7,
+      "c1": "Harley [Buss]",
+      "cmd1": "Harley [Buss]",
+      "r2": 2,
+      "c2": "Harley [Buss]",
+      "cmd2": "Harley [Buss]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "Gilang Fandi Setiaji",
+      "dept": "Middleware Engineering / IT Engineering",
+      "nickname": "sadistic_killer",
+      "gameId": "4117658(4148)",
+      "r1": 4,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 6,
+      "c2": "Kalea [Dubi]",
+      "cmd2": "Kalea [Dubi]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -5,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "M ikhsan",
+      "dept": "Product",
+      "nickname": "Ganool",
+      "gameId": "16725620 (4014)",
+      "r1": 6,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 5,
+      "c2": "Ling",
+      "cmd2": "Ling",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_C"
+    },
+    {
+      "name": "David Iskandar",
+      "dept": "Project Management BMRI",
+      "nickname": "Disk",
+      "gameId": "5633899 & 4199",
+      "r1": 2,
+      "c1": "Layla",
+      "cmd1": "Layla",
+      "r2": 1,
+      "c2": "Layla",
+      "cmd2": "Layla",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Muh Asrul",
+      "dept": "Ado Thamrin",
+      "nickname": "Odet tiktok",
+      "gameId": "13492185 (4170)",
+      "r1": 1,
+      "c1": "Dubi [Kalea]",
+      "cmd1": "Dubi [Kalea]",
+      "r2": 3,
+      "c2": "Alice [Mavis]",
+      "cmd2": "Alice [Mavis]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Muhammad Harits Eldrid",
+      "dept": "Quality Assurance",
+      "nickname": "Eldrid",
+      "gameId": "111771260",
+      "r1": 3,
+      "c1": "Fanny",
+      "cmd1": "Fanny",
+      "r2": 2,
+      "c2": "Dubi [Kalea]",
+      "cmd2": "Dubi [Kalea]",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Rani Tiara Putri",
+      "dept": "Marketing Yokke / ADO Palembang",
+      "nickname": "Queen•",
+      "gameId": "86774755 (4070)",
+      "r1": 4,
+      "c1": "Ruby [Bersi]",
+      "cmd1": "Ruby [Bersi]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Setyo Haryo Alifianto",
+      "dept": "IT DEV",
+      "nickname": "whyJude",
+      "gameId": "9585223 (4098)",
+      "r1": 5,
+      "c1": "Johnson [Kaboom]",
+      "cmd1": "Johnson [Kaboom]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -9,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Laga Al Ahli",
+      "dept": "ERM/PRM",
+      "nickname": "Exjoyness.",
+      "gameId": "1605612 (1007)",
+      "r1": 6,
+      "c1": "Remy [Lancelot]",
+      "cmd1": "Remy [Lancelot]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -10,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_D"
+    },
+    {
+      "name": "Eko Marwanto Putro",
+      "dept": "Risk Management Group",
+      "nickname": "BladeSpy",
+      "gameId": "5730333 (4059)",
+      "r1": 1,
+      "c1": "Minotaur [Aldous]",
+      "cmd1": "Minotaur [Aldous]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -4,
+      "mvpCount": 1,
+      "origLobby": "LOBBY_E"
+    },
+    {
+      "name": "Elham Yudhistira",
+      "dept": "IT Dev",
+      "nickname": "KoncoKentel",
+      "gameId": "2559856 (4081)",
+      "r1": 2,
+      "c1": "Eggie [Diggie]",
+      "cmd1": "Eggie [Diggie]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -5,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_E"
+    },
+    {
+      "name": "Rendy Wibi Pratama",
+      "dept": "Quality Assurance",
+      "nickname": "EhhChaky",
+      "gameId": "3221758 (4129)",
+      "r1": 3,
+      "c1": "Popol [Benny]",
+      "cmd1": "Popol [Benny]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -6,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_E"
+    },
+    {
+      "name": "Muhamad Fajar Samudra",
+      "dept": "Project Management BMRI",
+      "nickname": "mfsamudra",
+      "gameId": "4881010 (4163)",
+      "r1": 4,
+      "c1": "Chou",
+      "cmd1": "Chou",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_E"
+    },
+    {
+      "name": "Alvin Elshadai Pangaribuan",
+      "dept": "Change&Release Management",
+      "nickname": "Mokondo.Hideung",
+      "gameId": "20564452 (4150)",
+      "r1": 5,
+      "c1": "Alice [Mavis]",
+      "cmd1": "Alice [Mavis]",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -9,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_E"
+    },
+    {
+      "name": "Fardhan Mauladi",
+      "dept": "Product Management",
+      "nickname": "Yokke.DHANNKEBOT",
+      "gameId": "111118942(4283)",
+      "r1": 6,
+      "c1": "Paquito",
+      "cmd1": "Paquito",
+      "r2": 8,
+      "c2": "",
+      "cmd2": "",
+      "r3": 8,
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -10,
+      "mvpCount": 0,
+      "origLobby": "LOBBY_E"
+    }
+  ],
+  "LOBBY_LOWER": [],
+  "ROUND_32_A": [
+    {
+      "name": "Setyo Haryo Alifianto",
+      "nickname": "whyJude",
+      "gameId": "9585223 (4098)",
+      "dept": "IT DEV",
+      "r1": 8,
+      "r2": 8,
+      "r3": 8,
+      "c1": "mavis",
+      "cmd1": "Mavis [Alice]",
+      "c2": "diggie",
+      "cmd2": "Diggie [Eggie]",
+      "c3": "",
+      "cmd3": "",
+      "penalty": 0,
+      "total": -12,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "FAJAR GILLES TIRANO",
+      "nickname": "Mugiwara",
+      "gameId": "3122743 (4122)",
+      "dept": "Ado jakarta kota",
+      "r1": 1,
+      "r2": 2,
+      "r3": 7,
+      "c1": "lukas",
+      "cmd1": "Lukas",
+      "c2": "alice",
+      "cmd2": "Alice [Mavis]",
+      "c3": "dubi",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 1,
+      "isTBD": false
+    },
+    {
+      "name": "Miftah Fadhlurrahman",
+      "nickname": "skuidwert",
+      "gameId": "3296316(4079)",
+      "dept": "Quality Assurance",
+      "r1": 4,
+      "r2": 4,
+      "r3": 4,
+      "c1": "pao",
+      "cmd1": "Pao [Yu Zhong]",
+      "c2": "vexana",
+      "cmd2": "Vexana [Connie]",
+      "c3": "dubi",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Dandy Nasri",
+      "nickname": "Wienie.10",
+      "gameId": "3180808 (4068)",
+      "dept": "Change&Release Management",
+      "r1": 2,
+      "r2": 6,
+      "r3": 2,
+      "c1": "fanny",
+      "cmd1": "Fanny",
+      "c2": "gusion",
+      "cmd2": "Gusion [Gujun]",
+      "c3": "paquito",
+      "cmd3": "Paquito",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Rani Tiara Putri",
+      "nickname": "Queen•",
+      "gameId": "86774755 (4070)",
+      "dept": "Marketing Yokke / ADO Palembang",
+      "r1": 7,
+      "r2": 7,
+      "r3": 5,
+      "c1": "kaboom",
+      "cmd1": "Kaboom [Johnson]",
+      "c2": "brody",
+      "cmd2": "Brody",
+      "c3": "wanwan",
+      "cmd3": "Wanwan",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "David Iskandar",
+      "nickname": "Disk",
+      "gameId": "5633899 & 4199",
+      "dept": "Project Management BMRI",
+      "r1": 6,
+      "r2": 5,
+      "r3": 6,
+      "c1": "popol",
+      "cmd1": "Popol [Benny]",
+      "c2": "kaboom",
+      "cmd2": "Kaboom [Johnson]",
+      "c3": "vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": -5,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "ANDHIKA BAYU PRASETYO",
+      "nickname": "H O K K I E",
+      "gameId": "2336317 (4053)",
+      "dept": "Quality Assurance",
+      "r1": 5,
+      "r2": 3,
+      "r3": 1,
+      "c1": "karina",
+      "cmd1": "Karina",
+      "c2": "angela",
+      "cmd2": "Angela",
+      "c3": "chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 5,
+      "mvpCount": 1,
+      "isTBD": false
+    },
+    {
+      "name": "Raihan Purnama",
+      "nickname": "hutanlindung",
+      "gameId": "17768274 (4031)",
+      "dept": "OPPI",
+      "r1": 3,
+      "r2": 1,
+      "r3": 3,
+      "c1": "vale",
+      "cmd1": "Vale",
+      "c2": "austus",
+      "cmd2": "Aamon [Austus]",
+      "c3": "remy",
+      "cmd3": "Remy [Lancelot]",
+      "penalty": 0,
+      "total": 8,
+      "mvpCount": 1,
+      "isTBD": false
+    }
+  ],
+  "ROUND_32_B": [
+    {
+      "name": "Elrizki Mardhi Hasan",
+      "nickname": "Bernadetha",
+      "gameId": "4543762 (4048)",
+      "dept": "OPPI",
+      "r1": 5,
+      "r2": 8,
+      "r3": 1,
+      "c1": "chou",
+      "cmd1": "Chou",
+      "c2": "paquito",
+      "cmd2": "Paquito",
+      "c3": "chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": -1,
+      "mvpCount": 1,
+      "isTBD": false
+    },
+    {
+      "name": "Sherly Aprilia",
+      "nickname": "Cookie S",
+      "gameId": "667212467 (8653)",
+      "dept": "LVM 1",
+      "r1": 7,
+      "r2": 7,
+      "r3": 7,
+      "c1": "fanny",
+      "cmd1": "Fanny",
+      "c2": "fanny",
+      "cmd2": "Fanny",
+      "c3": "harper",
+      "cmd3": "Harper [Alucard]",
+      "penalty": 0,
+      "total": -9,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Amsal Robinhot",
+      "nickname": "dlya las",
+      "gameId": "7736110 (4124)",
+      "dept": "Inventory Management",
+      "r1": 8,
+      "r2": 6,
+      "r3": 5,
+      "c1": "vale",
+      "cmd1": "Vale",
+      "c2": "harper",
+      "cmd2": "Harper [Alucard]",
+      "c3": "kagura",
+      "cmd3": "Kagura [Saki]",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Joko waluyono",
+      "nickname": "Xylo^",
+      "gameId": "2357103 (4071)",
+      "dept": "MY / Ado bandung",
+      "r1": 1,
+      "r2": 1,
+      "r3": 2,
+      "c1": "lukas",
+      "cmd1": "Lukas",
+      "c2": "vale",
+      "cmd2": "Vale",
+      "c3": "vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": 11,
+      "mvpCount": 2,
+      "isTBD": false
+    },
+    {
+      "name": "Daniel Reimond",
+      "nickname": "jonomon19",
+      "gameId": "6652814 (4125)",
+      "dept": "IT/QA",
+      "r1": 4,
+      "r2": 2,
+      "r3": 3,
+      "c1": "nana",
+      "cmd1": "Nana",
+      "c2": "buss",
+      "cmd2": "Buss [Harley]",
+      "c3": "buss",
+      "cmd3": "Buss [Harley]",
+      "penalty": 0,
+      "total": 6,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Laga Al Ahli",
+      "nickname": "Exjoyness.",
+      "gameId": "1605612 (1007)",
+      "dept": "ERM/PRM",
+      "r1": 3,
+      "r2": 4,
+      "r3": 6,
+      "c1": "alice",
+      "cmd1": "Alice [Mavis]",
+      "c2": "chou",
+      "cmd2": "Chou",
+      "c3": "chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Muh Asrul",
+      "nickname": "Odet tiktok",
+      "gameId": "13492185 (4170)",
+      "dept": "Ado Thamrin",
+      "r1": 6,
+      "r2": 3,
+      "r3": 4,
+      "c1": "layla",
+      "cmd1": "Layla",
+      "c2": "dubi",
+      "cmd2": "Dubi [Kalea]",
+      "c3": "angela",
+      "cmd3": "Angela",
+      "penalty": 0,
+      "total": 1,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Irza Muttaqin",
+      "nickname": "Ťøķýô",
+      "gameId": "10610516(4048)",
+      "dept": "Enterprise Risk Management",
+      "r1": 2,
+      "r2": 5,
+      "r3": 8,
+      "c1": "chou",
+      "cmd1": "Chou",
+      "c2": "kagura",
+      "cmd2": "Kagura [Saki]",
+      "c3": "chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": -2,
+      "mvpCount": 0,
+      "isTBD": false
+    }
+  ],
+  "ROUND_32_C": [
+    {
+      "name": "Bagus Setiawan",
+      "nickname": "BagusSt",
+      "gameId": "3501438 (4089)",
+      "dept": "Quality Assurance",
+      "r1": 4,
+      "r2": 8,
+      "r3": 4,
+      "c1": "moskov",
+      "cmd1": "Moskov",
+      "c2": "remy",
+      "cmd2": "Remy [Lancelot]",
+      "c3": "fanny",
+      "cmd3": "Fanny",
+      "penalty": 0,
+      "total": -2,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Faldi Rasis Purnomo",
+      "nickname": "En D M0",
+      "gameId": "1645656 (4002)",
+      "dept": "Enterprise Risk Management / PRM",
+      "r1": 3,
+      "r2": 2,
+      "r3": 2,
+      "c1": "buss",
+      "cmd1": "Buss [Harley]",
+      "c2": "luoyi",
+      "cmd2": "Luo Yi [Yuki]",
+      "c3": "connie",
+      "cmd3": "Vexana [Connie]",
+      "penalty": 0,
+      "total": 8,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Dhimas Saputro",
+      "nickname": "dhimssky",
+      "gameId": "20610458 (4119)",
+      "dept": "CRM",
+      "r1": 8,
+      "r2": 6,
+      "r3": 5,
+      "c1": "kagura",
+      "cmd1": "Kagura [Saki]",
+      "c2": "valir",
+      "cmd2": "Valir",
+      "c3": "vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Yudhistira Pratama Ramadhan",
+      "nickname": "BuzzFeed",
+      "gameId": "3266192 (4113)",
+      "dept": "ADO BANDUNG",
+      "r1": 1,
+      "r2": 1,
+      "r3": 7,
+      "c1": "popol",
+      "cmd1": "Popol [Benny]",
+      "c2": "dyrroth",
+      "cmd2": "Dyrroth",
+      "c3": "moskov",
+      "cmd3": "Moskov",
+      "penalty": 0,
+      "total": 5,
+      "mvpCount": 2,
+      "isTBD": false
+    },
+    {
+      "name": "Muhammad Teguh",
+      "nickname": "Hipp",
+      "gameId": "111712748(4278",
+      "dept": "IT Quality Assurance / IT QA",
+      "r1": 7,
+      "r2": 5,
+      "r3": 3,
+      "c1": "dubi",
+      "cmd1": "Dubi [Kalea]",
+      "c2": "kalea",
+      "cmd2": "Kalea [Dubi]",
+      "c3": "alice",
+      "cmd3": "Alice [Mavis]",
+      "penalty": 0,
+      "total": -2,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Rendy Wibi Pratama",
+      "nickname": "EhhChaky",
+      "gameId": "3221758 (4129)",
+      "dept": "Quality Assurance",
+      "r1": 2,
+      "r2": 4,
+      "r3": 6,
+      "c1": "lancelot",
+      "cmd1": "Lancelot [Remy]",
+      "c2": "tharz",
+      "cmd2": "Lylia [Tharz]",
+      "c3": "connie",
+      "cmd3": "Vexana [Connie]",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Muhammad Harits Eldrid",
+      "nickname": "Eldrid",
+      "gameId": "111771260",
+      "dept": "Quality Assurance",
+      "r1": 5,
+      "r2": 3,
+      "r3": 8,
+      "c1": "harper",
+      "cmd1": "Harper [Alucard]",
+      "c2": "nana",
+      "cmd2": "Nana",
+      "c3": "harper",
+      "cmd3": "Harper [Alucard]",
+      "penalty": 0,
+      "total": -3,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Muhamad Fajar Samudra",
+      "nickname": "mfsamudra",
+      "gameId": "4881010 (4163)",
+      "dept": "Project Management BMRI",
+      "r1": 6,
+      "r2": 7,
+      "r3": 1,
+      "c1": "yuzhong",
+      "cmd1": "Yu Zhong [Pao]",
+      "c2": "alice",
+      "cmd2": "Alice [Mavis]",
+      "c3": "dubi",
+      "cmd3": "Dubi [Kalea]",
+      "penalty": 0,
+      "total": -1,
+      "mvpCount": 1,
+      "isTBD": false
+    }
+  ],
+  "ROUND_32_D": [
+    {
+      "name": "Eko Marwanto Putro",
+      "nickname": "BladeSpy",
+      "gameId": "5730333 (4059)",
+      "dept": "Risk Management Group",
+      "r1": 3,
+      "r2": 1,
+      "r3": 7,
+      "c1": "vale",
+      "cmd1": "Vale",
+      "c2": "vexana",
+      "cmd2": "Vexana [Connie]",
+      "c3": "vexana",
+      "cmd3": "Vexana [Connie]",
+      "penalty": 0,
+      "total": 3,
+      "mvpCount": 1,
+      "isTBD": false
+    },
+    {
+      "name": "Gilang Fandi Setiaji",
+      "nickname": "sadistic_killer",
+      "gameId": "4117658(4148)",
+      "dept": "Middleware Engineering / IT Engineering",
+      "r1": 7,
+      "r2": 5,
+      "r3": 5,
+      "c1": "kagura",
+      "cmd1": "Kagura [Saki]",
+      "c2": "kagura",
+      "cmd2": "Kagura [Saki]",
+      "c3": "kagura",
+      "cmd3": "Kagura [Saki]",
+      "penalty": -2,
+      "total": -7,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Alvin Elshadai Pangaribuan",
+      "nickname": "Mokondo.Hideung",
+      "gameId": "20564452 (4150)",
+      "dept": "Change&Release Management",
+      "r1": 6,
+      "r2": 7,
+      "r3": 3,
+      "c1": "miya",
+      "cmd1": "Miya",
+      "c2": "wanwan",
+      "cmd2": "Wanwan",
+      "c3": "wanwan",
+      "cmd3": "Wanwan",
+      "penalty": 0,
+      "total": -3,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Sulistiyo Yonatan",
+      "nickname": "Yona",
+      "gameId": "2355574 (4027)",
+      "dept": "Marketing Yokke / ADO MEDAN",
+      "r1": 1,
+      "r2": 4,
+      "r3": 1,
+      "c1": "dubi",
+      "cmd1": "Dubi [Kalea]",
+      "c2": "buss",
+      "cmd2": "Buss [Harley]",
+      "c3": "chou",
+      "cmd3": "Chou",
+      "penalty": 0,
+      "total": 9,
+      "mvpCount": 2,
+      "isTBD": false
+    },
+    {
+      "name": "MUHAMMAD FAUZI KURNIAWAN",
+      "nickname": "Alis Setan17",
+      "gameId": "5488262 (4097)",
+      "dept": "Assistant Manager / Mercant business partnership",
+      "r1": 8,
+      "r2": 2,
+      "r3": 2,
+      "c1": "kalea",
+      "cmd1": "Kalea [Dubi]",
+      "c2": "nana",
+      "cmd2": "Nana",
+      "c3": "layla",
+      "cmd3": "Layla",
+      "penalty": 0,
+      "total": 2,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "M ikhsan",
+      "nickname": "Ganool",
+      "gameId": "16725620 (4014)",
+      "dept": "Product",
+      "r1": 4,
+      "r2": 3,
+      "r3": 4,
+      "c1": "valir",
+      "cmd1": "Valir",
+      "c2": "ling",
+      "cmd2": "Ling",
+      "c3": "ling",
+      "cmd3": "Ling",
+      "penalty": 0,
+      "total": 4,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Elham Yudhistira",
+      "nickname": "KoncoKentel",
+      "gameId": "2559856 (4081)",
+      "dept": "IT Dev",
+      "r1": 5,
+      "r2": 6,
+      "r3": 8,
+      "c1": "pao",
+      "cmd1": "Pao [Yu Zhong]",
+      "c2": "fanny",
+      "cmd2": "Fanny",
+      "c3": "fanny",
+      "cmd3": "Fanny",
+      "penalty": 0,
+      "total": -7,
+      "mvpCount": 0,
+      "isTBD": false
+    },
+    {
+      "name": "Fardhan Mauladi",
+      "nickname": "Yokke.DHANNKEBOT",
+      "gameId": "111118942(4283)",
+      "dept": "Product Management",
+      "r1": 2,
+      "r2": 8,
+      "r3": 6,
+      "c1": "karina",
+      "cmd1": "Karina",
+      "c2": "vale",
+      "cmd2": "Vale",
+      "c3": "vale",
+      "cmd3": "Vale",
+      "penalty": 0,
+      "total": -3,
+      "mvpCount": 0,
+      "isTBD": false
+    }
+  ]
 };
+
+const MCGG_DATA_VERSION = 'v20_20261112_semi_final_clean';
+let savedMcggVersion = null;
+try {
+  savedMcggVersion = localStorage.getItem('yokke_mcgg_version');
+} catch (e) {}
 
 let savedLobbies = null;
 try {
-  savedLobbies = JSON.parse(localStorage.getItem('yokke_mcgg_lobbies'));
-} catch (e) {}
+  const rawSaved = localStorage.getItem('yokke_mcgg_lobbies') || '';
+  // Auto-purge jika versi berubah atau jika di dalam cache tersimpan peserta yang gugur di 32 Besar (seperti David Iskandar/Disk, Elham/KoncoKentel, Eldrid, dkk)
+  const isStale = (
+    savedMcggVersion !== MCGG_DATA_VERSION ||
+    rawSaved.includes('David Iskandar') ||
+    rawSaved.includes('Disk') ||
+    rawSaved.includes('KoncoKentel') ||
+    rawSaved.includes('Harits Eldrid') ||
+    rawSaved.includes('Eldrid') ||
+    (rawSaved.includes('Bagus Setiawan') && rawSaved.includes('SEMI_A')) ||
+    (rawSaved.includes('Sherly Aprilia') && rawSaved.includes('SEMI_B'))
+  );
+  if (isStale) {
+    localStorage.removeItem('yokke_mcgg_lobbies');
+    localStorage.removeItem('yokke_commander_draw');
+    localStorage.setItem('yokke_mcgg_version', MCGG_DATA_VERSION);
+    savedLobbies = null;
+  } else if (rawSaved) {
+    savedLobbies = JSON.parse(rawSaved);
+  }
+} catch (e) {
+  savedLobbies = null;
+}
 
 let mcggLobbies = (savedLobbies && Object.keys(savedLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER').length >= 5)
   ? savedLobbies
   : JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES));
 
-// Deep merge commander assignments & match results dari DEFAULT_MCGG_LOBBIES jika data lokal kosong
+// Deep merge commander assignments, departments, and ensure new stage keys (ROUND_32_*, WILDCARD, _top30Qualifiers) exist
 Object.keys(DEFAULT_MCGG_LOBBIES).forEach(lKey => {
-  if (mcggLobbies[lKey] && Array.isArray(mcggLobbies[lKey])) {
+  if (!mcggLobbies[lKey] || (Array.isArray(mcggLobbies[lKey]) && mcggLobbies[lKey].length === 0 && DEFAULT_MCGG_LOBBIES[lKey].length > 0)) {
+    mcggLobbies[lKey] = JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES[lKey]));
+  } else if (mcggLobbies[lKey] && Array.isArray(mcggLobbies[lKey])) {
     mcggLobbies[lKey].forEach((p, idx) => {
-      const defP = (DEFAULT_MCGG_LOBBIES[lKey] || []).find(dp => dp.name && p.name && dp.name.trim().toLowerCase() === p.name.trim().toLowerCase()) || (DEFAULT_MCGG_LOBBIES[lKey] || [])[idx];
+      const defP = (DEFAULT_MCGG_LOBBIES[lKey] || []).find(dp => 
+        (dp.name && p.name && dp.name.trim().toLowerCase() === p.name.trim().toLowerCase()) ||
+        (dp.nickname && p.nickname && dp.nickname.trim().toLowerCase() === p.nickname.trim().toLowerCase()) ||
+        (dp.gameId && p.gameId && p.gameId !== '-' && dp.gameId.trim() === p.gameId.trim())
+      );
       if (defP) {
+        if (!p.dept && defP.dept) p.dept = defP.dept;
+        if (!p.gameId && defP.gameId) p.gameId = defP.gameId;
+        if (!p.nickname && defP.nickname) p.nickname = defP.nickname;
         if (!p.c1 && defP.c1) { p.c1 = defP.c1; p.cmd1 = defP.cmd1; }
         if (!p.c2 && defP.c2) { p.c2 = defP.c2; p.cmd2 = defP.cmd2; }
         if (!p.c3 && defP.c3) { p.c3 = defP.c3; p.cmd3 = defP.cmd3; }
@@ -608,10 +2849,14 @@ Object.keys(DEFAULT_MCGG_LOBBIES).forEach(lKey => {
         if ((!p.r3 || p.r3 === 0) && defP.r3) p.r3 = defP.r3;
         const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
         p.total = (POINT_MAP[p.r1] || 0) + (POINT_MAP[p.r2] || 0) + (POINT_MAP[p.r3] || 0) - (p.penalty || 0);
+        if (p.mvpCount === undefined && defP.mvpCount !== undefined) p.mvpCount = defP.mvpCount;
       }
     });
   }
 });
+
+syncMCGGSemiFinal();
+syncMCGGGrandFinal();
 
 // State Kontrol Tahapan Turnamen (Stage Machine ala Challonge)
 let tournamentStageState = JSON.parse(localStorage.getItem('yokke_stage_state') || JSON.stringify({
@@ -656,6 +2901,7 @@ const MCGG_COMMANDERS = [
   { id: 'valir', name: 'Valir', hero: 'Valir', alterName: '', displayName: 'Valir', tier: 'Mid', heroImage: 'assets/commanders/valir.png', alterImage: '', aliases: ['valir'] },
   { id: 'gusion', name: 'Gusion', hero: 'Gusion', alterName: 'Gujun', displayName: 'Gusion [Gujun]', tier: 'Mid', heroImage: 'assets/commanders/gusion.png', alterImage: 'assets/commanders/gujun.png', aliases: ['gusion', 'gujun'] },
   { id: 'johnson', name: 'Johnson', hero: 'Johnson', alterName: 'Kaboom', displayName: 'Johnson [Kaboom]', tier: 'Mid', heroImage: 'assets/commanders/kaboom.png', alterImage: '', aliases: ['johnson', 'kaboom'] },
+  { id: 'kagura', name: 'Kagura', hero: 'Kagura', alterName: 'Saki', displayName: 'Kagura [Saki]', tier: 'Mid', heroImage: 'assets/commanders/kagura.png', alterImage: 'assets/commanders/saki.png', aliases: ['kagura', 'saki'] },
 
   // --- TIER META ---
   { id: 'austus', name: 'Austus', hero: 'Austus', alterName: '', displayName: 'Austus', tier: 'Meta', heroImage: 'assets/commanders/austus.png', alterImage: '', aliases: ['austus', 'aamon'] },
@@ -695,7 +2941,12 @@ const MCGG_COMMANDERS = [
   { id: 'paquito', name: 'Paquito', hero: 'Paquito', alterName: '', displayName: 'Paquito', tier: 'Normal', heroImage: 'assets/commanders/paquito.png', alterImage: '', aliases: ['paquito'] },
   { id: 'cyclops', name: 'Cyclops', hero: 'Cyclops', alterName: 'Asta', displayName: 'Cyclops [Asta]', tier: 'Normal', heroImage: 'assets/commanders/cyclops.png', alterImage: '', aliases: ['cyclops', 'asta'] },
   { id: 'aurora', name: 'Aurora', hero: 'Aurora', alterName: '', displayName: 'Aurora', tier: 'Normal', heroImage: 'assets/commanders/aurora.png', alterImage: '', aliases: ['aurora'] },
-  { id: 'yuzhong', name: 'Yu Zhong', hero: 'Yu Zhong', alterName: 'Pao', displayName: 'Yu Zhong [Pao]', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['yuzhong', 'yu zhong', 'pao'] }
+  { id: 'yuzhong', name: 'Yu Zhong', hero: 'Yu Zhong', alterName: 'Pao', displayName: 'Yu Zhong [Pao]', tier: 'Normal', heroImage: 'assets/commanders/pao.png', alterImage: '', aliases: ['yuzhong', 'yu zhong', 'pao'] },
+  { id: 'karina', name: 'Karina', hero: 'Karina', alterName: '', displayName: 'Karina', tier: 'Normal', heroImage: 'assets/commanders/karina.png', alterImage: '', aliases: ['karina'] },
+  { id: 'angela', name: 'Angela', hero: 'Angela', alterName: '', displayName: 'Angela', tier: 'Normal', heroImage: 'assets/commanders/angela.png', alterImage: '', aliases: ['angela'] },
+  { id: 'miya', name: 'Miya', hero: 'Miya', alterName: '', displayName: 'Miya', tier: 'Normal', heroImage: 'assets/commanders/miya.png', alterImage: '', aliases: ['miya'] },
+  { id: 'nana', name: 'Nana', hero: 'Nana', alterName: '', displayName: 'Nana', tier: 'Normal', heroImage: 'assets/commanders/nana.png', alterImage: '', aliases: ['nana'] },
+  { id: 'zilong', name: 'Zilong', hero: 'Zilong', alterName: '', displayName: 'Zilong', tier: 'Normal', heroImage: 'assets/commanders/zilong.png', alterImage: '', aliases: ['zilong'] }
 ];
 
 // Helper Format Nama Commander: Hero [Alter] jika alter ada, atau Hero jika tidak ada
@@ -796,6 +3047,87 @@ function renderCommanderCardVisualHtml(cmd) {
   }
 }
 
+// ========================================================
+// KOMPRESI & HIDRASI HASIL UNDIAN COMMANDER MCGG
+// Menghilangkan duplikasi payload hero/gambar/tier agar bebas batas 50.000 karakter GSheet
+// ========================================================
+function getCompactMCGGDrawState(drawState) {
+  if (!drawState || typeof drawState !== 'object') return {};
+  const compact = {};
+  Object.keys(drawState).forEach(lKey => {
+    const lData = drawState[lKey];
+    if (!lData || typeof lData !== 'object') return;
+    compact[lKey] = {
+      activeMatch: lData.activeMatch || 1
+    };
+    ['match1', 'match2', 'match3'].forEach(mKey => {
+      const mData = lData[mKey];
+      if (mData && typeof mData === 'object') {
+        const compactPool = Array.isArray(mData.pool)
+          ? mData.pool.map(c => (typeof c === 'string' ? c : (c?.id || c?.hero || ''))).filter(Boolean)
+          : [];
+        const compactAssigned = Array.isArray(mData.assigned)
+          ? mData.assigned.map(a => {
+              if (!a) return null;
+              const cmdId = typeof a.commander === 'string'
+                ? a.commander
+                : (a.commander?.id || a.commander?.hero || a.commanderId || a.cmd || '');
+              return {
+                playerIndex: a.playerIndex !== undefined ? a.playerIndex : (a.i !== undefined ? a.i : 0),
+                playerName: a.playerName || '',
+                commanderId: cmdId
+              };
+            }).filter(Boolean)
+          : [];
+        compact[lKey][mKey] = {
+          pool: compactPool,
+          assigned: compactAssigned,
+          isLocked: !!mData.isLocked
+        };
+      }
+    });
+  });
+  return compact;
+}
+
+function hydrateMCGGDrawState(drawState) {
+  if (!drawState || typeof drawState !== 'object') return {};
+  Object.keys(drawState).forEach(lKey => {
+    const lData = drawState[lKey];
+    if (!lData || typeof lData !== 'object') return;
+    ['match1', 'match2', 'match3'].forEach(mKey => {
+      const mData = lData[mKey];
+      if (mData && typeof mData === 'object') {
+        if (Array.isArray(mData.pool)) {
+          mData.pool = mData.pool.map(c => {
+            if (typeof c === 'string') {
+              return getCommanderById(c) || { id: c, name: c, displayName: c, tier: 'Normal' };
+            }
+            return c;
+          }).filter(Boolean);
+        }
+        if (Array.isArray(mData.assigned)) {
+          mData.assigned = mData.assigned.map(a => {
+            if (!a) return null;
+            const cmdId = a.commanderId || (typeof a.commander === 'string' ? a.commander : a.commander?.id) || a.cmd || '';
+            const cmdObj = (typeof a.commander === 'object' && a.commander !== null && a.commander.name)
+              ? a.commander
+              : (getCommanderById(cmdId) || { id: cmdId, name: cmdId, displayName: cmdId, tier: 'Normal' });
+            return {
+              playerIndex: a.playerIndex !== undefined ? a.playerIndex : (a.i !== undefined ? a.i : 0),
+              playerName: a.playerName || '',
+              playerNick: a.playerNick || a.playerName || '',
+              gameId: a.gameId || '-',
+              commander: cmdObj
+            };
+          }).filter(Boolean);
+        }
+      }
+    });
+  });
+  return drawState;
+}
+
 // Generator Default State Undian Commander Resmi TM
 function buildDefaultMCGGDrawState() {
   const pools = {
@@ -809,26 +3141,57 @@ function buildDefaultMCGGDrawState() {
     },
     LOBBY_C: {
       m2: ['chou', 'harley', 'franco', 'luoyi', 'kalea', 'eggie', 'ling', 'cyclops']
+    },
+    SEMI_A: {
+      m1: ['lancelot', 'floryn', 'karina', 'kalea', 'cyclops', 'brown', 'minotaur', 'kagura'],
+      m2: ['lancelot', 'layla', 'karina', 'brody', 'johnson', 'kaboom', 'eggie', 'popol']
+    },
+    SEMI_B: {
+      m1: ['abe', 'dubi', 'mavis', 'eva', 'chou', 'alice', 'yuzhong', 'benny'],
+      m2: ['chou', 'alucard', 'guinevere', 'ling', 'kalea', 'austus', 'fanny', 'vale']
     }
   };
   const res = {};
-  ['LOBBY_A', 'LOBBY_B', 'LOBBY_C'].forEach(lKey => {
-    res[lKey] = { activeMatch: 2 };
+  const allTargetKeys = Object.keys(DEFAULT_MCGG_LOBBIES || {});
+  allTargetKeys.forEach(lKey => {
     const pList = DEFAULT_MCGG_LOBBIES[lKey] || [];
+    if (!Array.isArray(pList) || pList.length === 0) return;
+    
+    // Tentukan apakah ada assignment c1 atau c2
+    const hasC1 = pList.some(p => !!p.c1);
+    const hasC2 = pList.some(p => !!p.c2);
+    if (!hasC1 && !hasC2 && !pools[lKey]) return;
+
+    res[lKey] = { activeMatch: hasC2 ? 2 : (hasC1 ? 1 : 1) };
+
     ['match1', 'match2'].forEach((mKey, mIdx) => {
       const matchNum = mIdx + 1;
       const pKey = `m${matchNum}`;
-      if (pools[lKey][pKey]) {
+      let poolCmds = [];
+      if (pools[lKey] && pools[lKey][pKey]) {
+        poolCmds = pools[lKey][pKey].map(id => getCommanderById(id)).filter(Boolean);
+      } else {
+        const setIds = new Set();
+        pList.forEach(p => {
+          const cid = p[`c${matchNum}`];
+          if (cid) setIds.add(cid);
+        });
+        poolCmds = Array.from(setIds).map(id => getCommanderById(id)).filter(Boolean);
+      }
+
+      const assigned = pList.map((p, idx) => ({
+        playerIndex: idx,
+        playerName: p.name,
+        playerNick: (p.nickname && p.nickname !== '-' && p.nickname !== 'undefined') ? p.nickname : p.name,
+        gameId: p.gameId || '-',
+        commander: getCommanderById(p[`c${matchNum}`])
+      })).filter(a => !!a.commander);
+
+      if (poolCmds.length > 0 || assigned.length > 0) {
         res[lKey][mKey] = {
-          pool: pools[lKey][pKey].map(id => getCommanderById(id)).filter(Boolean),
-          assigned: pList.map((p, idx) => ({
-            playerIndex: idx,
-            playerName: p.name,
-            playerNick: (p.nickname && p.nickname !== '-' && p.nickname !== 'undefined') ? p.nickname : p.name,
-            gameId: p.gameId || '-',
-            commander: getCommanderById(p[`c${matchNum}`])
-          })).filter(a => !!a.commander),
-          isLocked: true
+          pool: poolCmds,
+          assigned: assigned,
+          isLocked: assigned.length > 0
         };
       }
     });
@@ -841,6 +3204,7 @@ let mcggDrawState = JSON.parse(localStorage.getItem('yokke_commander_draw') || '
 if (!mcggDrawState || Object.keys(mcggDrawState).length === 0) {
   mcggDrawState = buildDefaultMCGGDrawState();
 } else {
+  mcggDrawState = hydrateMCGGDrawState(mcggDrawState);
   // Merge jika ada lobi yang belum memiliki data undian
   const defDraw = buildDefaultMCGGDrawState();
   Object.keys(defDraw).forEach(lKey => {
@@ -849,7 +3213,7 @@ if (!mcggDrawState || Object.keys(mcggDrawState).length === 0) {
     } else {
       ['match1', 'match2'].forEach(mKey => {
         if (!mcggDrawState[lKey][mKey] || (mcggDrawState[lKey][mKey].assigned || []).length === 0) {
-          if (defDraw[lKey][mKey]) {
+          if (defDraw[lKey] && defDraw[lKey][mKey]) {
             mcggDrawState[lKey][mKey] = defDraw[lKey][mKey];
           }
         }
@@ -963,11 +3327,12 @@ Sebelum pertandingan dimulai, panitia menetapkan skenario Commander berdasarkan 
 * Pada setiap akhir match, peringkat 4 besar wajib mendokumentasikan hasil akhir (Screenshot placement) dan mengirimkannya ke grup koordinasi panitia.
 7. KETENTUAN TIE-BREAKER DAN PENENTUAN KELULUSAN
 Jika terdapat dua atau lebih player dengan total poin yang sama pada batas kelolosan, penentuan peringkat dilakukan berdasarkan kriteria berikut (secara berurutan):
-1. Jumlah Placement 4 besar terbanyak selama BO3/BO5.
-2. Kepatuhan Commander: Jumlah poin yang didapat dengan konsisten mengikuti ketentuan commander.
-3. Peringkat tertinggi pada setiap match (banyaknya Juara 1 > Juara 2, dan seterusnya).
-4. Tie-Breaker Match (BO1): Jika masih sama persis, diadakan match penentu BO1 dengan commander bebas/andalan.
-5. Keputusan mutlak: Seluruh keputusan tie-breaker dan kelolosan ditetapkan oleh panitia berdasarkan data hasil pertandingan yang terdokumentasi.
+1. Peringkat tertinggi yang dicapai pada setiap match (Posisi finish terbaik: Juara 1 > Juara 2 > Juara 3, dan seterusnya).
+2. Jumlah Placement 4 besar terbanyak selama BO3/BO5.
+3. Kepatuhan Commander: Jumlah poin yang didapat dengan konsisten mengikuti ketentuan commander (sanksi/penalti terminimal).
+4. Detail posisi finish pada tiap ronde (Breakdown Finish 1 s/d 8).
+5. Tie-Breaker Match (BO1): Jika masih sama persis, diadakan match penentu BO1 dengan commander bebas/andalan.
+6. Keputusan mutlak: Seluruh keputusan tie-breaker dan kelolosan ditetapkan oleh panitia berdasarkan data hasil pertandingan yang terdokumentasi.
 8. PAIRING BABAK BERIKUTNYA
 * 4 player terbaik dari tiap grup akan di-pairing secara silang (cross-group) ke babak berikutnya (contoh: Grup A & B ➔ Grup E & F) untuk menghindari pertemuan ulang antar player dari grup yang sama.
 9. ATURAN TAMBAHAN (DOs & DON'Ts)
@@ -1766,20 +4131,51 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
           });
         }
         if (data.config.mcggDrawState && typeof data.config.mcggDrawState === 'object' && Object.keys(data.config.mcggDrawState).length > 0) {
-          Object.keys(data.config.mcggDrawState).forEach(lKey => {
-            mcggDrawState[lKey] = Object.assign({}, mcggDrawState[lKey] || {}, data.config.mcggDrawState[lKey]);
+          const hydratedIncoming = hydrateMCGGDrawState(data.config.mcggDrawState);
+          Object.keys(hydratedIncoming).forEach(lKey => {
+            mcggDrawState[lKey] = Object.assign({}, mcggDrawState[lKey] || {}, hydratedIncoming[lKey]);
           });
-          localStorage.setItem('yokke_commander_draw', JSON.stringify(mcggDrawState));
+          localStorage.setItem('yokke_commander_draw', JSON.stringify(getCompactMCGGDrawState(mcggDrawState)));
         }
-        if (data.config.mcggLobbies && Object.keys(data.config.mcggLobbies).length > 0) {
-          // Merge preserving commander assignments if incoming from server is empty
-          Object.keys(data.config.mcggLobbies).forEach(k => {
-            const incomingList = data.config.mcggLobbies[k];
-            const localList = mcggLobbies[k] || [];
-            if (Array.isArray(incomingList)) {
+        if (data.config.mcggLobbies && typeof data.config.mcggLobbies === 'object' && Object.keys(data.config.mcggLobbies).length > 0) {
+          const incomingLobbies = data.config.mcggLobbies;
+          
+          // Satukan semua key: incoming server, local mcggLobbies, dan DEFAULT_MCGG_LOBBIES agar ROUND_32_A..D & WILDCARD tidak hilang
+          const allLobbyKeys = new Set([
+            ...Object.keys(DEFAULT_MCGG_LOBBIES || {}),
+            ...Object.keys(mcggLobbies || {}),
+            ...Object.keys(incomingLobbies || {})
+          ]);
+
+          allLobbyKeys.forEach(k => {
+            let incomingList = incomingLobbies[k];
+            const localList = (mcggLobbies && mcggLobbies[k]) || (DEFAULT_MCGG_LOBBIES && DEFAULT_MCGG_LOBBIES[k]) || [];
+
+            // Proteksi Khusus Semifinal: Tolak data lama jika mengandung peserta yang telah gugur di 32 Besar (seperti David Iskandar/Disk, KoncoKentel, Bagus di Semi A, dll)
+            if (k === 'SEMI_A' || k === 'SEMI_B') {
+              const disallowed = [
+                'david iskandar', 'elham yudhistira', 'miftah fadhlurrahman',
+                'muhammad harits eldrid', 'sherly aprilia', 'bagus setiawan', 'irza muttaqin'
+              ];
+              if (Array.isArray(incomingList)) {
+                const hasDisallowed = incomingList.some(p => p && p.name && disallowed.includes(p.name.trim().toLowerCase()));
+                if (hasDisallowed || incomingList.length !== 8) {
+                  incomingList = JSON.parse(JSON.stringify(DEFAULT_MCGG_LOBBIES[k] || []));
+                }
+              }
+            }
+
+            if (Array.isArray(incomingList) && incomingList.length > 0) {
               incomingList.forEach((inP, pIdx) => {
-                const localP = localList.find(lp => lp.name && inP.name && lp.name.trim().toLowerCase() === inP.name.trim().toLowerCase()) || localList[pIdx];
+                const localP = Array.isArray(localList) && localList.find(lp => 
+                  (lp.name && inP.name && lp.name.trim().toLowerCase() === inP.name.trim().toLowerCase()) ||
+                  (lp.nickname && inP.nickname && lp.nickname.trim().toLowerCase() === inP.nickname.trim().toLowerCase()) ||
+                  (lp.gameId && inP.gameId && inP.gameId !== '-' && lp.gameId.trim() === inP.gameId.trim())
+                );
                 if (localP) {
+                  if (!inP.dept && localP.dept) inP.dept = localP.dept;
+                  if (!inP.gameId && localP.gameId) inP.gameId = localP.gameId;
+                  if (!inP.nickname && localP.nickname) inP.nickname = localP.nickname;
                   if (!inP.c1 && localP.c1) { inP.c1 = localP.c1; inP.cmd1 = localP.cmd1 || inP.cmd1; }
                   if (!inP.c2 && localP.c2) { inP.c2 = localP.c2; inP.cmd2 = localP.cmd2 || inP.cmd2; }
                   if (!inP.c3 && localP.c3) { inP.c3 = localP.c3; inP.cmd3 = localP.cmd3 || inP.cmd3; }
@@ -1791,13 +4187,39 @@ async function fetchParticipantsFromGoogleSheet(isSilent = false, isPure = false
                   if ((!inP.r3 || inP.r3 === 0) && localP.r3) inP.r3 = localP.r3;
                   const POINT_MAP = { 1: 4, 2: 3, 3: 2, 4: 1, 5: -1, 6: -2, 7: -3, 8: -4 };
                   inP.total = (POINT_MAP[inP.r1] || 0) + (POINT_MAP[inP.r2] || 0) + (POINT_MAP[inP.r3] || 0) - (inP.penalty || 0);
+                  if (inP.mvpCount === undefined && localP.mvpCount !== undefined) inP.mvpCount = localP.mvpCount;
                 }
               });
+              mcggLobbies[k] = incomingList;
+            } else if (!mcggLobbies[k] || !Array.isArray(mcggLobbies[k]) || mcggLobbies[k].length === 0) {
+              if (Array.isArray(localList) && localList.length > 0) {
+                mcggLobbies[k] = JSON.parse(JSON.stringify(localList));
+              }
+            } else {
+              const defList = DEFAULT_MCGG_LOBBIES && DEFAULT_MCGG_LOBBIES[k];
+              if (Array.isArray(defList) && defList.length > 0) {
+                mcggLobbies[k].forEach((p, idx) => {
+                  const defP = defList.find(dp => dp.name && p.name && dp.name.trim().toLowerCase() === p.name.trim().toLowerCase()) || defList[idx];
+                  if (defP) {
+                    if (!p.dept && defP.dept) p.dept = defP.dept;
+                    if (!p.gameId && defP.gameId) p.gameId = defP.gameId;
+                    if (!p.nickname && defP.nickname) p.nickname = defP.nickname;
+                    if (!p.c1 && defP.c1) { p.c1 = defP.c1; p.cmd1 = defP.cmd1 || getCommanderFormattedName(defP.c1); }
+                    if (!p.c2 && defP.c2) { p.c2 = defP.c2; p.cmd2 = defP.cmd2 || getCommanderFormattedName(defP.c2); }
+                    if (!p.c3 && defP.c3) { p.c3 = defP.c3; p.cmd3 = defP.cmd3 || getCommanderFormattedName(defP.c3); }
+                  }
+                });
+              }
             }
           });
-          mcggLobbies = data.config.mcggLobbies;
+
+          syncMCGGSemiFinal();
+          syncMCGGGrandFinal();
           localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
           renderMCGGTable();
+          if (typeof renderMCGGInteractiveHubUI === 'function') {
+            renderMCGGInteractiveHubUI();
+          }
         }
         if (data.config.isRegistrationClosed !== undefined && data.config.isRegistrationClosed !== null) {
           isRegistrationClosed = data.config.isRegistrationClosed === true || data.config.isRegistrationClosed === 'true';
@@ -2098,7 +4520,7 @@ async function saveAllChangesToGoogleSheet() {
       groupPlayoffMatches: groupPlayoffMatches,
       invitedTeams: participants.filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
       mcggLobbies: mcggLobbies,
-      mcggDrawState: mcggDrawState,
+      mcggDrawState: getCompactMCGGDrawState(mcggDrawState),
       tournamentStageState: tournamentStageState,
       isRegistrationClosed: isRegistrationClosed
     }, 25000).catch(err => console.warn('Gagal sync config ke Google Sheets:', err));
@@ -2154,7 +4576,7 @@ async function syncTournamentConfigToGSheet(options = {}) {
       isGroupLocked: !!(tournamentStageState.mlbb && tournamentStageState.mlbb.isGroupLocked),
       invitedTeams: (participants || []).filter(p => p.category === 'MLBB' && p.isInvited).map(p => p.name),
       mcggLobbies: mcggLobbies,
-      mcggDrawState: mcggDrawState,
+      mcggDrawState: getCompactMCGGDrawState(mcggDrawState),
       tournamentStageState: tournamentStageState,
       isRegistrationClosed: isRegistrationClosed
     };
@@ -9769,6 +12191,9 @@ function shuffleMCGGPlayers() {
 function isMCGGLobbyPointsFull(lobbyKey) {
   const list = mcggLobbies[lobbyKey] || [];
   if (list.length === 0) return false;
+  if (lobbyKey === 'WILDCARD') {
+    return list.every(p => (parseInt(p.r1) || 0) > 0);
+  }
   return list.every(p => (parseInt(p.r1) || 0) > 0 && (parseInt(p.r2) || 0) > 0 && (parseInt(p.r3) || 0) > 0);
 }
 
@@ -9776,6 +12201,11 @@ function isMCGGQualificationFull() {
   const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
   if (qualKeys.length === 0) return false;
   return qualKeys.every(k => isMCGGLobbyPointsFull(k));
+}
+
+function isMCGG32BesarFull() {
+  const groupKeys = ['ROUND_32_A', 'ROUND_32_B', 'ROUND_32_C', 'ROUND_32_D'];
+  return groupKeys.every(k => isMCGGLobbyPointsFull(k));
 }
 
 function isMCGGSemiFinalFull() {
@@ -9786,10 +12216,11 @@ function isMCGGSemiFinalFull() {
 // Komparator resmi urutan klasemen MCGG sesuai regulasi:
 // 1. Total Poin Akhir (besar ke kecil)
 // 2. Juara 1 / MVP Ronde (banyaknya finish posisi 1, besar ke kecil)
-// 3. Top 4 Finish (banyaknya finish posisi 1-4, besar ke kecil)
-// 4. Pengurangan Poin / Penalti (makin sering kena pengurangan makin bawah jika poin dkk sama: deductA - deductB)
-// 5. Breakdown Posisi Finish Ronde 1 s/d 8
-// 6. Nama Pemain (A-Z)
+// 3. Peringkat Tertinggi yang Dicapai (Best Finish Rank: min finish 1st > 2nd > 3rd dst, lalu peringkat terbaik ke-2 & ke-3)
+// 4. Top 4 Finish (banyaknya finish posisi 1-4, besar ke kecil)
+// 5. Pengurangan Poin / Penalti (makin sering kena pengurangan makin bawah jika poin dkk sama: deductA - deductB)
+// 6. Breakdown Posisi Finish Ronde 1 s/d 8
+// 7. Nama Pemain (A-Z)
 function compareMCGGPlayers(a, b) {
   const totA = Number(a.total) || 0;
   const totB = Number(b.total) || 0;
@@ -9800,92 +12231,156 @@ function compareMCGGPlayers(a, b) {
   const bRank1 = [b.r1, b.r2, b.r3].filter(r => parseInt(r, 10) === 1).length;
   if (bRank1 !== aRank1) return bRank1 - aRank1;
 
-  // 2. Top 4 Finish (Rank 1-4 count, descending)
+  // 2. Peringkat Tertinggi yang Dicapai (Best Finish: 1st > 2nd > 3rd dst, lalu finish terbaik ke-2 dan ke-3)
+  const aRanks = [a.r1, a.r2, a.r3].map(r => parseInt(r, 10)).filter(r => r > 0).sort((x, y) => x - y);
+  const bRanks = [b.r1, b.r2, b.r3].map(r => parseInt(r, 10)).filter(r => r > 0).sort((x, y) => x - y);
+  for (let i = 0; i < Math.min(aRanks.length, bRanks.length); i++) {
+    if (aRanks[i] !== bRanks[i]) return aRanks[i] - bRanks[i]; // angka lebih kecil = peringkat lebih tinggi (posisi 1 lebih baik drpd 2, dst)
+  }
+
+  // 3. Top 4 Finish (Rank 1-4 count, descending)
   const aTop4 = [a.r1, a.r2, a.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
   const bTop4 = [b.r1, b.r2, b.r3].filter(r => { const num = parseInt(r, 10); return num >= 1 && num <= 4; }).length;
   if (bTop4 !== aTop4) return bTop4 - aTop4;
 
-  // 3. Pengurangan Poin / Penalti (makin sering kena pengurangan point makin bawah jika poin dkk sama)
+  // 4. Pengurangan Poin / Penalti (makin sering kena pengurangan point makin bawah jika poin dkk sama)
   const deductA = Math.abs(Number(a.penalty) || 0);
   const deductB = Math.abs(Number(b.penalty) || 0);
   if (deductA !== deductB) return deductA - deductB;
 
-  // 4. Detail Posisi Finish 1 sampai 8
+  // 5. Detail Posisi Finish 1 sampai 8
   for (let r = 1; r <= 8; r++) {
     const aRCount = [a.r1, a.r2, a.r3].filter(rank => parseInt(rank, 10) === r).length;
     const bRCount = [b.r1, b.r2, b.r3].filter(rank => parseInt(rank, 10) === r).length;
     if (bRCount !== aRCount) return bRCount - aRCount;
   }
 
-  // 5. Nama Pemain (A-Z)
+  // 6. Nama Pemain (A-Z)
   return (a.name || '').localeCompare(b.name || '');
 }
 
 function syncMCGGSemiFinal() {
-  const qualKeys = Object.keys(mcggLobbies).filter(k => k.startsWith('LOBBY_') && k !== 'LOBBY_LOWER');
-  if (qualKeys.length <= 2) return; // Jika 2 lobi langsung ke Grand Final
-
-  const isQualDone = isMCGGQualificationFull();
+  const has32 = mcggLobbies.ROUND_32_A && mcggLobbies.ROUND_32_A.length > 0;
   const sortFn = compareMCGGPlayers;
 
-  if (!isQualDone) {
-    // Belum selesai: Set 8 slot TBD untuk Semifinal A dan Semifinal B
-    mcggLobbies.SEMI_A = [];
-    mcggLobbies.SEMI_B = [];
-    for (let i = 1; i <= 8; i++) {
-      const orig = qualKeys[(i - 1) % qualKeys.length].replace('LOBBY_', 'Lobi ');
-      const rankSlot = Math.ceil(i / qualKeys.length);
-      mcggLobbies.SEMI_A.push({ name: `TBD (Top ${rankSlot} ${orig})`, r1: 0, r2: 0, r3: 0, penalty: 0, total: 0 });
-      mcggLobbies.SEMI_B.push({ name: `TBD (Top ${rankSlot} ${orig})`, r1: 0, r2: 0, r3: 0, penalty: 0, total: 0 });
+  // Nama resmi 8 pemain yang lolos ke Semifinal A & B
+  const OFFICIAL_A_NAMES = [
+    "raihan purnama", "daniel reimond", "faldi rasis purnomo", "m ikhsan",
+    "fajar gilles tirano", "muh asrul", "rendy wibi pratama", "muhammad fauzi kurniawan"
+  ];
+  const OFFICIAL_B_NAMES = [
+    "joko waluyono", "andhika bayu prasetyo", "sulistiyo yonatan", "yudhistira pratama ramadhan",
+    "laga al ahli", "dandy nasri", "eko marwanto putro", "muhamad fajar samudra"
+  ];
+
+  if (has32) {
+    const groupKeys = ['ROUND_32_A', 'ROUND_32_B', 'ROUND_32_C', 'ROUND_32_D'];
+    
+    // Ambil Top 4 dari masing-masing 4 grup 32 Besar
+    const qual32 = {};
+    groupKeys.forEach(k => {
+      const char = k.replace('ROUND_32_', '');
+      const list = mcggLobbies[k] || [];
+      const sorted = [...list].sort(sortFn);
+      if (sorted.length >= 4) {
+        qual32[char] = sorted.slice(0, 4);
+      } else {
+        qual32[char] = (DEFAULT_MCGG_LOBBIES[k] || []).slice(0, 4);
+      }
+    });
+
+    // Seeding Serpentine Seimbang 8 Pemain Semifinal A & B:
+    // SEMI_A: A1, A3, B2, B4, C1, C3, D2, D4
+    // SEMI_B: A2, A4, B1, B3, C2, C4, D1, D3
+    const semiA_raw = [
+      qual32['A'] && qual32['A'][0], qual32['A'] && qual32['A'][2],
+      qual32['B'] && qual32['B'][1], qual32['B'] && qual32['B'][3],
+      qual32['C'] && qual32['C'][0], qual32['C'] && qual32['C'][2],
+      qual32['D'] && qual32['D'][1], qual32['D'] && qual32['D'][3]
+    ].filter(Boolean);
+
+    const semiB_raw = [
+      qual32['A'] && qual32['A'][1], qual32['A'] && qual32['A'][3],
+      qual32['B'] && qual32['B'][0], qual32['B'] && qual32['B'][2],
+      qual32['C'] && qual32['C'][1], qual32['C'] && qual32['C'][3],
+      qual32['D'] && qual32['D'][0], qual32['D'] && qual32['D'][2]
+    ].filter(Boolean);
+
+    const findPrevSemi = (ply) => {
+      for (const sKey of ['SEMI_A', 'SEMI_B']) {
+        const f = (mcggLobbies[sKey] || []).find(x => !x.isTBD && x.name && ply.name && x.name.trim().toLowerCase() === ply.name.trim().toLowerCase());
+        if (f && f.r1 !== undefined && (f.r1 > 0 || f.total !== 0)) return f;
+      }
+      return null;
+    };
+
+    const mapSemiPlayer = (p) => {
+      if (!p) return null;
+      if (p.isTBD) return { ...p };
+      const prev = findPrevSemi(p) || {};
+      const defSemi = [...(DEFAULT_MCGG_LOBBIES.SEMI_A || []), ...(DEFAULT_MCGG_LOBBIES.SEMI_B || [])].find(dp => 
+        (dp.name && p.name && dp.name.trim().toLowerCase() === p.name.trim().toLowerCase()) ||
+        (dp.nickname && p.nickname && dp.nickname.trim().toLowerCase() === p.nickname.trim().toLowerCase())
+      ) || {};
+      return {
+        name: p.name,
+        nickname: p.nickname || '-',
+        gameId: p.gameId || '-',
+        dept: p.dept || '',
+        r1: prev.r1 || 0,
+        r2: prev.r2 || 0,
+        r3: prev.r3 || 0,
+        c1: prev.c1 || defSemi.c1 || '',
+        cmd1: prev.cmd1 || defSemi.cmd1 || '',
+        c2: prev.c2 || defSemi.c2 || '',
+        cmd2: prev.cmd2 || defSemi.cmd2 || '',
+        c3: prev.c3 || defSemi.c3 || '',
+        cmd3: prev.cmd3 || defSemi.cmd3 || '',
+        penalty: prev.penalty || 0,
+        total: prev.total || 0,
+        isTBD: false
+      };
+    };
+
+    if (semiA_raw.length === 8) {
+      mcggLobbies.SEMI_A = semiA_raw.map(mapSemiPlayer);
     }
-    return;
+    if (semiB_raw.length === 8) {
+      mcggLobbies.SEMI_B = semiB_raw.map(mapSemiPlayer);
+    }
   }
 
-  // Ambil Top 3 dari masing-masing 5 grup (5 x 3 = 15 pemain)
-  const top3Players = [];
-  const fourthPlayers = [];
+  // Jika belum ada atau corrupt, pulihkan dari DEFAULT_MCGG_LOBBIES
+  if (!mcggLobbies.SEMI_A || mcggLobbies.SEMI_A.length === 0) {
+    mcggLobbies.SEMI_A = JSON.parse(JSON.stringify((DEFAULT_MCGG_LOBBIES && DEFAULT_MCGG_LOBBIES.SEMI_A) || []));
+  }
+  if (!mcggLobbies.SEMI_B || mcggLobbies.SEMI_B.length === 0) {
+    mcggLobbies.SEMI_B = JSON.parse(JSON.stringify((DEFAULT_MCGG_LOBBIES && DEFAULT_MCGG_LOBBIES.SEMI_B) || []));
+  }
 
-  qualKeys.forEach(k => {
-    const sorted = [...(mcggLobbies[k] || [])].sort(sortFn);
-    top3Players.push(...sorted.slice(0, 3));
-    if (sorted[3]) fourthPlayers.push(sorted[3]);
-  });
-
-  // Cari 1 pemain peringkat ke-4 terbaik (Best 4th Place)
-  fourthPlayers.sort(sortFn);
-  const best4th = fourthPlayers[0];
-  const all16 = [...top3Players];
-  if (best4th) all16.push(best4th);
-
-  // Preserve poin semifinal jika sudah ada
-  const findPrevSemi = (ply) => {
-    for (const sKey of ['SEMI_A', 'SEMI_B']) {
-      const f = (mcggLobbies[sKey] || []).find(x => x.name && ply.name && x.name.trim().toLowerCase() === ply.name.trim().toLowerCase());
-      if (f && f.r1 !== undefined) return f;
+  // HARD SANITATION: Buang Disk (David Iskandar) dan peserta gugur lain yang mungkin terselip
+  const sanitizeLobby = (list, allowed, defaultList) => {
+    if (!Array.isArray(list) || list.length === 0) return JSON.parse(JSON.stringify(defaultList || []));
+    const isClean = list.every(p => p && p.name && allowed.includes(p.name.trim().toLowerCase()));
+    if (!isClean || list.length !== 8) {
+      return JSON.parse(JSON.stringify(defaultList || []));
     }
-    return null;
+    return list;
   };
 
-  const mapSemiPlayer = (p) => {
-    const prev = findPrevSemi(p) || {};
-    return {
-      name: p.name,
-      nickname: p.nickname || '-',
-      gameId: p.gameId || '-',
-      r1: prev.r1 || 0,
-      r2: prev.r2 || 0,
-      r3: prev.r3 || 0,
-      c1: prev.c1 || '',
-      c2: prev.c2 || '',
-      c3: prev.c3 || '',
-      penalty: prev.penalty || 0,
-      total: prev.total || 0
-    };
-  };
+  const prevA = JSON.stringify(mcggLobbies.SEMI_A || []);
+  const prevB = JSON.stringify(mcggLobbies.SEMI_B || []);
 
-  // Seeding seimbang 8 pemain ke Semifinal A dan 8 pemain ke Semifinal B
-  mcggLobbies.SEMI_A = all16.filter((_, i) => i % 2 === 0).map(mapSemiPlayer);
-  mcggLobbies.SEMI_B = all16.filter((_, i) => i % 2 === 1).map(mapSemiPlayer);
+  mcggLobbies.SEMI_A = sanitizeLobby(mcggLobbies.SEMI_A, OFFICIAL_A_NAMES, DEFAULT_MCGG_LOBBIES.SEMI_A);
+  mcggLobbies.SEMI_B = sanitizeLobby(mcggLobbies.SEMI_B, OFFICIAL_B_NAMES, DEFAULT_MCGG_LOBBIES.SEMI_B);
+
+  // Jika ada pemulihan/perubahan dari sanitasi, paksa update ke localStorage seketika
+  if (JSON.stringify(mcggLobbies.SEMI_A) !== prevA || JSON.stringify(mcggLobbies.SEMI_B) !== prevB) {
+    try {
+      localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
+      localStorage.setItem('yokke_mcgg_version', MCGG_DATA_VERSION);
+    } catch (e) {}
+  }
 }
 
 function syncMCGGGrandFinal() {
@@ -10109,9 +12604,20 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
   const assigned = matchData.assigned || [];
   const isMatchLocked = !!matchData.isLocked;
 
-  const lobbyLabel = lobbyKey === 'LOBBY_A' 
-    ? 'Lobi Kualifikasi A' 
-    : (lobbyKey === 'LOBBY_B' ? 'Lobi Kualifikasi B' : (isGF ? 'Grand Final' : 'Lobi Utama'));
+  let lobbyLabel = 'Lobi Utama';
+  if (lobbyKey.startsWith('LOBBY_')) {
+    lobbyLabel = `Lobi Kualifikasi ${lobbyKey.replace('LOBBY_', '')}`;
+  } else if (lobbyKey.startsWith('ROUND_32_')) {
+    lobbyLabel = `32 Besar - Grup ${lobbyKey.replace('ROUND_32_', '')}`;
+  } else if (lobbyKey === 'WILDCARD') {
+    lobbyLabel = 'Babak Wildcard';
+  } else if (lobbyKey === 'SEMI_A') {
+    lobbyLabel = 'Semifinal A';
+  } else if (lobbyKey === 'SEMI_B') {
+    lobbyLabel = 'Semifinal B';
+  } else if (isGF) {
+    lobbyLabel = 'Grand Final';
+  }
 
   // Stepper state
   const hasPool = currentPool.length > 0;
@@ -10140,7 +12646,10 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
           <button class="btn ${activeMatch === 2 ? 'btn-primary' : 'btn-outline'}" style="padding:0.25rem 0.65rem; font-size:0.78rem;" onclick="switchLobbyDrawView('${lobbyKey}', 2)">
             🔥 Match 2: All Commander ${m2Locked ? '🔒' : (m2Done ? '✅' : '')}
           </button>
-          <button class="btn btn-outline" style="padding:0.25rem 0.55rem; font-size:0.75rem; margin-left:auto;" onclick="copyCommanderDrawText('${lobbyKey}')" title="Salin Hasil Undian Lobi Ini">
+          <button class="btn btn-warning" style="padding:0.25rem 0.75rem; font-size:0.75rem; background:linear-gradient(135deg, #f59e0b, #ef4444); color:#fff; font-weight:700; border:none; border-radius:4px; margin-left:auto; display:inline-flex; align-items:center; gap:0.3rem; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.25);" onclick="handleAcakCommanderClick('${lobbyKey}')">
+            🎲 Acak Undian Lengkap (M1 & M2)
+          </button>
+          <button class="btn btn-outline" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="copyCommanderDrawText('${lobbyKey}')" title="Salin Hasil Undian Lobi Ini">
             📋 Salin
           </button>
           <button class="btn btn-outline" style="padding:0.25rem 0.45rem; font-size:0.75rem; color:var(--yokke-red); border-color:rgba(239,68,68,0.35);" onclick="resetLobbyDraw('${lobbyKey}')" title="Reset Undian Match Ini">
@@ -10151,15 +12660,15 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
         <div style="display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center;">
           ${/* 1. Tombol Acak Pool Match 1 / Match 2 */ ''}
           <button class="btn btn-primary" style="padding:0.35rem 0.75rem; font-size:0.78rem; ${drawDisStyle}" 
-            onclick="${!isRegistrationClosed ? "alert('⚠️ Pendaftaran turnamen masih dibuka. Harap tutup pendaftaran terlebih dahulu untuk mengundi commander.')" : (isMatchLocked ? "alert('🔒 Match " + activeMatch + " sedang dikunci. Buka kunci terlebih dahulu jika ingin mengacak ulang.')" : `drawMatchPool(${activeMatch}, '${lobbyKey}')`)}" 
-            ${(drawDisAttr || isMatchLocked) ? 'disabled' : ''} ${drawDisTitle}>
+            onclick="${!isRegistrationClosed ? "alert('⚠️ Pendaftaran turnamen masih dibuka. Harap tutup pendaftaran terlebih dahulu untuk mengundi commander.')" : (isMatchLocked ? "handleAcakCommanderClick('" + lobbyKey + "')" : `drawMatchPool(${activeMatch}, '${lobbyKey}')`)}" 
+            ${drawDisAttr} ${drawDisTitle}>
             🎲 ${hasPool ? 'Acak Ulang 8 Pool Match ' + activeMatch : 'Acak 8 Pool Match ' + activeMatch} (${activeMatch === 1 ? 'Non-Meta' : 'All Pool selain Not Use'})
           </button>
 
           ${/* 2. Tombol Acak ke Masing-Masing Pemain */ ''}
           <button class="btn btn-gold" style="padding:0.35rem 0.75rem; font-size:0.78rem; ${(!hasPool || isMatchLocked) ? 'opacity:0.5; cursor:not-allowed;' : ''}" 
-            onclick="${!hasPool ? "alert('⚠️ Silakan acak 8 Pool Commander terlebih dahulu.')" : (isMatchLocked ? "alert('🔒 Match sedang dikunci. Buka kunci terlebih dahulu jika ingin mengundi ulang pemain.')" : `assignMatchPoolToPlayers(${activeMatch}, '${lobbyKey}')`)}" 
-            ${(!hasPool || isMatchLocked) ? 'disabled' : ''}>
+            onclick="${!hasPool ? "alert('⚠️ Silakan acak 8 Pool Commander terlebih dahulu.')" : (isMatchLocked ? "handleAcakCommanderClick('" + lobbyKey + "')" : `assignMatchPoolToPlayers(${activeMatch}, '${lobbyKey}')`)}" 
+            ${(!hasPool) ? 'disabled' : ''}>
             🎯 ${hasAssigned ? 'Acak Ulang ke Pemain' : 'Pasangkan ke Pemain'}
           </button>
 
@@ -10167,7 +12676,7 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
           <button class="btn ${isMatchLocked ? 'btn-gold' : 'btn-outline'}" style="padding:0.35rem 0.7rem; font-size:0.78rem; ${lockDisStyle}" 
             onclick="${!hasAssigned ? "alert('⚠️ Pasangkan commander ke pemain terlebih dahulu sebelum mengunci.')" : `toggleLockMatchDraw(${activeMatch}, '${lobbyKey}')`}" 
             ${lockDisAttr}>
-            ${isMatchLocked ? '🔒 Match ' + activeMatch + ' Terkunci' : '🔓 Kunci Match ' + activeMatch}
+            ${isMatchLocked ? '🔒 Match ' + activeMatch + ' Terkunci (Klik utk Buka)' : '🔓 Kunci Match ' + activeMatch}
           </button>
 
           ${/* 4. Tombol Next Match */ ''}
@@ -10188,7 +12697,7 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
   } else {
     // Mode Peserta / Guest
     actionButtonsHtml = `
-      <div style="display:flex; gap:0.35rem; align-items:center;">
+      <div style="display:flex; gap:0.35rem; align-items:center; flex-wrap:wrap; width:100%;">
         <button class="btn-score-mini ${activeMatch === 1 ? 'active' : ''}" style="font-size:0.75rem; padding:0.25rem 0.5rem;" onclick="switchLobbyDrawView('${lobbyKey}', 1)">
           Hasil Match 1
         </button>
@@ -10197,6 +12706,9 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
         </button>
         <button class="btn btn-outline" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="copyCommanderDrawText('${lobbyKey}')">
           📋 Salin
+        </button>
+        <button class="btn btn-warning" style="padding:0.3rem 0.75rem; font-size:0.78rem; background:linear-gradient(135deg, #f59e0b, #ef4444); color:#fff; font-weight:700; border:none; border-radius:4px; margin-left:auto; display:inline-flex; align-items:center; gap:0.35rem; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.3);" onclick="handleAcakCommanderClick('${lobbyKey}')">
+          <span>🎲</span> <span>Acak Undian Commander</span>
         </button>
       </div>
     `;
@@ -10241,17 +12753,18 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
         </div>
         <div class="lottery-pool-chips">
           ${currentPool.map(cmd => {
-            const hero = (cmd.hero || cmd.name || '').trim();
-            const alter = (cmd.alterName || '').trim();
+            const cmdObj = (typeof cmd === 'string') ? (getCommanderById(cmd) || { id: cmd, hero: cmd, name: cmd, tier: 'Normal' }) : (cmd || {});
+            const hero = (cmdObj.hero || cmdObj.name || '').trim();
+            const alter = (cmdObj.alterName || '').trim();
             const disp = alter && hero.toLowerCase() !== alter.toLowerCase() ? `${hero} [${alter}]` : (hero || alter);
             const heroSlug = hero.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const img = cmd.heroImage || `assets/commanders/${heroSlug}.png`;
-            const tierClass = `tier-${(cmd.tier || 'normal').toLowerCase()}`;
+            const img = cmdObj.heroImage || `assets/commanders/${heroSlug}.png`;
+            const tierClass = `tier-${(cmdObj.tier || 'normal').toLowerCase()}`;
             return `
-              <div class="commander-pool-chip" title="${disp} (Tier: ${cmd.tier || 'Normal'})">
+              <div class="commander-pool-chip" title="${disp} (Tier: ${cmdObj.tier || 'Normal'})">
                 <img src="${img}" alt="${hero}" onerror="this.src='assets/commanders/chou.png'">
                 <span>${disp}</span>
-                <span class="tier-tag ${tierClass}">${cmd.tier || 'Normal'}</span>
+                <span class="tier-tag ${tierClass}">${cmdObj.tier || 'Normal'}</span>
               </div>
             `;
           }).join('')}
@@ -10275,19 +12788,24 @@ function renderLobbyCommanderDrawPanelHtml(lobbyKey, isGF, isQualFull) {
           </span>
         </div>
         <div class="commander-grid" style="margin-top:0.5rem;">
-          ${assigned.map(item => `
+          ${assigned.map(item => {
+            const cmdObj = (typeof item.commander === 'string')
+              ? (getCommanderById(item.commander) || { id: item.commander, name: item.commander, hero: item.commander, tier: 'Normal' })
+              : (item.commander || getCommanderById(item.commanderId) || {});
+            return `
             <div class="commander-card assigned-card ${isMatchLocked ? 'locked-card' : ''}">
-              ${renderCommanderCardVisualHtml(item.commander)}
+              ${renderCommanderCardVisualHtml(cmdObj)}
               <div style="margin-top: 0.45rem; padding-top: 0.4rem; border-top: 1px dashed rgba(255,255,255,0.1);">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--yokke-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.playerNick)}">
-                  🎮 ${escapeHtml(item.playerNick)}
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--yokke-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.playerNick || item.playerName)}">
+                  🎮 ${escapeHtml(item.playerNick || item.playerName)}
                 </div>
                 <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.playerName)}">
                   👤 ${escapeHtml(item.playerName)}
                 </div>
               </div>
             </div>
-          `).join('')}
+          `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -10520,6 +13038,193 @@ function drawMatchCommanders(matchNum, targetLobbyKey) {
   assignMatchPoolToPlayers(matchNum, targetLobbyKey);
 }
 
+// ----------------------------------------------------
+// FUNGSI 5: Eksekusi Pengundian Commander Lengkap (Match 1 & Match 2)
+// ----------------------------------------------------
+function executeFullCommanderDraw(targetLobbyKey) {
+  const lobbyKey = targetLobbyKey || (currentSelectedMCGGNode === 'STAGE3_SEMI_B' ? 'SEMI_B' : (currentSelectedMCGGNode === 'STAGE3_SEMI_A' ? 'SEMI_A' : (currentMCGGLobby || 'LOBBY_A')));
+  const currentList = mcggLobbies[lobbyKey] || [];
+  if (currentList.length === 0) {
+    alert(`⚠️ Data pemain untuk ${lobbyKey} belum tersedia.`);
+    return;
+  }
+
+  if (!mcggDrawState[lobbyKey]) mcggDrawState[lobbyKey] = {};
+
+  // 1. MATCH 1: 8 Hero NON-META (Tier High, Mid, Normal — exclude Meta & Not Use)
+  const nonMetaCandidates = MCGG_COMMANDERS.filter(c => {
+    const t = (c.tier || '').toLowerCase().trim();
+    return t !== 'meta' && t !== 'not use' && t !== 'gone';
+  });
+  const poolM1 = [...nonMetaCandidates].sort(() => Math.random() - 0.5).slice(0, 8);
+
+  const shuffledPoolM1 = [...poolM1].sort(() => Math.random() - 0.5);
+  const assignedM1 = [];
+  currentList.forEach((player, i) => {
+    const cmd = shuffledPoolM1[i % shuffledPoolM1.length];
+    assignedM1.push({
+      playerIndex: i,
+      playerName: player.name,
+      playerNick: player.nickname || player.name,
+      gameId: player.gameId || '-',
+      commander: cmd
+    });
+    player.c1 = cmd.id;
+    player.cmd1 = getCommanderFormattedName(cmd);
+  });
+
+  // 2. MATCH 2: 8 Hero dari SELURUH COMMANDER (All Pool — exclude Not Use), TANPA DUPLIKAT dengan Match 1 per pemain!
+  const allPoolCandidates = MCGG_COMMANDERS.filter(c => {
+    const t = (c.tier || '').toLowerCase().trim();
+    return t !== 'not use' && t !== 'gone';
+  });
+
+  let poolM2 = [];
+  let assignedM2 = [];
+  let attempts = 0;
+  let match2Success = false;
+
+  while (!match2Success && attempts < 100) {
+    attempts++;
+    poolM2 = [...allPoolCandidates].sort(() => Math.random() - 0.5).slice(0, 8);
+    const poolCopy = [...poolM2].sort(() => Math.random() - 0.5);
+    const tempAssigned = [];
+    let duplicateFound = false;
+
+    for (let i = 0; i < currentList.length; i++) {
+      const p = currentList[i];
+      const m1Hero = (p.c1 || '').toLowerCase().trim();
+      const validIndex = poolCopy.findIndex(c => (c.id || '').toLowerCase() !== m1Hero && (c.hero || '').toLowerCase() !== m1Hero);
+      if (validIndex === -1) {
+        duplicateFound = true;
+        break;
+      }
+      const chosen = poolCopy.splice(validIndex, 1)[0];
+      tempAssigned.push({
+        playerIndex: i,
+        playerName: p.name,
+        playerNick: p.nickname || p.name,
+        gameId: p.gameId || '-',
+        commander: chosen
+      });
+    }
+
+    if (!duplicateFound && tempAssigned.length === currentList.length) {
+      assignedM2 = tempAssigned;
+      match2Success = true;
+    }
+  }
+
+  if (!match2Success) {
+    poolM2 = [...allPoolCandidates].sort(() => Math.random() - 0.5).slice(0, 8);
+    const poolCopy = [...poolM2].sort(() => Math.random() - 0.5);
+    assignedM2 = currentList.map((p, i) => {
+      const cmd = poolCopy[i % poolCopy.length];
+      return {
+        playerIndex: i,
+        playerName: p.name,
+        playerNick: p.nickname || p.name,
+        gameId: p.gameId || '-',
+        commander: cmd
+      };
+    });
+  }
+
+  assignedM2.forEach((item, i) => {
+    currentList[i].c2 = item.commander.id;
+    currentList[i].cmd2 = getCommanderFormattedName(item.commander);
+  });
+
+  // Simpan ke mcggDrawState
+  mcggDrawState[lobbyKey].activeMatch = 1;
+  mcggDrawState[lobbyKey].match1 = {
+    pool: poolM1,
+    assigned: assignedM1,
+    isLocked: false
+  };
+  mcggDrawState[lobbyKey].match2 = {
+    pool: poolM2,
+    assigned: assignedM2,
+    isLocked: false
+  };
+
+  localStorage.setItem('yokke_commander_draw', JSON.stringify(mcggDrawState));
+  localStorage.setItem('yokke_mcgg_lobbies', JSON.stringify(mcggLobbies));
+  saveState();
+  saveTournamentStateOnly(true);
+
+  renderMCGGTable();
+  if (typeof renderMCGGInteractiveHubUI === 'function') {
+    renderMCGGInteractiveHubUI();
+  }
+
+  let lobbyName = lobbyKey;
+  if (lobbyKey === 'SEMI_A') lobbyName = 'Semifinal A';
+  else if (lobbyKey === 'SEMI_B') lobbyName = 'Semifinal B';
+  else if (lobbyKey.startsWith('ROUND_32_')) lobbyName = `32 Besar ${lobbyKey.replace('ROUND_32_', '')}`;
+
+  alert(
+    `🎲 PENGUNDIAN COMMANDER BERHASIL!\n\n` +
+    `Lobi: ${lobbyName}\n` +
+    `• Match 1 (8 Hero Non-Meta): Berhasil diundi & dipasangkan.\n` +
+    `• Match 2 (All Pool): Berhasil diundi & dipasangkan (Bebas komandan sama per pemain).\n` +
+    `• Match 3: In-Game Draft Pick.\n\n` +
+    `Hasil undian telah otomatis disimpan & disinkronkan ke Google Sheets!`
+  );
+}
+
+// ----------------------------------------------------
+// FUNGSI KHUSUS: Reset Cache MCGG Lokal & Muat Data Resmi Terbaru
+// ----------------------------------------------------
+window.resetMCGGCacheAndReload = function() {
+  if (confirm("⚡ Reset seluruh cache turnamen MCGG lokal dan muat data 16 besar resmi terbaru dari server?")) {
+    try {
+      localStorage.removeItem('yokke_mcgg_lobbies');
+      localStorage.removeItem('yokke_commander_draw');
+      localStorage.removeItem('yokke_mcgg_version');
+      sessionStorage.clear();
+    } catch (e) {}
+    location.reload(true);
+  }
+};
+
+// ----------------------------------------------------
+// FUNGSI 6: Handler Klik Tombol Acak Commander (Auto PIN + Unlock)
+// ----------------------------------------------------
+function handleAcakCommanderClick(targetLobbyKey) {
+  const lobbyKey = targetLobbyKey || (currentSelectedMCGGNode === 'STAGE3_SEMI_B' ? 'SEMI_B' : (currentSelectedMCGGNode === 'STAGE3_SEMI_A' ? 'SEMI_A' : (currentMCGGLobby || 'LOBBY_A')));
+  const drawData = mcggDrawState[lobbyKey] || {};
+  const m1Locked = drawData.match1 && drawData.match1.isLocked;
+  const m2Locked = drawData.match2 && drawData.match2.isLocked;
+
+  // 1. Otentikasi Admin jika belum login
+  if (!isAdmin) {
+    const pin = prompt(
+      "🔐 Mode Panitia: Masukkan PIN Admin untuk mengacak komandan:\n(Default PIN: YOKKE2026_)"
+    );
+    if (!pin) return;
+    const cleanPin = pin.trim().toUpperCase();
+    if (cleanPin !== "YOKKE2026_" && cleanPin !== "4212" && cleanPin !== "ADMIN" && cleanPin !== "YOKKE2026") {
+      alert("❌ PIN Admin salah! Akses pengundian hanya untuk Panitia.");
+      return;
+    }
+    isAdmin = true;
+    localStorage.setItem('yokke_admin', 'true');
+    updateAuthUI();
+  }
+
+  // 2. Konfirmasi pembukaan kunci jika match sedang locked
+  if (m1Locked || m2Locked) {
+    const confirmUnlock = confirm(
+      `🔒 Undian Commander ${lobbyKey} saat ini SEDANG DIKUNCI.\n\n` +
+      "Apakah Anda yakin ingin membuka kunci dan mengacak ulang seluruh pasangan komandan (Match 1 & Match 2)?"
+    );
+    if (!confirmUnlock) return;
+  }
+
+  executeFullCommanderDraw(lobbyKey);
+}
+
 
 function switchLobbyDrawView(lobbyKey, matchNum) {
   if (!mcggDrawState[lobbyKey]) mcggDrawState[lobbyKey] = {};
@@ -10529,7 +13234,20 @@ function switchLobbyDrawView(lobbyKey, matchNum) {
 
 function resetLobbyDraw(lobbyKey) {
   if (!isAdmin) return;
-  const label = lobbyKey === 'LOBBY_A' ? 'Lobi A' : (lobbyKey === 'LOBBY_B' ? 'Lobi B' : 'Grand Final');
+  let label = 'Lobi Utama';
+  if (lobbyKey.startsWith('LOBBY_')) {
+    label = `Lobi Kualifikasi ${lobbyKey.replace('LOBBY_', '')}`;
+  } else if (lobbyKey.startsWith('ROUND_32_')) {
+    label = `32 Besar - Grup ${lobbyKey.replace('ROUND_32_', '')}`;
+  } else if (lobbyKey === 'WILDCARD') {
+    label = 'Babak Wildcard';
+  } else if (lobbyKey === 'SEMI_A') {
+    label = 'Semifinal A';
+  } else if (lobbyKey === 'SEMI_B') {
+    label = 'Semifinal B';
+  } else if (lobbyKey === 'GRAND_FINAL') {
+    label = 'Grand Final';
+  }
   if (!confirm(`Hapus seluruh hasil undian Commander untuk ${label}?`)) return;
 
   if (mcggDrawState[lobbyKey]) {
@@ -10563,9 +13281,20 @@ function copyCommanderDrawText(lobbyKey) {
     return;
   }
 
-  const lobbyLabel = lKey === 'LOBBY_A' 
-    ? 'Lobi Kualifikasi A' 
-    : (lKey === 'LOBBY_B' ? 'Lobi Kualifikasi B' : (lKey === 'GRAND_FINAL' ? 'Grand Final' : 'Lobi Utama'));
+  let lobbyLabel = 'Lobi Utama';
+  if (lKey.startsWith('LOBBY_')) {
+    lobbyLabel = `Lobi Kualifikasi ${lKey.replace('LOBBY_', '')}`;
+  } else if (lKey.startsWith('ROUND_32_')) {
+    lobbyLabel = `32 Besar - Grup ${lKey.replace('ROUND_32_', '')}`;
+  } else if (lKey === 'WILDCARD') {
+    lobbyLabel = 'Babak Wildcard';
+  } else if (lKey === 'SEMI_A') {
+    lobbyLabel = 'Semifinal A';
+  } else if (lKey === 'SEMI_B') {
+    lobbyLabel = 'Semifinal B';
+  } else if (lKey === 'GRAND_FINAL') {
+    lobbyLabel = 'Grand Final';
+  }
   const matchTitle = matchNum === 1 ? 'MATCH 1 (POOL COMMANDER)' : 'MATCH 2 (RANDOM 8 COMMANDER)';
 
   let text = `🎲 *HASIL UNDIAN COMMANDER ${matchTitle}*\n`;
@@ -10629,21 +13358,24 @@ function renderMCGGLobbyAnchorBar() {
 
   if (isSingle) {
     items.push({ key: 'LOBBY_A', label: '♟️ Lobi Utama', color: 'var(--yokke-cyan)' });
-  } else if (hasSemis) {
+  } else {
     qualKeys.forEach((k, idx) => {
       items.push({ key: k, label: `🛡️ Kualifikasi ${k.replace('LOBBY_', '')}`, color: idx % 2 === 0 ? 'var(--yokke-cyan)' : 'var(--yokke-purple)' });
     });
-    items.push({ key: 'SEMI_A', label: '🔥 Semifinal A', color: 'var(--yokke-cyan)' });
-    items.push({ key: 'SEMI_B', label: '🔥 Semifinal B', color: 'var(--yokke-purple)' });
-    items.push({ key: 'GRAND_FINAL', label: isQualFull ? '🏆 Grand Final' : '🏆 Grand Final (TBD)', color: 'var(--yokke-gold)' });
-  } else {
-    items.push({ key: 'LOBBY_A', label: '🛡️ Lobi Kualifikasi A', color: 'var(--yokke-cyan)' });
-    items.push({ key: 'LOBBY_B', label: '🛡️ Lobi Kualifikasi B', color: 'var(--yokke-purple)' });
-    items.push({ 
-      key: 'GRAND_FINAL', 
-      label: isQualFull ? '🏆 Babak Grand Final' : '🏆 Grand Final (TBD)', 
-      color: 'var(--yokke-gold)' 
+    if (mcggLobbies.WILDCARD && mcggLobbies.WILDCARD.length > 0) {
+      items.push({ key: 'WILDCARD', label: '⚡ Wildcard', color: 'var(--yokke-gold)' });
+    }
+    ['A', 'B', 'C', 'D'].forEach((ch, idx) => {
+      const rKey = `ROUND_32_${ch}`;
+      if (mcggLobbies[rKey] && mcggLobbies[rKey].length > 0) {
+        items.push({ key: rKey, label: `🛡️ 32 Besar ${ch}`, color: idx % 2 === 0 ? 'var(--yokke-cyan)' : 'var(--yokke-purple)' });
+      }
     });
+    if (hasSemis) {
+      items.push({ key: 'SEMI_A', label: '🔥 Semifinal A', color: 'var(--yokke-cyan)' });
+      items.push({ key: 'SEMI_B', label: '🔥 Semifinal B', color: 'var(--yokke-purple)' });
+    }
+    items.push({ key: 'GRAND_FINAL', label: isQualFull ? '🏆 Grand Final' : '🏆 Grand Final (TBD)', color: 'var(--yokke-gold)' });
   }
 
   bar.innerHTML = items.map(it => `
@@ -10674,6 +13406,20 @@ function renderMCGGLobbySelectOptions() {
       const count = (mcggLobbies[k] || []).length;
       optionsHtml += `<option value="${k}" ${currentMCGGLobby === k ? 'selected' : ''}>Lobi Kualifikasi ${char} (${count} Pemain)</option>`;
       drawOptionsHtml += `<option value="${k}" ${currentMCGGLobby === k ? 'selected' : ''}>Undi Untuk: Lobi Kualifikasi ${char}</option>`;
+    });
+
+    if (mcggLobbies.WILDCARD && mcggLobbies.WILDCARD.length > 0) {
+      optionsHtml += `<option value="WILDCARD" ${currentMCGGLobby === 'WILDCARD' ? 'selected' : ''}>Babak Wildcard (${mcggLobbies.WILDCARD.length} Pemain)</option>`;
+      drawOptionsHtml += `<option value="WILDCARD" ${currentMCGGLobby === 'WILDCARD' ? 'selected' : ''}>Undi Untuk: Babak Wildcard</option>`;
+    }
+
+    ['A', 'B', 'C', 'D'].forEach(ch => {
+      const rKey = `ROUND_32_${ch}`;
+      if (mcggLobbies[rKey]) {
+        const count = mcggLobbies[rKey].length;
+        optionsHtml += `<option value="${rKey}" ${currentMCGGLobby === rKey ? 'selected' : ''}>32 Besar - Grup ${ch} (${count} Pemain)</option>`;
+        drawOptionsHtml += `<option value="${rKey}" ${currentMCGGLobby === rKey ? 'selected' : ''}>Undi Untuk: 32 Besar Grup ${ch}</option>`;
+      }
     });
 
     if (hasSemis) {
@@ -12710,6 +15456,14 @@ function renderMCGGInteractiveHubUI() {
           <div class="flow-node-desc">${(mcggLobbies.SEMI_B || []).length || 8} Pemain • Top 4 Lolos</div>
         </button>
       </div>
+      <div style="margin-top:0.65rem;display:flex;flex-direction:column;gap:0.35rem;">
+        <button type="button" class="btn btn-warning" style="width:100%;font-size:0.78rem;padding:0.42rem 0.6rem;background:linear-gradient(135deg, #f59e0b, #ef4444);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.35rem;box-shadow:0 3px 10px rgba(245,158,11,0.25);border:none;border-radius:6px;cursor:pointer;" onclick="handleAcakCommanderClick(currentSelectedMCGGNode === 'STAGE3_SEMI_B' ? 'SEMI_B' : 'SEMI_A')">
+          <span>🎲</span> <span>Acak Undian Commander Semifinal</span>
+        </button>
+        <button type="button" class="btn btn-outline" style="width:100%;font-size:0.75rem;padding:0.35rem 0.6rem;color:var(--yokke-cyan);border:1px solid rgba(0,210,255,0.4);font-weight:600;display:flex;align-items:center;justify-content:center;gap:0.35rem;border-radius:6px;cursor:pointer;background:rgba(0,210,255,0.06);" onclick="resetMCGGCacheAndReload()">
+          <span>⚡</span> <span>Reset Cache & Muat Data Resmi</span>
+        </button>
+      </div>
     </div>
   `;
 
@@ -12923,15 +15677,26 @@ function renderMCGGDetailPanelContent(nodeKey) {
 
   // 4. DETAIL SEMIFINAL DAY 3
   else if (nodeKey === 'STAGE3_SEMI_A' || nodeKey === 'STAGE3_SEMI_B') {
+    syncMCGGSemiFinal();
     const isA = nodeKey === 'STAGE3_SEMI_A';
     const lobbyKey = isA ? 'SEMI_A' : 'SEMI_B';
     const list = mcggLobbies[lobbyKey] || [];
 
     content += `
       <div class="detail-panel-header">
-        <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
-          <span>🔥</span> <span>Babak Semifinal ${isA ? 'A' : 'B'} (Day 3)</span>
-        </h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;width:100%;">
+          <h3 style="margin:0;font-size:1.15rem;color:var(--yokke-cyan);display:flex;align-items:center;gap:0.4rem;">
+            <span>🔥</span> <span>Babak Semifinal ${isA ? 'A' : 'B'} (Day 3)</span>
+          </h3>
+          <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="btn btn-warning" style="font-size:0.78rem;padding:0.35rem 0.8rem;background:linear-gradient(135deg, #f59e0b, #ef4444);color:#fff;font-weight:700;border:none;border-radius:6px;display:inline-flex;align-items:center;gap:0.35rem;box-shadow:0 3px 10px rgba(245,158,11,0.3);cursor:pointer;" onclick="handleAcakCommanderClick('${lobbyKey}')">
+              <span>🎲</span> <span>Acak Undian Commander ${isA ? 'Semi A' : 'Semi B'}</span>
+            </button>
+            <button type="button" class="btn btn-outline" style="font-size:0.78rem;padding:0.35rem 0.7rem;color:var(--yokke-cyan);border:1px solid rgba(0,210,255,0.4);font-weight:600;border-radius:6px;display:inline-flex;align-items:center;gap:0.3rem;cursor:pointer;background:rgba(0,210,255,0.06);" onclick="resetMCGGCacheAndReload()" title="Bersihkan cache lokal browser dan muat ulang 16 semifinalis resmi">
+              <span>⚡</span> <span>Reset Cache</span>
+            </button>
+          </div>
+        </div>
         <div class="detail-badge-group">
           <span class="badge-status" style="background:rgba(0,210,255,0.12);color:var(--yokke-cyan);">8 Pemain Semifinalis</span>
           <span class="badge-status" style="background:rgba(255,183,3,0.15);color:var(--yokke-gold);font-weight:700;">Top 4 Lolos ke Grand Final</span>
@@ -12966,6 +15731,7 @@ function renderMCGGDetailPanelContent(nodeKey) {
 
   // 5. DETAIL GRAND FINAL OFFLINE (BO5)
   else if (nodeKey === 'STAGE4_GRAND_FINAL') {
+    syncMCGGGrandFinal();
     const list = mcggLobbies.GRAND_FINAL || [];
 
     content += `
@@ -13495,6 +16261,54 @@ const MCGG_COMMANDER_METADATA = {
     skill: 'Empowerment Sacrifice',
     desc: 'Mengorbankan dua hero di samping untuk melipatgandakan damage dan shield hero inti carry.',
     synergy: 'Sinergi Assassin & Blood Demon',
+    isVetoM1: false,
+    pool: 'All-Pool'
+  },
+  karina: {
+    spec: 'Elven Assassin & True Damage Burst',
+    skill: 'Shadow Combo',
+    desc: 'Memberikan burst true damage dan bonus gold setelah berhasil mengeksekusi hero lawan.',
+    synergy: 'Sinergi Assassin & Elf',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  angela: {
+    spec: 'Support Puppet & Buff Shield',
+    skill: 'Heartguard',
+    desc: 'Melindungi hero terkuat dengan perisai tebal dan meningkatkan attack speed tim secara drastis.',
+    synergy: 'Sinergi Support & Cyborg',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  miya: {
+    spec: 'Moon Archer & Rapid Fire Burst',
+    skill: 'Moonlight Shadow',
+    desc: 'Meningkatkan attack speed dan memberikan efek invisibilitas darurat saat menerima serangan fatal.',
+    synergy: 'Sinergi Archer & Elf',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  nana: {
+    spec: 'Molina Morph & Crowd Control',
+    skill: 'Molina Blessing',
+    desc: 'Mengubah commander musuh atau hero terkuat menjadi Molina dan memberikan gold cadangan.',
+    synergy: 'Sinergi Mage & Elementalist',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  zilong: {
+    spec: 'Spear Fighter & Frontline Morale',
+    skill: 'Supreme Warrior',
+    desc: 'Meningkatkan kecepatan serang dan mobilitas hero garis depan secara masif.',
+    synergy: 'Sinergi Weapon Master & Cadia Riverlands',
+    isVetoM1: false,
+    pool: 'Non-Meta Pool'
+  },
+  kagura: {
+    spec: 'Seimei Umbrella & Magic Area Stun',
+    skill: 'Yin Yang Overturn',
+    desc: 'Mengendalikan payung seimei untuk memberikan magic damage area dan efek crowd control stun.',
+    synergy: 'Sinergi Mage & Cadia Riverlands',
     isVetoM1: false,
     pool: 'All-Pool'
   }

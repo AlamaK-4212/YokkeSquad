@@ -932,6 +932,11 @@ function getInitialData(ss) {
         else if (upL.indexOf("SEMI_A") !== -1 || upL === "SEMIFINAL_A") lKey = "SEMI_A";
         else if (upL.indexOf("SEMI_B") !== -1 || upL === "SEMIFINAL_B") lKey = "SEMI_B";
         else if (upL.indexOf("GRAND_FINAL") !== -1 || upL === "FINAL") lKey = "GRAND_FINAL";
+        else if (upL === "WILDCARD" || upL === "LOBBY_WILDCARD") lKey = "WILDCARD";
+        else if (upL.indexOf("ROUND_32_A") !== -1 || upL === "32_A" || upL === "32_BESAR_A") lKey = "ROUND_32_A";
+        else if (upL.indexOf("ROUND_32_B") !== -1 || upL === "32_B" || upL === "32_BESAR_B") lKey = "ROUND_32_B";
+        else if (upL.indexOf("ROUND_32_C") !== -1 || upL === "32_C" || upL === "32_BESAR_C") lKey = "ROUND_32_C";
+        else if (upL.indexOf("ROUND_32_D") !== -1 || upL === "32_D" || upL === "32_BESAR_D") lKey = "ROUND_32_D";
 
         if (!sheetLobbies[lKey]) sheetLobbies[lKey] = [];
 
@@ -989,7 +994,13 @@ function getInitialData(ss) {
         return k.indexOf("LOBBY_") === 0 && k !== "LOBBY_LOWER";
       });
       if (qualKeysFromSheet.length > 0) {
-        appConfig.mcggLobbies = sheetLobbies;
+        if (appConfig.mcggLobbies && typeof appConfig.mcggLobbies === "object") {
+          for (var sk in sheetLobbies) {
+            appConfig.mcggLobbies[sk] = sheetLobbies[sk];
+          }
+        } else {
+          appConfig.mcggLobbies = sheetLobbies;
+        }
       }
     }
 
@@ -1434,6 +1445,51 @@ function getValidAdminPins(ss) {
   return validPins;
 }
 
+/**
+ * Kompresi data mcggDrawState ke format ultra-ringan (hanya ID commander).
+ * Menghilangkan duplikasi payload hero/gambar/tier agar bebas batas 50.000 karakter GSheet
+ */
+function compactMCGGDrawState(drawState) {
+  if (!drawState || typeof drawState !== "object") return {};
+  var compact = {};
+  Object.keys(drawState).forEach(function(lKey) {
+    var lData = drawState[lKey];
+    if (!lData || typeof lData !== "object") return;
+    compact[lKey] = {
+      activeMatch: lData.activeMatch || 1
+    };
+    ["match1", "match2", "match3"].forEach(function(mKey) {
+      var mData = lData[mKey];
+      if (mData && typeof mData === "object") {
+        var compactPool = Array.isArray(mData.pool)
+          ? mData.pool.map(function(c) {
+              return typeof c === "string" ? c : (c ? (c.id || c.hero || "") : "");
+            }).filter(Boolean)
+          : [];
+        var compactAssigned = Array.isArray(mData.assigned)
+          ? mData.assigned.map(function(a) {
+              if (!a) return null;
+              var cmdId = typeof a.commander === "string" 
+                ? a.commander 
+                : (a.commander ? (a.commander.id || a.commander.hero || "") : (a.commanderId || a.cmd || ""));
+              return {
+                playerIndex: a.playerIndex !== undefined ? a.playerIndex : (a.i !== undefined ? a.i : 0),
+                playerName: a.playerName || "",
+                commanderId: cmdId
+              };
+            }).filter(Boolean)
+          : [];
+        compact[lKey][mKey] = {
+          pool: compactPool,
+          assigned: compactAssigned,
+          isLocked: !!mData.isLocked
+        };
+      }
+    });
+  });
+  return compact;
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   var hasLock = false;
@@ -1561,21 +1617,38 @@ function doPost(e) {
         { key: "mcggLobbies", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
         { key: "tournamentStageState", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
         { key: "customRules", val: "MIGRATED_TO_RELATIONAL_SHEETS" },
-        { key: "mcggDrawState", val: (data.mcggDrawState ? (typeof data.mcggDrawState === "object" ? JSON.stringify(data.mcggDrawState) : String(data.mcggDrawState)) : null) },
+        { key: "mcggDrawState", val: (data.mcggDrawState ? (typeof data.mcggDrawState === "object" ? JSON.stringify(compactMCGGDrawState(data.mcggDrawState)) : String(data.mcggDrawState)) : null) },
         { key: "invitedTeams", val: "MIGRATED_TO_RELATIONAL_SHEETS" }
       ];
 
       itemsToSave.forEach(function(item) {
         if (item.val !== null && item.val !== undefined) {
+          var safeVal = item.val;
+          if (typeof safeVal === "string" && safeVal.length > 45000) {
+            safeVal = safeVal.substring(0, 45000);
+          }
           if (keyRowIdx[item.key] !== undefined) {
-            rows[keyRowIdx[item.key]][1] = item.val;
+            rows[keyRowIdx[item.key]][1] = safeVal;
             rows[keyRowIdx[item.key]][2] = now;
           } else {
-            rows.push([item.key, item.val, now]);
+            rows.push([item.key, safeVal, now]);
             keyRowIdx[item.key] = rows.length - 1;
           }
         }
       });
+
+      // Defensive sanitization: Pastikan TIDAK ADA SATUPUN sel yang melebihi batas 50.000 karakter Google Sheets
+      for (var r = 0; r < rows.length; r++) {
+        for (var c = 0; c < rows[r].length; c++) {
+          if (typeof rows[r][c] === "string" && rows[r][c].length > 45000) {
+            if (c === 1 && rows[r][0] && typeof rows[r][0] === "string" && /group|mcgg|tournament|custom/i.test(rows[r][0])) {
+              rows[r][c] = "MIGRATED_TO_RELATIONAL_SHEETS";
+            } else {
+              rows[r][c] = rows[r][c].substring(0, 45000);
+            }
+          }
+        }
+      }
 
       if (rows.length > 0) {
         cfgSheet.getRange(1, 1, rows.length, 3).setValues(rows);
@@ -2655,7 +2728,10 @@ function syncDedicatedTournamentSheets(ss, payload) {
     'paquito': 'Paquito', 'cyclops': 'Cyclops [Asta]',
     'dyrroth': 'Dyrroth', 'valir': 'Valir',
     'gusion': 'Gusion [Gujun]', 'lukas': 'Lukas',
-    'aurora': 'Aurora', 'guinevere': 'Guinevere'
+    'aurora': 'Aurora', 'guinevere': 'Guinevere',
+    'karina': 'Karina', 'angela': 'Angela',
+    'kagura': 'Kagura [Saki]', 'saki': 'Kagura [Saki]',
+    'miya': 'Miya', 'nana': 'Nana', 'zilong': 'Zilong'
   };
 
   if (setupSheet && setupSheet.getLastRow() > 1) {
@@ -2690,7 +2766,11 @@ function syncDedicatedTournamentSheets(ss, payload) {
 
   const lobbies = payload.mcggLobbies || {};
   Object.keys(lobbies).forEach(lobbyKey => {
+    // Abaikan metadata internal (key dengan prefix '_') seperti _top30Qualifiers dan array kosong
+    if (lobbyKey.indexOf('_') === 0) return;
     const pList = lobbies[lobbyKey] || [];
+    if (!Array.isArray(pList) || pList.length === 0) return;
+
     const isQual = lobbyKey.indexOf('LOBBY_') === 0 && lobbyKey !== 'LOBBY_LOWER';
     const qualDone = pList.length > 0 && pList.every(p => p.r1 && p.r2 && p.r3);
 
@@ -2700,8 +2780,17 @@ function syncDedicatedTournamentSheets(ss, payload) {
         status = 'Grand Finalist';
       } else if (lobbyKey === 'SEMI_A' || lobbyKey === 'SEMI_B') {
         status = 'Babak Semifinal';
+      } else if (lobbyKey === 'WILDCARD') {
+        status = (idx < 2) ? 'LOLOS KE 32 BESAR (Top 2)' : 'Babak Wildcard';
+      } else if (lobbyKey.indexOf('ROUND_32_') === 0) {
+        status = (idx < 4) ? 'LOLOS KE SEMIFINAL (Top 4)' : 'Babak 32 Besar';
       } else if (isQual && qualDone) {
-        status = (idx < 3) ? 'LOLOS KE SEMIFINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        var is2Lobbies = Object.keys(lobbies).filter(function(k){ return k.indexOf('LOBBY_') === 0 && k !== 'LOBBY_LOWER'; }).length <= 2;
+        if (is2Lobbies) {
+          status = (idx < 4) ? 'LOLOS KE GRAND FINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        } else {
+          status = (idx < 3) ? 'LOLOS KE SEMIFINAL' : ('GUGUR (Peringkat ' + (idx + 1) + ')');
+        }
       }
 
       var c1Display = formatCmd(p.cmd1 || p.c1);
