@@ -372,65 +372,1043 @@ const DEFAULT_MLBB_GROUPS = {
 
 // 38 Pertandingan Resmi Babak Playoff Double Elimination MLBB Turnamen Yokke Squad 2026 (Ground Truth Hasil Undian Resmi)
 const DEFAULT_MLBB_PLAYOFF_MATCHES = [
-  // Ronde 0 (Hari 3): Upper Bracket 16 Besar (8 Match)
   [
-    { matchLabel: 'UB_R1_1', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'Anti Climax', teamB: 'Miskin Mekanik', winner: null },
-    { matchLabel: 'UB_R1_2', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'ATMO', teamB: 'IOS', winner: null },
-    { matchLabel: 'UB_R1_3', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '7 SINS', teamB: 'APPA LINUX', winner: null },
-    { matchLabel: 'UB_R1_4', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'BOLO CLUB', teamB: 'Native', winner: null },
-    { matchLabel: 'UB_R1_5', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'VALKYRIE', teamB: 'Yokke.Syindicate', winner: null },
-    { matchLabel: 'UB_R1_6', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TY BEKASI', teamB: 'WINGSKANAN ESPORT 1', winner: null },
-    { matchLabel: 'UB_R1_7', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: '666', teamB: 'AANG ALPHA', winner: null },
-    { matchLabel: 'UB_R1_8', phaseName: 'Upper Bracket 16 Besar (Hari 3)', bracket: 'UPPER', day: 3, teamA: 'TABRAK AJALAH', teamB: 'YOKKE LAMPUNG', winner: null }
+    {
+      "matchLabel": "UB_R1_1",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "Anti Climax",
+      "winner": "Anti Climax",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Ggrandong | G2: LIMITLESS",
+      "mvpHero": "G1: Karrie | G2: Minsitthar",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Ggrandong",
+          "hero": "Karrie",
+          "team": "Anti Climax"
+        },
+        {
+          "game": 2,
+          "player": "LIMITLESS",
+          "hero": "Minsitthar",
+          "team": "Anti Climax"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_2",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "Native",
+      "teamB": "BOLO CLUB",
+      "winner": "Native",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Kuaciii | G2: Excellent! | G3: Yokke. yami sukehiro",
+      "mvpHero": "G1: Aurora | G2: Julian | G3: Atlas",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Kuaciii",
+          "hero": "Aurora",
+          "team": "Native"
+        },
+        {
+          "game": 2,
+          "player": "Excellent!",
+          "hero": "Julian",
+          "team": "Native"
+        },
+        {
+          "game": 3,
+          "player": "Yokke. yami sukehiro",
+          "hero": "Atlas",
+          "team": "Native"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_3",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "ATMO",
+      "teamB": "IOS",
+      "winner": "ATMO",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Uchiha Domskuy | G2: Uchiha Domskuy",
+      "mvpHero": "G1: Suyou | G2: Aulus",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Uchiha Domskuy",
+          "hero": "Suyou",
+          "team": "ATMO"
+        },
+        {
+          "game": 2,
+          "player": "Uchiha Domskuy",
+          "hero": "Aulus",
+          "team": "ATMO"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_4",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "WINGSKANAN ESPORT 1",
+      "teamB": "TY BEKASI",
+      "winner": "TY BEKASI",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: EZ KATKA | G2: LumieRe?레지.",
+      "mvpHero": "G1: Minotaur | G2: Harley",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "EZ KATKA",
+          "hero": "Minotaur",
+          "team": "TY BEKASI"
+        },
+        {
+          "game": 2,
+          "player": "LumieRe?레지.",
+          "hero": "Harley",
+          "team": "TY BEKASI"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_5",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "Miskin Mekanik",
+      "teamB": "666",
+      "winner": "666",
+      "scoreA": 1,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "UB_R1_6",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "7 SINS",
+      "teamB": "APPA LINUX",
+      "winner": "7 SINS",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Backburner. | G2: Backburner.",
+      "mvpHero": "G1: Lylia | G2: Lylia",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Backburner.",
+          "hero": "Lylia",
+          "team": "7 SINS"
+        },
+        {
+          "game": 2,
+          "player": "Backburner.",
+          "hero": "Lylia",
+          "team": "7 SINS"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_7",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "VALKYRIE",
+      "teamB": "Yokke.Syindicate",
+      "winner": "VALKYRIE",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Nomuraa | G2: JayyZ X Falesco.",
+      "mvpHero": "G1: Faramis | G2: Nathan",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Nomuraa",
+          "hero": "Faramis",
+          "team": "VALKYRIE"
+        },
+        {
+          "game": 2,
+          "player": "JayyZ X Falesco.",
+          "hero": "Nathan",
+          "team": "VALKYRIE"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_R1_8",
+      "phaseName": "Upper Bracket 16 Besar (Hari 3)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "AANG ALPHA",
+      "teamB": "YOKKE LAMPUNG",
+      "winner": "AANG ALPHA",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Yokke.Im^Spicy™ | G2: Yokke.ConeAct",
+      "mvpHero": "G1: Bane | G2: Sora",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yokke.Im^Spicy™",
+          "hero": "Bane",
+          "team": "AANG ALPHA"
+        },
+        {
+          "game": 2,
+          "player": "Yokke.ConeAct",
+          "hero": "Sora",
+          "team": "AANG ALPHA"
+        }
+      ]
+    }
   ],
-  // Ronde 1 (Hari 3-4): Upper Bracket Perempat Final (4 Match) & Lower Bracket Ronde 1 (8 Match)
   [
-    { matchLabel: 'UB_QF_1', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 1', teamB: 'Pemenang UB R1 2', winner: null },
-    { matchLabel: 'UB_QF_2', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 3', teamB: 'Pemenang UB R1 4', winner: null },
-    { matchLabel: 'UB_QF_3', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 5', teamB: 'Pemenang UB R1 6', winner: null },
-    { matchLabel: 'UB_QF_4', phaseName: 'Upper Bracket Perempat Final (Hari 3-4)', bracket: 'UPPER', day: 3, teamA: 'Pemenang UB R1 7', teamB: 'Pemenang UB R1 8', winner: null },
-    { matchLabel: 'LB_R1_1', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'DEADLINE SLAYER', teamB: 'Gugur UB R1 1', winner: null },
-    { matchLabel: 'LB_R1_2', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 2', teamB: 'MiracleXStars', winner: null },
-    { matchLabel: 'LB_R1_3', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 3', teamB: 'LOLO', winner: null },
-    { matchLabel: 'LB_R1_4', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 4', teamB: 'Yokke Batam Squad (YBS)', winner: null },
-    { matchLabel: 'LB_R1_5', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 5', teamB: 'Red Razor', winner: null },
-    { matchLabel: 'LB_R1_6', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 6', teamB: 'My Palembang', winner: null },
-    { matchLabel: 'LB_R1_7', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Gugur UB R1 7', teamB: 'Colorbook', winner: null },
-    { matchLabel: 'LB_R1_8', phaseName: 'Lower Bracket Ronde 1 (Hari 3-4)', bracket: 'LOWER', day: 3, teamA: 'Yokke Batam', teamB: 'Gugur UB R1 8', winner: null }
+    {
+      "matchLabel": "UB_QF_1",
+      "phaseName": "Upper Bracket Perempat Final (Hari 3-4)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "Anti Climax",
+      "teamB": "Native",
+      "winner": "Anti Climax",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: MageManzone. | G2: LIMITLESS | G3: Ggrandong",
+      "mvpHero": "G1: Alice | G2: Barats | G3: Hanabi",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "MageManzone.",
+          "hero": "Alice",
+          "team": "Anti Climax"
+        },
+        {
+          "game": 2,
+          "player": "LIMITLESS",
+          "hero": "Barats",
+          "team": "Anti Climax"
+        },
+        {
+          "game": 3,
+          "player": "Ggrandong",
+          "hero": "Hanabi",
+          "team": "Anti Climax"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_QF_2",
+      "phaseName": "Upper Bracket Perempat Final (Hari 3-4)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "ATMO",
+      "teamB": "TY BEKASI",
+      "winner": "ATMO",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Uchiha Domskuy | G2: Dopaminz.",
+      "mvpHero": "G1: Lukas | G2: Atlas",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Uchiha Domskuy",
+          "hero": "Lukas",
+          "team": "ATMO"
+        },
+        {
+          "game": 2,
+          "player": "Dopaminz.",
+          "hero": "Atlas",
+          "team": "ATMO"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_QF_3",
+      "phaseName": "Upper Bracket Perempat Final (Hari 3-4)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "666",
+      "teamB": "7 SINS",
+      "winner": "7 SINS",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: J E R A M I K T | G2: Backburner.",
+      "mvpHero": "G1: Alice | G2: Zhuxin",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "J E R A M I K T",
+          "hero": "Alice",
+          "team": "7 SINS"
+        },
+        {
+          "game": 2,
+          "player": "Backburner.",
+          "hero": "Zhuxin",
+          "team": "7 SINS"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_QF_4",
+      "phaseName": "Upper Bracket Perempat Final (Hari 3-4)",
+      "bracket": "UPPER",
+      "day": 3,
+      "teamA": "VALKYRIE",
+      "teamB": "AANG ALPHA",
+      "winner": "AANG ALPHA",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Yokke.Im^Spicy™ | G2: Yokke.Im^Spicy™",
+      "mvpHero": "G1 : Bane | G2 : Bane",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yokke.Im^Spicy™",
+          "hero": "G1 : Bane",
+          "team": "AANG ALPHA"
+        },
+        {
+          "game": 2,
+          "player": "Yokke.Im^Spicy™",
+          "hero": "G2 : Bane",
+          "team": "AANG ALPHA"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R1_1",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "My Palembang",
+      "winner": "TABRAK AJALAH",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "LB_R1_2",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "BOLO CLUB",
+      "teamB": "Colorbook",
+      "winner": "BOLO CLUB",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: SLJ#09 | G2: Excellent! | G3: Excellent!",
+      "mvpHero": "G1: Valir | G2: Julian | G3: Suyou",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "SLJ#09",
+          "hero": "Valir",
+          "team": "BOLO CLUB"
+        },
+        {
+          "game": 2,
+          "player": "Excellent!",
+          "hero": "Julian",
+          "team": "BOLO CLUB"
+        },
+        {
+          "game": 3,
+          "player": "Excellent!",
+          "hero": "Suyou",
+          "team": "BOLO CLUB"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R1_3",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "IOS",
+      "teamB": "LOLO",
+      "winner": "IOS",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "LB_R1_4",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "WINGSKANAN ESPORT 1",
+      "teamB": "DEADLINE SLAYER",
+      "winner": "WINGSKANAN ESPORT 1",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Yangskyyy | G2: Yangskyyy",
+      "mvpHero": "G1: Roger | G2: Harley",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yangskyyy",
+          "hero": "Roger",
+          "team": "WINGSKANAN ESPORT 1"
+        },
+        {
+          "game": 2,
+          "player": "Yangskyyy",
+          "hero": "Harley",
+          "team": "WINGSKANAN ESPORT 1"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R1_5",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "Miskin Mekanik",
+      "teamB": "Red Razor",
+      "winner": "Red Razor",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "LB_R1_6",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "APPA LINUX",
+      "teamB": "LOLO",
+      "winner": "APPA LINUX",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: O H M W R E C K E R | G2: Yokke.♤SuperUsagi",
+      "mvpHero": "G1: Obsidian | G2: Badang",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "O H M W R E C K E R",
+          "hero": "Obsidian",
+          "team": "APPA LINUX"
+        },
+        {
+          "game": 2,
+          "player": "Yokke.♤SuperUsagi",
+          "hero": "Badang",
+          "team": "APPA LINUX"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R1_7",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "Yokke.Syindicate",
+      "teamB": "Yokke Batam Squad (YBS)",
+      "winner": "Yokke Batam Squad (YBS)",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Omreg | G2: Snow Prince",
+      "mvpHero": "G1: Hanabi | G2: Guinevere",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Omreg",
+          "hero": "Hanabi",
+          "team": "Yokke Batam Squad (YBS)"
+        },
+        {
+          "game": 2,
+          "player": "Snow Prince",
+          "hero": "Guinevere",
+          "team": "Yokke Batam Squad (YBS)"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R1_8",
+      "phaseName": "Lower Bracket Ronde 1 (Hari 3-4)",
+      "bracket": "LOWER",
+      "day": 3,
+      "teamA": "YOKKE LAMPUNG",
+      "teamB": "MiracleXStars",
+      "winner": "MiracleXStars",
+      "scoreA": 1,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: SkySlwy | G2: B A R R I E R | G3: C A C I N G",
+      "mvpHero": "G1: Alpha | G2: Masha | G3: Zhuxin",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "SkySlwy",
+          "hero": "Alpha",
+          "team": "MiracleXStars"
+        },
+        {
+          "game": 2,
+          "player": "B A R R I E R",
+          "hero": "Masha",
+          "team": "MiracleXStars"
+        },
+        {
+          "game": 3,
+          "player": "C A C I N G",
+          "hero": "Zhuxin",
+          "team": "MiracleXStars"
+        }
+      ]
+    }
   ],
-  // Ronde 2 (Hari 4): Upper Bracket Semifinal (2 Match) & Lower Bracket Ronde 2 (4 Match) & Lower Bracket Ronde 3 (4 Match)
   [
-    { matchLabel: 'UB_SF_1', phaseName: 'Upper Bracket Semifinal (Hari 4)', bracket: 'UPPER', day: 4, teamA: 'Pemenang UB QF 1', teamB: 'Pemenang UB QF 2', winner: null },
-    { matchLabel: 'UB_SF_2', phaseName: 'Upper Bracket Semifinal (Hari 4)', bracket: 'UPPER', day: 4, teamA: 'Pemenang UB QF 3', teamB: 'Pemenang UB QF 4', winner: null },
-    { matchLabel: 'LB_R2_1', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 1', teamB: 'Pemenang LB R1 2', winner: null },
-    { matchLabel: 'LB_R2_2', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 3', teamB: 'Pemenang LB R1 4', winner: null },
-    { matchLabel: 'LB_R2_3', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 5', teamB: 'Pemenang LB R1 6', winner: null },
-    { matchLabel: 'LB_R2_4', phaseName: 'Lower Bracket Ronde 2 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R1 7', teamB: 'Pemenang LB R1 8', winner: null },
-    { matchLabel: 'LB_R3_1', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 1', teamB: 'Gugur UB QF 1', winner: null },
-    { matchLabel: 'LB_R3_2', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 2', teamB: 'Gugur UB QF 2', winner: null },
-    { matchLabel: 'LB_R3_3', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 3', teamB: 'Gugur UB QF 3', winner: null },
-    { matchLabel: 'LB_R3_4', phaseName: 'Lower Bracket Ronde 3 (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R2 4', teamB: 'Gugur UB QF 4', winner: null }
+    {
+      "matchLabel": "UB_SF_1",
+      "phaseName": "Upper Bracket Semifinal (Hari 4)",
+      "bracket": "UPPER",
+      "day": 4,
+      "teamA": "Anti Climax",
+      "teamB": "ATMO",
+      "winner": "ATMO",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Uchiha Domskuy | G2: Uchiha Domskuy",
+      "mvpHero": "G1: Aulus | G2: Nolan",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Uchiha Domskuy",
+          "hero": "Aulus",
+          "team": "ATMO"
+        },
+        {
+          "game": 2,
+          "player": "Uchiha Domskuy",
+          "hero": "Nolan",
+          "team": "ATMO"
+        }
+      ]
+    },
+    {
+      "matchLabel": "UB_SF_2",
+      "phaseName": "Upper Bracket Semifinal (Hari 4)",
+      "bracket": "UPPER",
+      "day": 4,
+      "teamA": "7 SINS",
+      "teamB": "AANG ALPHA",
+      "winner": "AANG ALPHA",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Yokke.Im^Spicy™ | G2: Yokke.Im^Spicy™",
+      "mvpHero": "G1: Bane | G2: Nolan",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yokke.Im^Spicy™",
+          "hero": "Bane",
+          "team": "AANG ALPHA"
+        },
+        {
+          "game": 2,
+          "player": "Yokke.Im^Spicy™",
+          "hero": "Nolan",
+          "team": "AANG ALPHA"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R2_1",
+      "phaseName": "Lower Bracket Ronde 2 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "BOLO CLUB",
+      "winner": "TABRAK AJALAH",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: C i d . | G2: krossbar_",
+      "mvpHero": "G1: Fanny | G2: Minotaur",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "C i d .",
+          "hero": "Fanny",
+          "team": "TABRAK AJALAH"
+        },
+        {
+          "game": 2,
+          "player": "krossbar_",
+          "hero": "Minotaur",
+          "team": "TABRAK AJALAH"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R2_2",
+      "phaseName": "Lower Bracket Ronde 2 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "IOS",
+      "teamB": "WINGSKANAN ESPORT 1",
+      "winner": "IOS",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: BlueJack | G2: Supeermeen | G3: otnariw bilek:",
+      "mvpHero": "G1: Marcel | G2: Belerick | G3: Paquito",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "BlueJack",
+          "hero": "Marcel",
+          "team": "IOS"
+        },
+        {
+          "game": 2,
+          "player": "Supeermeen",
+          "hero": "Belerick",
+          "team": "IOS"
+        },
+        {
+          "game": 3,
+          "player": "otnariw bilek:",
+          "hero": "Paquito",
+          "team": "IOS"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R2_3",
+      "phaseName": "Lower Bracket Ronde 2 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "Red Razor",
+      "teamB": "APPA LINUX",
+      "winner": "APPA LINUX",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: Yokke.♤SuperUsagi | G2: O H M W R E C K E R",
+      "mvpHero": "G1: Hanzo | G2: Obsidian",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yokke.♤SuperUsagi",
+          "hero": "Hanzo",
+          "team": "APPA LINUX"
+        },
+        {
+          "game": 2,
+          "player": "O H M W R E C K E R",
+          "hero": "Obsidian",
+          "team": "APPA LINUX"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R2_4",
+      "phaseName": "Lower Bracket Ronde 2 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "Yokke Batam Squad (YBS)",
+      "teamB": "MiracleXStars",
+      "winner": "MiracleXStars",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: B A R R I E R | G2: C A C I N G",
+      "mvpHero": "G1: Khaleed | G2: Zetian",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "B A R R I E R",
+          "hero": "Khaleed",
+          "team": "MiracleXStars"
+        },
+        {
+          "game": 2,
+          "player": "C A C I N G",
+          "hero": "Zetian",
+          "team": "MiracleXStars"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R3_1",
+      "phaseName": "Lower Bracket Ronde 3 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "Native",
+      "winner": "TABRAK AJALAH",
+      "scoreA": 2,
+      "scoreB": 0,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: ETERNAL | G2: NEOX",
+      "mvpHero": "G1: Barats | G2: Joy",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "ETERNAL",
+          "hero": "Barats",
+          "team": "TABRAK AJALAH"
+        },
+        {
+          "game": 2,
+          "player": "NEOX",
+          "hero": "Joy",
+          "team": "TABRAK AJALAH"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R3_2",
+      "phaseName": "Lower Bracket Ronde 3 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "IOS",
+      "teamB": "TY BEKASI",
+      "winner": "TY BEKASI",
+      "scoreA": 1,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: ES_GOOD_DAY_1 | G3: EZ KATKA",
+      "mvpHero": "G1: Balmond | G3: Moskov",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "ES_GOOD_DAY_1",
+          "hero": "Balmond",
+          "team": "TY BEKASI"
+        },
+        {
+          "game": 2,
+          "player": "EZ KATKA",
+          "hero": "Moskov",
+          "team": "TY BEKASI"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R3_3",
+      "phaseName": "Lower Bracket Ronde 3 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "APPA LINUX",
+      "teamB": "666",
+      "winner": "APPA LINUX",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: FrisianFlag | G2: Yokke.♤SuperUsagi | G3: Danchóu",
+      "mvpHero": "G1: Zetian | G2: Badang | G3: Zetian",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "FrisianFlag",
+          "hero": "Zetian",
+          "team": "APPA LINUX"
+        },
+        {
+          "game": 2,
+          "player": "Yokke.♤SuperUsagi",
+          "hero": "Badang",
+          "team": "APPA LINUX"
+        },
+        {
+          "game": 3,
+          "player": "Danchóu",
+          "hero": "Zetian",
+          "team": "APPA LINUX"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_R3_4",
+      "phaseName": "Lower Bracket Ronde 3 (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "MiracleXStars",
+      "teamB": "VALKYRIE",
+      "winner": "MiracleXStars",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G2: JayyZ X Falesco. | G3: PRINCE sa'D BOY",
+      "mvpHero": "G2: Beatrix | G3: Barats",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "JayyZ X Falesco.",
+          "hero": "Beatrix",
+          "team": "MiracleXStars"
+        },
+        {
+          "game": 2,
+          "player": "PRINCE sa'D BOY",
+          "hero": "Barats",
+          "team": "MiracleXStars"
+        }
+      ]
+    }
   ],
-  // Ronde 3 (Hari 4): Lower Bracket Perempat Final (2 Match)
   [
-    { matchLabel: 'LB_QF_1', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'TABRAK AJALAH', teamB: 'TY BEKASI', winner: 'TABRAK AJALAH', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: '¢id.', mvpHero: 'Beatrix / Hayabusa', mvpTeam: 'TABRAK AJALAH' },
-    { matchLabel: 'LB_QF_2', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'APPA LINUX', teamB: 'MiracleXStars', winner: 'APPA LINUX', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: 'Yokke.♤SuperUsagi', mvpHero: 'Roamer / Playmaker', mvpTeam: 'APPA LINUX' }
+    {
+      "matchLabel": "LB_QF_1",
+      "phaseName": "Lower Bracket Perempat Final (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "TY BEKASI",
+      "winner": "TABRAK AJALAH",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "¢id.",
+      "mvpHero": "Beatrix / Hayabusa",
+      "mvpTeam": "TABRAK AJALAH",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "¢id.",
+          "hero": "Beatrix / Hayabusa",
+          "team": "TABRAK AJALAH"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_QF_2",
+      "phaseName": "Lower Bracket Perempat Final (Hari 4)",
+      "bracket": "LOWER",
+      "day": 4,
+      "teamA": "APPA LINUX",
+      "teamB": "MiracleXStars",
+      "winner": "APPA LINUX",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "Yokke.♤SuperUsagi",
+      "mvpHero": "Roamer / Playmaker",
+      "mvpTeam": "APPA LINUX",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "Yokke.♤SuperUsagi",
+          "hero": "Roamer / Playmaker",
+          "team": "APPA LINUX"
+        }
+      ]
+    }
   ],
-  // Ronde 4 (Hari 5): Upper Final & Lower Semifinal / Final (5 Match)
   [
-    { matchLabel: 'UB_FINAL', phaseName: 'Upper Bracket Final (Hari 5)', bracket: 'UPPER', day: 5, teamA: 'ATMO', teamB: 'AANG ALPHA', winner: null },
-    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: 'TABRAK AJALAH', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: 'G2: C i d . | G3: NEOX', mvpHero: 'G2: Granger | G3: Nolan', mvpTeam: 'TABRAK AJALAH', gameMvps: [{ game: 1, player: 'C i d .', hero: 'Granger', team: 'TABRAK AJALAH' }, { game: 2, player: 'NEOX', hero: 'Nolan', team: 'TABRAK AJALAH' }] },
-    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'APPA LINUX', teamB: '7 SINS', winner: '7 SINS', scoreA: 0, scoreB: 2, status: 'COMPLETED', mvpPlayer: 'G1: ϯσxίɕ | G2: Rynnn.', mvpHero: 'G1: Moskov | G2: Sun', mvpTeam: '7 SINS', gameMvps: [{ game: 1, player: 'ϯσxίɕ', hero: 'Moskov', team: '7 SINS' }, { game: 2, player: 'Rynnn.', hero: 'Sun', team: '7 SINS' }] },
-    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: '7 SINS', winner: null },
-    { matchLabel: 'LB_FINAL', phaseName: 'Lower Bracket Final Penentu (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB Prelim', teamB: 'Gugur UB Final', winner: null }
+    {
+      "matchLabel": "UB_FINAL",
+      "phaseName": "Upper Bracket Final (Hari 5)",
+      "bracket": "UPPER",
+      "day": 5,
+      "teamA": "ATMO",
+      "teamB": "AANG ALPHA",
+      "winner": null,
+      "scoreA": null,
+      "scoreB": null,
+      "status": "SCHEDULED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "LB_SF_1",
+      "phaseName": "Lower Bracket Semifinal 1 (Hari 5)",
+      "bracket": "LOWER",
+      "day": 5,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "Anti Climax",
+      "winner": "TABRAK AJALAH",
+      "scoreA": 2,
+      "scoreB": 1,
+      "status": "FINISHED",
+      "mvpPlayer": "G2: C i d . | G3: NEOX",
+      "mvpHero": "G2: Granger | G3: Nolan",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "C i d .",
+          "hero": "Granger",
+          "team": "TABRAK AJALAH"
+        },
+        {
+          "game": 2,
+          "player": "NEOX",
+          "hero": "Nolan",
+          "team": "TABRAK AJALAH"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_SF_2",
+      "phaseName": "Lower Bracket Semifinal 2 (Hari 5)",
+      "bracket": "LOWER",
+      "day": 5,
+      "teamA": "APPA LINUX",
+      "teamB": "7 SINS",
+      "winner": "7 SINS",
+      "scoreA": 0,
+      "scoreB": 2,
+      "status": "FINISHED",
+      "mvpPlayer": "G1: ϯσxίɕ | G2: Rynnn.",
+      "mvpHero": "G1: Moskov | G2: Sun",
+      "mvpTeam": "",
+      "gameMvps": [
+        {
+          "game": 1,
+          "player": "ϯσxίɕ",
+          "hero": "Moskov",
+          "team": "7 SINS"
+        },
+        {
+          "game": 2,
+          "player": "Rynnn.",
+          "hero": "Sun",
+          "team": "7 SINS"
+        }
+      ]
+    },
+    {
+      "matchLabel": "LB_PRELIM",
+      "phaseName": "Lower Bracket Final Penantang (Hari 5)",
+      "bracket": "LOWER",
+      "day": 5,
+      "teamA": "TABRAK AJALAH",
+      "teamB": "7 SINS",
+      "winner": null,
+      "scoreA": null,
+      "scoreB": null,
+      "status": "SCHEDULED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    },
+    {
+      "matchLabel": "LB_FINAL",
+      "phaseName": "Lower Bracket Final Penentu (Hari 5)",
+      "bracket": "LOWER",
+      "day": 5,
+      "teamA": "Pemenang LB Prelim",
+      "teamB": "Gugur UB Final",
+      "winner": null,
+      "scoreA": null,
+      "scoreB": null,
+      "status": "SCHEDULED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    }
   ],
-  // Ronde 5 (Hari 5): Grand Final BO5 (1 Match)
   [
-    { matchLabel: 'GRAND_FINAL', phaseName: 'Grand Final BO5 (Hari 5)', bracket: 'GRAND_FINAL', day: 5, teamA: 'Juara Upper Bracket', teamB: 'Juara Lower Bracket', winner: null }
+    {
+      "matchLabel": "GRAND_FINAL",
+      "phaseName": "Grand Final BO5 (Hari 5)",
+      "bracket": "GRAND_FINAL",
+      "day": 5,
+      "teamA": "Juara Upper Bracket",
+      "teamB": "Juara Lower Bracket",
+      "winner": null,
+      "scoreA": null,
+      "scoreB": null,
+      "status": "SCHEDULED",
+      "mvpPlayer": "",
+      "mvpHero": "",
+      "mvpTeam": "",
+      "gameMvps": []
+    }
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-13-v6-top4-mlbb-official-prelim';
+const PLAYOFF_DATA_VERSION = '2026-11-13-v7-all-playoff-mvps-synced';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
