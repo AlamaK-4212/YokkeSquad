@@ -413,15 +413,15 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ],
   // Ronde 3 (Hari 4): Lower Bracket Perempat Final (2 Match)
   [
-    { matchLabel: 'LB_QF_1', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R3 1', teamB: 'Pemenang LB R3 2', winner: null },
-    { matchLabel: 'LB_QF_2', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'Pemenang LB R3 3', teamB: 'Pemenang LB R3 4', winner: null }
+    { matchLabel: 'LB_QF_1', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'TABRAK AJALAH', teamB: 'TY BEKASI', winner: 'TABRAK AJALAH', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: '¢id.', mvpHero: 'Beatrix / Hayabusa', mvpTeam: 'TABRAK AJALAH' },
+    { matchLabel: 'LB_QF_2', phaseName: 'Lower Bracket Perempat Final (Hari 4)', bracket: 'LOWER', day: 4, teamA: 'APPA LINUX', teamB: 'MiracleXStars', winner: 'APPA LINUX', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: 'Yokke.♤SuperUsagi', mvpHero: 'Roamer / Playmaker', mvpTeam: 'APPA LINUX' }
   ],
   // Ronde 4 (Hari 5): Upper Final & Lower Semifinal / Final (5 Match)
   [
-    { matchLabel: 'UB_FINAL', phaseName: 'Upper Bracket Final (Hari 5)', bracket: 'UPPER', day: 5, teamA: 'Pemenang UB SF 1', teamB: 'Pemenang UB SF 2', winner: null },
-    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB QF 1', teamB: 'Gugur UB SF 1', winner: null },
-    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB QF 2', teamB: 'Gugur UB SF 2', winner: null },
-    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB SF 1', teamB: 'Pemenang LB SF 2', winner: null },
+    { matchLabel: 'UB_FINAL', phaseName: 'Upper Bracket Final (Hari 5)', bracket: 'UPPER', day: 5, teamA: 'ATMO', teamB: 'AANG ALPHA', winner: null },
+    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
+    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'APPA LINUX', teamB: '7 SINS', winner: '7 SINS', scoreA: 0, scoreB: 2, status: 'COMPLETED', mvpPlayer: 'tσxíɕ', mvpHero: 'Moskov / Sun', mvpTeam: '7 SINS' },
+    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB SF 1', teamB: '7 SINS', winner: null },
     { matchLabel: 'LB_FINAL', phaseName: 'Lower Bracket Final Penentu (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB Prelim', teamB: 'Gugur UB Final', winner: null }
   ],
   // Ronde 5 (Hari 5): Grand Final BO5 (1 Match)
@@ -430,7 +430,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-09-v4-restore-ground-truth-playoff-brackets';
+const PLAYOFF_DATA_VERSION = '2026-11-13-v5-top4-mlbb-official';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
@@ -486,12 +486,44 @@ function normalizeGroupPlayoffMatches(incoming) {
         if (found.mvpTeam !== undefined && found.mvpTeam !== null) defaultMatch.mvpTeam = found.mvpTeam;
         if (found.gameMvps !== undefined && found.gameMvps !== null) defaultMatch.gameMvps = found.gameMvps;
       }
-      // Memastikan slot lawan di Lower Semifinal adalah tim gugur Upper SF resmi: Anti Climax dan 7 SINS
-      if (defaultMatch.matchLabel === 'LB_SF_1' && (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamB))) {
-        defaultMatch.teamB = 'Anti Climax';
+      // Memastikan slot resmi babak 4 Besar & Final Lower Bracket
+      if (defaultMatch.matchLabel === 'LB_QF_1') {
+        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'TABRAK AJALAH';
+        if (!defaultMatch.teamB || isPlayoffPlaceholderTeam(defaultMatch.teamB)) defaultMatch.teamB = 'TY BEKASI';
+        if (!defaultMatch.winner || isPlayoffPlaceholderTeam(defaultMatch.winner)) {
+          defaultMatch.winner = 'TABRAK AJALAH';
+          defaultMatch.scoreA = 2;
+          defaultMatch.scoreB = 1;
+          defaultMatch.status = 'COMPLETED';
+          defaultMatch.mvpPlayer = '¢id.';
+          defaultMatch.mvpHero = 'Beatrix / Hayabusa';
+          defaultMatch.mvpTeam = 'TABRAK AJALAH';
+        }
       }
-      if (defaultMatch.matchLabel === 'LB_SF_2' && (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(defaultMatch.teamB))) {
-        defaultMatch.teamB = '7 SINS';
+      if (defaultMatch.matchLabel === 'LB_SF_1') {
+        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'TABRAK AJALAH';
+        if (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamB)) {
+          defaultMatch.teamB = 'Anti Climax';
+        }
+      }
+      if (defaultMatch.matchLabel === 'LB_SF_2') {
+        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'APPA LINUX';
+        if (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(defaultMatch.teamB)) {
+          defaultMatch.teamB = '7 SINS';
+        }
+        if (!defaultMatch.winner || isPlayoffPlaceholderTeam(defaultMatch.winner)) {
+          defaultMatch.winner = '7 SINS';
+          defaultMatch.scoreA = 0;
+          defaultMatch.scoreB = 2;
+          defaultMatch.status = 'COMPLETED';
+          defaultMatch.mvpPlayer = 'tσxíɕ';
+          defaultMatch.mvpHero = 'Moskov / Sun';
+          defaultMatch.mvpTeam = '7 SINS';
+        }
+      }
+      if (defaultMatch.matchLabel === 'LB_PRELIM') {
+        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'Pemenang LB SF 1';
+        if (!defaultMatch.teamB || isPlayoffPlaceholderTeam(defaultMatch.teamB)) defaultMatch.teamB = '7 SINS';
       }
       if (defaultMatch.matchLabel === 'UB_FINAL') {
         if (!defaultMatch.teamA || defaultMatch.teamA === 'Pemenang UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'ATMO';
@@ -1356,116 +1388,68 @@ const DEFAULT_MCGG_LOBBIES = {
   ],
   "GRAND_FINAL": [
     {
-      "name": "TBD (Top 1 Semifinal A)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Raihan Purnama",
+      "dept": "OPPI",
+      "nickname": "hutanlindung",
+      "gameId": "17768274 (4031)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 2 Semifinal A)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Daniel Reimond",
+      "dept": "IT/QA",
+      "nickname": "jonomon19",
+      "gameId": "6652814 (4125)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 3 Semifinal A)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Faldi Rasis Purnomo",
+      "dept": "Enterprise Risk Management / PRM",
+      "nickname": "En D M0",
+      "gameId": "1645656 (4002)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 4 Semifinal A)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "M ikhsan",
+      "dept": "Product",
+      "nickname": "Ganool",
+      "gameId": "5447194 (4074)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 1 Semifinal B)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Joko waluyono",
+      "dept": "MY / Ado bandung",
+      "nickname": "Xylo^",
+      "gameId": "2357103 (4071)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 2 Semifinal B)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "ANDHIKA BAYU PRASETYO",
+      "dept": "Quality Assurance",
+      "nickname": "H O K K I E",
+      "gameId": "2336317 (4053)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 3 Semifinal B)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Sulistiyo Yonatan",
+      "dept": "Marketing Yokke / ADO MEDAN",
+      "nickname": "Yona",
+      "gameId": "2355574 (4027)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     },
     {
-      "name": "TBD (Top 4 Semifinal B)",
-      "nickname": "TBD",
-      "gameId": "-",
-      "r1": 0,
-      "r2": 0,
-      "r3": 0,
-      "c1": "",
-      "c2": "",
-      "c3": "",
-      "penalty": 0,
-      "total": 0,
-      "isTBD": true
+      "name": "Yudhistira Pratama Ramadhan",
+      "dept": "ADO BANDUNG",
+      "nickname": "BuzzFeed",
+      "gameId": "3266192 (4113)",
+      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
+      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
     }
   ],
   "WILDCARD": [
@@ -2787,7 +2771,7 @@ const DEFAULT_MCGG_LOBBIES = {
   ]
 };
 
-const MCGG_DATA_VERSION = 'v20_20261112_semi_final_clean';
+const MCGG_DATA_VERSION = 'v21_20261113_top8_mcgg_finalists';
 let savedMcggVersion = null;
 try {
   savedMcggVersion = localStorage.getItem('yokke_mcgg_version');
@@ -12416,6 +12400,9 @@ function syncMCGGGrandFinal() {
     // 2 Lobi Semifinal (A & B) -> 1 Grand Final
     const semiDone = isMCGGSemiFinalFull();
     if (!semiDone) {
+      if (mcggLobbies.GRAND_FINAL && mcggLobbies.GRAND_FINAL.length === 8 && !mcggLobbies.GRAND_FINAL.every(p => p.isTBD)) {
+        return; // Sudah terisi 8 besar finalis resmi dari Semifinal A & B
+      }
       mcggLobbies.GRAND_FINAL = [];
       for (let i = 1; i <= 4; i++) {
         mcggLobbies.GRAND_FINAL.push({ name: `TBD (Top ${i} Semifinal A)`, nickname: 'TBD', gameId: '-', r1: 0, r2: 0, r3: 0, c1: '', c2: '', c3: '', penalty: 0, total: 0, isTBD: true });
@@ -14351,10 +14338,20 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
 
   let effectiveTeamA = m.teamA || '-';
   let effectiveTeamB = m.teamB || '-';
-  if (m.matchLabel === 'LB_SF_1' && (effectiveTeamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamB))) {
-    effectiveTeamB = 'Anti Climax';
-  } else if (m.matchLabel === 'LB_SF_2' && (effectiveTeamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB))) {
-    effectiveTeamB = '7 SINS';
+  if (m.matchLabel === 'LB_QF_1') {
+    if (effectiveTeamA === 'Pemenang LB R3 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'TABRAK AJALAH';
+    if (effectiveTeamB === 'Pemenang LB R3 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = 'TY BEKASI';
+  } else if (m.matchLabel === 'LB_QF_2') {
+    if (effectiveTeamA === 'Pemenang LB R3 3' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'APPA LINUX';
+    if (effectiveTeamB === 'Pemenang LB R3 4' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = 'MiracleXStars';
+  } else if (m.matchLabel === 'LB_SF_1') {
+    if (effectiveTeamA === 'Pemenang LB QF 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'TABRAK AJALAH';
+    if (effectiveTeamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = 'Anti Climax';
+  } else if (m.matchLabel === 'LB_SF_2') {
+    if (effectiveTeamA === 'Pemenang LB QF 2' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'APPA LINUX';
+    if (effectiveTeamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = '7 SINS';
+  } else if (m.matchLabel === 'LB_PRELIM') {
+    if (effectiveTeamB === 'Pemenang LB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = '7 SINS';
   } else if (m.matchLabel === 'UB_FINAL') {
     if (effectiveTeamA === 'Pemenang UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'ATMO';
     if (effectiveTeamB === 'Pemenang UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = 'AANG ALPHA';
