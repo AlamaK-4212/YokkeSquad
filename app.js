@@ -419,9 +419,9 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   // Ronde 4 (Hari 5): Upper Final & Lower Semifinal / Final (5 Match)
   [
     { matchLabel: 'UB_FINAL', phaseName: 'Upper Bracket Final (Hari 5)', bracket: 'UPPER', day: 5, teamA: 'ATMO', teamB: 'AANG ALPHA', winner: null },
-    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: null },
-    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'APPA LINUX', teamB: '7 SINS', winner: '7 SINS', scoreA: 0, scoreB: 2, status: 'COMPLETED', mvpPlayer: 'tσxíɕ', mvpHero: 'Moskov / Sun', mvpTeam: '7 SINS' },
-    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB SF 1', teamB: '7 SINS', winner: null },
+    { matchLabel: 'LB_SF_1', phaseName: 'Lower Bracket Semifinal 1 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: 'Anti Climax', winner: 'TABRAK AJALAH', scoreA: 2, scoreB: 1, status: 'COMPLETED', mvpPlayer: 'G2: C i d . | G3: NEOX', mvpHero: 'G2: Granger | G3: Nolan', mvpTeam: 'TABRAK AJALAH', gameMvps: [{ game: 1, player: 'C i d .', hero: 'Granger', team: 'TABRAK AJALAH' }, { game: 2, player: 'NEOX', hero: 'Nolan', team: 'TABRAK AJALAH' }] },
+    { matchLabel: 'LB_SF_2', phaseName: 'Lower Bracket Semifinal 2 (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'APPA LINUX', teamB: '7 SINS', winner: '7 SINS', scoreA: 0, scoreB: 2, status: 'COMPLETED', mvpPlayer: 'G1: ϯσxίɕ | G2: Rynnn.', mvpHero: 'G1: Moskov | G2: Sun', mvpTeam: '7 SINS', gameMvps: [{ game: 1, player: 'ϯσxίɕ', hero: 'Moskov', team: '7 SINS' }, { game: 2, player: 'Rynnn.', hero: 'Sun', team: '7 SINS' }] },
+    { matchLabel: 'LB_PRELIM', phaseName: 'Lower Bracket Final Penantang (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'TABRAK AJALAH', teamB: '7 SINS', winner: null },
     { matchLabel: 'LB_FINAL', phaseName: 'Lower Bracket Final Penentu (Hari 5)', bracket: 'LOWER', day: 5, teamA: 'Pemenang LB Prelim', teamB: 'Gugur UB Final', winner: null }
   ],
   // Ronde 5 (Hari 5): Grand Final BO5 (1 Match)
@@ -430,7 +430,7 @@ const DEFAULT_MLBB_PLAYOFF_MATCHES = [
   ]
 ];
 
-const PLAYOFF_DATA_VERSION = '2026-11-13-v5-top4-mlbb-official';
+const PLAYOFF_DATA_VERSION = '2026-11-13-v6-top4-mlbb-official-prelim';
 
 /**
  * Normalisasi dan rekonsiliasi data playoff ke dalam 6 ronde kanonikal (38 matches).
@@ -505,6 +505,16 @@ function normalizeGroupPlayoffMatches(incoming) {
         if (!defaultMatch.teamB || defaultMatch.teamB === 'Gugur UB SF 1' || isPlayoffPlaceholderTeam(defaultMatch.teamB)) {
           defaultMatch.teamB = 'Anti Climax';
         }
+        if (!defaultMatch.winner || isPlayoffPlaceholderTeam(defaultMatch.winner)) {
+          defaultMatch.winner = 'TABRAK AJALAH';
+          defaultMatch.scoreA = 2;
+          defaultMatch.scoreB = 1;
+          defaultMatch.status = 'COMPLETED';
+          defaultMatch.mvpPlayer = 'G2: C i d . | G3: NEOX';
+          defaultMatch.mvpHero = 'G2: Granger | G3: Nolan';
+          defaultMatch.mvpTeam = 'TABRAK AJALAH';
+          defaultMatch.gameMvps = [{ game: 1, player: 'C i d .', hero: 'Granger', team: 'TABRAK AJALAH' }, { game: 2, player: 'NEOX', hero: 'Nolan', team: 'TABRAK AJALAH' }];
+        }
       }
       if (defaultMatch.matchLabel === 'LB_SF_2') {
         if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'APPA LINUX';
@@ -516,13 +526,14 @@ function normalizeGroupPlayoffMatches(incoming) {
           defaultMatch.scoreA = 0;
           defaultMatch.scoreB = 2;
           defaultMatch.status = 'COMPLETED';
-          defaultMatch.mvpPlayer = 'tσxíɕ';
-          defaultMatch.mvpHero = 'Moskov / Sun';
+          defaultMatch.mvpPlayer = 'G1: ϯσxíɕ | G2: Rynnn.';
+          defaultMatch.mvpHero = 'G1: Moskov | G2: Sun';
           defaultMatch.mvpTeam = '7 SINS';
+          defaultMatch.gameMvps = [{ game: 1, player: 'ϯσxíɕ', hero: 'Moskov', team: '7 SINS' }, { game: 2, player: 'Rynnn.', hero: 'Sun', team: '7 SINS' }];
         }
       }
       if (defaultMatch.matchLabel === 'LB_PRELIM') {
-        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA)) defaultMatch.teamA = 'Pemenang LB SF 1';
+        if (!defaultMatch.teamA || isPlayoffPlaceholderTeam(defaultMatch.teamA) || defaultMatch.teamA === 'Pemenang LB SF 1') defaultMatch.teamA = 'TABRAK AJALAH';
         if (!defaultMatch.teamB || isPlayoffPlaceholderTeam(defaultMatch.teamB)) defaultMatch.teamB = '7 SINS';
       }
       if (defaultMatch.matchLabel === 'UB_FINAL') {
@@ -1240,218 +1251,442 @@ const DEFAULT_MCGG_LOBBIES = {
   ],
   "SEMI_A": [
     {
-      "name": "Raihan Purnama",
-      "nickname": "hutanlindung",
-      "gameId": "17768274 (4031)",
-      "dept": "OPPI",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "lancelot", "cmd1": "Lancelot [Remy]", "c2": "kaboom", "cmd2": "Kaboom [Johnson]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Raihan Purnama",
+        "dept": "OPPI",
+        "nickname": "hutanlindung",
+        "gameId": "17768274 (4031)",
+        "r1": 1,
+        "c1": "Lancelot [Remy]",
+        "cmd1": "Lancelot [Remy]",
+        "r2": 2,
+        "c2": "Kaboom [Johnson]",
+        "cmd2": "Kaboom [Johnson]",
+        "r3": 5,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 6,
+        "mvpCount": 1
     },
     {
-      "name": "Daniel Reimond",
-      "nickname": "jonomon19",
-      "gameId": "6652814 (4125)",
-      "dept": "IT/QA",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "minotaur", "cmd1": "Minotaur [Brown]", "c2": "lancelot", "cmd2": "Lancelot [Remy]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "FAJAR GILLES TIRANO",
+        "dept": "Ado jakarta kota",
+        "nickname": "Mugiwara",
+        "gameId": "3122743 (4122)",
+        "r1": 8,
+        "c1": "Kagura [Saki]",
+        "cmd1": "Kagura [Saki]",
+        "r2": 1,
+        "c2": "Johnson [Kaboom]",
+        "cmd2": "Johnson [Kaboom]",
+        "r3": 2,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 3,
+        "mvpCount": 1
     },
     {
-      "name": "Faldi Rasis Purnomo",
-      "nickname": "En D M0",
-      "gameId": "1645656 (4002)",
-      "dept": "Enterprise Risk Management / PRM",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "floryn", "cmd1": "Floryn [Dubi]", "c2": "popol", "cmd2": "Popol [Benny]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Daniel Reimond",
+        "dept": "IT/QA",
+        "nickname": "jonomon19",
+        "gameId": "6652814 (4125)",
+        "r1": 2,
+        "c1": "Minotaur [Brown]",
+        "cmd1": "Minotaur [Brown]",
+        "r2": 6,
+        "c2": "Lancelot [Remy]",
+        "cmd2": "Lancelot [Remy]",
+        "r3": 4,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 2,
+        "mvpCount": 0
     },
     {
-      "name": "M ikhsan",
-      "nickname": "Ganool",
-      "gameId": "16725620 (4014)",
-      "dept": "Product",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "kalea", "cmd1": "Kalea [Dubi]", "c2": "layla", "cmd2": "Layla", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Muh Asrul",
+        "dept": "Ado Thamrin",
+        "nickname": "Odet tiktok",
+        "gameId": "13492185 (4170)",
+        "r1": 5,
+        "c1": "Cyclops [Asta]",
+        "cmd1": "Cyclops [Asta]",
+        "r2": 3,
+        "c2": "Karina",
+        "cmd2": "Karina",
+        "r3": 7,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -2,
+        "mvpCount": 0
     },
     {
-      "name": "FAJAR GILLES TIRANO",
-      "nickname": "Mugiwara",
-      "gameId": "3122743 (4122)",
-      "dept": "Ado jakarta kota",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "kagura", "cmd1": "Kagura [Saki]", "c2": "johnson", "cmd2": "Johnson [Kaboom]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Faldi Rasis Purnomo",
+        "dept": "Enterprise Risk Management / PRM",
+        "nickname": "En D M0",
+        "gameId": "1645656 (4002)",
+        "r1": 7,
+        "c1": "Floryn [Dubi]",
+        "cmd1": "Floryn [Dubi]",
+        "r2": 4,
+        "c2": "Popol [Benny]",
+        "cmd2": "Popol [Benny]",
+        "r3": 1,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 2,
+        "mvpCount": 1
     },
     {
-      "name": "Muh Asrul",
-      "nickname": "Odet tiktok",
-      "gameId": "13492185 (4170)",
-      "dept": "Ado Thamrin",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "cyclops", "cmd1": "Cyclops [Asta]", "c2": "karina", "cmd2": "Karina", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Rendy Wibi Pratama",
+        "dept": "Quality Assurance",
+        "nickname": "EhhChaky",
+        "gameId": "3221758 (4129)",
+        "r1": 3,
+        "c1": "Brown [Minotaur]",
+        "cmd1": "Brown [Minotaur]",
+        "r2": 5,
+        "c2": "Eggie [Diggie]",
+        "cmd2": "Eggie [Diggie]",
+        "r3": 8,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -3,
+        "mvpCount": 0
     },
     {
-      "name": "Rendy Wibi Pratama",
-      "nickname": "EhhChaky",
-      "gameId": "3221758 (4129)",
-      "dept": "Quality Assurance",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "brown", "cmd1": "Brown [Minotaur]", "c2": "eggie", "cmd2": "Eggie [Diggie]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "M ikhsan",
+        "dept": "Product",
+        "nickname": "Ganool",
+        "gameId": "16725620 (4014)",
+        "r1": 4,
+        "c1": "Kalea [Dubi]",
+        "cmd1": "Kalea [Dubi]",
+        "r2": 7,
+        "c2": "Layla",
+        "cmd2": "Layla",
+        "r3": 3,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "MUHAMMAD FAUZI KURNIAWAN",
-      "nickname": "Alis Setan17",
-      "gameId": "5488262 (4097)",
-      "dept": "Assistant Manager / Mercant business partnership",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "karina", "cmd1": "Karina", "c2": "brody", "cmd2": "Brody", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "MUHAMMAD FAUZI KURNIAWAN",
+        "dept": "Assistant Manager / Mercant business partnership",
+        "nickname": "Alis Setan17",
+        "gameId": "5488262 (4097)",
+        "r1": 6,
+        "c1": "Karina",
+        "cmd1": "Karina",
+        "r2": 8,
+        "c2": "Brody",
+        "cmd2": "Brody",
+        "r3": 6,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -8,
+        "mvpCount": 0
     }
-  ],
+],
   "SEMI_B": [
     {
-      "name": "Joko waluyono",
-      "nickname": "Xylo^",
-      "gameId": "2357103 (4071)",
-      "dept": "MY / Ado bandung",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "alice", "cmd1": "Alice [Mavis]", "c2": "chou", "cmd2": "Chou", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "ANDHIKA BAYU PRASETYO",
+        "dept": "Quality Assurance",
+        "nickname": "H O K K I E",
+        "gameId": "2336317 (4053)",
+        "r1": 7,
+        "c1": "Benny [Popol]",
+        "cmd1": "Benny [Popol]",
+        "r2": 6,
+        "c2": "Fanny",
+        "cmd2": "Fanny",
+        "r3": 3,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -3,
+        "mvpCount": 0
     },
     {
-      "name": "ANDHIKA BAYU PRASETYO",
-      "nickname": "H O K K I E",
-      "gameId": "2336317 (4053)",
-      "dept": "Quality Assurance",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "benny", "cmd1": "Benny [Popol]", "c2": "fanny", "cmd2": "Fanny", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Dandy Nasri",
+        "dept": "Change&Release Management",
+        "nickname": "Wienie.10",
+        "gameId": "3180808 (4068)",
+        "r1": 4,
+        "c1": "Yu Zhong [Pao]",
+        "cmd1": "Yu Zhong [Pao]",
+        "r2": 5,
+        "c2": "Alucard [Harper]",
+        "cmd2": "Alucard [Harper]",
+        "r3": 1,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 4,
+        "mvpCount": 1
     },
     {
-      "name": "Sulistiyo Yonatan",
-      "nickname": "Yona",
-      "gameId": "2355574 (4027)",
-      "dept": "Quality Assurance",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "chou", "cmd1": "Chou", "c2": "kalea", "cmd2": "Kalea [Dubi]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Joko waluyono",
+        "dept": "MY / Ado bandung",
+        "nickname": "Xylo^",
+        "gameId": "2357103 (4071)",
+        "r1": 2,
+        "c1": "Alice [Mavis]",
+        "cmd1": "Alice [Mavis]",
+        "r2": 8,
+        "c2": "Chou",
+        "cmd2": "Chou",
+        "r3": 2,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 2,
+        "mvpCount": 0
     },
     {
-      "name": "Yudhistira Pratama Ramadhan",
-      "nickname": "BuzzFeed",
-      "gameId": "3266192 (4113)",
-      "dept": "Quality Assurance",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "eva", "cmd1": "Eva", "c2": "ling", "cmd2": "Ling", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Laga Al Ahli",
+        "dept": "ERM/PRM",
+        "nickname": "Exjoyness.",
+        "gameId": "1605612 (1007)",
+        "r1": 1,
+        "c1": "Mavis [Alice]",
+        "cmd1": "Mavis [Alice]",
+        "r2": 1,
+        "c2": "Vale",
+        "cmd2": "Vale",
+        "r3": 4,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 9,
+        "mvpCount": 2
     },
     {
-      "name": "Laga Al Ahli",
-      "nickname": "Exjoyness.",
-      "gameId": "5475396 (4097)",
-      "dept": "IT/QA",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "mavis", "cmd1": "Mavis [Alice]", "c2": "vale", "cmd2": "Vale", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Yudhistira Pratama Ramadhan",
+        "dept": "ADO BANDUNG",
+        "nickname": "BuzzFeed",
+        "gameId": "3266192 (4113)",
+        "r1": 5,
+        "c1": "Franco [Ragnar]",
+        "cmd1": "Franco [Ragnar]",
+        "r2": 7,
+        "c2": "Ling",
+        "cmd2": "Ling",
+        "r3": 5,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -5,
+        "mvpCount": 0
     },
     {
-      "name": "Dandy Nasri",
-      "nickname": "Wienie.10",
-      "gameId": "3180808 (4068)",
-      "dept": "Change&Release Management",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "yuzhong", "cmd1": "Yu Zhong [Pao]", "c2": "alucard", "cmd2": "Alucard [Harper]", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Muhamad Fajar Samudra",
+        "dept": "Project Management BMRI",
+        "nickname": "mfsamudra",
+        "gameId": "4881010 (4163)",
+        "r1": 8,
+        "c1": "Moskov",
+        "cmd1": "Moskov",
+        "r2": 3,
+        "c2": "Aamon [Austus]",
+        "cmd2": "Aamon [Austus]",
+        "r3": 6,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -4,
+        "mvpCount": 0
     },
     {
-      "name": "Eko Marwanto Putro",
-      "nickname": "BladeSpy",
-      "gameId": "5730333 (4059)",
-      "dept": "Risk Management Group",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "dubi", "cmd1": "Dubi [Kalea]", "c2": "guinevere", "cmd2": "Guinevere", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Sulistiyo Yonatan",
+        "dept": "Marketing Yokke / ADO MEDAN",
+        "nickname": "Yona",
+        "gameId": "2355574 (4027)",
+        "r1": 3,
+        "c1": "Chou",
+        "cmd1": "Chou",
+        "r2": 4,
+        "c2": "Kalea [Dubi]",
+        "cmd2": "Kalea [Dubi]",
+        "r3": 7,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Muhamad Fajar Samudra",
-      "nickname": "mfsamudra",
-      "gameId": "4881010 (4163)",
-      "dept": "Project Management BMRI",
-      "r1": 0, "r2": 0, "r3": 0,
-      "c1": "abe", "cmd1": "Abe", "c2": "austus", "cmd2": "Austus", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Eko Marwanto Putro",
+        "dept": "Risk Management Group",
+        "nickname": "BladeSpy",
+        "gameId": "5730333 (4059)",
+        "r1": 6,
+        "c1": "Dubi [Kalea]",
+        "cmd1": "Dubi [Kalea]",
+        "r2": 2,
+        "c2": "Guinevere",
+        "cmd2": "Guinevere",
+        "r3": 8,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": -3,
+        "mvpCount": 0
     }
-  ],
+],
   "GRAND_FINAL": [
     {
-      "name": "Raihan Purnama",
-      "dept": "OPPI",
-      "nickname": "hutanlindung",
-      "gameId": "17768274 (4031)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Raihan Purnama",
+        "dept": "OPPI",
+        "nickname": "hutanlindung",
+        "gameId": "17768274 (4031)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Daniel Reimond",
-      "dept": "IT/QA",
-      "nickname": "jonomon19",
-      "gameId": "6652814 (4125)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "FAJAR GILLES TIRANO",
+        "dept": "Ado jakarta kota",
+        "nickname": "Mugiwara",
+        "gameId": "3122743 (4122)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Faldi Rasis Purnomo",
-      "dept": "Enterprise Risk Management / PRM",
-      "nickname": "En D M0",
-      "gameId": "1645656 (4002)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Faldi Rasis Purnomo",
+        "dept": "Enterprise Risk Management / PRM",
+        "nickname": "En D M0",
+        "gameId": "1645656 (4002)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "M ikhsan",
-      "dept": "Product",
-      "nickname": "Ganool",
-      "gameId": "5447194 (4074)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Daniel Reimond",
+        "dept": "IT/QA",
+        "nickname": "jonomon19",
+        "gameId": "6652814 (4125)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Joko waluyono",
-      "dept": "MY / Ado bandung",
-      "nickname": "Xylo^",
-      "gameId": "2357103 (4071)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Laga Al Ahli",
+        "dept": "ERM/PRM",
+        "nickname": "Exjoyness.",
+        "gameId": "1605612 (1007)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "ANDHIKA BAYU PRASETYO",
-      "dept": "Quality Assurance",
-      "nickname": "H O K K I E",
-      "gameId": "2336317 (4053)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Dandy Nasri",
+        "dept": "Change&Release Management",
+        "nickname": "Wienie.10",
+        "gameId": "3180808 (4068)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Sulistiyo Yonatan",
-      "dept": "Marketing Yokke / ADO MEDAN",
-      "nickname": "Yona",
-      "gameId": "2355574 (4027)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Joko waluyono",
+        "dept": "MY / Ado bandung",
+        "nickname": "Xylo^",
+        "gameId": "2357103 (4071)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     },
     {
-      "name": "Yudhistira Pratama Ramadhan",
-      "dept": "ADO BANDUNG",
-      "nickname": "BuzzFeed",
-      "gameId": "3266192 (4113)",
-      "r1": 0, "r2": 0, "r3": 0, "c1": "", "cmd1": "", "c2": "", "cmd2": "", "c3": "", "cmd3": "",
-      "penalty": 0, "total": 0, "mvpCount": 0, "isTBD": false
+        "name": "Sulistiyo Yonatan",
+        "dept": "Marketing Yokke / ADO MEDAN",
+        "nickname": "Yona",
+        "gameId": "2355574 (4027)",
+        "r1": 0,
+        "c1": "",
+        "cmd1": "",
+        "r2": 0,
+        "c2": "",
+        "cmd2": "",
+        "r3": 0,
+        "c3": "",
+        "cmd3": "",
+        "penalty": 0,
+        "total": 0,
+        "mvpCount": 0
     }
-  ],
+],
   "WILDCARD": [
     {
       "name": "Aziz Nur Maulana",
@@ -2771,7 +3006,7 @@ const DEFAULT_MCGG_LOBBIES = {
   ]
 };
 
-const MCGG_DATA_VERSION = 'v21_20261113_top8_mcgg_finalists';
+const MCGG_DATA_VERSION = 'v22_20261113_official_grand_finalists';
 let savedMcggVersion = null;
 try {
   savedMcggVersion = localStorage.getItem('yokke_mcgg_version');
@@ -14351,6 +14586,7 @@ function renderSingleMatchNodeHtml(m, rIdx, mIdx, topPx, activeNodeKey, isLower 
     if (effectiveTeamA === 'Pemenang LB QF 2' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'APPA LINUX';
     if (effectiveTeamB === 'Gugur UB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = '7 SINS';
   } else if (m.matchLabel === 'LB_PRELIM') {
+    if (effectiveTeamA === 'Pemenang LB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'TABRAK AJALAH';
     if (effectiveTeamB === 'Pemenang LB SF 2' || isPlayoffPlaceholderTeam(effectiveTeamB)) effectiveTeamB = '7 SINS';
   } else if (m.matchLabel === 'UB_FINAL') {
     if (effectiveTeamA === 'Pemenang UB SF 1' || isPlayoffPlaceholderTeam(effectiveTeamA)) effectiveTeamA = 'ATMO';
